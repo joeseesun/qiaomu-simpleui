@@ -58,7 +58,7 @@ Hidden.registerHoldAction(fm)
 assert(row(a,false)==nil)
 local closed=0
 local refreshed=0
-Hidden.refresh=function() refreshed=refreshed+1 end
+Hidden.refresh=function(close) refreshed=refreshed+1; if close then close() end end
 package.loaded["infra/sui_core"]={Notify={toast=function() end}}
 local buttons=row(b,true,nil,function() closed=closed+1 end)
 buttons[1].callback()

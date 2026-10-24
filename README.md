@@ -6,7 +6,7 @@
 
 A customized SimpleUI for KOReader with a cleaner header, a WeRead shortcut, and reversible book visibility.
 
-[下载测试版](https://github.com/joeseesun/qiaomu-simpleui/releases/tag/v3.0.0-qiaomu.1) · [原版 SimpleUI](https://github.com/doctorhetfield-cmd/simpleui.koplugin) · [GPL-3.0](LICENSE)
+[下载测试版](https://github.com/joeseesun/qiaomu-simpleui/releases/tag/v3.0.0-qiaomu.2) · [原版 SimpleUI](https://github.com/doctorhetfield-cmd/simpleui.koplugin) · [GPL-3.0](LICENSE)
 
 基于 Doctor Hetfield 的 **SimpleUI 3.0.0**，保留上游作者和许可证。本仓库提供定制版本，不代表上游官方发布。
 
@@ -50,6 +50,7 @@ Kindle 插件目录：`koreader/plugins/`；Kobo：`.adds/koreader/plugins/`。�
 ```bash
 python3 -m pip install -r requirements-dev.txt
 python3 tests/test_customizations.py
+python3 tests/test_refresh_lifecycle.py
 python3 scripts/package.py
 ```
 

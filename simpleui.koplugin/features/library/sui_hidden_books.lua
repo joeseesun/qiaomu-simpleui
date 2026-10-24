@@ -77,23 +77,37 @@ function Hidden.filterState(state)
     return copy
 end
 
-function Hidden.refresh()
+-- Invalidate before the caller closes/repaints its action sheet. The caller
+-- owns that paint: a second refresh of the underlying file manager changes
+-- its navbar/path state and can paint white rectangles over the home screen.
+function Hidden.refresh(caller_refresh)
     local Scan = package.loaded["engines/sui_library_scan"]
     if Scan then Scan.invalidate() end
-    local Registry = package.loaded["modules/moduleregistry"]
-    if Registry then
-        for _i, mod in ipairs(Registry.list()) do
-            if mod.invalidateCache then mod.invalidateCache() end
-        end
-    end
     local Engine = package.loaded["engines/sui_screen_engine"]
-    if Engine then
-        Engine.markAllStale()
-        Engine.invalidateAllCfgAndRefresh(true)
-    end
+    if Engine then Engine.markAllStale() end
     local FM = package.loaded["apps/filemanager/filemanager"]
-    local fc = FM and FM.instance and FM.instance.file_chooser
-    if fc then fc:refreshPath() end
+    local fm = FM and FM.instance
+    if fm then fm._sui_lazy_refresh_path = true end
+    if caller_refresh then
+        caller_refresh()
+        return
+    end
+    -- Restore is invoked from a settings row, without a book-sheet callback.
+    -- Let its event finish, then choose a single owner for the visible view.
+    require("ui/uimanager"):nextTick(function()
+        if Engine and #Engine.liveScreenIds() > 0 then
+            Engine.refreshAllLiveImmediate(false)
+        else
+            local current_fm = FM and FM.instance
+            local fc = current_fm and current_fm.file_chooser
+            if not fc then return end
+            local previous = current_fm._navbar_suppress_path_change
+            current_fm._navbar_suppress_path_change = true
+            local ok, err = pcall(fc.refreshPath, fc)
+            current_fm._navbar_suppress_path_change = previous
+            if not ok then error(err) end
+        end
+    end)
 end
 
 function Hidden.makeMenuItem()
@@ -140,10 +154,7 @@ function Hidden.registerHoldAction(fm)
             sui_icon = "hide",
             callback = function()
                 if Hidden.hide(file) then
-                    if close then close() end
-                    Hidden.refresh()
-                    require("infra/sui_core").Notify.toast(
-                        _("Hidden. The file and reading history are kept.\nRestore it in Settings → Library → Hidden books and documents."), 4)
+                    Hidden.refresh(close)
                 end
             end,
         }}
