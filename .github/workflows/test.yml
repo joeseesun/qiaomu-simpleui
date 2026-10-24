@@ -15,6 +15,7 @@ jobs:
       - run: python -m pip install -r requirements-dev.txt
       - run: python tests/test_customizations.py
       - run: python tests/test_refresh_lifecycle.py
+      - run: python tests/test_weread_lifecycle.py
       - run: |
           python - <<'PY'
           from pathlib import Path
