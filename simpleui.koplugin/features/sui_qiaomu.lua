@@ -44,7 +44,11 @@ function M.install(plugin)
                 end
             end,
         }
-        if not Settings:isTrue("simpleui_qiaomu_weread_tab_added") then
+        -- .1/.2 could prune the tab on restart but retain the "added" flag.
+        -- Repair that state once; later manual navbar choices stay respected.
+        if not Settings:isTrue("simpleui_qiaomu_weread_tab_added")
+                or not Settings:isTrue("simpleui_qiaomu_weread_tab_migrated_v2")
+                or Settings:isTrue("simpleui_qiaomu_weread_tab_suspended") then
             local tabs = {}
             local found = false
             for _i, id in ipairs(Config.loadTabConfig()) do
@@ -54,8 +58,13 @@ function M.install(plugin)
             if not found and #tabs < Config.effectiveMaxTabs() then
                 table.insert(tabs, math.max(2, #tabs), ACTION)
                 Config.saveTabConfig(tabs)
+                found = true
             end
-            Settings:set("simpleui_qiaomu_weread_tab_added", true)
+            if found then
+                Settings:set("simpleui_qiaomu_weread_tab_added", true)
+                Settings:set("simpleui_qiaomu_weread_tab_suspended", false)
+            end
+            Settings:set("simpleui_qiaomu_weread_tab_migrated_v2", true)
         end
     else
         QA.unregister(ACTION)
@@ -63,7 +72,10 @@ function M.install(plugin)
         if type(tabs) == "table" then
             local kept = {}
             for _i, id in ipairs(tabs) do if id ~= ACTION then kept[#kept + 1] = id end end
-            if #kept ~= #tabs then Config.saveTabConfig(kept) end
+            if #kept ~= #tabs then
+                Config.saveTabConfig(kept)
+                Settings:set("simpleui_qiaomu_weread_tab_suspended", true)
+            end
         end
     end
     Config.invalidateTabsCache()

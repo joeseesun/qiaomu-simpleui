@@ -6,7 +6,7 @@
 
 A customized SimpleUI for KOReader with a cleaner header, a WeRead shortcut, and reversible book visibility.
 
-[下载测试版](https://github.com/joeseesun/qiaomu-simpleui/releases/tag/v3.0.0-qiaomu.2) · [原版 SimpleUI](https://github.com/doctorhetfield-cmd/simpleui.koplugin) · [GPL-3.0](LICENSE)
+[下载测试版](https://github.com/joeseesun/qiaomu-simpleui/releases/tag/v3.0.0-qiaomu.3) · [原版 SimpleUI](https://github.com/doctorhetfield-cmd/simpleui.koplugin) · [GPL-3.0](LICENSE)
 
 基于 Doctor Hetfield 的 **SimpleUI 3.0.0**，保留上游作者和许可证。本仓库提供定制版本，不代表上游官方发布。
 
@@ -45,12 +45,13 @@ Kindle 插件目录：`koreader/plugins/`；Kobo：`.adds/koreader/plugins/`。�
 
 本版是测试发布。已自动验证：隐藏与恢复、重载后持久化、同名路径隔离、文件保留、原生文件浏览过滤、主页网格过滤、微信读书检测/启动分发/入口去重，以及 Lua 语法。
 
-自动测试通过不代表真机视觉和触控已验收；当前定制的长按、恢复界面和微信读书页面仍需要设备操作确认。未宣称所有 Kindle/Kobo/Android 机型兼容。
+v3.0.0-qiaomu.2 的隐藏与恢复画面已获一台 Kindle 用户确认；v3.0.0-qiaomu.3 的微信读书入口重启保持仍待真机复测。自动测试通过不代表所有视觉和触控交互均已验收。未宣称所有 Kindle/Kobo/Android 机型兼容。
 
 ```bash
 python3 -m pip install -r requirements-dev.txt
 python3 tests/test_customizations.py
 python3 tests/test_refresh_lifecycle.py
+python3 tests/test_weread_lifecycle.py
 python3 scripts/package.py
 ```
 
@@ -74,4 +75,4 @@ Files, annotations and reading history are preserved. Visibility is not encrypti
 
 Requires KOReader v2026.03+ and its enabled CoverBrowser plugin. Back up your existing plugin folder and `settings/simpleui`, then extract the release's **simpleui.koplugin.zip** into KOReader's `plugins/` directory and restart. Keep the folder name exactly `simpleui.koplugin`. Add the Flat Library module to browse books across subfolders. To roll back, restore your previous plugin and settings backup.
 
-This is a test release: automated visibility, dispatch and syntax tests pass; physical-device visual/touch acceptance of the customization is still pending. Other devices are not claimed as tested. Run the commands above to test and build the distributable ZIP. No account, device settings, history or hidden-book list is included.
+This is a test release: automated visibility, dispatch and syntax tests pass; hide/restore rendering in .2 has been user-confirmed on one Kindle; WeRead shortcut persistence in .3 still needs a device recheck. Other devices are not claimed as tested. Run the commands above to test and build the distributable ZIP. No account, device settings, history or hidden-book list is included.

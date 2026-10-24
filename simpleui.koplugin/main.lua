@@ -967,6 +967,11 @@ function SimpleUIPlugin:init()
 
         Config.applyFirstRunDefaults()
         Config.migrateOldCustomSlots()
+        -- External actions must exist before persistent tabs are sanitized.
+        -- Registering WeRead later made the second launch delete its tab.
+        if SUISettings:nilOrTrue("simpleui_enabled") then
+            require("features/sui_qiaomu").install(self)
+        end
         -- Always run sanitizeQASlots: it cleans both custom QA slot references
         -- and any stale built-in IDs from navbar_tabs.  The function is cheap —
         -- it reads a handful of settings and only writes back when it finds
@@ -1046,7 +1051,6 @@ function SimpleUIPlugin:init()
             "has_document=", self.ui and self.ui.document ~= nil)
 
         if SUISettings:nilOrTrue("simpleui_enabled") then
-            require("features/sui_qiaomu").install(self)
             Patches.installAll(self)
 
             pcall(function() QSBar.install() end)
