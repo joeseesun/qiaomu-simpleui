@@ -1,0 +1,6340 @@
+# Simple UI — KOReader plugin
+# Translation template
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: simpleui\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-22 11:13+0000\n"
+"PO-Revision-Date: 2026-03-27 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Polish\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
+
+#: modules/module_reading_goals.lua:1202
+msgid "  Set Goal  (%d hr/month)"
+msgstr "  Ustaw cel  (%d godz./miesiąc)"
+
+#: modules/module_reading_goals.lua:1214
+msgid "  Set Goal  (%d min/day)"
+msgstr "  Ustaw Cel  (%d minut/dzień)"
+
+#: modules/module_reading_goals.lua:1190
+msgid "  Set Goal  (%s)"
+msgstr "  Ustaw Cel (%s)"
+
+#: modules/module_reading_goals.lua:1201 modules/module_reading_goals.lua:1213
+msgid "  Set Goal  (disabled)"
+msgstr "  Ustaw Cel (wyłączony)"
+
+#: infra/sui_text.lua:97
+msgid " et al."
+msgstr " i in."
+
+#: engines/sui_book_grid.lua:463 features/library/sui_foldercovers.lua:1236
+msgid " p."
+msgstr " str."
+
+#: engines/sui_book_grid.lua:1533
+msgid "% Read (ascending)"
+msgstr "% przeczytane (rosnąco)"
+
+#: engines/sui_book_grid.lua:1534
+msgid "% Read (descending)"
+msgstr "% przeczytane (malejąco)"
+
+#: modules/critter/phrases.lua:190
+msgid "%.1f hours read today!"
+msgstr ""
+
+#: modules/module_heatmap.lua:226
+msgid "%1 weeks"
+msgstr "%1 tyg."
+
+#: engines/sui_book_grid.lua:1900 engines/sui_book_grid.lua:1905
+#: modules/module_reading_stats.lua:1153 screens/sui_menu.lua:3118
+#: screens/sui_menu.lua:3122
+msgid "%1 × %2"
+msgstr "%1 × %2"
+
+#: features/sui_backup.lua:697
+msgid "%d files (%s)"
+msgstr "pliki: %d (%s)"
+
+#: modules/module_reading_goals.lua:1140
+msgid "%d hr/month"
+msgstr "%d godz./miesiąc"
+
+#: modules/module_reading_goals.lua:1142
+msgid "%d min/day"
+msgstr "%d min/dzień"
+
+#: features/sui_backup.lua:695
+msgid "%d settings"
+msgstr "ustawienia: %d"
+
+#: engines/sui_book_grid.lua:842
+msgid "%d%%"
+msgstr "%d%%"
+
+#: engines/sui_book_grid.lua:902 engines/sui_book_grid.lua:914
+msgid "%d%% Read"
+msgstr "%d%% Przeczytane"
+
+#: screens/sui_stats_windows.lua:3141
+msgid "%d/%d days · %d/%d min to next freeze"
+msgstr "%d/%d dni · %d/%d min do następnego zamrożenia"
+
+#: infra/sui_book_stats.lua:192
+msgid "%s left"
+msgstr "Zostało %s"
+
+#: infra/sui_book_stats.lua:191 modules/module_reading_goals.lua:737
+#: modules/module_reading_goals.lua:757
+msgid "%s read"
+msgstr "Przeczytano %s"
+
+#: modules/module_quick_actions.lua:367
+msgid "(%d/%d — at limit)"
+msgstr "(%d/%d — limit osiągnięty)"
+
+#: engines/sui_book_sources.lua:383
+msgid "(collection not found)"
+msgstr "(nie znaleziono kolekcji)"
+
+#: screens/sui_menu.lua:198
+msgid ""
+"0% transparent, 100% solid. Applies across the full width of the title bar."
+msgstr ""
+"0% = przezroczysty, 100% = pełny. Dotyczy całej szerokości paska tytułu."
+
+#: screens/sui_menu.lua:186
+msgid ""
+"0% transparent, 100% solid. Applies to the native page bar in Library, "
+"History, Collections and similar screens."
+msgstr ""
+"0% = przezroczysty, 100% = pełny. Dotyczy natywnego paska stron w "
+"Bibliotece, Historii, Kolekcjach i podobnych ekranach."
+
+#: features/library/sui_label_options.lua:151
+msgid ""
+"0% transparent, 100% solid. Only the background changes; the text stays "
+"solid."
+msgstr ""
+"0% = przezroczysty, 100% = pełny. Zmienia się tylko tło; tekst pozostaje "
+"pełny."
+
+#: infra/sui_config.lua:1445
+msgid ""
+"0% transparent, 100% solid. Values in between add a scrim over the wallpaper."
+msgstr ""
+"0% = przezroczysty, 100% = pełny. Wartości pośrednie nakładają "
+"przyciemnienie na tapetę."
+
+#: engines/sui_group_cell.lua:262
+msgid "4-Cover Grid"
+msgstr "Siatka 4 okładek"
+
+#: features/sui_cover_elements.lua:318
+msgid "4-Cover Grid (Mosaic View Only)"
+msgstr "Siatka 4 okładek (tylko widok mozaiki)"
+
+#: modules/critter/phrases.lua:92
+msgid "A chapter pairs well with a coffee."
+msgstr ""
+
+#: screens/sui_onboarding.lua:188
+msgid "A folder named \"Books\" will be created and set as the library home."
+msgstr ""
+"Zostanie utworzony folder \"Books\" i ustawiony jako folder główny "
+"biblioteki."
+
+#: screens/sui_stats_windows.lua:2805
+msgid ""
+"A freeze can only bridge a single missed day right after an active one — "
+"yesterday doesn't qualify."
+msgstr ""
+"Zamrożenie może pokryć tylko jeden pominięty dzień, i tylko zaraz po dniu "
+"aktywnym — wczorajszy dzień się nie kwalifikuje."
+
+#: modules/critter/phrases.lua:84
+msgid "A fresh day, a fresh page."
+msgstr ""
+
+#: modules/critter/phrases.lua:240
+msgid "A good book helps."
+msgstr ""
+
+#: modules/critter/phrases.lua:170
+msgid "A new book awaits!"
+msgstr ""
+
+#: modules/critter/phrases.lua:203
+msgid "A new personal best!"
+msgstr ""
+
+#: modules/critter/phrases.lua:236
+msgid "A new week of stories."
+msgstr ""
+
+#: features/sui_presets.lua:346
+msgid "A preset named \"%s\" already exists."
+msgstr "Preset o nazwie \"%s\" już istnieje."
+
+#: features/sui_presets.lua:355
+msgid ""
+"A preset named \"%s\" already exists.\n"
+"Overwrite it?"
+msgstr ""
+"Preset o nazwie \"%s\" już istnieje.\n"
+"Nadpisać?"
+
+#: screens/sui_menu.lua:984 screens/sui_menu.lua:1123 screens/sui_menu.lua:1729
+msgid ""
+"A restart is required to apply the new bar size across all layouts.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Należy zrestartować w celu zastosowania nowego rozmiaru paska.\n"
+"\n"
+"Zrestartować teraz?"
+
+#: screens/sui_menu.lua:3962
+msgid ""
+"A restart is required to apply the new text size everywhere.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Aby zastosować nowy rozmiar tekstu wszędzie, wymagane jest ponowne "
+"uruchomienie.\n"
+"\n"
+"Uruchomić ponownie teraz?"
+
+#: _meta.lua:6
+msgid "A simple UI for KOReader"
+msgstr "Prosty interfejs dla KOReadera"
+
+#: screens/sui_stats_windows.lua:2475
+msgid "ALL TIME"
+msgstr "ŁĄCZNIE"
+
+#: screens/sui_menu.lua:4198 screens/sui_settings_window.lua:374
+#: screens/sui_settings_window.lua:1040
+msgid "About"
+msgstr "O wtyczce"
+
+#: features/library/sui_label_options.lua:134 features/sui_style.lua:1426
+msgid "Accent"
+msgstr ""
+
+#: screens/sui_menu.lua:3218
+msgid "Accent Color"
+msgstr ""
+
+#: features/sui_quickactions.lua:2387 features/sui_quickactions.lua:2620
+msgid "Action"
+msgstr "Akcja"
+
+#: modules/module_action_list.lua:219
+msgid "Action List"
+msgstr "Lista akcji"
+
+#: features/sui_quickactions.lua:2593
+msgid "Action Type"
+msgstr "Typ akcji"
+
+#: features/sui_quickactions.lua:1167
+msgid "Action error: %s"
+msgstr "Błąd akcji: %s"
+
+#: features/sui_quickactions.lua:2612
+msgid "Action name…"
+msgstr "Nazwa akcji…"
+
+#: features/sui_quickactions.lua:1160
+msgid "Action not available: %s"
+msgstr "Akcja niedostępna: %s"
+
+#: modules/module_tab_grid.lua:642
+msgid "Active Tab Color"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1510
+msgid "Add Action"
+msgstr "Dodaj akcję"
+
+#: features/sui_manual_books.lua:105
+msgid "Add Book"
+msgstr "Dodaj książkę"
+
+#: screens/sui_menu.lua:1417 screens/sui_menu.lua:1455
+msgid "Add Button"
+msgstr "Dodaj przycisk"
+
+#: engines/sui_screen_engine.lua:2075 engines/sui_window.lua:1143
+#: features/sui_arrange.lua:385 screens/sui_menu.lua:916
+#: screens/sui_menu.lua:953 screens/sui_menu.lua:1996 screens/sui_menu.lua:2026
+#: screens/sui_quicksettings_bar.lua:1426 screens/sui_settings_window.lua:1048
+msgid "Add Item"
+msgstr "Dodaj element"
+
+#: features/sui_manual_books.lua:159
+msgid "Add Manual Books"
+msgstr "Dodaj książki ręcznie"
+
+#: features/sui_manual_books.lua:172
+msgid "Add Manual Count"
+msgstr "Dodaj ręczną liczbę"
+
+#: screens/sui_settings_window.lua:1045 screens/sui_settings_window.lua:1171
+msgid "Add Module"
+msgstr "Dodaj moduł"
+
+#: screens/sui_settings_window.lua:1140
+msgid "Add Page"
+msgstr "Dodaj stronę"
+
+#: features/sui_manual_books.lua:167
+msgid "Add Single Book"
+msgstr "Dodaj pojedynczą książkę"
+
+#: modules/module_tab_grid.lua:869
+#, fuzzy
+msgid "Add Tab"
+msgstr "Dodaj stronę"
+
+#: modules/module_action_list.lua:287 modules/module_quick_actions.lua:349
+#: screens/sui_menu.lua:1916 screens/sui_quicksettings_bar.lua:1509
+msgid "Add at least 2 actions to arrange."
+msgstr "Dodaj minimum 2 akcje, aby zmienić kolejność."
+
+#: features/sui_collection_arrange.lua:35
+msgid "Add at least 2 books to arrange."
+msgstr "Dodaj minimum 2 książki, aby zmienić kolejność."
+
+#: modules/critter/module_critter.lua:559
+msgid "Add at least 2 decorations to arrange."
+msgstr ""
+
+#: modules/module_reading_stats.lua:1143
+msgid "Add at least 2 stats to arrange."
+msgstr "Dodaj minimum 2 statystyki, aby zmienić kolejność."
+
+#: modules/module_tab_grid.lua:868 screens/sui_menu.lua:363
+#, fuzzy
+msgid "Add at least 2 tabs to arrange."
+msgstr "Dodaj minimum 2 statystyki, aby zmienić kolejność."
+
+#: modules/module_tbr.lua:342
+msgid "Add to To Be Read"
+msgstr "Dodaj do listy Do przeczytania"
+
+#: modules/critter/module_critter.lua:541
+msgid "Add your own critters in %1"
+msgstr ""
+
+#: modules/critter/module_critter.lua:685
+msgid "Add your own decorations in %1"
+msgstr ""
+
+#: screens/sui_menu.lua:2328
+msgid "After closing a book"
+msgstr "Po zamknięciu książki"
+
+#: infra/sui_config.lua:2035 modules/critter/module_critter.lua:678
+#: modules/module_action_list.lua:342 modules/module_quick_actions.lua:472
+#: modules/module_quote.lua:1484
+msgid "Alignment"
+msgstr "Wyrównanie"
+
+#: screens/sui_menu.lua:3278 screens/sui_menu.lua:3937
+msgid "All caps"
+msgstr ""
+
+#: engines/sui_window.lua:4294 screens/sui_settings_window.lua:813
+msgid "All items have already been added."
+msgstr "Wszystkie elementy zostały już dodane."
+
+#: screens/sui_settings_window.lua:791
+msgid "All modules have already been added."
+msgstr "Wszystkie moduły zostały już dodane."
+
+#: features/sui_quickactions.lua:3312
+msgid "All recent books are finished."
+msgstr "Wszystkie ostatnie książki zostały ukończone."
+
+#: modules/module_reading_stats.lua:248
+msgid "All time"
+msgstr ""
+
+#: modules/module_reading_stats.lua:249
+msgid "All time — Books"
+msgstr "Łącznie — Książki"
+
+#: modules/module_reading_stats.lua:248
+msgid "All time — Time"
+msgstr "Łączny czas"
+
+#: screens/sui_menu.lua:2436
+msgid "Always"
+msgstr "Zawsze"
+
+#: modules/module_clock.lua:1095 modules/module_clock.lua:1114
+msgid "Analogue"
+msgstr "Analogowy"
+
+#: infra/sui_goals.lua:44
+msgid "Annual Goal"
+msgstr "Cel roczny"
+
+#: infra/sui_goals.lua:45
+msgid "Annual Reading Goal"
+msgstr "Roczny cel czytania"
+
+#: modules/critter/phrases.lua:215
+msgid "Annual goal reached!"
+msgstr ""
+
+#: features/sui_module_chrome.lua:251 features/sui_module_chrome.lua:272
+#: infra/sui_config.lua:1201 modules/module_heatmap.lua:354
+#: modules/module_reading_goals.lua:1256 modules/module_reading_goals.lua:1322
+msgid "Appearance"
+msgstr "Wygląd"
+
+#: features/sui_backup.lua:112
+msgid "Appearance & Style"
+msgstr "Wygląd i styl"
+
+#: features/dialogs/sui_dialogs.lua:285 features/sui_accent_picker.lua:104
+msgid "Apply"
+msgstr "Zastosuj"
+
+#: infra/sui_core.lua:1462
+msgid "Applying preset…"
+msgstr "Stosowanie presetu…"
+
+#: infra/sui_datenames.lua:29
+msgid "Apr"
+msgstr "kwi"
+
+#: infra/sui_datenames.lua:36
+msgid "April"
+msgstr "Kwiecień"
+
+#: features/dialogs/sui_dialogs.lua:221
+msgid "Are you sure you want to reboot the device?"
+msgstr ""
+
+#: features/sui_arrange.lua:384 infra/sui_config.lua:2208
+msgid "Arrange"
+msgstr "Zmień kolejność"
+
+#: modules/critter/module_critter.lua:557 modules/module_action_list.lua:285
+#: modules/module_quick_actions.lua:347 screens/sui_menu.lua:1920
+msgid "Arrange %s"
+msgstr "Zmień kolejność %s"
+
+#: screens/sui_quicksettings_bar.lua:1581
+msgid "Arrange Book Details"
+msgstr "Ustaw kolejność szczegółów książki"
+
+#: screens/sui_menu.lua:1373 screens/sui_menu.lua:1380
+#: screens/sui_menu.lua:1557 screens/sui_menu.lua:1572
+msgid "Arrange Buttons"
+msgstr "Zmień kolejność przycisków"
+
+#: engines/sui_book_sources.lua:399
+msgid "Arrange Collection"
+msgstr "Uporządkuj kolekcję"
+
+#: engines/sui_screen_engine.lua:2074 modules/module_coverdeck.lua:1594
+#: modules/module_currently.lua:1349 screens/sui_bottombar.lua:787
+#: screens/sui_menu.lua:656 screens/sui_menu.lua:723 screens/sui_menu.lua:730
+#: screens/sui_menu.lua:1910 screens/sui_quicksettings_bar.lua:1425
+#: screens/sui_settings_window.lua:1069 screens/sui_topbar.lua:635
+msgid "Arrange Items"
+msgstr "Zmień kolejność ikon"
+
+#: screens/sui_quicksettings_bar.lua:1507
+msgid "Arrange Quick Settings"
+msgstr "Ustaw kolejność szybkich ustawień"
+
+#: modules/module_reading_stats.lua:1141
+msgid "Arrange Reading Stats"
+msgstr "Zmień kolejność statystyk"
+
+#: modules/module_coverdeck.lua:1585 modules/module_currently.lua:1341
+#: screens/sui_quicksettings_bar.lua:1568
+msgid "Arrange Statistics"
+msgstr "Rozmieść statystyki"
+
+#: modules/module_tab_grid.lua:865 screens/sui_menu.lua:361
+msgid "Arrange Tabs"
+msgstr "Ustaw kolejność kart"
+
+#: engines/sui_book_sources.lua:359
+msgid "Arrange To Be Read List"
+msgstr "Ustaw kolejność listy Do przeczytania"
+
+#: features/sui_presets.lua:157
+msgid "At a Glance"
+msgstr "Przegląd"
+
+#: screens/sui_menu.lua:1599
+msgid "At least one item must stay visible."
+msgstr "Przynajmniej jeden element musi pozostać widoczny."
+
+#: infra/sui_datenames.lua:30
+msgid "Aug"
+msgstr "sie"
+
+#: infra/sui_datenames.lua:37
+msgid "August"
+msgstr "Sierpień"
+
+#: features/sui_manual_books.lua:109 modules/module_coverdeck.lua:125
+#: modules/module_coverdeck.lua:1611 modules/module_currently.lua:278
+#: modules/module_currently.lua:1374 modules/module_quote.lua:1446
+#: modules/module_quote.lua:1467 screens/sui_quicksettings_bar.lua:218
+msgid "Author"
+msgstr "Autor"
+
+#: engines/sui_book_grid.lua:1532 modules/module_library.lua:205
+msgid "Author (A–Z)"
+msgstr "Autor (A–Z)"
+
+#: screens/sui_menu.lua:4016
+msgid "Author: %s"
+msgstr "Autor: %s"
+
+#: features/library/sui_library_browse.lua:67
+#: features/sui_quickactions.lua:1004 infra/sui_config.lua:141
+msgid "Authors"
+msgstr "Autorzy"
+
+#: engines/sui_group_cell.lua:263 features/sui_cover_elements.lua:319
+msgid "Auto (Single ↔ 4-Cover Grid)"
+msgstr "Auto (pojedyncza ↔ siatka 4 okładek)"
+
+#: features/library/sui_group_actions.lua:56
+msgid "Auto (first book)"
+msgstr "Auto (pierwsza książka)"
+
+#: screens/sui_menu.lua:2271
+msgid "Auto-rotate"
+msgstr "Automatyczny obrót"
+
+#: screens/sui_menu.lua:4021
+msgid "Automatic Update Check"
+msgstr "Automatyczne sprawdzanie aktualizacji"
+
+#: screens/sui_stats_windows.lua:1147 screens/sui_stats_windows.lua:2215
+#: screens/sui_stats_windows.lua:3611
+msgid "Average per day"
+msgstr "Średnio dziennie"
+
+#: screens/sui_stats_windows.lua:1149 screens/sui_stats_windows.lua:3613
+msgid "Average per page"
+msgstr "Średnio na stronę"
+
+#: modules/module_reading_stats.lua:260
+msgid "Average session"
+msgstr ""
+
+#: modules/critter/phrases.lua:268
+msgid "Aww, you're here!"
+msgstr ""
+
+#: screens/sui_titlebar.lua:114 screens/sui_titlebar.lua:120
+msgid "Back"
+msgstr "Powrót"
+
+#: features/sui_style.lua:100
+msgid "Back Button"
+msgstr "Przycisk Wstecz"
+
+#: features/library/sui_label_options.lua:150 infra/sui_config.lua:1509
+#: screens/sui_menu.lua:217
+msgid "Background Opacity"
+msgstr "Krycie tła"
+
+#: features/sui_quickactions.lua:994
+msgid "Backup"
+msgstr "Kopia zapasowa"
+
+#: screens/sui_menu.lua:4043
+msgid "Backup & Restore"
+msgstr "Kopia zapasowa i przywracanie"
+
+#: features/sui_backup.lua:673
+msgid "Backup created"
+msgstr "Utworzono kopię zapasową"
+
+#: features/sui_backup.lua:925 features/sui_backup.lua:1127
+msgid "Backup created:"
+msgstr "Utworzono kopię zapasową:"
+
+#: features/sui_backup.lua:922 features/sui_backup.lua:1130
+msgid "Backup failed."
+msgstr "Tworzenie kopii zapasowej nie powiodło się."
+
+#: features/sui_backup.lua:984
+msgid "Backup loaded. Choose what to import, then tap \"Restore Selected…\"."
+msgstr ""
+"Wczytano kopię zapasową. Wybierz, co zaimportować, a następnie dotknij "
+"\"Przywróć wybrane…\"."
+
+#: features/sui_backup.lua:1041
+msgid ""
+"Backup restored.\n"
+"Restart KOReader now to finish applying all changes?"
+msgstr ""
+"Przywrócono kopię zapasową.\n"
+"Uruchomić teraz ponownie KOReader, aby dokończyć stosowanie wszystkich zmian?"
+
+#: features/sui_backup.lua:615
+msgid ""
+"Backup was made by a newer SimpleUI version. Please update this plugin first."
+msgstr ""
+"Kopia zapasowa została utworzona przez nowszą wersję SimpleUI. Najpierw "
+"zaktualizuj tę wtyczkę."
+
+#: engines/sui_book_grid.lua:2095 engines/sui_group_cell.lua:319
+#: features/sui_cover_elements.lua:81
+msgid "Badge"
+msgstr "Odznaka"
+
+#: infra/sui_config.lua:1403 infra/sui_config.lua:1405
+msgid "Badge Size"
+msgstr "Rozmiar odznaki"
+
+#: features/sui_cover_elements.lua:67
+msgid "Banner"
+msgstr "Baner"
+
+#: engines/sui_book_grid.lua:1990
+msgid "Bar"
+msgstr "Pasek"
+
+#: engines/sui_book_grid.lua:1992
+msgid "Bar + Text"
+msgstr "Pasek + tekst"
+
+#: screens/sui_menu.lua:540 screens/sui_menu.lua:1021 screens/sui_menu.lua:1102
+#: screens/sui_menu.lua:1194
+msgid "Bar Size"
+msgstr "Rozmiar paska"
+
+#: modules/module_quick_actions.lua:459 screens/sui_quicksettings_bar.lua:1659
+msgid "Bare"
+msgstr "Prosty"
+
+#: features/sui_backup.lua:122 screens/sui_menu.lua:4160
+#: screens/sui_settings_window.lua:335 screens/sui_settings_window.lua:1037
+msgid "Bars"
+msgstr "Paski"
+
+#: infra/sui_config.lua:203 modules/module_clock.lua:196
+#: modules/module_clock.lua:1083
+msgid "Battery"
+msgstr "Bateria"
+
+#: infra/sui_config.lua:1207 screens/sui_menu.lua:2625
+#: screens/sui_settings_window.lua:459 screens/sui_settings_window.lua:1050
+msgid "Behaviour"
+msgstr "Zachowanie"
+
+#: engines/sui_group_cell.lua:231
+#, fuzzy
+msgid "Below Cover"
+msgstr "Pojedyncza okładka"
+
+#: screens/sui_stats_windows.lua:1990 screens/sui_stats_windows.lua:2010
+msgid "Best streak"
+msgstr "Najdłuższa passa"
+
+#: infra/sui_config.lua:201
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: features/sui_style.lua:2486
+msgid "Bold"
+msgstr "Pogrubiona"
+
+#: features/sui_style.lua:2488
+msgid "Bold italic"
+msgstr "Pogrubiona kursywa"
+
+#: screens/sui_quicksettings_bar.lua:1603
+msgid "Book"
+msgstr "Książka"
+
+#: screens/sui_menu.lua:2479
+msgid "Book Cover Transition"
+msgstr "Przejście okładki książki"
+
+#: screens/sui_quicksettings_bar.lua:1580
+msgid "Book Details"
+msgstr "Szczegóły książki"
+
+#: screens/sui_menu.lua:2333
+#, fuzzy
+msgid "Book Folder"
+msgstr "Folder"
+
+#: features/sui_quickactions.lua:2199
+msgid "Book Info"
+msgstr "Informacje o książce"
+
+#: infra/sui_config.lua:1842
+msgid "Book Menu"
+msgstr "Menu książki"
+
+#: features/sui_cover_elements.lua:107
+msgid "Book Stack"
+msgstr ""
+
+#: screens/sui_menu.lua:2891
+msgid "Book Stack Style"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:3666
+msgid "Book Statistics"
+msgstr "Statystyki książki"
+
+#: main.lua:1235
+msgid "Book statistics"
+msgstr "Statystyki książki"
+
+#: screens/sui_settings_window.lua:345
+msgid "Book-browser settings"
+msgstr "Ustawienia przeglądarki książek"
+
+#: features/sui_quickactions.lua:500
+msgid "Bookmark browser"
+msgstr "Przeglądarka zakładek"
+
+#: features/sui_quickactions.lua:441
+msgid "Bookmark browser requires a newer KOReader. Please update."
+msgstr ""
+"Przeglądarka zakładek wymaga nowszej wersji KOReadera. Zaktualizuj aplikację."
+
+#: features/sui_quickactions.lua:864 infra/sui_config.lua:133
+msgid "Bookmarks"
+msgstr "Zakładki"
+
+#: engines/sui_book_sources.lua:400 modules/module_library.lua:266
+#: modules/module_reading_stats.lua:249
+msgid "Books"
+msgstr "Książki"
+
+#: modules/critter/phrases.lua:261
+msgid "Books are tiny adventures."
+msgstr ""
+
+#: modules/critter/phrases.lua:44
+msgid "Books this year"
+msgstr ""
+
+#: infra/sui_goals.lua:46
+msgid "Books to read in %s:"
+msgstr "Książki do przeczytania w %s:"
+
+#: engines/sui_group_cell.lua:298 features/library/sui_label_options.lua:146
+#: features/sui_cover_elements.lua:96 modules/module_tab_grid.lua:598
+msgid "Bottom"
+msgstr "Dół"
+
+#: screens/sui_menu.lua:1158 screens/sui_menu.lua:1159
+#: screens/sui_menu.lua:1197
+msgid "Bottom Margin"
+msgstr "Dolny margines"
+
+#: screens/sui_menu.lua:2480
+msgid ""
+"Briefly show the book cover full-screen when opening or closing a book, "
+"masking the page-layout flash. Normally requires the book to already be "
+"indexed by the cover browser (its cover must have been seen at least once in "
+"a grid/list view) — see \"High-Quality Cover\" below to also cover un-"
+"indexed books."
+msgstr ""
+"Krótko pokazuje okładkę książki na pełnym ekranie podczas otwierania lub "
+"zamykania książki, maskując mignięcie układu strony. Zwykle wymaga, aby "
+"książka była już zindeksowana przez przeglądarkę okładek (jej okładka "
+"musiała zostać przynajmniej raz wyświetlona w widoku siatki/listy) — zobacz "
+"„Okładka wysokiej jakości” poniżej, aby objąć też niezindeksowane książki."
+
+#: features/sui_accent_picker.lua:92 features/sui_quickactions.lua:930
+#: infra/sui_config.lua:136 infra/sui_config.lua:202
+msgid "Brightness"
+msgstr "Jasność"
+
+#: screens/sui_titlebar.lua:116
+msgid "Browse"
+msgstr "Przeglądaj"
+
+#: features/sui_style.lua:117
+msgid "Browse Button (author)"
+msgstr "Przycisk Przeglądaj (autor)"
+
+#: features/sui_style.lua:111
+msgid "Browse Button (default)"
+msgstr "Przycisk Przeglądaj (domyślny)"
+
+#: features/sui_style.lua:123
+msgid "Browse Button (series)"
+msgstr "Przycisk Przeglądaj (cykl)"
+
+#: features/sui_style.lua:129
+msgid "Browse Button (tags)"
+msgstr "Przycisk Przeglądaj (tagi)"
+
+#: features/sui_style.lua:1265
+msgid "Browse Icons"
+msgstr "Przeglądaj ikony"
+
+#: engines/sui_book_sources.lua:433 features/library/sui_library_browse.lua:571
+msgid "Browse by"
+msgstr "Przeglądaj według"
+
+#: features/sui_quickactions.lua:666
+msgid "Browse by Authors/Series/Tags not available."
+msgstr "Przeglądanie według autorów/cykli/tagów niedostępne."
+
+#: screens/sui_titlebar.lua:1146
+msgid "Browse library"
+msgstr "Przeglądaj bibliotekę"
+
+#: features/sui_quickactions.lua:2142 screens/sui_menu.lua:2202
+#: screens/sui_menu.lua:3469
+msgid "Browse…"
+msgstr "Przeglądaj…"
+
+#: modules/module_quick_actions.lua:455 screens/sui_quicksettings_bar.lua:1655
+msgid "Button Type"
+msgstr "Typ przycisku"
+
+#: screens/sui_titlebar.lua:1152
+msgid "By author"
+msgstr "Według autora"
+
+#: screens/sui_menu.lua:2519
+msgid ""
+"By default the cover is stretched to fill the whole screen, which can "
+"distort it if its proportions don't match your screen's. When on, the cover "
+"keeps its original proportions instead, centered over a black background."
+msgstr ""
+"Domyślnie okładka jest rozciągana, aby wypełnić cały ekran, co może ją "
+"zniekształcić, jeśli proporcje nie pasują do ekranu. Gdy włączone, okładka "
+"zachowuje oryginalne proporcje i jest wyśrodkowana na czarnym tle."
+
+#: screens/sui_titlebar.lua:1153
+msgid "By series"
+msgstr "Według cyklu"
+
+#: screens/sui_titlebar.lua:1154
+msgid "By tags"
+msgstr "Według tagów"
+
+#: screens/sui_heatmap_popup.lua:67 screens/sui_stats_windows.lua:2826
+msgid "CALENDAR"
+msgstr "KALENDARZ"
+
+#: modules/module_heatmap.lua:340
+msgid "Calendar"
+msgstr "Kalendarz"
+
+#: features/dialogs/sui_dialogs.lua:170 features/dialogs/sui_dialogs.lua:278
+#: features/dialogs/sui_dialogs.lua:388
+#: features/library/sui_library_search.lua:57
+#: features/sui_accent_picker.lua:103 features/sui_backup.lua:1029
+#: features/sui_manual_books.lua:91 features/sui_presets.lua:965
+#: features/sui_presets.lua:981 features/sui_presets.lua:1019
+#: features/sui_presets.lua:1039 features/sui_quickactions.lua:1596
+#: features/sui_quickactions.lua:1865 features/sui_quickactions.lua:2067
+#: features/sui_quickactions.lua:2581 features/sui_quickactions.lua:2933
+#: features/sui_quickactions.lua:3250 features/sui_style.lua:1284
+#: infra/sui_updater.lua:500 infra/sui_updater.lua:517
+#: modules/module_quote.lua:1303 screens/sui_menu.lua:3722
+#: screens/sui_menu.lua:3742 screens/sui_menu.lua:3783
+#: screens/sui_menu.lua:3805 screens/sui_menu.lua:4059
+#: screens/sui_stats_windows.lua:621
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: modules/module_reading_stats.lua:1185
+msgid "Cards"
+msgstr "Karty"
+
+#: features/library/sui_label_options.lua:145 infra/sui_config.lua:2026
+#: screens/sui_menu.lua:672 screens/sui_menu.lua:879
+msgid "Center"
+msgstr "Środek"
+
+#: modules/module_reading_stats.lua:270
+msgid "Charts — This week"
+msgstr ""
+
+#: modules/module_reading_stats.lua:273
+msgid "Charts — When you read (%d-week average)"
+msgstr ""
+
+#: screens/sui_menu.lua:4032
+msgid "Check for Updates"
+msgstr "Sprawdź aktualizacje"
+
+#: infra/sui_updater.lua:635
+msgid "Checking for updates…"
+msgstr "Sprawdzanie aktualizacji…"
+
+#: features/sui_accent_picker.lua:80
+msgid "Choose a color"
+msgstr ""
+
+#: screens/sui_onboarding.lua:192
+msgid "Choose a different folder"
+msgstr "Wybierz inny folder"
+
+#: features/sui_backup.lua:999
+msgid "Choose backup file"
+msgstr "Wybierz plik kopii zapasowej"
+
+#: features/sui_backup.lua:1153
+msgid "Choose backup file…"
+msgstr "Wybierz plik kopii zapasowej…"
+
+#: engines/sui_asset_browser.lua:91
+msgid "Choose file"
+msgstr "Wybierz plik"
+
+#: features/sui_quickactions.lua:2155 features/sui_quickactions.lua:2177
+msgid "Choose icon"
+msgstr "Wybierz ikonę"
+
+#: screens/sui_menu.lua:3479
+msgid "Choose icon pack"
+msgstr "Wybierz paczkę ikon"
+
+#: screens/sui_onboarding.lua:211
+msgid ""
+"Choose the folder where you will place all your books. Simple UI uses it to "
+"show your books in the Library."
+msgstr ""
+"Wybierz folder, w którym będziesz trzymać wszystkie swoje książki. Simple UI "
+"używa go, aby pokazywać książki w Bibliotece."
+
+#: screens/sui_quicksettings_bar.lua:1691
+msgid ""
+"Choose the menus that open directly on the Quick Settings tab instead of the "
+"last used tab."
+msgstr ""
+"Wybierz menu, które otwierają się od razu na karcie szybkich ustawień "
+"zamiast na ostatnio używanej karcie."
+
+#: screens/sui_menu.lua:2210
+msgid "Choose wallpaper"
+msgstr "Wybierz tapetę"
+
+#: screens/sui_onboarding.lua:124
+msgid "Choose your initial layout"
+msgstr "Wybierz układ początkowy"
+
+#: features/sui_cover_elements.lua:114 modules/module_coverdeck.lua:1484
+#: screens/sui_menu.lua:1761 screens/sui_menu.lua:2894
+#: screens/sui_menu.lua:3277 screens/sui_menu.lua:3937
+#: screens/sui_quicksettings_bar.lua:1602
+#: screens/sui_quicksettings_bar.lua:1614
+msgid "Classic"
+msgstr "Klasyczny"
+
+#: features/sui_accent_picker.lua:101 screens/sui_menu.lua:3220
+msgid "Clear"
+msgstr ""
+
+#: features/sui_presets.lua:172 features/sui_presets.lua:236
+#: infra/sui_config.lua:199 modules/module_clock.lua:194
+#: modules/module_clock.lua:744 modules/module_clock.lua:1083
+msgid "Clock"
+msgstr "Zegar"
+
+#: modules/module_clock.lua:1091
+msgid "Clock Style"
+msgstr "Styl zegara"
+
+#: modules/module_currently.lua:1439
+msgid "Clock icon"
+msgstr ""
+
+#: screens/sui_titlebar.lua:119
+msgid "Close"
+msgstr "Zamknij"
+
+#: screens/sui_menu.lua:2432
+msgid "Closing Book Notice"
+msgstr "Powiadomienie o zamknięciu książki"
+
+#: main.lua:1859
+msgid "Closing book…"
+msgstr "Zamykanie książki…"
+
+#: features/sui_quickactions.lua:2046
+msgid "Codepoint out of valid Unicode range (0–10FFFF)."
+msgstr "Codepoint poza poprawnym zakresem Unicode (0–10FFFF)."
+
+#: engines/sui_book_sources.lua:381 features/sui_quickactions.lua:2477
+#: features/sui_quickactions.lua:2596 modules/module_feat_coll.lua:79
+msgid "Collection"
+msgstr "Kolekcje"
+
+#: modules/module_collections.lua:490
+msgid "Collection Menu"
+msgstr "Menu kolekcji"
+
+#: features/library/sui_group_actions.lua:137
+msgid "Collection \"%1\" created with %2 books."
+msgstr "Kolekcja \"%1\" utworzona z %2 książkami."
+
+#: features/library/sui_group_actions.lua:110
+msgid "Collection already exists: %1"
+msgstr "Kolekcja już istnieje: %1"
+
+#: modules/module_collections.lua:319
+msgid "Collection is empty."
+msgstr "Kolekcja jest pusta."
+
+#: features/sui_quickactions.lua:3022
+msgid "Collection not available: %s"
+msgstr "Kolekcja niedostępna: %s"
+
+#: features/sui_quickactions.lua:517 features/sui_quickactions.lua:753
+#: features/sui_quickactions.lua:2201 infra/sui_config.lua:127
+#: modules/module_collections.lua:354 modules/module_collections.lua:366
+#: modules/module_collections.lua:380 modules/module_collections.lua:414
+#: modules/module_collections.lua:483 modules/module_collections.lua:484
+#: modules/module_coverdeck.lua:1538
+msgid "Collections"
+msgstr "Kolekcje"
+
+#: infra/sui_patches.lua:1283
+msgid "Collections (%1)"
+msgstr "Kolekcje (%1)"
+
+#: features/sui_quickactions.lua:760
+msgid "Collections not available."
+msgstr "Kolekcja niedostępna."
+
+#: features/sui_style.lua:191
+msgid "Collections: Back Button"
+msgstr "Kolekcje: Przycisk Wstecz"
+
+#: features/library/sui_label_options.lua:148
+#: features/sui_cover_elements.lua:257 infra/sui_config.lua:1059
+#: infra/sui_config.lua:1491
+msgid "Color"
+msgstr "Kolor"
+
+#: screens/sui_menu.lua:3995
+msgid "Colors"
+msgstr ""
+
+#: infra/sui_config.lua:1711 infra/sui_config.lua:1713
+msgid "Column Width (Bento Grid)"
+msgstr "Szerokość kolumny (siatka bento)"
+
+#: engines/sui_book_grid.lua:1911 modules/module_reading_stats.lua:1163
+msgid "Columns"
+msgstr "Kolumny"
+
+#: modules/module_currently.lua:1431 modules/module_reading_goals.lua:1262
+msgid "Compact"
+msgstr "Kompaktowy"
+
+#: features/sui_quickactions.lua:2068
+msgid "Confirm"
+msgstr "Potwierdź"
+
+#: infra/sui_config.lua:1182 screens/sui_menu.lua:2756
+#, fuzzy
+msgid "Content"
+msgstr "Kontynuuj"
+
+#: features/sui_quickactions.lua:786 infra/sui_config.lua:130
+#: screens/sui_onboarding.lua:417 screens/sui_onboarding.lua:423
+#: screens/sui_onboarding.lua:435 screens/sui_onboarding.lua:441
+msgid "Continue"
+msgstr "Kontynuuj"
+
+#: features/sui_backup.lua:1128
+msgid "Copy this file somewhere safe (e.g. over USB)."
+msgstr "Skopiuj ten plik w bezpieczne miejsce (np. przez USB)."
+
+#: engines/sui_book_grid.lua:1994
+msgid "Corner Badge"
+msgstr "Odznaka narożna"
+
+#: features/sui_backup.lua:916 features/sui_backup.lua:991
+#: features/sui_backup.lua:1110
+msgid "Could not determine backup folder."
+msgstr "Nie udało się ustalić folderu kopii zapasowych."
+
+#: features/sui_style.lua:2661
+msgid "Could not determine packs folder"
+msgstr "Nie można ustalić folderu paczek"
+
+#: features/sui_backup.lua:560
+msgid "Could not open backup file for writing"
+msgstr "Nie udało się otworzyć pliku kopii zapasowej do zapisu"
+
+#: screens/sui_stats_windows.lua:67
+msgid "Could not open statistics database."
+msgstr "Nie można otworzyć bazy danych statystyk."
+
+#: features/sui_style.lua:2663
+msgid "Could not open zip (invalid format or corrupted)"
+msgstr "Nie można otworzyć pliku ZIP (nieprawidłowy format lub uszkodzony)"
+
+#: features/sui_backup.lua:572
+msgid "Could not write backup file"
+msgstr "Nie udało się zapisać pliku kopii zapasowej"
+
+#: features/sui_stats_menu.lua:103
+msgid ""
+"Count manually tracked books in the all-time total of books finished. They "
+"always count towards the year they belong to."
+msgstr ""
+"Liczy ręcznie śledzone książki w łącznej liczbie ukończonych książek. Zawsze "
+"liczą się do roku, do którego należą."
+
+#: features/sui_presets.lua:192 features/sui_presets.lua:210
+#: modules/module_coverdeck.lua:837
+msgid "Cover Deck"
+msgstr "Karuzela okładek"
+
+#: screens/sui_menu.lua:3007
+msgid "Cover Settings"
+msgstr "Ustawienia okładki"
+
+#: screens/sui_menu.lua:2787
+msgid "Cover Shadow"
+msgstr "Cień okładki"
+
+#: engines/sui_book_grid.lua:1865 engines/sui_book_grid.lua:1867
+#: modules/module_coverdeck.lua:1472 modules/module_coverdeck.lua:1473
+#: modules/module_currently.lua:1264 modules/module_currently.lua:1265
+msgid "Cover Size"
+msgstr "Rozmiar okładki"
+
+#: modules/module_currently.lua:1279 modules/module_currently.lua:1280
+msgid "Cover Spacing"
+msgstr "Odstęp okładek"
+
+#: engines/sui_group_cell.lua:259
+msgid "Cover Style"
+msgstr "Styl okładki"
+
+#: features/sui_cover_elements.lua:331
+msgid "Cover Type"
+msgstr ""
+
+#: engines/sui_group_cell.lua:587 modules/module_collections.lua:315
+msgid "Cover for \"%s\""
+msgstr "Okładka dla \"%s\""
+
+#: infra/sui_compat_check.lua:131
+msgid ""
+"CoverBrowser plugin is not enabled, some features will not work correctly."
+msgstr ""
+"Wtyczka CoverBrowser nie jest włączona, niektóre funkcje nie będą działać "
+"poprawnie."
+
+#: modules/module_coverdeck.lua:123 screens/sui_menu.lua:3917
+msgid "Covers"
+msgstr "Okładki"
+
+#: features/library/sui_group_actions.lua:105
+#: screens/sui_settings_window.lua:1128
+msgid "Create"
+msgstr "Utwórz"
+
+#: features/sui_quickactions.lua:1632 features/sui_quickactions.lua:2840
+msgid "Create Quick Action"
+msgstr "Stwórz Szybką Akcję"
+
+#: screens/sui_settings_window.lua:1121
+msgid "Create Screen"
+msgstr "Utwórz ekran"
+
+#: screens/sui_onboarding.lua:187
+msgid "Create a \"Books\" folder"
+msgstr "Utwórz folder \"Books\""
+
+#: features/library/sui_facet_groups.lua:139
+#: features/library/sui_foldercovers.lua:607
+#: features/library/sui_foldercovers.lua:622
+#: features/library/sui_library_browse.lua:887
+#: features/library/sui_series_grouping.lua:401
+msgid "Create collection"
+msgstr "Utwórz kolekcję"
+
+#: screens/sui_settings_window.lua:1126
+msgid "Create screen"
+msgstr "Utwórz ekran"
+
+#: features/sui_backup.lua:913 features/sui_backup.lua:1124
+msgid "Creating backup…"
+msgstr "Tworzenie kopii zapasowej…"
+
+#: modules/critter/module_critter.lua:522
+msgid "Critter"
+msgstr ""
+
+#: features/sui_backup.lua:161
+msgid "Critter images and phrases from sui_critters/"
+msgstr ""
+
+#: modules/critter/module_critter.lua:670
+msgid "Critter position"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:1988 screens/sui_stats_windows.lua:2008
+msgid "Current streak"
+msgstr "Bieżąca passa"
+
+#: features/sui_presets.lua:158 features/sui_presets.lua:172
+#: features/sui_presets.lua:236 modules/module_currently.lua:334
+#: modules/module_currently.lua:335
+msgid "Currently Reading"
+msgstr "Teraz czytane"
+
+#: infra/sui_config.lua:3045
+msgid "Custom"
+msgstr "Niestandardowy"
+
+#: features/sui_quickactions.lua:1834 features/sui_quickactions.lua:1837
+msgid "Custom Actions"
+msgstr "Niestandardowe akcje"
+
+#: modules/module_quote.lua:1422
+msgid "Custom File"
+msgstr "Własny plik"
+
+#: modules/module_quote.lua:1427
+msgid "Custom File + My Highlights"
+msgstr "Własny plik + Moje Zaznaczenia"
+
+#: features/sui_quickactions.lua:1525 features/sui_quickactions.lua:1629
+msgid "Custom Quick Actions"
+msgstr "Niestandardowe szybkie akcje"
+
+#: infra/sui_custom_screens.lua:158
+msgid "Custom Screen"
+msgstr "Niestandardowy ekran"
+
+#: features/sui_quickactions.lua:1844 features/sui_quickactions.lua:1847
+msgid "Custom Screens"
+msgstr "Niestandardowe ekrany"
+
+#: screens/sui_settings_window.lua:479
+msgid "Custom Screens unavailable."
+msgstr "Niestandardowe ekrany niedostępne."
+
+#: infra/sui_config.lua:206 screens/sui_menu.lua:35
+msgid "Custom Text"
+msgstr "Niestandardowy tekst"
+
+#: features/sui_backup.lua:133
+msgid "Custom actions, rows and dispatcher bindings"
+msgstr "Niestandardowe akcje, wiersze i przypisania dispatchera"
+
+#: features/sui_backup.lua:160
+msgid "Custom critters"
+msgstr ""
+
+#: features/sui_backup.lua:154
+msgid "Custom icons"
+msgstr "Niestandardowe ikony"
+
+#: features/sui_backup.lua:148
+msgid "Custom quotes"
+msgstr "Niestandardowe cytaty"
+
+#: screens/sui_onboarding.lua:333
+msgid "Custom wallpapers and icons"
+msgstr "Niestandardowe tapety i ikony"
+
+#: screens/sui_onboarding.lua:325
+msgid "Customize even more"
+msgstr "Personalizuj jeszcze więcej"
+
+#: features/library/sui_hold_rows.lua:254
+msgid "Cut"
+msgstr "Wytnij"
+
+#: screens/sui_stats_windows.lua:2506 screens/sui_stats_windows.lua:3080
+msgid "DAY STREAK"
+msgstr "PASSA DZIENNA"
+
+#: infra/sui_goals.lua:65
+msgid "Daily Goal"
+msgstr "Dzienny cel"
+
+#: infra/sui_goals.lua:66
+msgid "Daily Reading Goal"
+msgstr "Cel dziennego czytania"
+
+#: modules/module_reading_stats.lua:244 modules/module_reading_stats.lua:245
+msgid "Daily average"
+msgstr ""
+
+#: modules/module_reading_stats.lua:245
+msgid "Daily avg — Pages"
+msgstr "Średnia dzienna — Strony"
+
+#: modules/module_reading_stats.lua:244
+msgid "Daily avg — Time"
+msgstr "Średnia dzienna — Czas"
+
+#: modules/critter/phrases.lua:219 modules/critter/phrases.lua:226
+msgid "Daily goal reached!"
+msgstr ""
+
+#: features/library/sui_label_options.lua:131 features/sui_style.lua:1482
+msgid "Dark"
+msgstr "Ciemny"
+
+#: screens/sui_menu.lua:2282
+#, fuzzy
+msgid "Darken"
+msgstr "Ciemny"
+
+#: features/sui_presets.lua:235
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: modules/module_clock.lua:195 modules/module_clock.lua:1083
+msgid "Date"
+msgstr "Data"
+
+#: modules/module_library.lua:206
+msgid "Date added (newest)"
+msgstr "Data dodania (najnowsze)"
+
+#: modules/module_library.lua:207
+msgid "Date added (oldest)"
+msgstr "Data dodania (najstarsze)"
+
+#: screens/sui_stats_windows.lua:580
+msgid "Date finished"
+msgstr "Data ukończenia"
+
+#: screens/sui_stats_windows.lua:573
+msgid "Date started"
+msgstr "Data rozpoczęcia"
+
+#: screens/sui_stats_windows.lua:889 screens/sui_stats_windows.lua:3380
+msgid "Days"
+msgstr "Dni"
+
+#: modules/critter/phrases.lua:47
+msgid "Days and months"
+msgstr ""
+
+#: infra/sui_book_stats.lua:177
+msgid "Days of reading"
+msgstr "Dni czytania"
+
+#: infra/sui_datenames.lua:30
+msgid "Dec"
+msgstr "gru"
+
+#: infra/sui_datenames.lua:38
+msgid "December"
+msgstr "Grudzień"
+
+#: features/dialogs/sui_dialogs.lua:265 features/sui_cover_elements.lua:113
+#: features/sui_quickactions.lua:2126 features/sui_quickactions.lua:2388
+#: features/sui_style.lua:2463 features/sui_style.lua:2510
+#: infra/sui_config.lua:997 infra/sui_config.lua:1054
+#: modules/module_currently.lua:1303 modules/module_reading_goals.lua:1261
+#: modules/module_tab_grid.lua:645 screens/sui_menu.lua:439
+#: screens/sui_menu.lua:568 screens/sui_menu.lua:2893 screens/sui_menu.lua:3255
+#: screens/sui_titlebar.lua:1151
+msgid "Default"
+msgstr "Domyślne"
+
+#: features/sui_quickactions.lua:2392
+msgid "Default (Folder)"
+msgstr "Domyślny (folder)"
+
+#: features/sui_quickactions.lua:2395
+msgid "Default (Plugin)"
+msgstr "Domyślne (Wtyczka)"
+
+#: features/sui_quickactions.lua:2399
+msgid "Default (System)"
+msgstr "Domyślne (System)"
+
+#: modules/module_quote.lua:1417
+msgid "Default Quotes"
+msgstr "Domyślne cytaty"
+
+#: infra/sui_config.lua:1446
+#, fuzzy
+msgid "Default: %1"
+msgstr "Domyślne"
+
+#: features/sui_style.lua:210
+msgid "Default: Folder"
+msgstr "Domyślne: Folder"
+
+#: features/sui_style.lua:231
+msgid "Default: Group"
+msgstr "Domyślnie: Grupa"
+
+#: features/sui_style.lua:217
+msgid "Default: Plugin"
+msgstr "Domyślne: Wtyczka"
+
+#: features/sui_style.lua:224
+msgid "Default: System"
+msgstr "Domyślne: System"
+
+#: engines/sui_window.lua:2361 engines/sui_window.lua:3723
+#: features/library/sui_hold_rows.lua:138 features/sui_manual_books.lua:85
+#: features/sui_manual_books.lua:90 features/sui_presets.lua:977
+#: features/sui_presets.lua:980 features/sui_presets.lua:1018
+#: features/sui_quickactions.lua:1595 features/sui_quickactions.lua:2927
+#: features/sui_quickactions.lua:2932 screens/sui_menu.lua:3738
+#: screens/sui_menu.lua:3741 screens/sui_menu.lua:3782
+#: screens/sui_settings_window.lua:537 screens/sui_settings_window.lua:585
+#: screens/sui_settings_window.lua:663
+msgid "Delete"
+msgstr "Usuń"
+
+#: screens/sui_menu.lua:4058
+msgid "Delete Settings"
+msgstr "Usuń ustawienia"
+
+#: screens/sui_settings_window.lua:535
+msgid "Delete \"%s\"? This removes its layout, modules and Quick Action."
+msgstr ""
+"Usunąć „%s”? Spowoduje to usunięcie jego układu, modułów i szybkiej akcji."
+
+#: features/sui_presets.lua:979 features/sui_presets.lua:1017
+#: screens/sui_menu.lua:3740 screens/sui_menu.lua:3781
+msgid "Delete preset \"%s\"?"
+msgstr "Usunąć preset \"%s\"?"
+
+#: features/sui_quickactions.lua:1594 features/sui_quickactions.lua:2931
+msgid "Delete quick action \"%s\"?"
+msgstr "Usunąć szybką akcję \"%s\"?"
+
+#: features/sui_manual_books.lua:89
+msgid "Delete this book?"
+msgstr "Usunąć tę książkę?"
+
+#: modules/module_currently.lua:280 modules/module_currently.lua:1376
+msgid "Description"
+msgstr "Opis"
+
+#: modules/module_currently.lua:1493
+msgid "Description Alignment"
+msgstr "Wyrównanie opisu"
+
+#: modules/module_reading_goals.lua:1127
+msgid "Detail"
+msgstr "Szczegóły"
+
+#: modules/module_reading_goals.lua:1274
+msgid "Detail Below Ring"
+msgstr "Szczegóły pod pierścieniem"
+
+#: modules/module_reading_goals.lua:1273
+msgid "Detail Inside Ring"
+msgstr "Szczegóły w pierścieniu"
+
+#: modules/module_currently.lua:1430
+msgid "Detailed"
+msgstr "Szczegółowy"
+
+#: modules/module_reading_stats.lua:1186
+msgid "Detailed Cards"
+msgstr ""
+
+#: modules/critter/module_critter.lua:697
+msgid "Details"
+msgstr ""
+
+#: features/sui_quickactions.lua:2204
+msgid "Dictionary Lookup"
+msgstr "Wyszukiwanie w słowniku"
+
+#: modules/module_clock.lua:1096 modules/module_clock.lua:1100
+msgid "Digital"
+msgstr "Cyfrowe"
+
+#: screens/sui_menu.lua:2395
+msgid "Disable \"Lock Scale\" first to set a custom label scale."
+msgstr "Wyłącz blokadę skali, aby ustawić niestandardowy rozmiar etykiety."
+
+#: infra/sui_config.lua:1382
+msgid "Disable \"Lock Scale\" first to set a per-module scale."
+msgstr "Wyłącz blokadę skali, aby ustawić skalę na moduł."
+
+#: infra/sui_config.lua:204
+msgid "Disk Usage"
+msgstr "Użycie pamięci"
+
+#: features/sui_quickactions.lua:2981
+msgid "Dispatcher not available."
+msgstr "Dyspozytor niedostępny."
+
+#: screens/sui_menu.lua:3060
+msgid "Display"
+msgstr "Wyświetlacz"
+
+#: screens/sui_menu.lua:3903
+#, fuzzy
+msgid "Don't Invert Colored Icons in Night Mode"
+msgstr "Odwróć w trybie nocnym"
+
+#: modules/critter/phrases.lua:108
+msgid "Don't forget to rest."
+msgstr ""
+
+#: features/sui_quickactions.lua:2582
+msgid "Done"
+msgstr "Gotowe"
+
+#: screens/sui_menu.lua:476
+msgid "Dot Pager"
+msgstr "Pager kropkowy"
+
+#: infra/sui_updater.lua:518
+msgid "Download and install"
+msgstr "Pobierz i zainstaluj"
+
+#: infra/sui_updater.lua:517
+msgid "Download and install now?"
+msgstr "Pobrać i zainstalować teraz?"
+
+#: infra/sui_updater.lua:441
+msgid "Download error: "
+msgstr "Błąd pobierania: "
+
+#: infra/sui_updater.lua:417
+msgid "Downloading Simple UI %s…"
+msgstr "Pobieranie Simple UI %s…"
+
+#: modules/module_currently.lua:1306
+msgid "Dynamic"
+msgstr "Dynamiczny"
+
+#: features/sui_quickactions.lua:2914
+msgid "Edit"
+msgstr "Edytuj"
+
+#: features/sui_manual_books.lua:105
+msgid "Edit Book"
+msgstr "Edytuj książkę"
+
+#: screens/sui_menu.lua:623 screens/sui_menu.lua:625 screens/sui_menu.lua:854
+msgid "Edit Custom Text"
+msgstr "Edytuj niestandardowy tekst"
+
+#: screens/sui_menu.lua:2153 screens/sui_settings_window.lua:414
+msgid "Edit Home Screen Layout"
+msgstr "Edytuj układ ekranu głównego"
+
+#: features/sui_quickactions.lua:2320
+msgid "Edit Quick Action"
+msgstr "Edytuj Szybką Akcję"
+
+#: modules/module_clock.lua:255
+msgid "Eight"
+msgstr "Osiem"
+
+#: modules/module_clock.lua:258
+msgid "Eighteen"
+msgstr "Osiemnaście"
+
+#: modules/module_clock.lua:256
+msgid "Eleven"
+msgstr "Jedenaście"
+
+#: screens/sui_menu.lua:847
+msgid "Empty"
+msgstr "Pusty"
+
+#: features/library/sui_foldercovers.lua:1431
+msgid "Empty folder"
+msgstr ""
+
+#: infra/sui_compat_check.lua:132
+#, fuzzy
+msgid "Enable"
+msgstr "włączony"
+
+#: features/sui_quickactions.lua:667
+msgid "Enable 'Browse by Author / Series / Tags' in the library menu first."
+msgstr ""
+"Najpierw włącz 'Przeglądaj według autora / cyklu / tagów' w menu biblioteki."
+
+#: screens/sui_menu.lua:2945
+msgid "Enable Browse by Author / Series / Tags"
+msgstr "Włącz przeglądanie wg autora / cyklu / tagów"
+
+#: screens/sui_menu.lua:2929
+msgid "Enable Library Custom Covers"
+msgstr "Włącz własne okładki biblioteki"
+
+#: screens/sui_menu.lua:1078
+msgid "Enable Navigation Bar"
+msgstr "Włącz pasek nawigacji"
+
+#: screens/sui_quicksettings_bar.lua:1484
+msgid "Enable Quick Settings Bar"
+msgstr "Włącz pasek szybkich ustawień"
+
+#: screens/sui_menu.lua:801
+msgid "Enable Status Bar"
+msgstr "Włącz pasek stanu"
+
+#: screens/sui_menu.lua:1742
+msgid "Enable Title Bar"
+msgstr "Włącz pasek tytułu"
+
+#: screens/sui_menu.lua:2244
+msgid "Enable Wallpaper"
+msgstr "Włącz tapetę"
+
+#: features/sui_style.lua:2301
+msgid "Enable custom UI font"
+msgstr "Włącz własną czcionkę interfejsu"
+
+#: features/sui_accent_picker.lua:54
+msgid "Enter a color like #2F6FDB."
+msgstr ""
+
+#: features/sui_quickactions.lua:2096
+msgid ""
+"Enter the Unicode codepoint (hex) of a Nerd Fonts symbol.\n"
+"You can look up codes with wakamaifondue.com using the file:\n"
+"  /koreader/fonts/nerdfonts/symbols.ttf\n"
+"Leave blank and press OK to remove a Nerd Font icon."
+msgstr ""
+"Wprowadź kod Unicode (szesnastkowy) symbolu czcionki Nerd Fonts.\n"
+"Możesz wyszukać kody na stronie wakamaifondue.com, korzystając z pliku:\n"
+"/koreader/fonts/nerdfonts/symbols.ttf\n"
+"Pozostaw puste pole i naciśnij OK, aby usunąć ikonę czcionki Nerd Font."
+
+#: screens/sui_menu.lua:3540
+msgid "Error applying pack:"
+msgstr "Błąd stosowania paczki:"
+
+#: infra/sui_updater.lua:640
+msgid "Error checking for updates."
+msgstr "Błąd podczas sprawdzania aktualizacji."
+
+#: infra/sui_updater.lua:645
+msgid "Error checking for updates: "
+msgstr "Błąd sprawdzania aktualizacji: "
+
+#: features/sui_presets.lua:1117 screens/sui_menu.lua:3887
+msgid "Error exporting preset: "
+msgstr "Błąd eksportu presetu: "
+
+#: features/sui_style.lua:2710
+msgid "Error extracting zip: "
+msgstr "Błąd wyodrębniania ZIP: "
+
+#: features/sui_presets.lua:1091 screens/sui_menu.lua:3860
+msgid "Error importing preset: "
+msgstr "Błąd importu presetu: "
+
+#: modules/module_reading_goals.lua:1026
+msgid "Error in Reading Goals: check crash.log"
+msgstr "Błąd w Celach czytelniczych: sprawdź crash.log"
+
+#: screens/sui_menu.lua:3458
+msgid "Error installing pack:"
+msgstr "Błąd instalacji paczki:"
+
+#: modules/critter/phrases.lua:265
+msgid "Every page counts."
+msgstr ""
+
+#: screens/sui_stats_windows.lua:1158
+msgid "Exclude from goals"
+msgstr "Wyklucz z celów"
+
+#: screens/sui_stats_windows.lua:745 screens/sui_stats_windows.lua:751
+msgid "Excluded"
+msgstr "Wykluczona"
+
+#: screens/sui_quicksettings_bar.lua:1008
+msgid "Exit"
+msgstr "Zamknij"
+
+#: features/sui_style.lua:202
+msgid "Exit Book Button"
+msgstr "Przycisk zamykania książki"
+
+#: features/sui_backup.lua:1118
+msgid "Export"
+msgstr "Eksportuj"
+
+#: features/sui_backup.lua:1138
+msgid "Export Full Backup…"
+msgstr "Eksportuj pełną kopię zapasową…"
+
+#: features/sui_backup.lua:1105
+msgid "Export now…"
+msgstr "Eksportuj teraz…"
+
+#: features/sui_presets.lua:1105 screens/sui_menu.lua:3874
+msgid "Export preset"
+msgstr "Eksportuj preset"
+
+#: screens/sui_settings_window.lua:425 screens/sui_settings_window.lua:1036
+msgid "Extra Custom Screens"
+msgstr "Dodatkowe niestandardowe ekrany"
+
+#: screens/sui_menu.lua:544
+msgid "Extra Small"
+msgstr "Bardzo mały"
+
+#: features/sui_manual_books.lua:129
+msgid "Extra books read in %d, on top of the automatic count:"
+msgstr "Dodatkowe książki przeczytane w %d, poza automatycznym licznikiem:"
+
+#: infra/sui_updater.lua:442
+msgid "Extraction error: "
+msgstr "Błąd wyodrębniania: "
+
+#: screens/sui_stats_windows.lua:3191
+msgid "FREEZES"
+msgstr "ZAMROŻENIA"
+
+#: screens/sui_menu.lua:4052
+msgid "Factory Reset"
+msgstr "Przywróć ustawienia fabryczne"
+
+#: features/library/sui_finished_books.lua:62
+msgid "Fade"
+msgstr "Rozjaśnij"
+
+#: screens/sui_menu.lua:2676
+msgid "Fade Intensity"
+msgstr "Intensywność rozjaśnienia"
+
+#: features/library/sui_finished_books.lua:63
+msgid ""
+"Fades finished book covers in the file browser. Other lists show them as "
+"usual."
+msgstr ""
+"Rozjaśnia okładki ukończonych książek w przeglądarce plików. Pozostałe listy "
+"pokazują je normalnie."
+
+#: screens/sui_menu.lua:2677
+msgid ""
+"Fades finished book covers towards white.\n"
+"50% is the default."
+msgstr ""
+"Rozjaśnia okładki ukończonych książek w kierunku bieli.\n"
+"50% to wartość domyślna."
+
+#: screens/sui_menu.lua:2283
+msgid "Fades the wallpaper towards black."
+msgstr "Przyciemnia tapetę w kierunku czerni."
+
+#: screens/sui_menu.lua:2277
+#, fuzzy
+msgid "Fades the wallpaper towards white to improve text readability."
+msgstr ""
+"Rozjaśnia tapetę w kierunku bieli dla lepszej czytelności tekstu.\n"
+"0% to ustawienie domyślne (bez rozjaśniania)."
+
+#: modules/critter/phrases.lua:118
+msgid "Fancy a chapter or two?"
+msgstr ""
+
+#: features/sui_quickactions.lua:851 features/sui_quickactions.lua:2200
+#: infra/sui_config.lua:132 modules/module_coverdeck.lua:1495
+msgid "Favorites"
+msgstr "Ulubione"
+
+#: features/sui_quickactions.lua:858
+msgid "Favorites not available."
+msgstr "Ulubione niedostępne."
+
+#: modules/module_feat_coll.lua:108 modules/module_feat_coll.lua:165
+msgid "Featured Collection"
+msgstr "Wyróżniona kolekcja"
+
+#: modules/module_feat_coll.lua:56
+msgid "Featured Collection — tap to configure"
+msgstr "Wyróżniona kolekcja — dotknij, aby skonfigurować"
+
+#: infra/sui_datenames.lua:29
+msgid "Feb"
+msgstr "lut"
+
+#: infra/sui_datenames.lua:36
+msgid "February"
+msgstr "Luty"
+
+#: features/sui_quickactions.lua:460
+msgid "Fetching bookmarks…"
+msgstr "Pobieranie zakładek…"
+
+#: modules/module_clock.lua:257
+msgid "Fifteen"
+msgstr "Piętnaście"
+
+#: modules/module_clock.lua:263
+msgid "Fifty"
+msgstr "Pięćdziesiąt"
+
+#: screens/sui_quicksettings_bar.lua:1678
+msgid "File Browser"
+msgstr "Przeglądarka plików"
+
+#: features/sui_quickactions.lua:839
+msgid "File Manager not available."
+msgstr "Menedżer plików niedostępny."
+
+#: features/sui_quickactions.lua:2202
+msgid "File Search"
+msgstr "Wyszukiwarka plików"
+
+#: features/sui_backup.lua:598
+msgid "File not found."
+msgstr "Nie znaleziono pliku."
+
+#: features/sui_style.lua:2657
+msgid "File not found: "
+msgstr "Nie znaleziono pliku: "
+
+#: modules/module_library.lua:208
+msgid "File size (largest)"
+msgstr "Rozmiar pliku (największe)"
+
+#: modules/module_library.lua:209
+msgid "File size (smallest)"
+msgstr "Rozmiar pliku (najmniejsze)"
+
+#: engines/sui_asset_browser.lua:274
+msgid "Filter by name…"
+msgstr "Filtruj według nazwy…"
+
+#: features/sui_manual_books.lua:111
+msgid "Finished"
+msgstr "Ukończono"
+
+#: features/library/sui_finished_books.lua:84 features/sui_stats_menu.lua:133
+msgid "Finished Books"
+msgstr "Ukończone książki"
+
+#: modules/module_clock.lua:254
+msgid "Five"
+msgstr "Pięć"
+
+#: modules/module_quote.lua:1453 modules/module_quote.lua:1484
+msgid "Fixed Height"
+msgstr "Stała wysokość"
+
+#: screens/sui_menu.lua:3969
+msgid "Flat"
+msgstr "Płaski"
+
+#: modules/module_library.lua:265
+msgid "Flat Library"
+msgstr "Płaska biblioteka"
+
+#: features/library/sui_label_options.lua:140 screens/sui_menu.lua:1098
+msgid "Floating"
+msgstr "Pływający"
+
+#: modules/module_coverdeck.lua:1485
+msgid "Flow"
+msgstr "Płynny"
+
+#: features/sui_quickactions.lua:2595
+msgid "Folder"
+msgstr "Folder"
+
+#: features/sui_cover_elements.lua:89
+msgid "Folder Count"
+msgstr ""
+
+#: features/sui_style.lua:1268
+msgid "Folder Covers"
+msgstr "Okładki Folderów"
+
+#: features/sui_style.lua:239
+msgid "Folder Covers: Empty Folder"
+msgstr "Okładki folderów: Pusty folder"
+
+#: features/sui_cover_elements.lua:121
+msgid "Folder Name"
+msgstr "Nazwa folderu"
+
+#: features/sui_cover_elements.lua:128
+msgid "Folder Name Text Size"
+msgstr "Rozmiar tekstu nazwy folderu"
+
+#: features/sui_quickactions.lua:2203
+msgid "Folder Shortcuts"
+msgstr "Skróty do folderów"
+
+#: features/library/sui_foldercovers.lua:524
+#: features/library/sui_group_actions.lua:80
+#: features/library/sui_library_browse.lua:443
+#: features/library/sui_series_grouping.lua:103
+msgid "Folder cover"
+msgstr "Okładka Folderu"
+
+#: features/sui_backup.lua:128
+msgid "Folder covers, browse modes, series grouping"
+msgstr "Okładki folderów, tryby przeglądania, grupowanie cykli"
+
+#: screens/sui_menu.lua:2843
+msgid "Folders"
+msgstr ""
+
+#: engines/sui_book_grid.lua:1973 modules/module_coverdeck.lua:1650
+#: modules/module_currently.lua:1407
+msgid "Follow Style"
+msgstr ""
+
+#: screens/sui_menu.lua:3237
+msgid "Follow accent"
+msgstr ""
+
+#: screens/sui_menu.lua:3240
+msgid "Follows accent"
+msgstr ""
+
+#: infra/sui_config.lua:1021 screens/sui_quicksettings_bar.lua:1646
+#, fuzzy
+msgid "Font"
+msgstr "Czcionka interfejsu"
+
+#: modules/module_quote.lua:1482
+#, fuzzy
+msgid "Fonts"
+msgstr "Czcionka interfejsu"
+
+#: features/sui_backup.lua:113
+msgid "Fonts, icon assignments, icon presets"
+msgstr "Czcionki, przypisania ikon, presety ikon"
+
+#: modules/module_clock.lua:263
+msgid "Forty"
+msgstr "Czterdzieści"
+
+#: modules/module_clock.lua:254
+msgid "Four"
+msgstr "Cztery"
+
+#: modules/module_clock.lua:257
+msgid "Fourteen"
+msgstr "Czternaście"
+
+#: infra/sui_config.lua:1499
+msgid "Frame"
+msgstr "Ramka"
+
+#: screens/sui_menu.lua:3980
+msgid "Framed"
+msgstr "Z ramką"
+
+#: features/sui_stats_menu.lua:64
+msgid "Freezes"
+msgstr "Zamrożenia"
+
+#: screens/sui_stats_windows.lua:2786
+msgid ""
+"Freezes can only cover a single missed day, and only right after an active "
+"one. Tap yesterday's cell to use one, when eligible."
+msgstr ""
+"Zamrożenia mogą pokryć tylko jeden pominięty dzień, i tylko zaraz po dniu "
+"aktywnym. Dotknij komórki wczorajszego dnia, aby użyć zamrożenia, gdy jest "
+"to możliwe."
+
+#: engines/sui_heatmap_widgets.lua:127 infra/sui_datenames.lua:43
+msgid "Fri"
+msgstr "Piątek"
+
+#: infra/sui_datenames.lua:49
+msgid "Friday"
+msgstr "Piątek"
+
+#: screens/sui_quicksettings_bar.lua:581
+msgid "Frontlight"
+msgstr "Podświetlenie"
+
+#: screens/sui_quicksettings_bar.lua:1621
+msgid "Frontlight Slider"
+msgstr "Suwak podświetlenia"
+
+#: features/sui_quickactions.lua:414
+msgid "Frontlight not available on this device."
+msgstr "Podświetlenie jest niedostępne na tym urządzeniu."
+
+#: features/library/sui_label_options.lua:141
+msgid "Full Width"
+msgstr "Pełna szerokość"
+
+#: screens/sui_menu.lua:1097
+msgid "Full-width"
+msgstr "Pełna szerokość"
+
+#: modules/critter/phrases.lua:48
+msgid "General"
+msgstr ""
+
+#: features/sui_backup.lua:681
+msgid "General — %d settings"
+msgstr "Ogólne — ustawienia: %d"
+
+#: screens/sui_menu.lua:2451
+msgid "Gesture Only"
+msgstr "Tylko gest"
+
+#: screens/sui_menu.lua:3951 screens/sui_menu.lua:3952
+msgid "Global Text Size"
+msgstr "Globalny rozmiar tekstu"
+
+#: screens/sui_settings_window.lua:361
+msgid "Global custom actions & icons"
+msgstr "Globalne niestandardowe akcje i ikony"
+
+#: screens/sui_menu.lua:3953
+msgid ""
+"Global scale applied to all of KOReader's interface text — menus, dialogs, "
+"titles, and Simple UI. It does not change the book's reading font size, "
+"which has its own setting.\n"
+"100% is the default size. Useful when a chosen UI font (see UI Font above) "
+"renders smaller or larger than usual."
+msgstr ""
+"Globalna skala stosowana do całego tekstu interfejsu KOReader — menu, okien "
+"dialogowych, tytułów i Simple UI. Nie zmienia rozmiaru czcionki podczas "
+"czytania książki, która ma własne ustawienie.\n"
+"100% to rozmiar domyślny. Przydatne, gdy wybrana czcionka interfejsu (patrz "
+"Czcionka interfejsu powyżej) wyświetla się mniejsza lub większa niż zwykle."
+
+#: screens/sui_menu.lua:2377
+msgid ""
+"Global scale for all modules.\n"
+"Individual overrides in Module Settings take precedence.\n"
+"100% is the default size."
+msgstr ""
+"Skala globalna dla wszystkich modułów.\n"
+"Poszczególne nadpisania w Ustawieniach modułu mają pierwszeństwo.\n"
+"Domyślny rozmiar to 100%."
+
+#: screens/sui_onboarding.lua:326
+msgid "Go to Settings > Home Screen to edit your layout whenever you want."
+msgstr ""
+"Przejdź do Ustawienia > Ekran główny, aby edytować układ w dowolnym momencie."
+
+#: modules/module_reading_goals.lua:1182 modules/module_reading_goals.lua:1223
+#: modules/module_reading_goals.lua:1235
+msgid "Goals"
+msgstr "Cele"
+
+#: features/sui_backup.lua:137
+msgid "Goals & Streaks"
+msgstr "Cele i serie"
+
+#: modules/critter/phrases.lua:87
+msgid "Good afternoon!"
+msgstr ""
+
+#: modules/critter/phrases.lua:117
+msgid "Good afternoon, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:95
+msgid "Good evening!"
+msgstr ""
+
+#: modules/critter/phrases.lua:121
+msgid "Good evening, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:79
+msgid "Good morning!"
+msgstr ""
+
+#: modules/critter/phrases.lua:113
+msgid "Good morning, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:103
+msgid "Good night!"
+msgstr ""
+
+#: modules/critter/phrases.lua:125
+msgid "Good night, %s!"
+msgstr ""
+
+#: features/library/sui_label_options.lua:130 infra/sui_config.lua:1482
+#: modules/module_tab_grid.lua:647
+msgid "Gray"
+msgstr "Szary"
+
+#: modules/critter/phrases.lua:145
+msgid "Great going, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:42
+msgid "Greetings"
+msgstr ""
+
+#: engines/sui_book_grid.lua:1898 engines/sui_book_grid.lua:1909
+#: modules/module_reading_stats.lua:1158 modules/module_reading_stats.lua:1161
+msgid "Grid size"
+msgstr "Rozmiar siatki"
+
+#: features/sui_quickactions.lua:2330 features/sui_quickactions.lua:2585
+msgid "Group"
+msgstr "Grupa"
+
+#: modules/module_tab_grid.lua:923
+#, fuzzy
+msgid "Group Covers"
+msgstr "Okładki"
+
+#: screens/sui_menu.lua:2725
+msgid "Group by Book Series"
+msgstr "Grupuj według cyklu"
+
+#: features/sui_quickactions.lua:2601
+msgid "Group of Quick Actions"
+msgstr "Grupa Szybkich Akcji"
+
+#: features/sui_quickactions.lua:2577
+msgid "Group: select actions"
+msgstr "Grupa: wybierz akcje"
+
+#: modules/module_currently.lua:1307
+msgid ""
+"Grows or shrinks the cover so its height always matches the text column, "
+"keeping the cover's proportions.\n"
+"The spacing between cover and text stays as set above.\n"
+"The Cover size setting still applies on top of this, and the cover never "
+"shrinks below its 100% size."
+msgstr ""
+"Powiększa lub zmniejsza okładkę tak, aby jej wysokość zawsze pasowała do "
+"kolumny tekstu, zachowując proporcje okładki.\n"
+"Odstęp między okładką a tekstem pozostaje taki, jak ustawiono powyżej.\n"
+"Ustawienie Rozmiar okładki nadal ma zastosowanie ponad tym, a okładka nigdy "
+"nie zmniejsza się poniżej 100% swojego rozmiaru."
+
+#: modules/critter/phrases.lua:235
+msgid "Happy Monday!"
+msgstr ""
+
+#: modules/critter/phrases.lua:229
+msgid "Happy New Year!"
+msgstr ""
+
+#: modules/critter/phrases.lua:247
+msgid "Happy weekend!"
+msgstr ""
+
+#: modules/critter/phrases.lua:80
+msgid "Have a great %s."
+msgstr ""
+
+#: screens/sui_menu.lua:1104
+msgid ""
+"Height of the bottom navigation bar.\n"
+"100% is the default size."
+msgstr ""
+"Wysokość dolnego paska nawigacyjnego.\n"
+"Domyślny rozmiar to 100%."
+
+#: modules/module_spacer.lua:91
+msgid ""
+"Height of the spacer.\n"
+"100% is the default size.\n"
+"Tap the arrows for fine steps, hold for larger ones."
+msgstr ""
+"Wysokość odstępu.\n"
+"100% to domyślny rozmiar.\n"
+"Dotknij strzałek, aby zmieniać drobnymi krokami, przytrzymaj, aby większymi."
+
+#: screens/sui_menu.lua:965
+msgid ""
+"Height of the top status bar.\n"
+"100% is the default size."
+msgstr ""
+"Wysokość górnego paska stanu.\n"
+"Domyślny rozmiar to 100%."
+
+#: modules/critter/phrases.lua:276
+msgid "Hello, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:257
+msgid "Hello, reader!"
+msgstr ""
+
+#: features/sui_accent_picker.lua:56
+msgid "Hex Color"
+msgstr ""
+
+#: engines/sui_group_cell.lua:285 modules/module_tab_grid.lua:588
+#: screens/sui_menu.lua:460 screens/sui_menu.lua:519
+msgid "Hidden"
+msgstr "Ukryty"
+
+#: features/library/sui_finished_books.lua:65
+msgid "Hide"
+msgstr "Ukryj"
+
+#: engines/sui_group_cell.lua:271
+msgid "Hide Book Stack"
+msgstr "Ukryj stos książek"
+
+#: features/sui_source_menu.lua:110
+msgid "Hide Currently Reading book"
+msgstr "Ukryj książkę z Teraz czytane"
+
+#: modules/module_quick_actions.lua:334 modules/module_quick_actions.lua:420
+#: screens/sui_menu.lua:1943 screens/sui_quicksettings_bar.lua:1650
+msgid "Hide Label"
+msgstr "Ukryj etykietę"
+
+#: screens/sui_menu.lua:3021
+msgid "Hide Selection Underline"
+msgstr "Ukryj podkreślenie zaznaczenia"
+
+#: screens/sui_menu.lua:998
+msgid "Hide Wi-Fi Icon When Off"
+msgstr "Ukryj ikonę Wi-Fi gdy wyłączone"
+
+#: screens/sui_menu.lua:527
+msgid ""
+"Hides the pagination bar on the homescreen.\n"
+"Not available when Navpager is active."
+msgstr ""
+"Ukrywa pasek paginacji na ekranie głównym.\n"
+"Niedostępne gdy Navpager jest aktywny."
+
+#: screens/sui_menu.lua:2506
+msgid "High-Quality Cover"
+msgstr "Okładka wysokiej jakości"
+
+#: screens/sui_stats_windows.lua:1152 screens/sui_stats_windows.lua:3616
+msgid "Highlights"
+msgstr "Wyróżnienia"
+
+#: features/sui_quickactions.lua:510 features/sui_quickactions.lua:765
+#: features/sui_quickactions.lua:2198 infra/sui_config.lua:128
+msgid "History"
+msgstr "Historia"
+
+#: features/sui_quickactions.lua:772
+msgid "History not available."
+msgstr "Historia niedostępna."
+
+#: features/sui_quickactions.lua:706 infra/sui_config.lua:126
+msgid "Home"
+msgstr "Dom"
+
+#: engines/sui_screen_engine.lua:927 features/sui_backup.lua:117
+#: infra/sui_patches.lua:1029 infra/sui_patches.lua:1039
+#: screens/sui_menu.lua:2331 screens/sui_menu.lua:4165
+#: screens/sui_settings_window.lua:327 screens/sui_settings_window.lua:1035
+msgid "Home Screen"
+msgstr "Ekran główny"
+
+#: screens/sui_settings_window.lua:1051
+msgid "Home Screen Presets"
+msgstr "Presety ekranu głównego"
+
+#: screens/sui_menu.lua:473
+msgid "Home Screen Style"
+msgstr "Styl ekranu głównego"
+
+#: features/sui_quickactions.lua:527
+msgid "Home folder"
+msgstr "Folder główny"
+
+#: features/sui_quickactions.lua:529
+msgid "Home folder + subfolders"
+msgstr "Folder główny + podfoldery"
+
+#: screens/sui_menu.lua:2566
+msgid "Home key opens Home Screen"
+msgstr "Przycisk Home otwiera ekran główny"
+
+#: features/sui_quickactions.lua:747
+msgid "Homescreen not available."
+msgstr "Ekran główny niedostępny."
+
+#: modules/module_currently.lua:1281
+msgid ""
+"Horizontal space between the cover and the text.\n"
+"100% is the default spacing."
+msgstr ""
+"Poziomy odstęp między okładką a tekstem.\n"
+"100% to domyślny odstęp."
+
+#: modules/module_heatmap.lua:225 modules/module_heatmap.lua:342
+msgid "Hours of day"
+msgstr ""
+
+#: infra/sui_goals.lua:56
+msgid "Hours per month:"
+msgstr "Godziny na miesiąc:"
+
+#: modules/module_heatmap.lua:310
+msgid ""
+"How many weeks of history to include, and (in Calendar view) how many weeks "
+"the grid shows — this count is unaffected by Scale, which only resizes the "
+"cells. In Time of day view, this only changes how much history feeds the "
+"shading — the grid itself always has one column per hour."
+msgstr ""
+"Ile tygodni historii uwzględnić i (w widoku Kalendarz) ile tygodni pokazuje "
+"siatka — ta liczba nie zależy od Skali, która zmienia tylko rozmiar komórek. "
+"W widoku Pora dnia zmienia to tylko, ile historii wpływa na cieniowanie — "
+"sama siatka zawsze ma jedną kolumnę na godzinę."
+
+#: features/sui_accent_picker.lua:84
+msgid "Hue"
+msgstr ""
+
+#: modules/critter/phrases.lua:280
+msgid "I missed you, %s!"
+msgstr ""
+
+#: features/sui_quickactions.lua:2355 features/sui_quickactions.lua:2359
+msgid "Icon"
+msgstr "Ikona"
+
+#: screens/sui_menu.lua:3378
+msgid "Icon Packs"
+msgstr "Paczki ikon"
+
+#: screens/sui_menu.lua:3555
+msgid "Icon Presets"
+msgstr "Presety ikon"
+
+#: screens/sui_menu.lua:1021 screens/sui_menu.lua:1127
+#: screens/sui_menu.lua:1128 screens/sui_menu.lua:1195
+msgid "Icon Size"
+msgstr "Rozmiar ikony"
+
+#: features/sui_backup.lua:155
+msgid "Icon files and installed packs from sui_icons/"
+msgstr "Pliki ikon i zainstalowane paczki z sui_icons/"
+
+#: features/sui_quickactions.lua:2351
+msgid "Icon: Default"
+msgstr "Ikona: Domyślna"
+
+#: screens/sui_menu.lua:241 screens/sui_menu.lua:3324
+msgid "Icons"
+msgstr "Ikony"
+
+#: screens/sui_menu.lua:242
+msgid "Icons only"
+msgstr "Tylko ikony"
+
+#: screens/sui_menu.lua:3904
+msgid ""
+"Icons that contain color keep their original colors in night mode instead of "
+"being inverted.\n"
+"Monochrome icons are not affected and keep following the interface colors.\n"
+"Requires a color screen."
+msgstr ""
+"Ikony zawierające kolor zachowują oryginalne barwy w trybie nocnym zamiast "
+"być odwracane.\n"
+"Nie dotyczy to ikon monochromatycznych, które nadal podążają za kolorami "
+"interfejsu.\n"
+"Wymaga ekranu kolorowego."
+
+#: screens/sui_settings_window.lua:353
+msgid "Icons, fonts and appearance"
+msgstr "Ikony, czcionki i wygląd"
+
+#: screens/sui_onboarding.lua:330
+msgid ""
+"If you selected the Momentum Preset, long press the Reading Goal module to "
+"choose and set your reading goals."
+msgstr ""
+"Jeśli wybrałeś preset Momentum, przytrzymaj moduł Cel czytelniczy, aby "
+"wybrać i ustawić cele czytelnicze."
+
+#: features/sui_backup.lua:1148
+msgid "Import Backup…"
+msgstr "Importuj kopię zapasową…"
+
+#: features/sui_presets.lua:1068 screens/sui_menu.lua:3836
+msgid "Import preset"
+msgstr "Importuj preset"
+
+#: features/sui_stats_menu.lua:102
+msgid "Include Manual Books in All Time Total"
+msgstr "Uwzględnij ręcznie dodane książki w łącznej sumie"
+
+#: modules/critter/module_critter.lua:612
+msgid "Included"
+msgstr ""
+
+#: modules/critter/module_critter.lua:613
+msgid "Included and mine"
+msgstr ""
+
+#: infra/sui_compat_check.lua:219
+msgid "Incompatible items have been disabled:"
+msgstr "Niezgodne elementy zostały wyłączone:"
+
+#: engines/sui_group_cell.lua:232
+#, fuzzy
+msgid "Inside Cover"
+msgstr "Pojedyncza okładka"
+
+#: screens/sui_menu.lua:3463
+msgid "Install pack from ZIP"
+msgstr "Zainstaluj pakiet z ZIP"
+
+#: screens/sui_menu.lua:2674
+msgid "Intensity"
+msgstr "Intensywność"
+
+#: screens/sui_menu.lua:1327
+msgid ""
+"Invalid arrangement.\n"
+"Keep items between the Left and Right separators."
+msgstr ""
+"Nieprawidłowy układ.\n"
+"Zachowaj elementy pomiędzy Prawym a Lewym separatorem."
+
+#: screens/sui_menu.lua:695
+msgid ""
+"Invalid arrangement.\n"
+"Keep the Left, Center and Right separators in order."
+msgstr ""
+"Nieprawidłowy układ.\n"
+"Zachowaj kolejność separatorów: lewy, środkowy i prawy."
+
+#: features/sui_presets.lua:565 features/sui_presets.lua:748
+msgid "Invalid data"
+msgstr "Nieprawidłowe dane"
+
+#: features/sui_quickactions.lua:2042
+msgid "Invalid input. Please enter 1–6 hexadecimal digits (0–9, A–F)."
+msgstr ""
+"Nieprawidłowe dane wejściowe. Proszę wprowadzić 1–6 cyfr szesnastkowych (0–"
+"9, A–F)."
+
+#: features/sui_presets.lua:561 features/sui_presets.lua:744
+msgid "Invalid preset file"
+msgstr "Nieprawidłowy plik presetu"
+
+#: screens/sui_menu.lua:2273
+msgid "Invert in Night Mode"
+msgstr "Odwróć w trybie nocnym"
+
+#: modules/critter/phrases.lua:243
+msgid "It's Friday!"
+msgstr ""
+
+#: features/sui_style.lua:2487
+msgid "Italic"
+msgstr "Kursywa"
+
+#: infra/sui_config.lua:1177 infra/sui_config.lua:2123
+#: modules/module_coverdeck.lua:1593 modules/module_coverdeck.lua:1605
+#: modules/module_currently.lua:1348 modules/module_currently.lua:1360
+#: modules/module_reading_stats.lua:1139 screens/sui_menu.lua:813
+#: screens/sui_menu.lua:818 screens/sui_menu.lua:889 screens/sui_menu.lua:1030
+#: screens/sui_menu.lua:1953 screens/sui_menu.lua:1958
+#: screens/sui_menu.lua:1984
+msgid "Items"
+msgstr "Elementy"
+
+#: infra/sui_datenames.lua:29
+msgid "Jan"
+msgstr "sty"
+
+#: infra/sui_datenames.lua:36
+msgid "January"
+msgstr "Styczeń"
+
+#: infra/sui_datenames.lua:30
+msgid "Jul"
+msgstr "lip"
+
+#: infra/sui_datenames.lua:37
+msgid "July"
+msgstr "Lipiec"
+
+#: infra/sui_datenames.lua:29
+msgid "Jun"
+msgstr "cze"
+
+#: infra/sui_datenames.lua:37
+msgid "June"
+msgstr "Czerwiec"
+
+#: infra/sui_config.lua:2028 modules/module_quick_actions.lua:474
+msgid "Justified"
+msgstr "Wyjustowany"
+
+#: screens/sui_menu.lua:497
+msgid "KOReader"
+msgstr "KOReader"
+
+#: modules/critter/phrases.lua:132
+msgid "Keep it going."
+msgstr ""
+
+#: modules/critter/phrases.lua:166
+msgid "Keep turning pages."
+msgstr ""
+
+#: modules/critter/phrases.lua:149
+msgid "Keep your streak alive!"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:3067
+msgid "LAST %d DAYS"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2508
+msgid "LAST 7 DAYS"
+msgstr "OSTATNIE 7 DNI"
+
+#: engines/sui_group_cell.lua:321 infra/sui_config.lua:1116
+#: modules/module_action_list.lua:340 modules/module_action_list.lua:355
+#: modules/module_collections.lua:485 modules/module_quick_actions.lua:441
+#: modules/module_reading_goals.lua:1127 modules/module_reading_stats.lua:1130
+#: screens/sui_quicksettings_bar.lua:1634
+msgid "Label"
+msgstr "Etykieta"
+
+#: screens/sui_menu.lua:1150
+#, fuzzy
+msgid "Label Font"
+msgstr "Etykieta"
+
+#: screens/sui_menu.lua:2397
+msgid "Label Scale"
+msgstr "Skala etykiety"
+
+#: screens/sui_menu.lua:1138 screens/sui_menu.lua:1139
+#: screens/sui_menu.lua:1196
+msgid "Label Size"
+msgstr "Rozmiar etykiety"
+
+#: infra/sui_config.lua:2060
+msgid "Label inside background"
+msgstr ""
+
+#: screens/sui_menu.lua:2392
+msgid "Labels"
+msgstr "Etykiety"
+
+#: screens/sui_menu.lua:3120
+msgid "Landscape mosaic mode"
+msgstr "Tryb mozaiki w poziomie"
+
+#: features/sui_backup.lua:1061
+msgid "Last backup: %s%s"
+msgstr "Ostatnia kopia zapasowa: %s%s"
+
+#: features/sui_backup.lua:1058
+msgid "Last backup: never"
+msgstr "Ostatnia kopia zapasowa: nigdy"
+
+#: features/dialogs/sui_dialogs.lua:212
+msgid "Later"
+msgstr "Potem"
+
+#: features/library/sui_label_options.lua:139 modules/module_currently.lua:1300
+#: modules/module_reading_goals.lua:1259 screens/sui_menu.lua:1095
+msgid "Layout"
+msgstr "Układ"
+
+#: screens/sui_settings_window.lua:1042 screens/sui_settings_window.lua:1043
+msgid "Layout Editor"
+msgstr "Edytor układu"
+
+#: screens/sui_quicksettings_bar.lua:1600
+msgid ""
+"Layout of the Quick Settings panel in the reader. The file browser always "
+"uses the classic layout."
+msgstr ""
+"Układ panelu szybkich ustawień w czytniku. Przeglądarka plików zawsze używa "
+"układu klasycznego."
+
+#: features/sui_backup.lua:118
+msgid "Layout, modules, custom screens, presets"
+msgstr "Układ, moduły, niestandardowe ekrany, presety"
+
+#: screens/sui_settings_window.lua:329
+msgid "Layout, wallpaper, presets and behaviour"
+msgstr "Układ, tapeta, presety i zachowanie"
+
+#: infra/sui_config.lua:2025 modules/module_quick_actions.lua:475
+#: screens/sui_menu.lua:666 screens/sui_menu.lua:875 screens/sui_menu.lua:1294
+#: screens/sui_menu.lua:1501
+msgid "Left"
+msgstr "Lewo"
+
+#: modules/critter/module_critter.lua:682
+msgid "Left decorations"
+msgstr ""
+
+#: engines/sui_heatmap_widgets.lua:410 modules/module_heatmap.lua:180
+msgid "Less"
+msgstr "Mniej"
+
+#: modules/critter/phrases.lua:273 modules/critter/phrases.lua:281
+msgid "Let's read something."
+msgstr ""
+
+#: screens/sui_menu.lua:3305 screens/sui_menu.lua:3307
+msgid "Letter Spacing"
+msgstr ""
+
+#: features/library/sui_library_browse.lua:76 features/sui_backup.lua:127
+#: features/sui_quickactions.lua:677 infra/sui_config.lua:125
+#: infra/sui_config.lua:443 modules/module_reading_stats.lua:280
+#: modules/module_reading_stats.lua:281 modules/module_reading_stats.lua:282
+#: screens/sui_menu.lua:2332 screens/sui_menu.lua:2803
+#: screens/sui_menu.lua:2876 screens/sui_menu.lua:4169
+#: screens/sui_settings_window.lua:343 screens/sui_settings_window.lua:1038
+#: screens/sui_titlebar.lua:1208 screens/sui_titlebar.lua:1253
+msgid "Library"
+msgstr "Biblioteka"
+
+#: screens/sui_menu.lua:2912
+msgid "Library Badges"
+msgstr ""
+
+#: screens/sui_menu.lua:1775 screens/sui_menu.lua:1778
+msgid "Library Buttons"
+msgstr "Przyciski Biblioteki"
+
+#: screens/sui_menu.lua:2743
+msgid "Library Captions"
+msgstr ""
+
+#: features/sui_presets.lua:209
+msgid "Library View"
+msgstr "Widok biblioteki"
+
+#: screens/sui_menu.lua:2866
+msgid ""
+"Library captions are enabled. Folder names are shown in the caption strip "
+"under each cover instead of on the cover."
+msgstr ""
+
+#: screens/sui_menu.lua:2739
+msgid ""
+"Library captions changed.\n"
+"\n"
+"Restart now?"
+msgstr ""
+
+#: features/library/sui_label_options.lua:129 features/sui_style.lua:1483
+msgid "Light"
+msgstr "Jasny"
+
+#: screens/sui_menu.lua:2276
+msgid "Lighten"
+msgstr "Rozjaśnij"
+
+#: modules/module_reading_stats.lua:1187
+msgid "List"
+msgstr "Lista"
+
+#: screens/sui_menu.lua:2982
+msgid ""
+"Lists books without an author, series or tag as a separate group in the "
+"Authors, Series and Tags views."
+msgstr ""
+"Pokazuje książki bez autora, cyklu lub tagu jako osobną grupę w widokach "
+"Autorzy, Cykle i Tagi."
+
+#: screens/sui_stats_launcher.lua:47
+msgid "Loading statistics…"
+msgstr "Wczytywanie statystyk…"
+
+#: screens/sui_menu.lua:2362
+msgid "Lock Scale"
+msgstr "Zablokuj skalę"
+
+#: infra/sui_config.lua:1844
+msgid "Long Press"
+msgstr "Długie naciśnięcie"
+
+#: screens/sui_onboarding.lua:321
+msgid "Long press to customize"
+msgstr "Przytrzymaj, aby dostosować"
+
+#: modules/module_reading_stats.lua:257
+msgid "Longest session"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1611
+msgid "Look of the frontlight and warmth sliders."
+msgstr "Wygląd suwaków podświetlenia i ciepłoty."
+
+#: features/sui_backup.lua:553 features/sui_backup.lua:602
+#: features/sui_presets.lua:544 features/sui_presets.lua:556
+#: features/sui_presets.lua:727 features/sui_presets.lua:739
+msgid "LuaSettings module unavailable"
+msgstr "Moduł LuaSettings niedostępny"
+
+#: screens/sui_onboarding.lua:287
+msgid "Make it yours"
+msgstr "Spersonalizuj"
+
+#: screens/sui_menu.lua:2567
+msgid ""
+"Makes the device's physical Home key open the SimpleUI Home Screen — while "
+"reading and while browsing files — instead of KOReader's native Home "
+"behaviour. The file browser title-bar home icon still goes to the home "
+"folder."
+msgstr ""
+"Sprawia, że fizyczny przycisk Home urządzenia otwiera ekran główny SimpleUI "
+"— zarówno podczas czytania, jak i przeglądania plików — zamiast domyślnego "
+"zachowania Home w KOReader. Ikona domu na pasku tytułu przeglądarki plików "
+"nadal prowadzi do folderu domowego."
+
+#: features/sui_presets.lua:953 features/sui_presets.lua:998
+#: features/sui_presets.lua:1003 screens/sui_menu.lua:3710
+#: screens/sui_menu.lua:3761 screens/sui_menu.lua:3766
+msgid "Manage presets"
+msgstr "Zarządzaj presetami"
+
+#: features/sui_manual_books.lua:145 screens/sui_stats_windows.lua:766
+msgid "Manual Yearly Count"
+msgstr "Ręczna liczba roczna"
+
+#: features/sui_manual_books.lua:128
+msgid "Manual Yearly Count — %d"
+msgstr "Ręczna liczba roczna — %d"
+
+#: modules/module_collections.lua:215
+msgid "Manual order"
+msgstr "Kolejność ręczna"
+
+#: infra/sui_datenames.lua:29
+msgid "Mar"
+msgstr "mar"
+
+#: infra/sui_datenames.lua:36
+msgid "March"
+msgstr "Marzec"
+
+#: screens/sui_quicksettings_bar.lua:625
+msgid "Max"
+msgstr "Maks."
+
+#: infra/sui_datenames.lua:29 infra/sui_datenames.lua:37
+msgid "May"
+msgstr "Maj"
+
+#: modules/critter/phrases.lua:230
+msgid "May your year be full of good books."
+msgstr ""
+
+#: screens/sui_titlebar.lua:113 screens/sui_titlebar.lua:118
+msgid "Menu"
+msgstr "Menu"
+
+#: features/sui_style.lua:86
+msgid "Menu Button"
+msgstr "Przycisk Menu"
+
+#: modules/critter/module_critter.lua:697
+msgid "Message"
+msgstr ""
+
+#: modules/module_clock.lua:324
+msgid "Midnight"
+msgstr "Północ"
+
+#: modules/critter/phrases.lua:46
+msgid "Milestones and goals"
+msgstr ""
+
+#: features/sui_presets.lua:171
+msgid "Mindful Reading"
+msgstr "Świadome czytanie"
+
+#: modules/critter/module_critter.lua:614
+msgid "Mine only"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1615
+msgid "Minimal"
+msgstr "Minimalistyczny"
+
+#: screens/sui_menu.lua:370
+msgid "Minimum 1 tab required in navpager mode."
+msgstr "Minimum 1 zakładka jest wymagana dla trybu navpager."
+
+#: screens/sui_menu.lua:371
+msgid "Minimum 2 tabs required. Select another tab first."
+msgstr "Wymagane minimum 2 zakładki. Najpierw wybierz inną."
+
+#: infra/sui_goals.lua:67
+msgid "Minutes per day:"
+msgstr "Minuty na dzień:"
+
+#: modules/critter/phrases.lua:272
+msgid "Missed me?"
+msgstr ""
+
+#: screens/sui_menu.lua:436
+msgid "Mode"
+msgstr "Tryb"
+
+#: screens/sui_menu.lua:3292 screens/sui_menu.lua:3935
+msgid "Module Labels"
+msgstr ""
+
+#: screens/sui_menu.lua:2373
+msgid "Module Scale"
+msgstr "Skala Modułu"
+
+#: infra/sui_config.lua:1841 screens/sui_menu.lua:2160
+msgid "Module Settings"
+msgstr "Ustawienia Modułu"
+
+#: screens/sui_menu.lua:3382
+msgid "Module unavailable"
+msgstr "Moduł niedostępny"
+
+#: screens/sui_menu.lua:2372 screens/sui_menu.lua:2593
+#: screens/sui_menu.lua:2808 screens/sui_menu.lua:2882
+msgid "Modules"
+msgstr "Moduły"
+
+#: screens/sui_menu.lua:2148
+msgid "Modules  (%d)"
+msgstr "Moduły  (%d)"
+
+#: engines/sui_screen_engine.lua:2741
+msgid ""
+"Modules exceed the visible area.\n"
+"Move some to another page or adjust the scale."
+msgstr ""
+"Moduły przekraczają widoczny obszar.\n"
+"Przenieś niektóre na inną stronę lub dostosuj skalę."
+
+#: features/sui_presets.lua:191
+msgid "Momentum"
+msgstr "Momentum"
+
+#: engines/sui_heatmap_widgets.lua:127 infra/sui_datenames.lua:43
+msgid "Mon"
+msgstr "Poniedziałek"
+
+#: infra/sui_datenames.lua:48
+msgid "Monday"
+msgstr "Poniedziałek"
+
+#: modules/critter/phrases.lua:239
+msgid "Mondays, right?"
+msgstr ""
+
+#: infra/sui_goals.lua:54
+msgid "Monthly Goal"
+msgstr "Cel miesięczny"
+
+#: infra/sui_goals.lua:55
+msgid "Monthly Reading Goal"
+msgstr "Miesięczny cel czytelniczy"
+
+#: engines/sui_heatmap_widgets.lua:416
+msgid "More"
+msgstr "Więcej"
+
+#: main.lua:1183
+msgid "More by %s (%d)"
+msgstr "Więcej od %s (%d)"
+
+#: modules/critter/phrases.lua:177
+msgid "More than halfway there!"
+msgstr ""
+
+#: engines/sui_window.lua:3706
+msgid "Move down"
+msgstr "Przesuń w dół"
+
+#: engines/sui_window.lua:3700 screens/sui_settings_window.lua:682
+#: screens/sui_settings_window.lua:717
+msgid "Move to page"
+msgstr "Przenieś na stronę"
+
+#: engines/sui_window.lua:3703
+msgid "Move up"
+msgstr "Przesuń w górę"
+
+#: modules/module_quote.lua:1418
+msgid "My Highlights"
+msgstr "Moje zaznaczenia"
+
+#: features/sui_presets.lua:308
+msgid "My Presets"
+msgstr "Moje presety"
+
+#: features/sui_quickactions.lua:2612 modules/critter/module_critter.lua:591
+msgid "Name"
+msgstr "Nazwa"
+
+#: modules/module_collections.lua:216
+msgid "Name (A–Z)"
+msgstr "Nazwa (A–Z)"
+
+#: modules/module_collections.lua:217
+msgid "Name (Z–A)"
+msgstr "Nazwa (Z–A)"
+
+#: features/sui_cover_elements.lua:68
+msgid "Native"
+msgstr "Natywny"
+
+#: screens/sui_bottombar.lua:788 screens/sui_menu.lua:2634
+msgid "Navigation Bar"
+msgstr "Pasek nawigacji"
+
+#: screens/sui_menu.lua:2290
+#, fuzzy
+msgid "Navigation Bar Opacity"
+msgstr "Rozmiar paska nawigacji"
+
+#: screens/sui_menu.lua:1103
+msgid "Navigation Bar Size"
+msgstr "Rozmiar paska nawigacji"
+
+#: screens/sui_menu.lua:1085
+msgid ""
+"Navigation Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Pasek nawigacji zostanie %s po restarcie.\n"
+"\n"
+"Uruchomić ponownie?"
+
+#: features/sui_backup.lua:123
+msgid "Navigation, status, title and quick settings bars"
+msgstr "Paski nawigacji, stanu, tytułu i szybkich ustawień"
+
+#: features/sui_style.lua:1267 screens/sui_menu.lua:449
+msgid "Navpager"
+msgstr "Nawigator"
+
+#: screens/sui_menu.lua:456
+msgid ""
+"Navpager enabled.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Navpager włączony.\n"
+"\n"
+"Zrestartować teraz?"
+
+#: features/sui_style.lua:180
+msgid "Navpager: Next"
+msgstr "Nawigacja: Następny"
+
+#: features/sui_style.lua:172
+msgid "Navpager: Previous"
+msgstr "Nawigacja: Poprzedni"
+
+#: features/sui_quickactions.lua:2095
+msgid "Nerd Font Icon"
+msgstr "Ikona czcionki Nerd"
+
+#: features/sui_quickactions.lua:2132
+msgid "Nerd Font symbol…"
+msgstr "Symbol Czcionki Nerd…"
+
+#: features/sui_quickactions.lua:278
+msgid "Network manager unavailable."
+msgstr "Menedżer sieci niedostępny."
+
+#: screens/sui_menu.lua:2462
+msgid "Never"
+msgstr "Nigdy"
+
+#: engines/sui_book_grid.lua:519 engines/sui_book_sources.lua:336
+#: features/library/sui_cover_widgets.lua:509
+#: features/library/sui_foldercovers.lua:1278
+#: features/library/sui_foldercovers.lua:1649
+msgid "New"
+msgstr "Nowy"
+
+#: engines/sui_book_grid.lua:2108
+msgid "New Badge Color"
+msgstr "Kolor odznaki nowej książki"
+
+#: features/sui_cover_elements.lua:75
+msgid "New Book"
+msgstr "Nowa książka"
+
+#: engines/sui_book_grid.lua:2100 engines/sui_book_grid.lua:2113
+msgid "New Book Badge"
+msgstr "Odznaka nowej książki"
+
+#: engines/sui_book_sources.lua:321 modules/module_new_books.lua:17
+msgid "New Books"
+msgstr "Nowe Książki"
+
+#: features/sui_quickactions.lua:2320
+msgid "New Quick Action"
+msgstr "Nowa Szybka Akcja"
+
+#: features/library/sui_group_actions.lua:103
+msgid "New collection name"
+msgstr "Nazwa nowej kolekcji"
+
+#: modules/critter/phrases.lua:251
+msgid "New month, new chapters!"
+msgstr ""
+
+#: features/sui_manual_books.lua:151 screens/sui_bottombar.lua:457
+msgid "Next"
+msgstr "Następny"
+
+#: modules/critter/phrases.lua:192
+msgid "Nice work."
+msgstr ""
+
+#: features/sui_quickactions.lua:939 infra/sui_config.lua:137
+msgid "Night Mode"
+msgstr "Tryb nocny"
+
+#: modules/module_clock.lua:255
+msgid "Nine"
+msgstr "Dziewięć"
+
+#: modules/module_clock.lua:259
+msgid "Nineteen"
+msgstr "Dziewiętnaście"
+
+#: screens/sui_stats_windows.lua:1159
+msgid "No"
+msgstr "Nie"
+
+#: modules/module_quote.lua:1399
+msgid "No .lua files found in sui_quotes/"
+msgstr "Nie znaleziono plików .lua w sui_quotes/"
+
+#: screens/sui_menu.lua:3501
+msgid ""
+"No .zip files found.\n"
+"Place .zip files in:\n"
+"%1"
+msgstr ""
+"Nie znaleziono plików .zip.\n"
+"Umieść pliki .zip w:\n"
+"%1"
+
+#: screens/sui_quicksettings_bar.lua:1508
+msgid "No actions active yet."
+msgstr "Brak aktywnych akcji."
+
+#: features/sui_quickactions.lua:1631 modules/module_action_list.lua:85
+#: modules/module_action_list.lua:104 modules/module_quick_actions.lua:145
+#: modules/module_quick_actions.lua:515
+msgid "No actions configured"
+msgstr "Brak skonfigurowanych akcji"
+
+#: modules/module_action_list.lua:84 modules/module_action_list.lua:103
+#: modules/module_quick_actions.lua:144
+msgid "No actions configured  —  long press to configure"
+msgstr "Brak skonfigurowanych akcji  —  przytrzymaj, aby skonfigurować"
+
+#: screens/sui_quicksettings_bar.lua:759
+msgid ""
+"No actions configured.\n"
+"Go to Bars → Quick Settings Bar."
+msgstr ""
+"Brak skonfigurowanych akcji.\n"
+"Przejdź do Paski → Pasek szybkich ustawień."
+
+#: features/sui_backup.lua:1183
+msgid "No backup loaded yet."
+msgstr "Nie wczytano jeszcze żadnej kopii zapasowej."
+
+#: features/sui_quickactions.lua:798
+msgid "No book in history."
+msgstr "Brak książek w historii."
+
+#: screens/sui_stats_windows.lua:673
+msgid "No books finished"
+msgstr "Brak ukończonych książek"
+
+#: screens/sui_stats_windows.lua:786
+msgid "No books finished in %s"
+msgstr "Brak ukończonych książek w %s"
+
+#: features/library/sui_foldercovers.lua:528
+#: features/library/sui_foldercovers.lua:631
+msgid "No books found in this folder."
+msgstr "Nie znaleziono żadnych książek w tym folderze."
+
+#: features/library/sui_series_grouping.lua:107
+#: features/library/sui_series_grouping.lua:122
+msgid "No books found in this series."
+msgstr "Nie znaleziono książek w tym cyklu."
+
+#: engines/sui_group_cell.lua:591 features/library/sui_facet_groups.lua:146
+#: features/library/sui_group_actions.lua:45
+#: features/library/sui_group_actions.lua:97
+#: features/library/sui_library_browse.lua:447
+#: features/library/sui_library_browse.lua:471
+msgid "No books found."
+msgstr "Nie znaleziono żadnych książek."
+
+#: engines/sui_book_sources.lua:361
+msgid "No books in To Be Read list."
+msgstr "Brak książek na liście Do przeczytania."
+
+#: engines/sui_book_sources.lua:401
+msgid "No books in this collection."
+msgstr "Brak książek w tej kolekcji."
+
+#: modules/module_tab_grid.lua:506
+#, fuzzy
+msgid "No books in this tab"
+msgstr "Brak książek w historii."
+
+#: engines/sui_screen_engine.lua:271
+msgid "No books opened yet"
+msgstr "Nie otwarto jeszcze żadnej książki"
+
+#: modules/module_coverdeck.lua:896 modules/module_currently.lua:460
+msgid "No books to show yet — open a book to see it here."
+msgstr "Brak książek do pokazania — otwórz książkę, aby zobaczyć ją tutaj."
+
+#: modules/module_feat_coll.lua:145 modules/module_feat_coll.lua:174
+msgid "No collection selected"
+msgstr "Nie wybrano kolekcji"
+
+#: modules/module_feat_coll.lua:144
+msgid "No collection selected  —  long press to configure"
+msgstr "Nie wybrano kolekcji — przytrzymaj, aby skonfigurować"
+
+#: modules/module_coverdeck.lua:1543
+msgid "No collections found"
+msgstr "Nie znaleziono kolekcji"
+
+#: modules/module_collections.lua:416 modules/module_collections.lua:457
+#: modules/module_feat_coll.lua:88
+msgid "No collections found."
+msgstr "Nie znaleziono kolekcji."
+
+#: modules/module_collections.lua:523
+msgid "No collections selected"
+msgstr "Nie wybrano żadnej kolekcji"
+
+#: modules/module_collections.lua:522
+msgid "No collections selected  —  long press to configure"
+msgstr "Brak wybranych kolekcji  —  przytrzymaj, aby skonfigurować"
+
+#: modules/module_quote.lua:948
+msgid ""
+"No custom quotes found. Add a .lua file to the plugin's sui_quotes/ folder "
+"and select it in Settings."
+msgstr ""
+"Nie znaleziono własnych cytatów. Dodaj plik .lua do folderu sui_quotes/ "
+"wtyczki i wybierz go w Ustawieniach."
+
+#: screens/sui_settings_window.lua:486
+msgid "No custom screens yet."
+msgstr "Brak niestandardowych ekranów."
+
+#: modules/critter/module_critter.lua:558
+msgid "No decorations selected."
+msgstr ""
+
+#: infra/sui_updater.lua:498
+msgid ""
+"No download file found.\n"
+"\n"
+"Open the releases page?"
+msgstr ""
+"Nie znaleziono pliku do pobrania.\n"
+"\n"
+"Otworzyć stronę wydań?"
+
+#: features/sui_presets.lua:536 features/sui_presets.lua:719
+msgid "No export directory"
+msgstr "Brak katalogu eksportu"
+
+#: screens/sui_stats_windows.lua:54
+msgid "No filepath."
+msgstr "Brak ścieżki pliku."
+
+#: features/sui_quickactions.lua:3059
+msgid ""
+"No folder, collection or plugin configured.\n"
+"Go to Simple UI → Settings → Quick Actions to set one."
+msgstr ""
+"Nie skonfigurowano folderu, kolekcji ani wtyczki.\n"
+"Przejdź do Simple UI → Ustawienia → Szybkie Akcje, aby skonfigurować."
+
+#: features/sui_style.lua:2314
+msgid "No fonts found."
+msgstr "Nie znaleziono czcionek."
+
+#: modules/module_tab_grid.lua:506
+#, fuzzy
+msgid "No groups in this tab"
+msgstr "Brak książek w tej kolekcji."
+
+#: modules/module_quote.lua:1014
+msgid "No highlights found. Open a book and highlight some passages."
+msgstr ""
+"Nie znaleziono żadnych zaznaczeń. Otwórz książkę i zaznacz trochę tekstu."
+
+#: features/library/sui_library_search.lua:175
+#, fuzzy
+msgid "No home folder set."
+msgstr "Folder główny"
+
+#: features/sui_quickactions.lua:2162
+msgid "No icons found in:"
+msgstr "Nie znaleziono ikon w:"
+
+#: engines/sui_window.lua:3406 engines/sui_window.lua:4025
+msgid "No items available."
+msgstr "Brak dostępnych elementów."
+
+#: engines/sui_window.lua:3934 infra/sui_config.lua:2124
+#: modules/module_action_list.lua:286 modules/module_collections.lua:383
+#: modules/module_quick_actions.lua:348 modules/module_reading_goals.lua:1229
+#: modules/module_reading_stats.lua:1142 screens/sui_menu.lua:362
+#: screens/sui_menu.lua:831 screens/sui_menu.lua:891 screens/sui_menu.lua:1410
+#: screens/sui_menu.lua:1517 screens/sui_menu.lua:1620
+#: screens/sui_menu.lua:1961 screens/sui_menu.lua:1986
+msgid "No items selected."
+msgstr "Brak wybranych elementów."
+
+#: screens/sui_settings_window.lua:605 screens/sui_settings_window.lua:728
+msgid "No modules"
+msgstr "Brak modułów"
+
+#: screens/sui_settings_window.lua:714
+msgid "No other pages available."
+msgstr "Brak innych stron."
+
+#: screens/sui_menu.lua:3522
+msgid "No packs found."
+msgstr "Nie znaleziono paczek."
+
+#: features/sui_quickactions.lua:2483
+msgid "No plugins found."
+msgstr "Nie znaleziono wtyczek."
+
+#: features/sui_presets.lua:1075 screens/sui_menu.lua:3844
+msgid ""
+"No preset files found.\n"
+"Place .lua files in:\n"
+"%1"
+msgstr ""
+"Nie znaleziono plików presetów.\n"
+"Umieść pliki .lua w:\n"
+"%1"
+
+#: features/sui_presets.lua:1052 screens/sui_menu.lua:3820
+msgid "No presets found."
+msgstr "Nie znaleziono presetów."
+
+#: modules/module_quote.lua:979
+msgid "No quotes found."
+msgstr "Nie znaleziono cytatów."
+
+#: features/sui_quickactions.lua:3294
+msgid "No recent books."
+msgstr "Brak ostatnich książek."
+
+#: features/library/sui_library_search.lua:185
+#, fuzzy
+msgid "No results for: %1"
+msgstr "Nie znaleziono presetów."
+
+#: screens/sui_stats_windows.lua:63 screens/sui_stats_windows.lua:97
+#: screens/sui_stats_windows.lua:3297
+msgid "No statistics found for this book."
+msgstr "Nie znaleziono statystyk dla tej książki."
+
+#: modules/module_coverdeck.lua:1586 modules/module_currently.lua:1342
+#: screens/sui_quicksettings_bar.lua:1569
+msgid "No statistics selected."
+msgstr "Nie wybrano statystyk."
+
+#: modules/module_reading_stats.lua:912
+msgid "No stats selected"
+msgstr "Nie wybrano statystyk"
+
+#: modules/module_reading_stats.lua:911
+msgid "No stats selected  —  long press to configure"
+msgstr "Brak wybranych statystyk  —  przytrzymaj, aby skonfigurować"
+
+#: features/sui_quickactions.lua:2500
+msgid "No system actions found."
+msgstr "Nie znaleziono żadnych systemowych akcji."
+
+#: modules/module_tab_grid.lua:1037 modules/module_tab_grid.lua:1118
+msgid "No tabs"
+msgstr "Brak kart"
+
+#: modules/module_tab_grid.lua:1037
+#, fuzzy
+msgid "No tabs  —  long press to configure"
+msgstr "Brak wybranych statystyk  —  przytrzymaj, aby skonfigurować"
+
+#: modules/module_tab_grid.lua:867
+msgid "No tabs."
+msgstr "Brak kart."
+
+#: screens/sui_menu.lua:2233
+msgid "No wallpapers found."
+msgstr "Nie znaleziono tapet."
+
+#: engines/sui_book_grid.lua:1989 engines/sui_book_grid.lua:2094
+#: features/sui_quickactions.lua:2405 infra/sui_config.lua:1054
+msgid "None"
+msgstr "Brak"
+
+#: modules/module_clock.lua:327
+msgid "Noon"
+msgstr "Południe"
+
+#: features/sui_backup.lua:607 features/sui_backup.lua:611
+#: features/sui_backup.lua:621 features/sui_backup.lua:809
+#: features/sui_backup.lua:966
+msgid "Not a valid backup file."
+msgstr "To nie jest prawidłowy plik kopii zapasowej."
+
+#: modules/critter/module_critter.lua:585 modules/module_reading_goals.lua:1136
+#: screens/sui_menu.lua:3222 screens/sui_menu.lua:3240
+msgid "Not set"
+msgstr "Nie ustawiono"
+
+#: screens/sui_stats_windows.lua:1153 screens/sui_stats_windows.lua:3617
+msgid "Notes"
+msgstr "Notatki"
+
+#: features/sui_backup.lua:1020
+msgid "Nothing selected to import."
+msgstr "Nie wybrano nic do zaimportowania."
+
+#: infra/sui_datenames.lua:30
+msgid "Nov"
+msgstr "lis"
+
+#: infra/sui_datenames.lua:38
+msgid "November"
+msgstr "Listopad"
+
+#: engines/sui_book_grid.lua:1883 engines/sui_book_grid.lua:1884
+msgid "Number of Books"
+msgstr "Liczba książek"
+
+#: modules/module_tab_grid.lua:586
+#, fuzzy
+msgid "Numbers"
+msgstr "Listopad"
+
+#: modules/module_clock.lua:345
+msgid "O'Clock"
+msgstr "w punkt"
+
+#: features/dialogs/sui_dialogs.lua:172 features/dialogs/sui_dialogs.lua:400
+#: features/sui_quickactions.lua:2068 infra/sui_compat_check.lua:133
+msgid "OK"
+msgstr "OK"
+
+#: infra/sui_datenames.lua:30
+msgid "Oct"
+msgstr "paź"
+
+#: infra/sui_datenames.lua:38
+msgid "October"
+msgstr "Październik"
+
+#: engines/sui_book_grid.lua:2061 engines/sui_book_grid.lua:2087
+#: features/sui_cover_elements.lua:275 modules/module_coverdeck.lua:1687
+#: modules/module_currently.lua:1451 screens/sui_menu.lua:1258
+#: screens/sui_menu.lua:1468 screens/sui_menu.lua:2703
+#: screens/sui_menu.lua:2852 screens/sui_menu.lua:4143
+msgid "Off"
+msgstr "Wyłącz"
+
+#: modules/module_clock.lua:290
+msgid "Oh"
+msgstr "zero"
+
+#: engines/sui_book_grid.lua:2061 engines/sui_book_grid.lua:2087
+#: features/sui_cover_elements.lua:277 features/sui_cover_elements.lua:282
+#: modules/module_coverdeck.lua:1687 modules/module_currently.lua:1451
+#: screens/sui_menu.lua:1258 screens/sui_menu.lua:1468
+#: screens/sui_menu.lua:2852 screens/sui_menu.lua:4143
+msgid "On"
+msgstr "Włącz"
+
+#: modules/module_coverdeck.lua:1637
+msgid "On side covers too"
+msgstr "Także na bocznych okładkach"
+
+#: modules/module_clock.lua:253
+msgid "One"
+msgstr "Jeden"
+
+#: modules/critter/phrases.lua:100
+msgid "One more chapter before bed."
+msgstr ""
+
+#: modules/critter/phrases.lua:198
+msgid "One page at a time."
+msgstr ""
+
+#: engines/sui_screen_engine.lua:590 features/library/sui_library_search.lua:56
+#: features/library/sui_library_search.lua:129
+#: features/sui_quickactions.lua:3249 modules/module_quote.lua:1302
+#: screens/sui_stats_windows.lua:620
+msgid "Open"
+msgstr "Otwórz"
+
+#: screens/sui_quicksettings_bar.lua:1690
+msgid "Open Menu on Quick Settings"
+msgstr "Otwieraj menu na szybkich ustawieniach"
+
+#: engines/sui_group_cell.lua:606
+msgid "Open Module Settings"
+msgstr "Ustawienia modułu"
+
+#: engines/sui_screen_engine.lua:280
+msgid "Open a book to get started"
+msgstr "Otwórz książkę, aby rozpocząć"
+
+#: infra/sui_updater.lua:501
+msgid "Open in browser"
+msgstr "Otwórz w przeglądarce"
+
+#: features/library/sui_book_hold_dialog.lua:257
+msgid "Open module settings"
+msgstr "Ustawienia modułu"
+
+#: engines/sui_screen_engine.lua:589 features/library/sui_library_search.lua:55
+#: features/sui_quickactions.lua:3248 modules/module_quote.lua:1301
+#: screens/sui_stats_windows.lua:618
+msgid "Open this file?"
+msgstr "Otworzyć ten plik?"
+
+#: features/library/sui_book_hold_dialog.lua:197
+msgid "Open with…"
+msgstr "Otwórz za pomocą…"
+
+#: screens/sui_menu.lua:2532
+msgid "Overflow Warning"
+msgstr "Ostrzeżenie o przepełnieniu"
+
+#: features/sui_presets.lua:356 features/sui_presets.lua:964
+#: features/sui_presets.lua:1038 screens/sui_menu.lua:3721
+#: screens/sui_menu.lua:3804
+msgid "Overwrite"
+msgstr "Nadpisz"
+
+#: features/sui_presets.lua:353
+msgid "Overwrite preset"
+msgstr ""
+
+#: features/sui_presets.lua:963 features/sui_presets.lua:1037
+msgid "Overwrite preset \"%s\" with the current homescreen settings?"
+msgstr "Nadpisać preset \"%s\" aktualnymi ustawieniami ekranu głównego?"
+
+#: screens/sui_menu.lua:3720 screens/sui_menu.lua:3803
+msgid "Overwrite preset \"%s\" with the current icon settings?"
+msgstr "Nadpisać preset \"%s\" aktualnymi ustawieniami ikon?"
+
+#: screens/sui_menu.lua:3537
+msgid ""
+"Pack \"%s\" applied.\n"
+"%d icons replaced."
+msgstr ""
+"Paczka \"%s\" zastosowana.\n"
+"Zastąpiono %d ikon."
+
+#: screens/sui_menu.lua:3455
+msgid ""
+"Pack \"%s\" installed.\n"
+"You can now apply it from the list."
+msgstr ""
+"Paczka \"%s\" zainstalowana.\n"
+"Możesz ją teraz zastosować z listy."
+
+#: features/sui_style.lua:2715
+msgid "Pack folder not accessible: "
+msgstr "Folder paczek niedostępny: "
+
+#: infra/sui_book_stats.lua:175
+msgid "Page"
+msgstr "Strona"
+
+#: engines/sui_screen_engine.lua:1952 engines/sui_window.lua:1742
+#: infra/sui_patches.lua:2038 infra/sui_patches.lua:2809
+msgid "Page %1 of %2"
+msgstr "Strona %1 z %2"
+
+#: screens/sui_settings_window.lua:579 screens/sui_settings_window.lua:691
+#: screens/sui_settings_window.lua:1057
+msgid "Page %d"
+msgstr "Strona %d"
+
+#: infra/sui_book_stats.lua:188
+msgid "Page %s/%s"
+msgstr "Strona %s/%s"
+
+#: screens/sui_settings_window.lua:578 screens/sui_settings_window.lua:690
+#: screens/sui_settings_window.lua:1056
+msgid "Page 1 (Home)"
+msgstr "Strona 1 (Główna)"
+
+#: modules/critter/phrases.lua:264
+msgid "Page by page!"
+msgstr ""
+
+#: features/sui_cover_elements.lua:53 screens/sui_stats_windows.lua:891
+#: screens/sui_stats_windows.lua:3382
+msgid "Pages"
+msgstr "Strony"
+
+#: engines/sui_book_grid.lua:2043 engines/sui_book_grid.lua:2059
+msgid "Pages Badge"
+msgstr "Odznaka stron"
+
+#: engines/sui_book_grid.lua:2054
+msgid "Pages Badge Color"
+msgstr "Kolor odznaki stron"
+
+#: modules/module_reading_stats.lua:245 screens/sui_stats_windows.lua:2217
+msgid "Pages per day"
+msgstr "Stron dziennie"
+
+#: modules/module_reading_stats.lua:263
+msgid "Pages per hour"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2234 screens/sui_stats_windows.lua:2250
+msgid "Pages read"
+msgstr "Przeczytane strony"
+
+#: modules/module_tab_grid.lua:581
+#, fuzzy
+msgid "Pagination"
+msgstr "Pasek stronicowania"
+
+#: features/sui_style.lua:1266 screens/sui_menu.lua:2636
+msgid "Pagination Bar"
+msgstr "Pasek stronicowania"
+
+#: screens/sui_menu.lua:2289
+#, fuzzy
+msgid "Pagination Bar Opacity"
+msgstr "Pasek stronicowania"
+
+#: screens/sui_menu.lua:466
+msgid ""
+"Pagination bar hidden.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Pasek paginacji ukryty.\n"
+"\n"
+"Zrestartować teraz?"
+
+#: screens/sui_menu.lua:445
+msgid ""
+"Pagination bar set to Default.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Pasek paginacji ustawiony na domyślny.\n"
+"\n"
+"Zrestartować teraz?"
+
+#: screens/sui_menu.lua:552 screens/sui_menu.lua:564 screens/sui_menu.lua:576
+msgid ""
+"Pagination bar size will change after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Rozmiar paska paginacji zmieni się po ponownym uruchomieniu.\n"
+"\n"
+"Uruchomić ponownie teraz?"
+
+#: features/sui_style.lua:155
+msgid "Pagination: First Page"
+msgstr "Stronicowanie: Pierwsza strona"
+
+#: features/sui_style.lua:163
+msgid "Pagination: Last Page"
+msgstr "Stronicowanie: Ostatnia strona"
+
+#: features/sui_style.lua:147
+msgid "Pagination: Next Page"
+msgstr "Stronicowanie: Następna strona"
+
+#: features/sui_style.lua:139
+msgid "Pagination: Previous Page"
+msgstr "Stronicowanie: Poprzednia strona"
+
+#: features/sui_quickactions.lua:2453
+msgid "Path chooser not available."
+msgstr "Wybieracz ścieżki niedostępny."
+
+#: features/sui_style.lua:2704
+msgid "Path does not exist: "
+msgstr "Ścieżka nie istnieje: "
+
+#: modules/module_reading_goals.lua:1127
+#, fuzzy
+msgid "Percentage"
+msgstr "Przeczytano (procent)"
+
+#: infra/sui_book_stats.lua:176
+msgid "Percentage read"
+msgstr "Przeczytano (procent)"
+
+#: modules/critter/module_critter.lua:610
+msgid "Phrases"
+msgstr ""
+
+#: screens/sui_onboarding.lua:193
+msgid "Pick any existing folder to use as the library home."
+msgstr ""
+"Wybierz dowolny istniejący folder, który ma być folderem głównym biblioteki."
+
+#: modules/critter/phrases.lua:252
+msgid "Pick your next read."
+msgstr ""
+
+#: modules/module_quote.lua:1407
+msgid "Place .lua files in the plugin's sui_quotes/ folder"
+msgstr "Umieść pliki .lua w folderze sui_quotes/ wtyczki"
+
+#: screens/sui_menu.lua:3523
+msgid "Place a folder or .zip in:"
+msgstr "Umieść folder lub plik .zip w:"
+
+#: screens/sui_menu.lua:2235
+msgid "Place images in:"
+msgstr "Umieść obrazy w:"
+
+#: screens/sui_onboarding.lua:334
+msgid ""
+"Place your files in koreader/settings/simpleui/sui_wallpapers or sui_icons."
+msgstr ""
+"Umieść pliki w koreader/settings/simpleui/sui_wallpapers lub sui_icons."
+
+#: screens/sui_menu.lua:3027
+msgid "Placeholder Cover for Bookless Folders"
+msgstr "Okładka zastępcza dla folderów bez książek"
+
+#: engines/sui_group_cell.lua:228
+#, fuzzy
+msgid "Placement"
+msgstr "Umieść obrazy w:"
+
+#: infra/sui_compat_check.lua:155
+msgid ""
+"Please delete the Project: Title plugin from your plugins folder and restart "
+"KOReader."
+msgstr ""
+"Usuń wtyczkę Project: Title z folderu wtyczek i uruchom ponownie KOReader."
+
+#: screens/sui_stats_windows.lua:509
+msgid "Please enter a date in YYYY-MM-DD format."
+msgstr "Wprowadź datę w formacie RRRR-MM-DD."
+
+#: features/sui_presets.lua:339
+msgid "Please enter a name for the preset."
+msgstr "Wprowadź nazwę presetu."
+
+#: features/sui_manual_books.lua:56
+msgid "Please enter a start or finish date."
+msgstr "Podaj datę rozpoczęcia lub ukończenia."
+
+#: features/sui_manual_books.lua:50
+msgid "Please enter a title."
+msgstr "Podaj tytuł."
+
+#: features/sui_manual_books.lua:53
+msgid "Please enter dates as YYYY-MM-DD or YYYY."
+msgstr "Podawaj daty w formacie RRRR-MM-DD lub RRRR."
+
+#: infra/sui_compat_check.lua:122
+msgid "Please restart KOReader for the change to take effect."
+msgstr "Uruchom ponownie KOReader, aby zmiana zaczęła obowiązywać."
+
+#: features/sui_quickactions.lua:2616
+msgid "Please select an action."
+msgstr "Wybierz akcję."
+
+#: modules/critter/phrases.lua:248
+msgid "Plenty of time for reading."
+msgstr ""
+
+#: features/sui_quickactions.lua:2494 features/sui_quickactions.lua:2598
+msgid "Plugin"
+msgstr "Wtyczka"
+
+#: features/sui_quickactions.lua:3005
+msgid "Plugin error: %s"
+msgstr "Błąd wtyczki: %s"
+
+#: features/sui_quickactions.lua:3007
+msgid "Plugin not available: %s"
+msgstr "Wtyczka niedostępna: %s"
+
+#: screens/sui_menu.lua:3124
+msgid "Portrait list mode"
+msgstr "Tryb listy w pionie"
+
+#: screens/sui_menu.lua:3116
+msgid "Portrait mosaic mode"
+msgstr "Tryb mozaiki w pionie"
+
+#: features/library/sui_label_options.lua:143
+#: features/sui_cover_elements.lua:92 modules/module_tab_grid.lua:595
+msgid "Position"
+msgstr "Pozycja"
+
+#: features/sui_quickactions.lua:972 infra/sui_config.lua:139
+msgid "Power"
+msgstr "Zasilanie"
+
+#: screens/sui_menu.lua:2518
+msgid "Preserve Cover Proportions"
+msgstr "Zachowaj proporcje okładki"
+
+#: features/sui_stats_menu.lua:89
+msgid "Preserve Deleted Books in Statistics"
+msgstr "Zachowaj usunięte książki w statystykach"
+
+#: features/sui_presets.lua:1088 screens/sui_menu.lua:3855
+msgid "Preset \"%s\" imported."
+msgstr "Preset \"%s\" zaimportowany."
+
+#: features/sui_presets.lua:868 features/sui_presets.lua:914
+#: screens/sui_menu.lua:3670
+msgid "Preset \"%s\" not found."
+msgstr "Nie znaleziono presetu \"%s\"."
+
+#: features/sui_presets.lua:943 screens/sui_menu.lua:3698
+msgid "Preset \"%s\" saved."
+msgstr "Preset \"%s\" zapisany."
+
+#: features/sui_presets.lua:969 features/sui_presets.lua:1043
+#: screens/sui_menu.lua:3727 screens/sui_menu.lua:3810
+msgid "Preset \"%s\" updated."
+msgstr "Preset \"%s\" zaktualizowany."
+
+#: features/sui_presets.lua:1115 screens/sui_menu.lua:3885
+msgid ""
+"Preset exported to:\n"
+"%s"
+msgstr ""
+"Preset wyeksportowany do:\n"
+"%s"
+
+#: features/sui_presets.lua:936 screens/sui_menu.lua:3692
+msgid "Preset name"
+msgstr "Nazwa presetu"
+
+#: features/sui_presets.lua:538 features/sui_presets.lua:721
+msgid "Preset not found"
+msgstr "Nie znaleziono presetu"
+
+#: screens/sui_menu.lua:2605 screens/sui_settings_window.lua:447
+msgid "Presets"
+msgstr "Presety"
+
+#: screens/sui_settings_window.lua:870
+msgid "Presets module unavailable."
+msgstr "Moduł presetów niedostępny."
+
+#: screens/sui_onboarding.lua:322
+msgid ""
+"Press and hold any element on the screen (like modules or bars) to quickly "
+"customize its settings."
+msgstr ""
+"Przytrzymaj dowolny element na ekranie (np. moduły lub paski), aby szybko "
+"dostosować jego ustawienia."
+
+#: screens/sui_bottombar.lua:457
+msgid "Prev"
+msgstr "Poprzedni"
+
+#: features/sui_cover_elements.lua:61
+msgid "Progress"
+msgstr "Postęp"
+
+#: modules/module_coverdeck.lua:1628 modules/module_coverdeck.lua:1685
+#: modules/module_currently.lua:1396 modules/module_currently.lua:1449
+msgid "Progress Badge"
+msgstr "Odznaka postępu"
+
+#: engines/sui_book_grid.lua:2015 modules/module_coverdeck.lua:1648
+#: modules/module_currently.lua:1405
+msgid "Progress Badge Color"
+msgstr "Kolor odznaki postępu"
+
+#: screens/sui_menu.lua:3966
+msgid "Progress Bar Type"
+msgstr "Typ paska postępu"
+
+#: engines/sui_book_grid.lua:2020
+msgid "Progress Indicator"
+msgstr "Wskaźnik postępu"
+
+#: engines/sui_book_grid.lua:2007
+msgid "Progress Style"
+msgstr "Styl paska postępu"
+
+#: engines/sui_book_grid.lua:2163 modules/module_currently.lua:1377
+#, fuzzy
+msgid "Progress Text"
+msgstr "Postęp"
+
+#: infra/sui_config.lua:1206
+msgid "Progress and Badges"
+msgstr "Postęp i odznaki"
+
+#: modules/module_currently.lua:1415
+msgid "Progress and Stats"
+msgstr "Postęp i statystyki"
+
+#: modules/module_coverdeck.lua:126 modules/module_currently.lua:281
+#: screens/sui_quicksettings_bar.lua:220
+msgid "Progress bar"
+msgstr "Pasek postępu"
+
+#: modules/module_currently.lua:1418
+msgid "Progress bar style"
+msgstr "Styl paska postępu"
+
+#: infra/sui_compat_check.lua:154
+msgid "Project: Title is not compatible with Simple UI."
+msgstr "Project: Title nie jest zgodny z Simple UI."
+
+#: infra/sui_config.lua:1189
+#, fuzzy
+msgid "Proportions"
+msgstr "Pozycja"
+
+#: features/sui_backup.lua:132 features/sui_quickactions.lua:1536
+#: features/sui_quickactions.lua:3213 modules/module_action_list.lua:283
+#: modules/module_quick_actions.lua:345 modules/module_quick_actions.lua:419
+#: screens/sui_menu.lua:2137 screens/sui_menu.lua:4186
+#: screens/sui_quicksettings_bar.lua:1505 screens/sui_settings_window.lua:359
+msgid "Quick Actions"
+msgstr "Szybkie Akcje"
+
+#: screens/sui_menu.lua:4190
+msgid "Quick Actions  (%d/%d — %d left)"
+msgstr "Szybkie Akcje (%d/%d — pozostało %d)"
+
+#: screens/sui_menu.lua:4188
+msgid "Quick Actions  (%d/%d — at limit)"
+msgstr "Szybkie Akcje (%d/%d  — osiągnięto limit)"
+
+#: features/sui_quickactions.lua:1518 features/sui_quickactions.lua:1856
+#: screens/sui_menu.lua:3361
+msgid "Quick Actions Icons"
+msgstr "Ikony Szybkich Akcji"
+
+#: modules/module_quick_actions.lua:274 modules/module_quick_actions.lua:331
+#: modules/module_quick_actions.lua:501 screens/sui_menu.lua:1887
+msgid "Quick Actions Row"
+msgstr "Wiersz szybkich akcji"
+
+#: features/sui_style.lua:1269
+msgid "Quick Settings"
+msgstr "Szybkie ustawienia"
+
+#: screens/sui_menu.lua:2638 screens/sui_quicksettings_bar.lua:1427
+msgid "Quick Settings Bar"
+msgstr "Pasek szybkich ustawień"
+
+#: screens/sui_onboarding.lua:398 screens/sui_onboarding.lua:399
+msgid "Quick Tips"
+msgstr "Szybkie wskazówki"
+
+#: features/sui_quickactions.lua:604
+msgid "Quit"
+msgstr "Wyjdź"
+
+#: features/sui_quickactions.lua:607
+msgid "Quitting…"
+msgstr "Zamykanie…"
+
+#: modules/module_quote.lua:1446 modules/module_quote.lua:1467
+msgid "Quote"
+msgstr "Cytat"
+
+#: features/sui_presets.lua:172 features/sui_presets.lua:236
+#: modules/module_quote.lua:1131
+msgid "Quote of the Day"
+msgstr "Cytat Dnia"
+
+#: features/sui_backup.lua:149
+msgid "Quote pool files from sui_quotes/"
+msgstr "Pliki z pulą cytatów z sui_quotes/"
+
+#: modules/module_quote.lua:1419
+msgid "Quotes + My Highlights"
+msgstr "Cytaty + Moje Zaznaczenia"
+
+#: infra/sui_config.lua:205
+msgid "RAM Usage"
+msgstr "Użycie RAM"
+
+#: features/sui_quickactions.lua:804 infra/sui_config.lua:131
+#: modules/module_library.lua:210
+msgid "Random"
+msgstr "Losowo"
+
+#: modules/critter/phrases.lua:150
+msgid "Read a little today to reach day %d."
+msgstr ""
+
+#: modules/critter/phrases.lua:155
+msgid "Read a little today to start a new one."
+msgstr ""
+
+#: modules/critter/phrases.lua:142
+msgid "Read again tomorrow to keep it going."
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1677
+msgid "Reader"
+msgstr "Czytnik"
+
+#: screens/sui_quicksettings_bar.lua:1599
+msgid "Reader Layout"
+msgstr "Układ czytnika"
+
+#: features/sui_presets.lua:192 features/sui_presets.lua:237
+#: features/sui_stats_menu.lua:138 modules/module_reading_goals.lua:794
+#: modules/module_reading_goals.lua:795
+msgid "Reading Goals"
+msgstr "Cele czytania"
+
+#: features/sui_stats_menu.lua:135 modules/module_heatmap.lua:210
+#: modules/module_heatmap.lua:211 screens/sui_heatmap_popup.lua:123
+msgid "Reading Heatmap"
+msgstr "Mapa cieplna czytania"
+
+#: features/sui_stats_menu.lua:132 screens/sui_stats_windows.lua:2517
+msgid "Reading Insights"
+msgstr "Statystyki czytania"
+
+#: features/sui_presets.lua:192 features/sui_presets.lua:237
+#: modules/module_reading_stats.lua:772
+msgid "Reading Stats"
+msgstr "Statystyki czytania"
+
+#: features/sui_backup.lua:138
+msgid "Reading goals, streak mode and freeze bank"
+msgstr "Cele czytania, tryb serii i bank zamrożeń"
+
+#: modules/module_reading_stats.lua:268
+msgid "Reading sessions"
+msgstr ""
+
+#: modules/critter/phrases.lua:43
+msgid "Reading streak"
+msgstr ""
+
+#: modules/critter/phrases.lua:258 modules/critter/phrases.lua:277
+msgid "Ready for a good story?"
+msgstr ""
+
+#: features/sui_stats_menu.lua:65
+msgid "Real streak only"
+msgstr "Tylko prawdziwa seria"
+
+#: features/dialogs/sui_dialogs.lua:222 features/sui_quickactions.lua:590
+msgid "Reboot"
+msgstr "Uruchom ponownie"
+
+#: engines/sui_book_sources.lua:272 features/sui_quickactions.lua:777
+#: features/sui_quickactions.lua:3356 infra/sui_config.lua:129
+msgid "Recent"
+msgstr "Ostatnie"
+
+#: engines/sui_book_sources.lua:271 features/sui_presets.lua:210
+#: modules/module_coverdeck.lua:1493 modules/module_recent.lua:23
+msgid "Recent Books"
+msgstr "Ostatnie Książki"
+
+#: modules/module_reading_stats.lua:256 modules/module_reading_stats.lua:259
+#: modules/module_reading_stats.lua:262 modules/module_reading_stats.lua:267
+msgid "Records"
+msgstr ""
+
+#: modules/module_reading_stats.lua:259
+msgid "Records — Average session"
+msgstr ""
+
+#: modules/module_reading_stats.lua:256
+msgid "Records — Longest session"
+msgstr ""
+
+#: modules/module_reading_stats.lua:262
+msgid "Records — Pages/hour"
+msgstr ""
+
+#: modules/module_reading_stats.lua:267
+msgid "Records — Sessions"
+msgstr ""
+
+#: features/sui_style.lua:2485
+msgid "Regular"
+msgstr "Zwykła"
+
+#: modules/module_tbr.lua:342
+msgid "Remove from To Be Read"
+msgstr "Usuń z listy Do przeczytania"
+
+#: modules/module_tbr.lua:278
+msgid "Remove from list when finished"
+msgstr "Usuń z listy po ukończeniu"
+
+#: engines/sui_window.lua:2358 engines/sui_window.lua:3712
+#: features/library/sui_hold_rows.lua:271 features/sui_presets.lua:373
+#: features/sui_presets.lua:974 screens/sui_menu.lua:3571
+#: screens/sui_menu.lua:3733
+msgid "Rename"
+msgstr "Zmień nazwę"
+
+#: features/sui_presets.lua:371 screens/sui_menu.lua:3569
+msgid "Rename \"%s\""
+msgstr "Zmień nazwę \"%s\""
+
+#: screens/sui_settings_window.lua:521
+msgid "Rename screen"
+msgstr "Zmień nazwę ekranu"
+
+#: screens/sui_menu.lua:2495
+msgid ""
+"Replaces the \"Closing book…\" notice above with the cover for that close, "
+"when a cover is available."
+msgstr ""
+"Zastępuje powyższe powiadomienie „Zamykanie książki…” okładką dla tego "
+"zamknięcia, gdy okładka jest dostępna."
+
+#: screens/sui_menu.lua:452
+msgid ""
+"Replaces the pagination bar with Prev/Next arrows at the edges of the "
+"navigation bar.\n"
+"The arrows dim when there is no previous or next page.\n"
+"With navpager active, as few as 1 tab and at most 4 tabs can be configured."
+msgstr ""
+"Zastępuje pasek paginacji strzałkami Poprz/Nast na krawędziach paska "
+"nawigacji.\n"
+"Strzałki przyciemniają się, gdy nie ma poprzedniej lub następnej strony.\n"
+"Przy aktywnym navpagerze można skonfigurować od 1 do 4 zakładek."
+
+#: features/sui_quickactions.lua:1864 features/sui_style.lua:1283
+#: screens/sui_menu.lua:2418 screens/sui_stats_windows.lua:526
+msgid "Reset"
+msgstr "Resetuj"
+
+#: features/sui_quickactions.lua:1858 features/sui_style.lua:1277
+msgid "Reset All"
+msgstr "Resetuj wszystko"
+
+#: features/sui_quickactions.lua:2682
+msgid "Reset All Quick Action Icons"
+msgstr "Zresetuj wszystkie ikony Szybkich Akcji"
+
+#: features/sui_style.lua:1116
+msgid "Reset All System Icons"
+msgstr "Zresetuj wszystkie ikony systemowe"
+
+#: features/sui_quickactions.lua:1863
+msgid "Reset all Quick Actions icons to default?"
+msgstr "Zresetować wszystkie ikony szybkich akcji do domyślnych?"
+
+#: screens/sui_menu.lua:2417
+msgid "Reset all scales to default (100%)? This cannot be undone."
+msgstr ""
+"Zresetować wszystkie skale do domyślnych (100%)? Tej operacji nie można "
+"cofnąć."
+
+#: features/sui_style.lua:1282
+msgid "Reset all system icons to default?"
+msgstr "Zresetować wszystkie ikony systemowe do domyślnych?"
+
+#: screens/sui_menu.lua:2412
+msgid "Reset to Default Scale"
+msgstr "Resetuj do Domyślnej Skali"
+
+#: features/dialogs/sui_dialogs.lua:211 features/sui_quickactions.lua:584
+msgid "Restart"
+msgstr "Uruchom ponownie"
+
+#: features/sui_backup.lua:1042 infra/sui_compat_check.lua:123
+#: infra/sui_compat_check.lua:223
+msgid "Restart now"
+msgstr "Uruchom ponownie teraz"
+
+#: features/sui_style.lua:2267
+msgid "Restart to fully apply the UI font change."
+msgstr "Uruchom ponownie, aby w pełni zastosować zmianę czcionki interfejsu."
+
+#: features/sui_quickactions.lua:586
+msgid "Restarting…"
+msgstr "Ponowne uruchamianie…"
+
+#: features/sui_backup.lua:1028
+msgid "Restore"
+msgstr "Przywróć"
+
+#: features/sui_backup.lua:1175
+msgid "Restore Selected…"
+msgstr "Przywróć wybrane…"
+
+#: features/sui_backup.lua:1033
+msgid "Restore failed."
+msgstr "Przywracanie nie powiodło się."
+
+#: features/sui_backup.lua:892
+msgid "Restore failed. Your previous configuration was kept unchanged."
+msgstr ""
+"Przywracanie nie powiodło się. Poprzednia konfiguracja pozostała bez zmian."
+
+#: features/sui_backup.lua:1027
+msgid ""
+"Restore this backup? Existing settings for these categories will be "
+"replaced. Saved presets are merged — yours are kept."
+msgstr ""
+"Przywrócić tę kopię zapasową? Istniejące ustawienia w tych kategoriach "
+"zostaną zastąpione. Zapisane presety są scalane — Twoje zostaną zachowane."
+
+#: screens/sui_menu.lua:2346
+msgid "Return to Home Screen on Wakeup"
+msgstr "Powrót do ekranu głównego po wybudzeniu"
+
+#: engines/sui_book_grid.lua:2096 features/sui_cover_elements.lua:82
+msgid "Ribbon"
+msgstr "Wstążka"
+
+#: infra/sui_config.lua:2027 modules/module_quick_actions.lua:476
+#: screens/sui_menu.lua:678 screens/sui_menu.lua:883 screens/sui_menu.lua:1309
+#: screens/sui_menu.lua:1507
+msgid "Right"
+msgstr "Prawo"
+
+#: modules/critter/module_critter.lua:683
+msgid "Right decorations"
+msgstr ""
+
+#: modules/module_reading_goals.lua:1282
+msgid "Ring Alignment"
+msgstr "Wyrównanie pierścieni"
+
+#: modules/module_reading_goals.lua:1270
+msgid "Ring Style"
+msgstr "Styl pierścieni"
+
+#: modules/module_reading_goals.lua:1263
+msgid "Rings"
+msgstr "Pierścienie"
+
+#: modules/critter/phrases.lua:83
+msgid "Rise and read!"
+msgstr ""
+
+#: modules/module_quick_actions.lua:457 screens/sui_quicksettings_bar.lua:1657
+msgid "Round"
+msgstr "Okrągły"
+
+#: engines/sui_book_grid.lua:1993
+msgid "Round Overlay"
+msgstr "Okrągła nakładka"
+
+#: modules/module_tab_grid.lua:633
+#, fuzzy
+msgid "Round Pill"
+msgstr "Okrągły"
+
+#: modules/module_quick_actions.lua:458 screens/sui_quicksettings_bar.lua:1658
+msgid "Rounded Square"
+msgstr "Zaokrąglony kwadrat"
+
+#: engines/sui_book_grid.lua:1919 modules/module_reading_stats.lua:1171
+msgid "Rows"
+msgstr "Wiersze"
+
+#: infra/sui_datenames.lua:43
+msgid "Sat"
+msgstr "Sobota"
+
+#: features/sui_accent_picker.lua:88
+msgid "Saturation"
+msgstr ""
+
+#: infra/sui_datenames.lua:49
+msgid "Saturday"
+msgstr "Sobota"
+
+#: features/sui_manual_books.lua:106 features/sui_manual_books.lua:134
+#: features/sui_presets.lua:937 features/sui_quickactions.lua:2610
+#: infra/sui_goals.lua:115 screens/sui_menu.lua:3693
+#: screens/sui_settings_window.lua:524 screens/sui_stats_windows.lua:514
+msgid "Save"
+msgstr "Zapisz"
+
+#: features/sui_presets.lua:930 screens/sui_menu.lua:3686
+msgid "Save as new preset"
+msgstr "Zapisz jako nowy preset"
+
+#: features/sui_backup.lua:1115
+msgid "Save backup as"
+msgstr "Zapisz kopię zapasową jako"
+
+#: screens/sui_menu.lua:3691
+msgid "Save icon preset"
+msgstr "Zapisz preset ikon"
+
+#: features/sui_presets.lua:935
+msgid "Save preset"
+msgstr "Zapisz preset"
+
+#: engines/sui_book_grid.lua:1856 engines/sui_book_grid.lua:1858
+#: modules/critter/module_critter.lua:648
+#: modules/critter/module_critter.lua:650 modules/module_action_list.lua:304
+#: modules/module_action_list.lua:306 modules/module_clock.lua:1055
+#: modules/module_clock.lua:1057 modules/module_coverdeck.lua:1463
+#: modules/module_coverdeck.lua:1465 modules/module_currently.lua:1250
+#: modules/module_currently.lua:1252 modules/module_heatmap.lua:323
+#: modules/module_heatmap.lua:325 modules/module_quick_actions.lua:428
+#: modules/module_quick_actions.lua:430 modules/module_quote.lua:1355
+#: modules/module_quote.lua:1359 modules/module_quote.lua:1480
+#: modules/module_reading_goals.lua:1107 modules/module_reading_goals.lua:1109
+#: modules/module_reading_stats.lua:1111 modules/module_reading_stats.lua:1113
+#: screens/sui_menu.lua:2358
+msgid "Scale"
+msgstr "Skala"
+
+#: features/sui_cover_elements.lua:293
+msgid ""
+"Scale for the badges (progress, pages, etc.).\n"
+"100% is the default size."
+msgstr ""
+
+#: modules/module_currently.lua:1266
+msgid ""
+"Scale for the cover thumbnail only.\n"
+"100% is the default size.\n"
+"When Dynamic Cover Size is on, this scales the cover relative to its current "
+"dynamic size instead, and the cover never shrinks below its 100% size."
+msgstr ""
+"Skala tylko dla miniatury okładki.\n"
+"100% to domyślny rozmiar.\n"
+"Gdy Dynamiczny rozmiar okładki jest włączony, skala jest stosowana względem "
+"aktualnego rozmiaru dynamicznego, a okładka nigdy nie zmniejsza się poniżej "
+"100% swojego rozmiaru."
+
+#: modules/module_coverdeck.lua:1474
+msgid ""
+"Scale for the cover thumbnails only.\n"
+"100% is the default size."
+msgstr ""
+"Skala tylko dla miniatur okładek.\n"
+"100% to domyślny rozmiar."
+
+#: engines/sui_book_grid.lua:1868
+msgid ""
+"Scale for the cover thumbnails only.\n"
+"Text and progress bar follow the module scale.\n"
+"100% is the default size."
+msgstr ""
+"Skala tylko dla miniatur okładek.\n"
+"Tekst i pasek postępu podążają za skalą modułu.\n"
+"100% to domyślny rozmiar."
+
+#: features/sui_cover_elements.lua:129
+msgid ""
+"Scale for the folder name overlay text.\n"
+"100% is the default size."
+msgstr ""
+"Skala tekstu nakładki nazwy folderu.\n"
+"100% to domyślny rozmiar."
+
+#: engines/sui_group_cell.lua:313
+#, fuzzy
+msgid "Scale for the group count badge."
+msgstr ""
+"Skala odznaki liczby książek w kolekcji.\n"
+"100% to domyślny rozmiar."
+
+#: screens/sui_quicksettings_bar.lua:1639
+msgid ""
+"Scale for the label text.\n"
+"100% is the default size."
+msgstr ""
+"Skala tekstu etykiety.\n"
+"100% to domyślny rozmiar."
+
+#: modules/module_coverdeck.lua:1619 modules/module_currently.lua:1387
+msgid "Scale for the progress badge."
+msgstr "Skala odznaki postępu."
+
+#: engines/sui_book_grid.lua:1960
+msgid ""
+"Scale for this module's corner badges (progress, pages, series, new book)."
+msgstr ""
+"Skala odznak w rogach tego modułu (postęp, strony, cykl, nowa książka).\n"
+"100% to domyślny rozmiar."
+
+#: modules/module_coverdeck.lua:1466
+msgid "Scale for this module."
+msgstr "Skala tego modułu."
+
+#: engines/sui_book_grid.lua:1859 modules/critter/module_critter.lua:651
+#: modules/module_action_list.lua:307 modules/module_clock.lua:1058
+#: modules/module_currently.lua:1253 modules/module_quick_actions.lua:431
+#: modules/module_quote.lua:1361 modules/module_reading_goals.lua:1110
+#: modules/module_reading_stats.lua:1114
+msgid ""
+"Scale for this module.\n"
+"100% is the default size."
+msgstr ""
+"Skala dla tego modułu.\n"
+"100% to domyślny rozmiar."
+
+#: modules/module_heatmap.lua:326
+msgid ""
+"Scale for this module.\n"
+"100% is the default size. Capped at 100% here: the grid always has as many "
+"columns as \"Weeks shown\" (or, in Time of day view, 24), so there's no room "
+"to grow the cells past their autofit size without the grid overflowing the "
+"card."
+msgstr ""
+"Skala dla tego modułu.\n"
+"100% to domyślny rozmiar. Ograniczona tutaj do 100%: siatka zawsze ma tyle "
+"kolumn, ile wynosi „Wyświetlane tygodnie” (lub 24 w widoku Pora dnia), więc "
+"komórki nie mają miejsca, aby urosnąć powyżej rozmiaru dopasowania "
+"automatycznego bez wystawania siatki poza kartę."
+
+#: screens/sui_menu.lua:2376
+msgid ""
+"Scales all modules and labels together.\n"
+"100% is the default size."
+msgstr ""
+"Skaluje wszystkie moduły i etykiety razem.\n"
+"100% to domyślny rozmiar."
+
+#: screens/sui_menu.lua:2398
+msgid ""
+"Scales the module label text above each module, on top of the size set in "
+"Style > Module Labels.\n"
+"100% is the default size."
+msgstr ""
+
+#: screens/sui_menu.lua:3040
+msgid "Scan Subfolders for Covers"
+msgstr "Skanuj podfoldery w poszukiwaniu okładek"
+
+#: screens/sui_settings_window.lua:523 screens/sui_settings_window.lua:1127
+msgid "Screen name"
+msgstr "Nazwa ekranu"
+
+#: screens/sui_menu.lua:2329
+msgid ""
+"Screen shown after closing a book. Gestures and quick actions that name a "
+"destination always open that destination."
+msgstr ""
+"Ekran pokazywany po zamknięciu książki. Gesty i szybkie akcje wskazujące "
+"konkretny cel zawsze otwierają ten cel."
+
+#: features/library/sui_library_search.lua:181
+#: features/sui_quickactions.lua:889 infra/sui_config.lua:134
+#: screens/sui_titlebar.lua:115 screens/sui_titlebar.lua:1251
+msgid "Search"
+msgstr "Szukaj"
+
+#: features/sui_style.lua:93
+msgid "Search Button"
+msgstr "Przycisk Wyszukaj"
+
+#: features/sui_quickactions.lua:906
+#, fuzzy
+msgid "Search Library not available."
+msgstr "Historia niedostępna."
+
+#: features/library/sui_library_search.lua:180
+#, fuzzy
+msgid "Search library"
+msgstr "Przeglądaj bibliotekę"
+
+#: features/library/sui_library_search.lua:162
+msgid "Search results: %1"
+msgstr "Wyniki wyszukiwania: %1"
+
+#: features/library/sui_label_options.lua:135 features/sui_style.lua:1429
+msgid "Secondary"
+msgstr ""
+
+#: screens/sui_menu.lua:3235
+msgid "Secondary Color"
+msgstr ""
+
+#: engines/sui_window.lua:2347 engines/sui_window.lua:3697
+#: features/library/sui_hold_rows.lua:246
+msgid "Select"
+msgstr "Wybierz"
+
+#: features/sui_presets.lua:875 features/sui_presets.lua:883
+#: features/sui_presets.lua:888 screens/sui_menu.lua:3677
+msgid "Select Preset"
+msgstr "Wybierz preset"
+
+#: screens/sui_menu.lua:2254
+msgid "Select Wallpaper"
+msgstr "Wybierz tapetę"
+
+#: modules/module_collections.lua:358
+msgid "Select at least 2 collections to arrange."
+msgstr "Wybierz co najmniej 2 kolekcje, aby zmienić kolejność."
+
+#: infra/sui_datenames.lua:30
+msgid "Sep"
+msgstr "wrz"
+
+#: infra/sui_datenames.lua:38
+msgid "September"
+msgstr "Wrzesień"
+
+#: features/library/sui_library_browse.lua:68
+#: features/sui_quickactions.lua:1005 infra/sui_config.lua:143
+#: modules/module_currently.lua:279 modules/module_currently.lua:1375
+msgid "Series"
+msgstr "Cykl"
+
+#: engines/sui_book_grid.lua:2069 engines/sui_book_grid.lua:2085
+msgid "Series Badge"
+msgstr "Odznaka cyklu"
+
+#: engines/sui_book_grid.lua:2080
+msgid "Series Badge Color"
+msgstr "Kolor odznaki cyklu"
+
+#: features/sui_cover_elements.lua:57
+msgid "Series Index"
+msgstr "Numer w cyklu"
+
+#: screens/sui_menu.lua:40
+msgid "Set"
+msgstr "Ustaw"
+
+#: modules/module_reading_goals.lua:1170
+msgid "Set Goal"
+msgstr "Ustaw cel"
+
+#: features/library/sui_folder_hold_dialog.lua:36
+msgid "Set as HOME folder"
+msgstr "Ustaw jako folder główny"
+
+#: modules/module_collections.lua:332
+msgid "Set collection cover"
+msgstr "Ustaw okładkę kolekcji"
+
+#: engines/sui_group_cell.lua:580
+#, fuzzy
+msgid "Set cover"
+msgstr "Ustaw okładkę folderu"
+
+#: features/library/sui_foldercovers.lua:561
+#: features/library/sui_library_browse.lua:879
+#: features/library/sui_series_grouping.lua:386
+msgid "Set folder cover"
+msgstr "Ustaw okładkę folderu"
+
+#: screens/sui_onboarding.lua:204 screens/sui_onboarding.lua:397
+msgid "Set the Home Folder"
+msgstr "Ustaw folder główny"
+
+#: screens/sui_onboarding.lua:329
+msgid "Set your reading goal"
+msgstr "Ustaw swój cel czytelniczy"
+
+#: features/sui_quickactions.lua:982 infra/sui_config.lua:140
+msgid "Settings"
+msgstr "Ustawienia"
+
+#: screens/sui_settings_window.lua:303 screens/sui_settings_window.lua:308
+msgid "Settings not found."
+msgstr "Nie znaleziono ustawień."
+
+#: screens/sui_menu.lua:1007 screens/sui_menu.lua:1034
+#: screens/sui_menu.lua:1176 screens/sui_menu.lua:2544
+#: screens/sui_quicksettings_bar.lua:1685
+msgid "Settings on Long Tap"
+msgstr "Ustawienia przy długim dotknięciu"
+
+#: modules/critter/phrases.lua:122
+msgid "Settle in with a good book."
+msgstr ""
+
+#: modules/module_clock.lua:255
+msgid "Seven"
+msgstr "Siedem"
+
+#: modules/module_clock.lua:258
+msgid "Seventeen"
+msgstr "Siedemnaście"
+
+#: infra/sui_config.lua:1714
+msgid ""
+"Share of the row this module occupies.\n"
+"100% = full width. Modules under 100% share a row when their widths fit "
+"(bento grid)."
+msgstr ""
+"Część wiersza zajmowana przez ten moduł.\n"
+"100% = pełna szerokość. Moduły poniżej 100% dzielą wiersz, jeśli ich "
+"szerokości się mieszczą (siatka bento)."
+
+#: features/library/sui_finished_books.lua:59
+#: features/sui_cover_elements.lua:236 screens/sui_menu.lua:2747
+msgid "Show"
+msgstr "Pokaż"
+
+#: modules/module_clock.lua:1067
+msgid "Show Battery"
+msgstr "Pokaż baterię"
+
+#: modules/module_clock.lua:1065
+msgid "Show Clock"
+msgstr "Pokaż zegar"
+
+#: modules/module_clock.lua:1066
+msgid "Show Date"
+msgstr "Pokaż datę"
+
+#: modules/module_action_list.lua:316 modules/module_action_list.lua:342
+msgid "Show Icon"
+msgstr "Pokaż ikonę"
+
+#: screens/sui_menu.lua:589
+msgid "Show Page Count in Title Bar"
+msgstr "Pokaż liczbę stron w pasku tytułu"
+
+#: screens/sui_menu.lua:2981
+msgid "Show Uncategorized Items"
+msgstr "Pokaż elementy bez kategorii"
+
+#: screens/sui_menu.lua:2433
+msgid ""
+"Show a brief \"Closing book…\" notice when closing a book, preventing "
+"accidental double-taps while e-ink refreshes."
+msgstr ""
+"Wyświetl krótkie powiadomienie \"Zamykanie książki…\" przy zamykaniu, "
+"zapobiegając przypadkowym podwójnym dotknięciom podczas odświeżania e-ink."
+
+#: features/sui_stats_menu.lua:118
+msgid ""
+"Show a brief \"Loading statistics…\" notice when opening a statistics "
+"window, preventing accidental double-taps while e-ink refreshes."
+msgstr ""
+"Pokazuje krótkie powiadomienie \"Wczytywanie statystyk…\" podczas otwierania "
+"okna statystyk, zapobiegając przypadkowemu dwukrotnemu dotknięciu podczas "
+"odświeżania e-ink."
+
+#: engines/sui_book_sources.lua:276 modules/module_coverdeck.lua:1661
+#: modules/module_recent.lua:49
+msgid "Show finished books"
+msgstr "Pokaż ukończone książki"
+
+#: modules/module_reading_stats.lua:1206
+msgid "Show icons"
+msgstr ""
+
+#: modules/module_heatmap.lua:359
+msgid "Show legend"
+msgstr "Pokaż legendę"
+
+#: screens/sui_menu.lua:2494
+msgid "Show on Close"
+msgstr "Pokaż przy zamknięciu"
+
+#: screens/sui_menu.lua:2483
+msgid "Show on Open"
+msgstr "Pokaż przy otwarciu"
+
+#: infra/sui_config.lua:2047
+msgid "Show section label"
+msgstr "Pokaż etykietę sekcji"
+
+#: screens/sui_quicksettings_bar.lua:1626
+msgid ""
+"Show the frontlight and warmth sliders below the book details in the Book "
+"layout."
+msgstr ""
+"Pokazuje suwaki podświetlenia i ciepłoty pod szczegółami książki w układzie "
+"Książka."
+
+#: screens/sui_menu.lua:2259
+msgid "Show wallpaper on all screens"
+msgstr "Pokaż tapetę na wszystkich ekranach"
+
+#: screens/sui_menu.lua:2851
+msgid "Shown in captions"
+msgstr ""
+
+#: screens/sui_menu.lua:593
+msgid ""
+"Shows \"Page X of Y\" in the title bar subtitle when browsing the library, "
+"history or collections.\n"
+"Navpager enables this automatically.\n"
+"Not available when Navpager is active."
+msgstr ""
+"Wyświetla \"Strona X z Y\" w podtytule paska tytułu podczas przeglądania "
+"biblioteki, historii lub kolekcji.\n"
+"Navpager włącza to automatycznie.\n"
+"Niedostępne gdy Navpager jest aktywny."
+
+#: screens/sui_menu.lua:484
+msgid ""
+"Shows a row of dots at the bottom of the homescreen.\n"
+"The active page dot is filled; the others are dimmed.\n"
+"Always active when Navpager is selected."
+msgstr ""
+"Pokazuje rząd kropek na dole ekranu głównego.\n"
+"Kropka aktywnej strony jest wypełniona; pozostałe są wyszarzone.\n"
+"Zawsze aktywny gdy wybrany jest Navpager."
+
+#: engines/sui_book_grid.lua:1535
+msgid "Shuffle"
+msgstr "Losuj"
+
+#: modules/module_library.lua:244
+msgid "Shuffle now"
+msgstr "Losuj teraz"
+
+#: modules/module_currently.lua:1420
+msgid "Simple"
+msgstr "Prosty"
+
+#: _meta.lua:5 main.lua:2336 main.lua:2349 screens/sui_menu.lua:4143
+#: screens/sui_menu.lua:4220
+msgid "Simple UI"
+msgstr "Simple UI"
+
+#: infra/sui_updater.lua:448
+msgid ""
+"Simple UI %s installed.\n"
+"\n"
+"Restart KOReader to apply the update?"
+msgstr ""
+"Simple UI %s zainstalowany.\n"
+"\n"
+"Zrestartować KOReader, aby zastosować aktualizację?"
+
+#: infra/sui_updater.lua:494
+msgid ""
+"Simple UI %s is available!\n"
+"You have %s."
+msgstr ""
+"Simple UI %s jest dostępne!\n"
+"Masz wersję %s."
+
+#: screens/sui_settings_window.lua:1034
+msgid "Simple UI Settings"
+msgstr "Ustawienia Simple UI"
+
+#: screens/sui_onboarding.lua:294
+msgid ""
+"Simple UI is designed to be simple and flexible. Here are a few tips to get "
+"the most out of it."
+msgstr ""
+"Simple UI jest zaprojektowane tak, aby być proste i elastyczne. Oto kilka "
+"wskazówek, jak najlepiej z niego korzystać."
+
+#: infra/sui_updater.lua:488
+msgid "Simple UI is up to date (%s)."
+msgstr "Simple UI jest aktualne (%s)."
+
+#: main.lua:201
+msgid ""
+"Simple UI was updated (%s → %s).\n"
+"\n"
+"A restart is recommended to apply all changes cleanly."
+msgstr ""
+"Simple UI zostało zaktualizowane (%s → %s).\n"
+"\n"
+"Zalecany jest restart, aby poprawnie zastosować wszystkie zmiany."
+
+#: screens/sui_menu.lua:4153
+msgid ""
+"Simple UI will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Simple UI będzie %s po ponownym uruchomieniu.\n"
+"\n"
+"Uruchomić teraz?"
+
+#: main.lua:991
+msgid "Simple UI: Go to Homescreen"
+msgstr "Simple UI: Przejdź do ekranu głównego"
+
+#: main.lua:997
+msgid "Simple UI: Go to Library"
+msgstr "Simple UI: Przejdź do biblioteki"
+
+#: main.lua:1021
+msgid "Simple UI: Navigation Bar"
+msgstr "Simple UI: Pasek nawigacji"
+
+#: main.lua:1015
+msgid "Simple UI: Recent"
+msgstr "Simple UI: Ostatnie"
+
+#: main.lua:1009
+msgid "Simple UI: Settings"
+msgstr "Simple UI: Ustawienia"
+
+#: main.lua:1003
+msgid "Simple UI: Toggle Homescreen / Library"
+msgstr "Simple UI: Przełącz ekran główny / bibliotekę"
+
+#: engines/sui_group_cell.lua:261 features/sui_cover_elements.lua:317
+msgid "Single Cover"
+msgstr "Pojedyncza okładka"
+
+#: modules/module_clock.lua:254
+msgid "Six"
+msgstr "Sześć"
+
+#: modules/module_clock.lua:258
+msgid "Sixteen"
+msgstr "Szesnaście"
+
+#: features/sui_cover_elements.lua:291 infra/sui_config.lua:1030
+#: modules/module_action_list.lua:301 modules/module_action_list.lua:334
+#: screens/sui_menu.lua:963 screens/sui_menu.lua:1721
+#: screens/sui_quicksettings_bar.lua:1637
+#: screens/sui_quicksettings_bar.lua:1638
+msgid "Size"
+msgstr "Rozmiar"
+
+#: screens/sui_menu.lua:3293
+msgid ""
+"Size of the module labels.\n"
+"100% is the default size."
+msgstr ""
+
+#: screens/sui_menu.lua:1129
+msgid ""
+"Size of the tab icons.\n"
+"100% is the default size."
+msgstr ""
+"Rozmiar ikon zakładek.\n"
+"100% to domyślny rozmiar."
+
+#: screens/sui_menu.lua:1140
+msgid ""
+"Size of the tab label text.\n"
+"100% is the default size."
+msgstr ""
+"Rozmiar tekstu etykiet zakładek.\n"
+"100% to domyślny rozmiar."
+
+#: modules/module_tab_grid.lua:668
+#, fuzzy
+msgid ""
+"Size of the tab labels.\n"
+"100% matches the homescreen section labels."
+msgstr ""
+"Rozmiar tekstu etykiet zakładek.\n"
+"100% to domyślny rozmiar."
+
+#: screens/sui_menu.lua:1723
+msgid ""
+"Size of the title bar buttons and tabs.\n"
+"100% is the default size."
+msgstr ""
+"Rozmiar przycisków i kart paska tytułu.\n"
+"100% to domyślny rozmiar."
+
+#: engines/sui_book_grid.lua:2165 modules/critter/module_critter.lua:698
+#: modules/module_action_list.lua:356 modules/module_clock.lua:1084
+#: modules/module_coverdeck.lua:1612 modules/module_currently.lua:1379
+#: modules/module_quick_actions.lua:442 modules/module_quote.lua:1447
+#: modules/module_quote.lua:1468 modules/module_reading_goals.lua:1128
+#: modules/module_reading_stats.lua:1131
+#, fuzzy
+msgid ""
+"Size of this text.\n"
+"100% is the default size."
+msgstr ""
+"Rozmiar tekstu etykiet zakładek.\n"
+"100% to domyślny rozmiar."
+
+#: features/sui_quickactions.lua:597
+msgid "Sleep"
+msgstr "Uśpij"
+
+#: modules/critter/phrases.lua:104
+msgid "Sleep well. The book will keep."
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1610
+msgid "Slider Style"
+msgstr "Styl suwaków"
+
+#: screens/sui_quicksettings_bar.lua:1625
+msgid "Sliders in Book Layout"
+msgstr "Suwaki w układzie Książka"
+
+#: screens/sui_menu.lua:556
+msgid "Small"
+msgstr "Mały"
+
+#: infra/sui_backdrop.lua:81
+msgid "Solid"
+msgstr "Jednolity"
+
+#: engines/sui_book_grid.lua:1548 modules/module_collections.lua:443
+#: modules/module_library.lua:225
+msgid "Sort"
+msgstr "Sortuj"
+
+#: modules/module_coverdeck.lua:1530 modules/module_quote.lua:1415
+msgid "Source"
+msgstr "Źródło"
+
+#: screens/sui_menu.lua:1160
+msgid ""
+"Space below the bottom navigation bar.\n"
+"100% is the default spacing."
+msgstr ""
+"Odstęp poniżej dolnego paska nawigacji.\n"
+"100% to domyślny odstęp."
+
+#: screens/sui_menu.lua:3308
+msgid ""
+"Space between the characters of a module label, as a percentage of its text "
+"size."
+msgstr ""
+
+#: modules/module_spacer.lua:58 modules/module_spacer.lua:112
+msgid "Spacer"
+msgstr "Odstęp"
+
+#: modules/module_spacer.lua:89 modules/module_spacer.lua:90
+msgid "Spacer Size"
+msgstr "Rozmiar odstępu"
+
+#: modules/module_clock.lua:1131 modules/module_clock.lua:1132
+msgid "Spacing"
+msgstr "Odstęp"
+
+#: modules/module_tab_grid.lua:634
+msgid "Square Pill"
+msgstr "Kwadratowy"
+
+#: screens/sui_onboarding.lua:447
+msgid "Start using Simple UI"
+msgstr "Zacznij używać Simple UI"
+
+#: infra/sui_patches.lua:1039 infra/sui_patches.lua:1041
+#: screens/sui_menu.lua:2318
+msgid "Start with"
+msgstr "Zacznij od"
+
+#: screens/sui_onboarding.lua:131
+msgid "Start with a ready-made layout. You can change everything later."
+msgstr "Zacznij z gotowym układem. Możesz zmienić wszystko później."
+
+#: features/sui_manual_books.lua:110
+msgid "Started"
+msgstr "Rozpoczęto"
+
+#: modules/module_coverdeck.lua:127 modules/module_coverdeck.lua:1584
+#: modules/module_coverdeck.lua:1604 modules/module_coverdeck.lua:1611
+#: modules/module_currently.lua:282 modules/module_currently.lua:1340
+#: modules/module_currently.lua:1359 screens/sui_quicksettings_bar.lua:219
+#: screens/sui_quicksettings_bar.lua:1567
+msgid "Statistics"
+msgstr "Statystyki"
+
+#: features/sui_stats_menu.lua:117
+msgid "Statistics Loading Notice"
+msgstr "Powiadomienie o wczytywaniu statystyk"
+
+#: screens/sui_stats_windows.lua:58
+msgid "Statistics database library not available."
+msgstr "Biblioteka bazy danych statystyk niedostępna."
+
+#: features/sui_quickactions.lua:966
+msgid "Statistics plugin not available."
+msgstr "Wtyczka statystyk niedostępna."
+
+#: features/sui_quickactions.lua:951 infra/sui_config.lua:138
+#: screens/sui_menu.lua:2621 screens/sui_settings_window.lua:388
+#: screens/sui_settings_window.lua:453
+msgid "Stats"
+msgstr "Statystyki"
+
+#: modules/module_currently.lua:1428
+msgid "Stats layout"
+msgstr "Układ statystyk"
+
+#: features/sui_stats_menu.lua:57 modules/module_coverdeck.lua:1711
+#: modules/module_currently.lua:1484 modules/module_reading_goals.lua:1310
+msgid "Stats updated successfully."
+msgstr "Statystyki zaktualizowane pomyślnie."
+
+#: screens/sui_menu.lua:2633
+msgid "Status Bar"
+msgstr "Pasek Stanu"
+
+#: screens/sui_menu.lua:2287
+#, fuzzy
+msgid "Status Bar Opacity"
+msgstr "Rozmiar paska stanu"
+
+#: screens/sui_menu.lua:964
+msgid "Status Bar Size"
+msgstr "Rozmiar paska stanu"
+
+#: screens/sui_menu.lua:808
+msgid ""
+"Status Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Pasek stanu zostanie %s po restarcie.\n"
+"\n"
+"Uruchomić ponownie?"
+
+#: modules/module_reading_stats.lua:282
+msgid "Status — Abandoned"
+msgstr "Status — Porzucona"
+
+#: modules/module_reading_stats.lua:281
+msgid "Status — Reading"
+msgstr "Status — Czytana"
+
+#: modules/module_reading_stats.lua:280
+msgid "Status — Unread"
+msgstr "Status — Nieprzeczytana"
+
+#: screens/sui_settings_window.lua:337
+msgid "Status, title, navigation and pagination"
+msgstr "Status, tytuł, nawigacja i paginacja"
+
+#: modules/critter/phrases.lua:107
+msgid "Still awake?"
+msgstr ""
+
+#: features/sui_stats_menu.lua:134 modules/module_reading_stats.lua:250
+#: screens/sui_stats_windows.lua:3227
+msgid "Streak"
+msgstr "Seria"
+
+#: features/sui_stats_menu.lua:62
+msgid "Streak Mode"
+msgstr "Tryb serii"
+
+#: modules/critter/phrases.lua:141
+msgid "Streak started!"
+msgstr ""
+
+#: screens/sui_menu.lua:2269
+msgid "Stretch to fill screen"
+msgstr "Rozciągnij na cały ekran"
+
+#: features/sui_cover_elements.lua:110 infra/sui_config.lua:1023
+#: modules/module_coverdeck.lua:1482 modules/module_reading_stats.lua:1183
+#: modules/module_tab_grid.lua:584 modules/module_tab_grid.lua:631
+#: screens/sui_menu.lua:1758 screens/sui_menu.lua:3275
+#: screens/sui_menu.lua:4177 screens/sui_settings_window.lua:351
+#: screens/sui_settings_window.lua:1039
+msgid "Style"
+msgstr "Styl"
+
+#: screens/sui_menu.lua:1781 screens/sui_menu.lua:1784
+msgid "Sub-page Buttons"
+msgstr "Przyciski podstron"
+
+#: infra/sui_datenames.lua:43
+msgid "Sun"
+msgstr "Niedziela"
+
+#: infra/sui_datenames.lua:48
+msgid "Sunday"
+msgstr "Niedziela"
+
+#: modules/critter/phrases.lua:126
+msgid "Sweet dreams and good books."
+msgstr ""
+
+#: modules/module_tab_grid.lua:587
+#, fuzzy
+msgid "Swipe Bar"
+msgstr "Wskaźnik Przeciągnięcia"
+
+#: screens/sui_menu.lua:988
+msgid "Swipe Indicator"
+msgstr "Wskaźnik Przeciągnięcia"
+
+#: features/sui_quickactions.lua:1824 features/sui_quickactions.lua:1827
+#: features/sui_quickactions.lua:2511 features/sui_quickactions.lua:2599
+msgid "System Actions"
+msgstr "Akcje Systemowe"
+
+#: features/sui_style.lua:1275 screens/sui_menu.lua:3330
+#: screens/sui_menu.lua:3338
+msgid "System Icons"
+msgstr "Ikony systemowe"
+
+#: features/sui_presets.lua:296
+msgid "System Presets"
+msgstr ""
+
+#: features/sui_quickactions.lua:2978
+msgid "System action error: %s"
+msgstr "Błąd akcji systemowej: %s"
+
+#: screens/sui_stats_windows.lua:2510
+msgid "THIS MONTH"
+msgstr "TEN MIESIĄC"
+
+#: screens/sui_stats_windows.lua:2509
+msgid "THIS WEEK"
+msgstr "TEN TYDZIEŃ"
+
+#: screens/sui_heatmap_popup.lua:92
+msgid "TIME OF DAY"
+msgstr "PORA DNIA"
+
+#: screens/sui_stats_windows.lua:2505
+msgid "TODAY'S SUMMARY"
+msgstr "PODSUMOWANIE DNIA"
+
+#: features/sui_style.lua:1270 modules/module_tab_grid.lua:628
+msgid "Tab Bar"
+msgstr "Pasek kart"
+
+#: screens/sui_menu.lua:1091
+msgid "Tab Style"
+msgstr "Styl karty"
+
+#: features/sui_style.lua:1225
+msgid "Tab bar icons must be PNG or SVG."
+msgstr "Ikony paska kart muszą być w formacie PNG lub SVG."
+
+#: features/sui_style.lua:301
+msgid "Tab: Back to File Browser"
+msgstr "Karta: Powrót do przeglądarki plików"
+
+#: features/sui_style.lua:280
+msgid "Tab: File Browser Settings"
+msgstr "Karta: Ustawienia przeglądarki plików"
+
+#: features/sui_style.lua:252
+msgid "Tab: Menu"
+msgstr "Karta: Menu"
+
+#: features/sui_style.lua:287
+msgid "Tab: Reader Navigation"
+msgstr "Karta: Nawigacja czytnika"
+
+#: features/sui_style.lua:294
+msgid "Tab: Reader Typeset"
+msgstr "Karta: Skład czytnika"
+
+#: features/sui_style.lua:273
+msgid "Tab: Search"
+msgstr "Karta: Szukaj"
+
+#: features/sui_style.lua:259
+msgid "Tab: Settings"
+msgstr "Karta: Ustawienia"
+
+#: features/sui_style.lua:308
+msgid "Tab: SimpleUI Quick Settings"
+msgstr "Karta: Szybkie ustawienia Simple UI"
+
+#: features/sui_style.lua:266
+msgid "Tab: Tools"
+msgstr "Karta: Narzędzia"
+
+#: features/sui_presets.lua:158 modules/module_tab_grid.lua:930
+#: modules/module_tab_grid.lua:1100
+msgid "Tabbed Grid"
+msgstr "Siatka z kartami"
+
+#: modules/module_tab_grid.lua:635 modules/module_tab_grid.lua:863
+#: modules/module_tab_grid.lua:866 screens/sui_menu.lua:350
+#: screens/sui_menu.lua:1762
+msgid "Tabs"
+msgstr "Karty"
+
+#: screens/sui_menu.lua:358
+msgid "Tabs  (%d/%d — %d left)"
+msgstr "Zakładki  (%d/%d — %d pozostało)"
+
+#: screens/sui_menu.lua:356
+msgid "Tabs  (%d/%d — at limit)"
+msgstr "Zakładki  (%d/%d — limit osiągnięty)"
+
+#: screens/sui_menu.lua:1586
+msgid "Tabs and Search"
+msgstr "Karty i wyszukiwanie"
+
+#: features/library/sui_library_browse.lua:69
+#: features/sui_quickactions.lua:1006 infra/sui_config.lua:145
+msgid "Tags"
+msgstr "Tagi"
+
+#: modules/critter/phrases.lua:91
+msgid "Taking a break?"
+msgstr ""
+
+#: screens/sui_settings_window.lua:487
+msgid "Tap \"Create Screen\" below to add one."
+msgstr "Dotknij „Utwórz ekran” poniżej, aby dodać ekran."
+
+#: modules/module_clock.lua:256
+msgid "Ten"
+msgstr "Dziesięć"
+
+#: engines/sui_book_grid.lua:1991 infra/sui_config.lua:1100
+#: modules/module_quote.lua:1482 modules/module_tab_grid.lua:667
+#: modules/module_tab_grid.lua:932 screens/sui_menu.lua:241
+msgid "Text"
+msgstr "Tekst"
+
+#: features/library/sui_label_options.lua:116
+msgid "Text Size"
+msgstr "Rozmiar tekstu"
+
+#: screens/sui_menu.lua:243
+msgid "Text only"
+msgstr "Tylko tekst"
+
+#: modules/critter/phrases.lua:269
+msgid "That makes me happy."
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1493
+msgid ""
+"The Quick Settings Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Pasek szybkich ustawień zostanie %s po restarcie.\n"
+"\n"
+"Uruchomić ponownie?"
+
+#: screens/sui_menu.lua:2507
+msgid ""
+"The cover shown right as a book opens normally comes from the library's "
+"cached thumbnail, which can look soft on higher-resolution screens. When on, "
+"SimpleUI instead reads the cover straight from the book file for that moment "
+"(also covers books never opened before, which otherwise show no cover at "
+"all) — at the cost of a brief extra pause while opening, since the file has "
+"to be read twice. Cover on close is unaffected either way: it already reads "
+"the full-quality cover from the open book."
+msgstr ""
+"Okładka pokazywana zaraz po otwarciu książki zwykle pochodzi z buforowanej "
+"miniatury biblioteki, która na ekranach o wyższej rozdzielczości może "
+"wyglądać nieostro. Gdy włączone, SimpleUI odczytuje wtedy okładkę "
+"bezpośrednio z pliku książki (obejmuje to również książki nigdy wcześniej "
+"nie otwierane, które inaczej w ogóle nie pokazują okładki) — kosztem "
+"krótkiej dodatkowej pauzy podczas otwierania, ponieważ plik trzeba odczytać "
+"dwukrotnie. Okładka przy zamykaniu nie jest w żadnym przypadku dotknięta: "
+"już odczytuje okładkę pełnej jakości z otwartej książki."
+
+#: modules/critter/module_critter.lua:589
+msgid "The critter may use it in what it says."
+msgstr ""
+
+#: main.lua:1395 screens/sui_bottombar.lua:1861
+msgid "The navigation bar is already available on this screen."
+msgstr "Pasek nawigacji jest już dostępny na tym ekranie."
+
+#: modules/critter/phrases.lua:96
+msgid "The perfect time to unwind with a book."
+msgstr ""
+
+#: features/sui_manual_books.lua:62
+msgid "The start date is after the finish date."
+msgstr "Data rozpoczęcia jest późniejsza niż data ukończenia."
+
+#: screens/sui_menu.lua:1714
+msgid ""
+"The title bar style will change after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Styl paska tytułu zmieni się po ponownym uruchomieniu.\n"
+"\n"
+"Uruchomić ponownie?"
+
+#: modules/critter/phrases.lua:244
+msgid "The weekend is made for reading."
+msgstr ""
+
+#: infra/sui_patches.lua:1181
+msgid "The «To Be Read» collection cannot be renamed."
+msgstr "Kolekcja «Do przeczytania» nie może być zmieniona."
+
+#: modules/module_clock.lua:257
+msgid "Thirteen"
+msgstr "Trzynaście"
+
+#: modules/module_clock.lua:262
+msgid "Thirty"
+msgstr "Trzydzieści"
+
+#: features/sui_backup.lua:976
+msgid "This backup contains no settings or files."
+msgstr "Ta kopia zapasowa nie zawiera ustawień ani plików."
+
+#: modules/module_tbr.lua:354
+msgid ""
+"This book is marked as Finished, so it can't be added to To Be Read.\n"
+"Change its status to Reading or On Hold first."
+msgstr ""
+"Ta książka jest oznaczona jako Ukończona, więc nie można jej dodać do Do "
+"przeczytania.\n"
+"Najpierw zmień jej status na Czytana lub Wstrzymana."
+
+#: features/sui_quickactions.lua:3117 features/sui_quickactions.lua:3196
+msgid ""
+"This group is empty.\n"
+"Add actions to it from Settings → Quick Actions."
+msgstr ""
+"Ta grupa jest pusta.\n"
+"Dodaj do niej akcje w Ustawienia → Szybkie Akcje."
+
+#: modules/module_reading_stats.lua:246 modules/module_reading_stats.lua:247
+msgid "This month"
+msgstr ""
+
+#: modules/module_reading_stats.lua:247
+msgid "This month — Pages"
+msgstr "Ten miesiąc — Strony"
+
+#: modules/module_reading_stats.lua:246
+msgid "This month — Time"
+msgstr "Ten miesiąc — Czas"
+
+#: features/sui_presets.lua:343
+msgid "This name is reserved by a built-in preset."
+msgstr "Ta nazwa jest zarezerwowana przez wbudowany preset."
+
+#: modules/module_reading_stats.lua:242 modules/module_reading_stats.lua:243
+#: modules/module_reading_stats.lua:270
+msgid "This week"
+msgstr ""
+
+#: modules/module_reading_stats.lua:243
+msgid "This week — Pages"
+msgstr "Ten tydzień — Strony"
+
+#: modules/module_reading_stats.lua:242
+msgid "This week — Time"
+msgstr "Ten tydzień — Czas"
+
+#: screens/sui_menu.lua:4057
+msgid ""
+"This will delete all Simple UI settings and restart KOReader.\n"
+"Are you sure?"
+msgstr ""
+"To usunie wszystkie ustawienia Simple UI i uruchomi ponownie KOReader.\n"
+"Czy na pewno?"
+
+#: modules/module_clock.lua:253
+msgid "Three"
+msgstr "Trzy"
+
+#: infra/sui_datenames.lua:43
+msgid "Thu"
+msgstr "Czwartek"
+
+#: infra/sui_datenames.lua:49
+msgid "Thursday"
+msgstr "Czwartek"
+
+#: modules/critter/phrases.lua:88
+msgid "Time for a few pages?"
+msgstr ""
+
+#: modules/module_heatmap.lua:224 modules/module_heatmap.lua:341
+msgid "Time of day"
+msgstr "Pora dnia"
+
+#: infra/sui_book_stats.lua:178
+msgid "Time read"
+msgstr "Czas czytania"
+
+#: infra/sui_book_stats.lua:179
+msgid "Time remaining"
+msgstr "Pozostały czas"
+
+#: modules/critter/module_critter.lua:349
+msgid "Tiny Critter"
+msgstr ""
+
+#: features/sui_manual_books.lua:108 modules/module_coverdeck.lua:124
+#: modules/module_coverdeck.lua:1611 modules/module_currently.lua:277
+#: modules/module_currently.lua:1373 screens/sui_menu.lua:2759
+#: screens/sui_quicksettings_bar.lua:217 screens/sui_titlebar.lua:117
+msgid "Title"
+msgstr "Tytuł"
+
+#: engines/sui_book_grid.lua:1530 modules/module_library.lua:203
+msgid "Title (A–Z)"
+msgstr "Tytuł (A–Z)"
+
+#: engines/sui_book_grid.lua:1531 modules/module_library.lua:204
+msgid "Title (Z–A)"
+msgstr "Tytuł (Z–A)"
+
+#: features/sui_style.lua:1264 screens/sui_menu.lua:2635
+msgid "Title Bar"
+msgstr "Pasek Tytułu"
+
+#: screens/sui_menu.lua:2288
+msgid "Title Bar Opacity"
+msgstr "Krycie paska tytułu"
+
+#: screens/sui_menu.lua:1722
+msgid "Title Bar Size"
+msgstr "Rozmiar paska tytułu"
+
+#: screens/sui_menu.lua:1751
+msgid ""
+"Title Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Pasek tytułu zostanie %s po restarcie.\n"
+"\n"
+"Uruchomić ponownie?"
+
+#: screens/sui_menu.lua:2760
+msgid "Title and Author"
+msgstr "Tytuł i autor"
+
+#: engines/sui_book_sources.lua:348 modules/module_coverdeck.lua:1494
+#: modules/module_tbr.lua:378
+msgid "To Be Read"
+msgstr "Do przeczytania"
+
+#: engines/sui_book_sources.lua:360
+msgid "To Be Read Books"
+msgstr "Książki do przeczytania"
+
+#: modules/module_reading_goals.lua:872 modules/module_reading_goals.lua:950
+#: modules/module_reading_goals.lua:952 modules/module_reading_goals.lua:1000
+#: modules/module_reading_goals.lua:1003 modules/module_reading_stats.lua:240
+#: modules/module_reading_stats.lua:241
+msgid "Today"
+msgstr "Dzisiaj"
+
+#: modules/module_reading_stats.lua:241
+msgid "Today — Pages"
+msgstr "Dzisiaj — Strony"
+
+#: modules/module_reading_stats.lua:240
+msgid "Today — Time"
+msgstr "Dzisiaj — Czas"
+
+#: modules/critter/phrases.lua:45
+msgid "Today's reading"
+msgstr ""
+
+#: engines/sui_window.lua:3715
+msgid "Toggle"
+msgstr "Przełącz"
+
+#: engines/sui_group_cell.lua:297 features/library/sui_label_options.lua:144
+#: features/sui_cover_elements.lua:95 modules/module_tab_grid.lua:597
+msgid "Top"
+msgstr "Góra"
+
+#: screens/sui_topbar.lua:636
+msgid "Top Bar"
+msgstr "Górny Pasek"
+
+#: infra/sui_config.lua:1760
+msgid "Top Margin"
+msgstr "Górny margines"
+
+#: modules/critter/module_critter.lua:625
+msgid "Topics"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:887 screens/sui_stats_windows.lua:3378
+msgid "Total"
+msgstr "Łącznie"
+
+#: screens/sui_stats_windows.lua:2232 screens/sui_stats_windows.lua:2248
+msgid "Total time"
+msgstr "Łączny czas"
+
+#: features/sui_backup.lua:705
+msgid "Total: %d settings, %d files (%s)"
+msgstr "Łącznie — ustawienia: %d, pliki: %d (%s)"
+
+#: infra/sui_backdrop.lua:80
+msgid "Transparent"
+msgstr "Przezroczysty"
+
+#: infra/sui_datenames.lua:43
+msgid "Tue"
+msgstr "Wtorek"
+
+#: infra/sui_datenames.lua:48
+msgid "Tuesday"
+msgstr "Wtorek"
+
+#: modules/module_clock.lua:256
+msgid "Twelve"
+msgstr "Dwanaście"
+
+#: modules/module_clock.lua:262
+msgid "Twenty"
+msgstr "Dwadzieścia"
+
+#: modules/module_clock.lua:253
+msgid "Two"
+msgstr "Dwa"
+
+#: features/sui_cover_elements.lua:64 features/sui_cover_elements.lua:78
+#: modules/module_heatmap.lua:338
+msgid "Type"
+msgstr "Typ"
+
+#: screens/sui_menu.lua:3922
+msgid "UI Font"
+msgstr "Czcionka interfejsu"
+
+#: features/library/sui_virtual_path.lua:75
+msgid "Uncategorized"
+msgstr "Bez kategorii"
+
+#: screens/sui_menu.lua:3012
+msgid "Uniformize Covers (2:3)"
+msgstr "Ujednolij okładki (2:3)"
+
+#: engines/sui_cover_placeholder.lua:145
+msgid "Unknown"
+msgstr "Nieznany"
+
+#: screens/sui_stats_windows.lua:775
+msgid "Unknown error."
+msgstr "Nieznany błąd."
+
+#: features/sui_style.lua:2713
+msgid "Unsupported format (use a folder or a .zip file)"
+msgstr "Nieobsługiwany format (użyj folderu lub pliku .zip)"
+
+#: features/sui_quickactions.lua:110 features/sui_quickactions.lua:1768
+#: features/sui_style.lua:1103 features/sui_style.lua:1218
+msgid ""
+"Unsupported icon format.\n"
+"Please use a PNG or SVG file."
+msgstr ""
+"Nieobsługiwany format ikony.\n"
+"Proszę użyć pliku PNG lub SVG."
+
+#: engines/sui_window.lua:2355 engines/sui_window.lua:3709
+msgid "Update"
+msgstr "Zaktualizuj"
+
+#: features/sui_stats_menu.lua:146 modules/module_coverdeck.lua:1694
+#: modules/module_currently.lua:1466 modules/module_reading_goals.lua:1292
+#: modules/module_reading_goals.lua:1328 modules/module_reading_stats.lua:1222
+msgid "Update Stats Now"
+msgstr "Zaktualizuj statystyki teraz"
+
+#: infra/sui_updater.lua:467
+msgid "Update cancelled."
+msgstr "Aktualizacja anulowana."
+
+#: infra/sui_updater.lua:668
+msgid "Update check cancelled."
+msgstr "Sprawdzanie aktualizacji anulowane."
+
+#: features/sui_presets.lua:961 screens/sui_menu.lua:3718
+msgid "Update with current settings"
+msgstr "Zaktualizuj z bieżącymi ustawieniami"
+
+#: screens/sui_menu.lua:4036
+msgid "Updater module not found."
+msgstr "Nie znaleziono modułu aktualizacji."
+
+#: modules/critter/module_critter.lua:595
+msgid "Use at most %1 characters."
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2814
+msgid "Use freeze"
+msgstr "Użyj zamrożenia"
+
+#: features/sui_quickactions.lua:2060
+msgid "Use this Nerd Font icon?"
+msgstr "Użyć tej ikony Nerd Font?"
+
+#: screens/sui_menu.lua:506
+msgid ""
+"Uses the standard KOReader pagination bar on the homescreen.\n"
+"Not available when Navpager is active."
+msgstr ""
+"Używa standardowego paska paginacji KOReader na ekranie głównym.\n"
+"Niedostępne gdy Navpager jest aktywny."
+
+#: modules/module_reading_stats.lua:1130
+msgid "Value"
+msgstr "Wartość"
+
+#: screens/sui_settings_window.lua:376
+msgid "Version, author and updates"
+msgstr "Wersja, autor i aktualizacje"
+
+#: screens/sui_menu.lua:4011
+msgid "Version: %s"
+msgstr "Wersja: %s"
+
+#: infra/sui_config.lua:1762
+msgid ""
+"Vertical space above this module.\n"
+"100% is the default spacing."
+msgstr ""
+"Przestrzeń pionowa nad tym modułem.\n"
+"100% to domyślny odstęp."
+
+#: modules/module_clock.lua:1133
+msgid ""
+"Vertical space between items.\n"
+"100% is the default spacing."
+msgstr ""
+"Odstęp pionowy między elementami.\n"
+"100% to domyślny odstęp."
+
+#: screens/sui_stats_windows.lua:2507 screens/sui_stats_windows.lua:3086
+msgid "WEEK STREAK"
+msgstr "PASSA TYGODNIOWA"
+
+#: modules/module_clock.lua:270
+msgid "WORD_CLOCK_TENS_SEP"
+msgstr " "
+
+#: features/sui_backup.lua:142 screens/sui_menu.lua:2599
+#: screens/sui_settings_window.lua:431 screens/sui_settings_window.lua:437
+msgid "Wallpaper"
+msgstr "Tapeta"
+
+#: features/sui_backup.lua:143
+msgid "Wallpaper settings and image files"
+msgstr "Ustawienia tapety i pliki obrazów"
+
+#: screens/sui_quicksettings_bar.lua:593
+msgid "Warmth"
+msgstr "Ciepłota"
+
+#: screens/sui_quicksettings_bar.lua:1623
+msgid "Warmth Slider"
+msgstr "Suwak ciepłoty"
+
+#: screens/sui_menu.lua:2533
+msgid "Warn when modules on a page exceed the available screen height."
+msgstr ""
+"Ostrzegaj, gdy moduły na stronie przekraczają dostępną wysokość ekranu."
+
+#: engines/sui_heatmap_widgets.lua:127 infra/sui_datenames.lua:43
+msgid "Wed"
+msgstr "Środa"
+
+#: infra/sui_datenames.lua:48
+msgid "Wednesday"
+msgstr "Środa"
+
+#: modules/module_heatmap.lua:305 modules/module_heatmap.lua:309
+msgid "Weeks shown"
+msgstr "Wyświetlane tygodnie"
+
+#: screens/sui_onboarding.lua:395 screens/sui_onboarding.lua:396
+msgid "Welcome to Simple UI"
+msgstr "Witamy w Simple UI"
+
+#: modules/critter/phrases.lua:220
+msgid "Well done today."
+msgstr ""
+
+#: modules/critter/phrases.lua:225
+msgid "Well done, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:212
+msgid "What a habit!"
+msgstr ""
+
+#: modules/critter/phrases.lua:114
+msgid "What shall we read today?"
+msgstr ""
+
+#: infra/sui_updater.lua:493
+msgid "What's new:"
+msgstr "Co nowego:"
+
+#: features/sui_stats_menu.lua:90
+msgid ""
+"When a finished book is deleted from the device (file or folder), keep it "
+"counted in the Books Read statistics on the Home Screen.\n"
+"\n"
+"Books changed back to Reading or Abandoned are automatically removed from "
+"this list."
+msgstr ""
+"Gdy ukończona książka zostanie usunięta z urządzenia (plik lub folder), "
+"nadal jest liczona w statystykach przeczytanych książek na ekranie głównym.\n"
+"\n"
+"Książki zmienione z powrotem na Czytane lub Porzucone są automatycznie "
+"usuwane z tej listy."
+
+#: screens/sui_menu.lua:2545
+msgid ""
+"When enabled, long-pressing a module on the home screen opens its settings "
+"menu.\n"
+"Disable this to prevent settings from appearing on long tap."
+msgstr ""
+"Gdy włączone, przytrzymanie modułu na ekranie głównym otwiera jego menu "
+"ustawień.\n"
+"Wyłącz, aby zapobiec wyświetlaniu ustawień przy długim dotknięciu."
+
+#: screens/sui_quicksettings_bar.lua:1688
+msgid ""
+"When enabled, long-pressing the Quick Settings Bar opens its settings menu.\n"
+"Disable this to prevent the settings menu from appearing on long tap."
+msgstr ""
+"Gdy włączone, przytrzymanie Paska szybkich ustawień otwiera jego menu "
+"ustawień.\n"
+"Wyłącz, aby zapobiec wyświetlaniu menu ustawień przy długim dotknięciu."
+
+#: screens/sui_menu.lua:1177
+msgid ""
+"When enabled, long-pressing the navigation bar opens its settings menu.\n"
+"Disable this to prevent the settings menu from appearing on long tap."
+msgstr ""
+"Gdy włączone, przytrzymanie paska nawigacji otwiera jego menu ustawień.\n"
+"Wyłącz, aby zapobiec otwieraniu menu ustawień przy długim dotknięciu."
+
+#: screens/sui_menu.lua:1008
+msgid ""
+"When enabled, long-pressing the top bar opens its settings menu.\n"
+"Disable this to prevent the settings menu from appearing on long tap."
+msgstr ""
+"Gdy włączone, przytrzymanie górnego paska otwiera jego menu ustawień.\n"
+"Wyłącz, aby zapobiec otwieraniu menu ustawień przy długim dotknięciu."
+
+#: screens/sui_menu.lua:2347
+msgid ""
+"When waking the device from sleep/suspend, always return to the Home Screen "
+"— even if a book was open when it went to sleep."
+msgstr ""
+"Podczas wybudzania urządzenia z uśpienia/wstrzymania zawsze wracaj do ekranu "
+"głównego — nawet jeśli książka była otwarta, gdy urządzenie zostało uśpione."
+
+#: modules/module_reading_stats.lua:273
+msgid "When you read most"
+msgstr ""
+
+#: infra/sui_config.lua:1481 modules/module_tab_grid.lua:646
+msgid "White"
+msgstr "Biały"
+
+#: features/sui_quickactions.lua:914 infra/sui_config.lua:135
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: features/sui_quickactions.lua:286
+msgid "Wi-Fi off"
+msgstr "Wi-Fi wyłączone"
+
+#: infra/sui_config.lua:200
+msgid "WiFi"
+msgstr "WiFi"
+
+#: features/sui_quickactions.lua:273
+msgid "WiFi not available on this device."
+msgstr "WiFi niedostępne na tym urządzeniu."
+
+#: features/sui_quickactions.lua:2205
+msgid "Wikipedia Lookup"
+msgstr "Wyszukiwanie w Wikipedii"
+
+#: modules/critter/phrases.lua:99
+msgid "Winding down?"
+msgstr ""
+
+#: modules/module_currently.lua:1421
+msgid "With percentage"
+msgstr "Z procentem"
+
+#: modules/module_clock.lua:1094 modules/module_clock.lua:1107
+msgid "Word"
+msgstr "Słowo"
+
+#: features/sui_manual_books.lua:102
+msgid "YYYY-MM-DD or YYYY"
+msgstr "RRRR-MM-DD lub RRRR"
+
+#: features/sui_manual_books.lua:146
+msgid "Year:"
+msgstr "Rok:"
+
+#: screens/sui_stats_windows.lua:1159
+msgid "Yes"
+msgstr "Tak"
+
+#: screens/sui_stats_windows.lua:2803
+msgid "Yesterday is already covered by a freeze."
+msgstr "Wczorajszy dzień jest już pokryty zamrożeniem."
+
+#: screens/sui_stats_windows.lua:2801
+msgid "You already read yesterday — there's nothing to freeze."
+msgstr "Wczoraj już czytałeś — nie ma czego zamrażać."
+
+#: screens/sui_stats_windows.lua:2795
+msgid "You don't have any freezes available yet."
+msgstr "Nie masz jeszcze dostępnych zamrożeń."
+
+#: screens/sui_stats_windows.lua:2812
+msgid ""
+"You have %d freeze(s) available.\n"
+"Use one to cover %s?"
+msgstr ""
+"Masz dostępnych zamrożeń: %d.\n"
+"Użyć jednego, aby pokryć %s?"
+
+#: modules/critter/phrases.lua:135
+msgid "You're on a roll!"
+msgstr ""
+
+#: modules/critter/phrases.lua:171
+msgid "Your first one this year is waiting."
+msgstr ""
+
+#: modules/module_quote.lua:1016
+msgid "Your highlights"
+msgstr "Twoje zaznaczenia"
+
+#: modules/critter/module_critter.lua:583
+#: modules/critter/module_critter.lua:588
+msgid "Your name"
+msgstr ""
+
+#: modules/critter/phrases.lua:154
+msgid "Your streak is on a break."
+msgstr ""
+
+#: modules/module_reading_stats.lua:282
+msgid "abandoned"
+msgstr "porzucona"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "apr"
+msgstr "kwi"
+
+#: screens/sui_stats_windows.lua:1352
+msgid "april"
+msgstr "kwiecień"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "aug"
+msgstr "sie"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "august"
+msgstr "sierpień"
+
+#: modules/module_reading_stats.lua:259
+msgid "average session (90 days)"
+msgstr ""
+
+#: modules/module_reading_stats.lua:249 screens/sui_stats_windows.lua:2110
+msgid "books finished"
+msgstr "przeczytane książki"
+
+#: modules/module_reading_stats.lua:244
+msgid "daily avg (7 days)"
+msgstr "średnia dzienna (7 dni)"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "dec"
+msgstr "gru"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "december"
+msgstr "grudzień"
+
+#: features/sui_quickactions.lua:1759 features/sui_quickactions.lua:2791
+msgid "default"
+msgstr "domyślny"
+
+#: screens/sui_menu.lua:808 screens/sui_menu.lua:1085 screens/sui_menu.lua:1752
+#: screens/sui_menu.lua:4153 screens/sui_quicksettings_bar.lua:1494
+msgid "disabled"
+msgstr "wyłączony"
+
+#: features/sui_backup.lua:699
+msgid "empty"
+msgstr "puste"
+
+#: screens/sui_menu.lua:808 screens/sui_menu.lua:1085 screens/sui_menu.lua:1752
+#: screens/sui_menu.lua:4153 screens/sui_quicksettings_bar.lua:1494
+msgid "enabled"
+msgstr "włączony"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "feb"
+msgstr "lut"
+
+#: screens/sui_stats_windows.lua:1352
+msgid "february"
+msgstr "luty"
+
+#: features/sui_style.lua:2659
+msgid "ffi/archiver not available in this KOReader version"
+msgstr "ffi/archiver niedostępny w tej wersji KOReadera"
+
+#: features/sui_quickactions.lua:2053
+msgid "hex code, e.g. E001"
+msgstr "kod hex, np. E001"
+
+#: screens/sui_stats_windows.lua:1817 screens/sui_stats_windows.lua:2108
+msgid "hours read"
+msgstr "godzin przeczytanych"
+
+#: modules/module_reading_stats.lua:281
+msgid "in progress"
+msgstr "w trakcie"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "jan"
+msgstr "sty"
+
+#: screens/sui_stats_windows.lua:1352
+msgid "january"
+msgstr "styczeń"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "jul"
+msgstr "lip"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "july"
+msgstr "lipiec"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "jun"
+msgstr "cze"
+
+#: screens/sui_stats_windows.lua:1352
+msgid "june"
+msgstr "czerwiec"
+
+#: modules/module_reading_stats.lua:244 modules/module_reading_stats.lua:245
+msgid "last 7 days"
+msgstr ""
+
+#: modules/module_reading_stats.lua:257 modules/module_reading_stats.lua:260
+#: modules/module_reading_stats.lua:263 modules/module_reading_stats.lua:268
+msgid "last 90 days"
+msgstr ""
+
+#: infra/sui_updater.lua:680
+msgid "latest"
+msgstr "najnowsza"
+
+#: modules/module_reading_stats.lua:256
+msgid "longest session (90 days)"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "mar"
+msgstr "mar"
+
+#: screens/sui_stats_windows.lua:1352
+msgid "march"
+msgstr "marzec"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+#: screens/sui_stats_windows.lua:1352
+msgid "may"
+msgstr "maj"
+
+#: modules/module_reading_stats.lua:252
+msgid "no streak"
+msgstr "brak serii"
+
+#: features/sui_quickactions.lua:1574 features/sui_quickactions.lua:2887
+#: features/sui_quickactions.lua:2906
+msgid "not configured"
+msgstr "nie skonfigurowano"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "nov"
+msgstr "lis"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "november"
+msgstr "listopad"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "oct"
+msgstr "paź"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "october"
+msgstr "październik"
+
+#: modules/module_reading_stats.lua:240 modules/module_reading_stats.lua:242
+#: modules/module_reading_stats.lua:246 modules/module_reading_stats.lua:248
+#: modules/module_reading_stats.lua:271
+msgid "of reading"
+msgstr ""
+
+#: modules/module_reading_stats.lua:246
+msgid "of reading this month"
+msgstr "czytania w tym miesiącu"
+
+#: modules/module_reading_stats.lua:242 modules/module_reading_stats.lua:270
+msgid "of reading this week"
+msgstr "czytania w tym tygodniu"
+
+#: modules/module_reading_stats.lua:240
+msgid "of reading today"
+msgstr "czytania dzisiaj"
+
+#: modules/module_reading_stats.lua:248
+msgid "of reading, all time"
+msgstr "czytania łącznie"
+
+#: features/sui_style.lua:2702
+msgid "pack_path not provided"
+msgstr "pack_path nie podano"
+
+#: modules/module_reading_stats.lua:241 modules/module_reading_stats.lua:243
+#: modules/module_reading_stats.lua:247 screens/sui_stats_windows.lua:2109
+#: screens/sui_stats_windows.lua:2402
+msgid "pages read"
+msgstr "stron przeczytanych"
+
+#: modules/module_reading_stats.lua:247
+msgid "pages read this month"
+msgstr "stron przeczytanych w tym miesiącu"
+
+#: modules/module_reading_stats.lua:243
+msgid "pages read this week"
+msgstr "stron przeczytanych w tym tygodniu"
+
+#: modules/module_reading_stats.lua:241
+msgid "pages read today"
+msgstr "stron przeczytanych dzisiaj"
+
+#: modules/module_reading_stats.lua:245
+msgid "pages/day (7 days)"
+msgstr "stron/dzień (7 dni)"
+
+#: modules/module_reading_stats.lua:262
+msgid "pages/hour (90 days)"
+msgstr ""
+
+#: modules/module_reading_stats.lua:267
+msgid "reading sessions (90 days)"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2400
+msgid "reading time"
+msgstr "czas czytania"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "sep"
+msgstr "wrz"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "september"
+msgstr "wrzesień"
+
+#: modules/module_reading_stats.lua:280
+msgid "unread"
+msgstr "nieprzeczytana"
+
+#: modules/module_reading_stats.lua:273
+msgid "when you read most"
+msgstr ""
+
+#: infra/sui_updater.lua:682
+msgid "⬆ Update available: %s"
+msgstr "⬆ Dostępna aktualizacja: %s"
+
+#: features/sui_arrange.lua:425 screens/sui_menu.lua:1933
+msgid "  (%d left)"
+msgid_plural "  (%d left)"
+msgstr[0] "  (%d pozostało)"
+msgstr[1] "  (%d pozostały)"
+msgstr[2] "  (%d pozostało)"
+
+#: modules/module_reading_goals.lua:1189
+msgid "  Set Goal  (%d book in %s)"
+msgid_plural "  Set Goal  (%d books in %s)"
+msgstr[0] "  Ustaw cel  (%d książka w %s)"
+msgstr[1] "  Ustaw cel  (%d książki w %s)"
+msgstr[2] "  Ustaw cel  (%d książek w %s)"
+
+#: modules/module_reading_goals.lua:721 screens/sui_stats_windows.lua:767
+msgid "%d book"
+msgid_plural "%d books"
+msgstr[0] "%d książka"
+msgstr[1] "%d książki"
+msgstr[2] "%d książek"
+
+#: modules/critter/phrases.lua:71
+msgid "%d book finished this year"
+msgid_plural "%d books finished this year"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/module_reading_goals.lua:1138
+msgid "%d book in %s"
+msgid_plural "%d books in %s"
+msgstr[0] "%d książka w %s"
+msgstr[1] "%d książki w %s"
+msgstr[2] "%d książek w %s"
+
+#: screens/sui_stats_windows.lua:1217
+msgid "%d book read"
+msgid_plural "%d books read"
+msgstr[0] "%d przeczytana książka"
+msgstr[1] "%d przeczytane książki"
+msgstr[2] "%d przeczytanych książek"
+
+#: modules/critter/phrases.lua:164
+msgid "%d book to go for your goal."
+msgid_plural "%d books to go for your goal."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: infra/sui_book_stats.lua:190 screens/sui_stats_windows.lua:1975
+#: screens/sui_stats_windows.lua:1977
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "%d dzień"
+msgstr[1] "%d dni"
+msgstr[2] "%d dni"
+
+#: modules/critter/phrases.lua:137
+msgid "%d day of reading in a row."
+msgid_plural "%d days of reading in a row."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/critter/phrases.lua:67
+msgid "%d day strong!"
+msgid_plural "%d days strong!"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/critter/phrases.lua:205
+msgid "%d day, your longest streak yet."
+msgid_plural "%d days, your longest streak yet."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: screens/sui_stats_windows.lua:3132
+msgid "%d freeze available"
+msgid_plural "%d freezes available"
+msgstr[0] "%d dostępne zamrożenie"
+msgstr[1] "%d dostępne zamrożenia"
+msgstr[2] "%d dostępnych zamrożeń"
+
+#: features/sui_quickactions.lua:1566 features/sui_quickactions.lua:2879
+#: features/sui_quickactions.lua:2900
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d element"
+msgstr[1] "%d elementy"
+msgstr[2] "%d elementów"
+
+#: modules/critter/phrases.lua:188
+msgid "%d minute read today!"
+msgid_plural "%d minutes read today!"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/critter/phrases.lua:179
+msgid "%d of %d book."
+msgid_plural "%d of %d books."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/critter/phrases.lua:196
+msgid "%d page turned today!"
+msgid_plural "%d pages turned today!"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: screens/sui_stats_windows.lua:1995 screens/sui_stats_windows.lua:1997
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] "%d tydzień"
+msgstr[1] "%d tygodnie"
+msgstr[2] "%d tygodni"
+
+#: modules/module_reading_goals.lua:719
+msgid "%d/%d book"
+msgid_plural "%d/%d books"
+msgstr[0] "%d/%d książka"
+msgstr[1] "%d/%d książki"
+msgstr[2] "%d/%d książek"
+
+#: modules/module_collections.lua:548
+msgid "(%d collection)"
+msgid_plural "(%d collections)"
+msgstr[0] "(%d kolekcja)"
+msgstr[1] "(%d kolekcje)"
+msgstr[2] "(%d kolekcji)"
+
+#: modules/module_quick_actions.lua:368
+msgid "(%d/%d — %d left)"
+msgid_plural "(%d/%d — %d left)"
+msgstr[0] "(%d/%d — %d pozostało)"
+msgstr[1] "(%d/%d — %d pozostały)"
+msgstr[2] "(%d/%d — %d pozostało)"
+
+#: features/sui_quickactions.lua:2402
+msgid "Group (%d item)"
+msgid_plural "Group (%d items)"
+msgstr[0] "Grupa (%d element)"
+msgstr[1] "Grupa (%d elementy)"
+msgstr[2] "Grupa (%d elementów)"
+
+#: screens/sui_quicksettings_bar.lua:1512
+msgid "Maximum of %d slot reached. Remove one first."
+msgid_plural "Maximum of %d slots reached. Remove one first."
+msgstr[0] "Osiągnięto maksimum %d slotu. Najpierw usuń jeden."
+msgstr[1] "Osiągnięto maksimum %d slotów. Najpierw usuń jeden."
+msgstr[2] "Osiągnięto maksimum %d slotów. Najpierw usuń jeden."
+
+#: modules/critter/phrases.lua:210
+msgid "Milestone: %d day!"
+msgid_plural "Milestone: %d days!"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: screens/sui_menu.lua:36
+msgid ""
+"Text shown in the top bar.\n"
+"Maximum %d character."
+msgid_plural ""
+"Text shown in the top bar.\n"
+"Maximum %d characters."
+msgstr[0] ""
+"Tekst wyświetlany na górnym pasku.\n"
+"Maksymalnie %d znak."
+msgstr[1] ""
+"Tekst wyświetlany na górnym pasku.\n"
+"Maksymalnie %d znaki."
+msgstr[2] ""
+"Tekst wyświetlany na górnym pasku.\n"
+"Maksymalnie %d znaków."
+
+#: modules/module_action_list.lua:289 modules/module_quick_actions.lua:351
+#: screens/sui_menu.lua:1898 screens/sui_menu.lua:2012
+msgid "The maximum of %d action per module has been reached. Remove one first."
+msgid_plural ""
+"The maximum of %d actions per module has been reached. Remove one first."
+msgstr[0] ""
+"Osiągnięto maksymalną liczbę %d akcji na moduł. Najpierw usuń jedną."
+msgstr[1] ""
+"Osiągnięto maksymalną liczbę %d akcji na moduł. Najpierw usuń jedną."
+msgstr[2] ""
+"Osiągnięto maksymalną liczbę %d akcji na moduł. Najpierw usuń jedną."
+
+#: modules/critter/module_critter.lua:561
+msgid ""
+"The maximum of %d decoration per side has been reached. Remove one first."
+msgid_plural ""
+"The maximum of %d decorations per side has been reached. Remove one first."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: features/sui_quickactions.lua:1636 features/sui_quickactions.lua:2844
+msgid "The maximum of %d quick action has been reached. Delete one first."
+msgid_plural ""
+"The maximum of %d quick actions has been reached. Delete one first."
+msgstr[0] ""
+"Osiągnięto maksymalną liczbę %d szybkiej akcji. Najpierw usuń jedną."
+msgstr[1] ""
+"Osiągnięto maksymalną liczbę %d szybkich akcji. Najpierw usuń jedną."
+msgstr[2] ""
+"Osiągnięto maksymalną liczbę %d szybkich akcji. Najpierw usuń jedną."
+
+#: screens/sui_menu.lua:365
+msgid "The maximum of %d tab has been reached. Remove one first."
+msgid_plural "The maximum of %d tabs has been reached. Remove one first."
+msgstr[0] "Osiągnięto maksymalną liczbę %d zakładki. Najpierw usuń jedną."
+msgstr[1] "Osiągnięto maksymalną liczbę %d zakładek. Najpierw usuń jedną."
+msgstr[2] "Osiągnięto maksymalną liczbę %d zakładek. Najpierw usuń jedną."
+
+#: modules/module_reading_stats.lua:255
+msgid "day"
+msgid_plural "days"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: screens/sui_stats_windows.lua:1820
+msgid "day read"
+msgid_plural "days read"
+msgstr[0] "dzień czytania"
+msgstr[1] "dni czytania"
+msgstr[2] "dni czytania"
+
+#: modules/module_reading_stats.lua:253
+msgid "day streak"
+msgid_plural "days streak"
+msgstr[0] "dzień z rzędu"
+msgstr[1] "dni z rzędu"
+msgstr[2] "dni z rzędu"
+
+#: screens/sui_stats_windows.lua:1835
+msgid "page read"
+msgid_plural "pages read"
+msgstr[0] "strona przeczytana"
+msgstr[1] "strony przeczytane"
+msgstr[2] "stron przeczytanych"
+
+#~ msgid "Background"
+#~ msgstr "Tło"
+
+#~ msgid "Badges"
+#~ msgstr "Odznaki"
+
+#~ msgid "Folder Book Stack"
+#~ msgstr "Stos książek w folderze"
+
+#~ msgid "Folder Cover Type"
+#~ msgstr "Typ okładki folderu"
+
+#~ msgid "Follow Library"
+#~ msgstr "Jak w bibliotece"
+
+#~ msgid "Number of Books in Folder"
+#~ msgstr "Liczba książek w folderze"
+
+#~ msgid "Number of Pages"
+#~ msgstr "Liczba stron"
+
+#~ msgid "Overlays"
+#~ msgstr "Nakładki"
+
+#~ msgid ""
+#~ "Scale for the library badges (progress, pages, etc.).\n"
+#~ "100% is the default size."
+#~ msgstr ""
+#~ "Skala dla odznak biblioteki (postęp, strony itp.).\n"
+#~ "100% to domyślny rozmiar."
+
+#~ msgid "Title and Author Below Covers"
+#~ msgstr "Tytuł i autor pod okładkami"
+
+#~ msgid ""
+#~ "Title and author strip enabled.\n"
+#~ "\n"
+#~ "Restart now?"
+#~ msgstr ""
+#~ "Pasek tytułu i autora włączony.\n"
+#~ "\n"
+#~ "Zrestartować teraz?"
+
+#~ msgid "Title only"
+#~ msgstr "Tylko tytuł"
+
+#~ msgid ""
+#~ "Title strip disabled.\n"
+#~ "\n"
+#~ "Restart now?"
+#~ msgstr ""
+#~ "Pasek tytułu wyłączony.\n"
+#~ "\n"
+#~ "Zrestartować teraz?"
+
+#~ msgid ""
+#~ "Title strip enabled.\n"
+#~ "\n"
+#~ "Restart now?"
+#~ msgstr ""
+#~ "Pasek tytułu włączony.\n"
+#~ "\n"
+#~ "Zrestartować teraz?"
+
+#~ msgid "UI Font  (default)"
+#~ msgstr "Czcionka interfejsu  (domyślna)"
+
+#~ msgid "UI Font  [%s]"
+#~ msgstr "Czcionka interfejsu  [%s]"
+
+#~ msgid "Visibility"
+#~ msgstr "Widoczność"
+
+#~ msgid "Visible"
+#~ msgstr "Widoczny"
+
+#~ msgid "The maximum of %d stat per row has been reached. Remove one first."
+#~ msgid_plural ""
+#~ "The maximum of %d stats per row has been reached. Remove one first."
+#~ msgstr[0] ""
+#~ "Osiągnięto maksymalną liczbę %d statystyki w wierszu. Najpierw usuń jedną."
+#~ msgstr[1] ""
+#~ "Osiągnięto maksymalną liczbę %d statystyk w wierszu. Najpierw usuń jedną."
+#~ msgstr[2] ""
+#~ "Osiągnięto maksymalną liczbę %d statystyk w wierszu. Najpierw usuń jedną."

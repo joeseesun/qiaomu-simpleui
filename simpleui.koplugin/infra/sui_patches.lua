@@ -1,0 +1,5391 @@
+-- sui_patches.lua — SimpleUI
+-- Monkey-patches applied to KOReader classes on plugin load.
+-- All patches are reversible; teardownAll() restores every original function.
+
+local UIManager = require("ui/uimanager")
+local Device    = require("device")
+local Screen    = Device.screen
+local logger    = require("logger")
+local T         = require("ffi/util").template
+local _         = require("infra/sui_i18n").translate
+
+local Config    = require("infra/sui_config")
+local Size      = require("ui/size")
+local UI        = require("infra/sui_core")
+local Bottombar = require("screens/sui_bottombar")
+local SUISettings = require("infra/sui_store")
+local SUIStyle    = require("features/sui_style")
+local SUIWallpaper = require("features/sui_wallpaper")
+local Backdrop   = require("infra/sui_backdrop")
+local WindowHooks  = require("infra/sui_window_hooks")
+local Perf         = require("infra/sui_perf")
+
+-- Lazy: only needed on D-pad devices, inside gesture event handlers.
+local _FocusManager
+local function FocusManager()
+    _FocusManager = _FocusManager or require("ui/widget/focusmanager")
+    return _FocusManager
+end
+
+-- Lazy: only needed inside patchFileManagerClass callbacks, not at load time.
+local _Titlebar
+local function Titlebar()
+    _Titlebar = _Titlebar or require("screens/sui_titlebar")
+    return _Titlebar
+end
+
+-- Lazy: only needed when a Homescreen-family widget turns out to be a
+-- Custom Screen (i.e. widget._id ~= "hs") — avoids a load-order cycle since
+-- infra/sui_custom_screens itself requires features/sui_quickactions.
+local _CustomScreens
+local function CustomScreens()
+    if _CustomScreens == nil then
+        local ok, m = pcall(require, "infra/sui_custom_screens")
+        _CustomScreens = ok and m or false
+    end
+    return _CustomScreens or nil
+end
+
+-- Every ScreenWidget instance shares widget.name == "homescreen",
+-- whether it is the built-in Homescreen (widget._id == "hs") or a Custom
+-- Screen (widget._id == the screen's own id, see
+-- engines/sui_screen_engine.lua ScreenWidget:init()). The bottombar
+-- tab that should show as active is "homescreen" only for the former; for a
+-- Custom Screen it is that screen's own "open_custom_screen:<id>" Quick
+-- Action id (infra/sui_custom_screens.qaId), which is what actually sits on
+-- the tab bar if the user placed that QA there.
+local function _hsActionId(widget)
+    local id = widget and widget._id
+    if not id or id == "hs" then return "homescreen" end
+    local CS = CustomScreens()
+    if CS and CS.qaId then return CS.qaId(id) end
+    return "homescreen"
+end
+
+local M = {}
+
+-- Forward declarations needed because the screen reopen step of the window
+-- hooks (below) can encounter a soft-parked Homescreen before these are
+-- defined further down this file, near _closeReaderToHomescreenSync (their
+-- primary caller).
+local _raiseParkedScreen
+local _dropParkedScreen
+
+-- ---------------------------------------------------------------------------
+-- Module-level state
+-- ---------------------------------------------------------------------------
+
+-- Reused for UIManager.show calls that have no extra arguments.
+local _EMPTY = {}
+
+-- True after the first FM show on boot; prevents the homescreen auto-open
+-- from firing more than once. Reset in teardownAll so re-enable works cleanly.
+local _hs_boot_done = false
+
+-- Set when ReaderUI closes with "Start with Homescreen" active.
+-- Makes UIManager.show defer the FM paint until the homescreen is on top,
+-- eliminating the visible flash between reader and homescreen.
+local _hs_pending_after_reader = false  -- kept for reset in teardown only
+
+-- Navbar keyboard-focus state (D-pad devices only).
+-- _navbar_kb_capture: the transparent InputContainer on the UIManager stack,
+--   or nil when keyboard focus is inactive.
+-- _navbar_kb_idx: 1-based index of the currently focused tab.
+-- _navbar_kb_return_fn: optional callback invoked when the user exits focus
+--   (e.g. the homescreen restores its own focus instead of the file-chooser).
+local _navbar_kb_capture   = nil
+local _navbar_kb_idx       = 1
+local _navbar_kb_return_fn = nil
+
+-- Set once by patchFileManagerClass so external callers (ScreenWidget)
+-- can trigger navbar keyboard focus via M.enterNavbarKbFocus().
+local _enterNavbarKbFocus_fn = nil
+
+-- Coalescence flag: true while a navpager arrow-update is already scheduled,
+-- so duplicate scheduleIn(0) calls are dropped within the same event-loop tick.
+local _navpager_rebuild_pending = false
+
+-- Always points at the most recently created SimpleUIPlugin instance.
+-- KOReader's FileManager:init() creates a brand-new plugin object on every
+-- FM (re)instantiation (PluginLoader:createPluginInstance), but
+-- patchFileManagerClass only re-installs the FileManager.setupLayout wrapper
+-- once per session (see setup_already_patched below) -- so closures defined
+-- inside that one-time installation would otherwise stay bound to whichever
+-- plugin instance happened to exist the first time it ran. Any of those
+-- closures that need "the current plugin" must resolve it via _live_plugin
+-- (updated on every patchFileManagerClass call) instead of using their
+-- captured `plugin` upvalue directly. The window hooks
+-- (infra/sui_window_hooks.lua) keep their live plugin the same way.
+local _live_plugin = nil
+
+-- ---------------------------------------------------------------------------
+-- Shared hooks
+--
+-- KOReader creates one plugin instance per host UI (file manager, reader) and
+-- recreates them on every book open and close. Every instance runs installAll
+-- and later teardownAll, in an order the plugin does not control. A hook that
+-- wraps a class function must therefore be safe against both repeated installs
+-- and out-of-order teardowns.
+--
+-- Rules for any patch of a class or module function:
+--   1. Install through _acquireHooks: it returns nil when the hooks already
+--      exist, so a function is never wrapped twice.
+--   2. Register each wrapper (_addHook, or _trackHooks for an assignment made
+--      in place) so it can be removed.
+--   3. Release through _releaseHooks in teardownAll. Hooks are removed only
+--      when the last instance using them is gone.
+--   4. Keep hook state on the patched class, never on the plugin instance or
+--      in a module local: instances and modules are recreated, classes are not.
+--   5. Resolve the current plugin through _live_plugin inside wrappers; the
+--      instance captured at install time may be stale.
+--   6. Release hooks in the reverse order they were installed: a wrapper is
+--      restored only while it is still the outermost one.
+--   7. Wrappers must be idempotent per call and must restore any temporary
+--      field they change, even on error.
+--
+-- A patch that skips these rules stacks one wrapper per instance, and its
+-- effect grows with every book opened.
+-- ---------------------------------------------------------------------------
+
+-- Registers `owner` as a user of the hooks stored on `target` under
+-- `state_key`. Returns a new state ({ users, hooks }) when the caller must
+-- install the hooks, nil when they are already installed.
+local function _acquireHooks(target, state_key, owner)
+    local state = rawget(target, state_key)
+    if state then
+        state.users[owner] = true
+        return nil
+    end
+    state = { users = { [owner] = true }, hooks = {} }
+    target[state_key] = state
+    return state
+end
+
+-- Replaces target[key] with `wrapped` and records it in `state` for removal.
+-- Returns the replaced function.
+local function _addHook(state, target, key, wrapped)
+    local orig = rawget(target, key)
+    state.hooks[#state.hooks + 1] = { target = target, key = key, orig = orig, wrapped = wrapped }
+    target[key] = wrapped
+    return orig
+end
+
+-- Records hooks that were already assigned: each entry is { target, key, orig }
+-- and the function currently stored at target[key] is taken as the wrapper.
+local function _trackHooks(state, entries)
+    for _, e in ipairs(entries) do
+        state.hooks[#state.hooks + 1] = {
+            target = e[1], key = e[2], orig = e[3], wrapped = rawget(e[1], e[2]),
+        }
+    end
+end
+
+-- Unregisters `owner` and removes the hooks once no user is left. Returns
+-- true when they were removed.
+local function _releaseHooks(target, state_key, owner)
+    local state = rawget(target, state_key)
+    if not state then return false end
+    state.users[owner] = nil
+    if next(state.users) then return false end
+    for i = #state.hooks, 1, -1 do
+        local h = state.hooks[i]
+        if rawget(h.target, h.key) == h.wrapped then h.target[h.key] = h.orig end
+    end
+    target[state_key] = nil
+    return true
+end
+
+-- Ensure the goal-tap callback is initialised. Called before any HS.show()
+-- that may need it. Idempotent: addToMainMenu is a no-op once
+-- _goalTapCallback has been set.
+--
+-- Delegates to UI.makeGoalTap()'s own lazy-init logic (infra/sui_core.lua) —
+-- kept as a thin wrapper here (rather than replacing every call site) since
+-- some callers below need the boolean side effect (plugin._goalTapCallback
+-- now set) without necessarily wanting a fresh closure back.
+local function _ensureGoalCallback(plugin_ref)
+    if not plugin_ref._goalTapCallback then
+        plugin_ref:addToMainMenu({})
+    end
+end
+
+-- Build the standard QA-tap callback closure. Delegates to the shared,
+-- generic implementation in infra/sui_core.lua (UI.makeQaTap) — the exact
+-- same one engines/sui_screen_engine.lua's ScreenEngine.showCustomScreen
+-- uses for Custom Screens, so a Quick Actions/Action List module behaves
+-- identically whether it's placed on the Homescreen or on a Custom Screen.
+-- The plugin_ref parameter is no longer used for capture (UI.makeQaTap
+-- resolves the live plugin lazily, at tap time, instead of baking in
+-- whichever plugin instance happened to exist when this closure was built)
+-- but is kept in the signature so every existing call site below stays
+-- unchanged.
+local function _makeQaTap(plugin_ref) -- luacheck: ignore plugin_ref
+    return UI.makeQaTap()
+end
+
+-- Dismiss the "Closing book…" notice once the Homescreen is visible.
+-- The notice is created in SimpleUIPlugin:onCloseDocument and held on
+-- plugin._closing_notice so it can be removed here instead of relying solely
+-- on its timeout=0.0 (which can leave the toast on top of the HS).
+local function closeClosingNotice(plugin)
+    if not plugin then return end
+    local notice = plugin._closing_notice
+    if not notice then return end
+    plugin._closing_notice = nil
+    UI.Notify.close(notice)
+end
+
+-- True once Exit/Restart has started. _exit_code is only set after the
+-- window stack is empty, so reopen guards must use this earlier flag.
+local function isAppExiting()
+    return UIManager._simpleui_exiting or UIManager._exit_code ~= nil
+end
+
+-- Cold-path HS show: activate the homescreen tab in the FM bar, then call
+-- HS.show() with the standard callbacks.  Sets _navbar_prev_action on the
+-- freshly-created instance.
+-- Caller must guard against HS._instance already being set (warm path).
+local function _showHSCold(plugin_ref, HS_ref, prev_action)
+    if isAppExiting() then return end
+    Perf.mark("showHSCold start")
+    local tabs = Config.loadTabConfig()
+    Bottombar.setActiveAndRefreshFM(plugin_ref, "homescreen", tabs)
+    _ensureGoalCallback(plugin_ref)
+    HS_ref.show(_makeQaTap(plugin_ref), plugin_ref._goalTapCallback)
+    local inst = HS_ref._instance
+    if inst then inst._navbar_prev_action = prev_action end
+    closeClosingNotice(plugin_ref)
+end
+
+-- Close all non-fullscreen widgets on the stack except the FM.
+-- True only for auto-dismissing notices (InfoMessage toasts, loading flashes).
+-- A real dialog may carry a timeout for auto-close *and* still be interactive
+-- (buttons, input). Require a positive timeout and no interactive chrome so
+-- Tools → plugin screens (achievements, Frotz, ConfirmBox, …) are never swept
+-- by the homescreen-restore path.
+local function _isTransientToast(w)
+    if not w then return false end
+    local t = w.timeout
+    if type(t) ~= "number" or t <= 0 then return false end
+    -- Interactive surfaces: button rows, movable input, or an explicit buttons table.
+    if w.buttons or w.button_table or w.movable then return false end
+    if w.textinput or w.input or w.input_dialog then return false end
+    return true
+end
+
+-- Used before restoring the homescreen so orphaned toasts are gone.
+-- Only auto-dismissing notices are swept; real dialogs stay on the stack.
+local function _closeOrphanedPopups(fm_ref, hs_inst)
+    local stack    = UI.getWindowStack()
+    local to_close = {}
+    for _, entry in ipairs(stack) do
+        local w = entry.widget
+        if w and w ~= fm_ref and not w.covers_fullscreen
+                and not (hs_inst and w == hs_inst)
+                and _isTransientToast(w) then
+            to_close[#to_close + 1] = w
+        end
+    end
+    for _, w in ipairs(to_close) do UIManager:close(w) end
+end
+
+-- ---------------------------------------------------------------------------
+-- Private helpers
+-- ---------------------------------------------------------------------------
+
+local isStartWithHS = Config.isStartWithHomescreen
+
+-- Linear search used in low-frequency paths (boot, resume).
+-- Hot paths build a set with tabsToSet() instead.
+local function tabInTabs(id, tabs)
+    for _, v in ipairs(tabs) do
+        if v == id then return true end
+    end
+    return false
+end
+
+-- Converts a tab list to a hash-set for O(1) membership tests.
+local function tabsToSet(tabs)
+    local s = {}
+    for _, v in ipairs(tabs) do s[v] = true end
+    return s
+end
+
+-- Returns the live FM instance from package.loaded, or nil.
+local function liveFM()
+    local mod = package.loaded["apps/filemanager/filemanager"]
+    return mod and mod.instance
+end
+
+-- Returns the live homescreen module from package.loaded, or nil.
+local function liveHS()
+    return package.loaded["screens/sui_homescreen"]
+end
+
+-- True when the file manager main menu is open above the stack entry at index
+-- `from`. The menu belongs to the screen beneath it, so that screen has to
+-- stay alive for as long as the menu is open.
+local function _mainMenuOpenAbove(stack, from, fm)
+    local container = fm and fm.menu and fm.menu.menu_container
+    if not container then return false end
+    for i = from + 1, #stack do
+        if stack[i].widget == container then return true end
+    end
+    return false
+end
+
+-- ---------------------------------------------------------------------------
+-- FileManager class patches
+-- Patches setupLayout, initGesListener, FileChooser.init, and FileChooser.changeToPath.
+-- Also wires up the per-instance event handlers: onShow, onCloseAllMenus,
+-- onPathChanged, onSetRotationMode, and the D-pad navbar keyboard focus system.
+-- ---------------------------------------------------------------------------
+
+local FM_LAYOUT_STATE = "_simpleui_fm_layout"
+
+function M.patchFileManagerClass(plugin)
+    local FileManager      = require("apps/filemanager/filemanager")
+
+    -- Refresh the shared "live plugin" pointer on every call -- including
+    -- when setup_already_patched is true below.  This is what lets the
+    -- one-time-installed setupLayout/onShow/onPathChanged closures (which
+    -- captured a `plugin` upvalue from the very first installation) find
+    -- their way back to the current instance instead of silently operating
+    -- on a stale one after the FM is recreated (e.g. after returning from
+    -- the reader, after a rotation reinit, or around a suspend/resume cycle
+    -- that tears down and rebuilds the FileManager).
+    _live_plugin = plugin
+
+    -- Guard: only wrap FileManager.setupLayout once per session.
+    --
+    -- patchFileManagerClass is called by installAll on every FM lifecycle event
+    -- (including when a new FM instance is created after returning from the reader).
+    -- Without this guard, each call adds another wrapper_A on top of the existing
+    -- chain.  The outermost wrapper_A calls wrapWithNavbar AFTER patchWallpaperFM's
+    -- wrapper_B has already cleared backgrounds, producing a fresh outer
+    -- FrameContainer with COLOR_WHITE that nobody clears → wallpaper disappears.
+    --
+    -- The hook state lives on the FileManager class table so it survives FM instance
+    -- recreation.  teardownAll releases it so a full disable→enable cycle reinstalls
+    -- the wrapper cleanly.
+    local layout_state = _acquireHooks(FileManager, FM_LAYOUT_STATE, plugin)
+    local setup_already_patched = layout_state == nil
+    -- orig_setupLayout is declared here (outer scope) so the setupLayout closure
+    -- below can capture it even though both are inside the guard block.
+    local orig_setupLayout = layout_state and FileManager.setupLayout
+
+    -- Navbar touch zones must be processed before FileChooser scroll children.
+    UI.applyGesturePriorityHandleEvent(FileManager)
+
+    -- Fix: the native filemanager_swipe handler does not return true, so the
+    -- event propagates a second time through WidgetContainer children and every
+    -- horizontal swipe advances two pages instead of one. Re-register the zone
+    -- with a handler that returns true to consume the event after the page turn.
+    -- North/south swipes are intentionally not consumed so FileManagerMenu's
+    -- zones can catch them and open the top menu.
+    local orig_initGesListener = FileManager.initGesListener
+    local function initGesListener(fm_self)
+        orig_initGesListener(fm_self)
+        fm_self:registerTouchZones({
+            {
+                id          = "filemanager_swipe",
+                ges         = "swipe",
+                screen_zone = { ratio_x = 0, ratio_y = 0, ratio_w = 1, ratio_h = 1 },
+                handler = function(ges)
+                    if ges.direction == "south" or ges.direction == "north" then
+                        return false
+                    end
+                    fm_self:onSwipeFM(ges)
+                    return true
+                end,
+            },
+        })
+    end
+    if layout_state then _addHook(layout_state, FileManager, "initGesListener", initGesListener) end
+
+    -- ---------------------------------------------------------------------
+    -- Home Button → Homescreen (class-level, patched once per session).
+    --
+    -- Natively FileManager:onHome() calls file_chooser:goHome()/setHome() —
+    -- it navigates the file browser, never the SimpleUI Homescreen. When the
+    -- "Home Button Opens Home Screen" behaviour setting is on, the Home key
+    -- should always land on the Homescreen, whether pressed from inside the
+    -- reader (see wireReaderHomeKey) or from the file manager. This mirrors
+    -- onSimpleUIGoHomescreen's own outside-the-reader branch, so behaviour
+    -- stays identical to using the "Go to Homescreen" gesture.
+    --
+    -- Gated on Config.deviceHasHomeKey() (event_map contains "Home"), not on
+    -- a single platform — PocketBook, reMarkable, Cervantes, Sony, Kindle
+    -- models with a Home key, and similar devices all share the same path.
+    --
+    -- Class-level like initGesListener above (FileManager instances are
+    -- recreated often); resolves the live plugin via _live_plugin so the
+    -- closure never operates on a stale instance.
+    -- ---------------------------------------------------------------------
+    if not FileManager._simpleui_home_patched and Config.deviceHasHomeKey() then
+        FileManager._simpleui_home_patched = true
+        local orig_onHome = FileManager.onHome
+        FileManager.onHome = function(fm_self, ...)
+            if SUISettings:isTrue("simpleui_home_key_opens_hs") then
+                local plugin_now = _live_plugin or plugin
+                local tabs = Config.loadTabConfig()
+                plugin_now:_navigate("homescreen", fm_self, tabs, false)
+                return true
+            end
+            return orig_onHome(fm_self, ...)
+        end
+    end
+
+    if not setup_already_patched then
+    FileManager.setupLayout = function(fm_self)
+        -- Resolve the live plugin instance rather than relying on the
+        -- `plugin` upvalue captured when this closure was installed (which
+        -- only happens once per session -- see setup_already_patched above).
+        -- Without this, a FM recreated later in the session (e.g. returning
+        -- from the reader, a rotation reinit, or after a suspend/resume
+        -- cycle) would read/write active_action on a stale, disconnected
+        -- plugin instance -- the visible symptom being the navbar indicator
+        -- not following actual navigation (e.g. staying lit on "Homescreen"
+        -- after tapping into the Library).
+        local plugin = _live_plugin or plugin
+        -- Reset the "first show" guard so onShow reinitialises on the next open.
+        fm_self._navbar_already_shown = nil
+
+        -- Reopen any screen (the built-in Homescreen or a Custom Screen)
+        -- that closed itself for a cross-family rotation -- see
+        -- ScreenWidget:onSetRotationMode in engines/sui_screen_engine.lua.
+        -- Done synchronously here, before setupLayout returns, so the
+        -- reopened screen is on the UIManager stack before the event loop
+        -- drains and paints anything -- an FM flash occurs otherwise, since
+        -- a scheduleIn(0) callback would run after the FM's own repaint.
+        -- We cannot rely on onShow here because the FM is already on the
+        -- UIManager stack during reinit -- onShow only fires on first push.
+        local ScreenEngine = liveHS()
+        for _, pending in pairs(UI.takePendingRotationReopens()) do
+            -- Clear the FM invisible flag so it's repaintable again once the
+            -- reopened screen is later closed normally.
+            local fm2 = liveFM()
+            if fm2 then fm2.invisible = nil end
+            _ensureGoalCallback(plugin)
+            local qa_tap   = pending.on_qa_tap   or _makeQaTap(plugin)
+            local goal_tap = pending.on_goal_tap or plugin._goalTapCallback
+            if ScreenEngine then
+                ScreenEngine._open(pending.instance_cfg, qa_tap, goal_tap)
+            end
+        end
+
+        -- Patch FileChooser once on the class (not per instance) to shrink it
+        -- to the content area and to flag external path changes.
+        local FileChooser = require("ui/widget/filechooser")
+        if not FileChooser._navbar_patched then
+            local orig_fc_init         = FileChooser.init
+            local orig_fc_changeToPath = FileChooser.changeToPath
+            plugin._orig_fc_init       = orig_fc_init
+            FileChooser._navbar_patched = true
+
+            -- Shrink the file chooser to leave room for the navbar.
+            FileChooser.init = function(fc_self)
+                if fc_self.height == nil and fc_self.width == nil then
+                    fc_self.height = UI.getContentHeight()
+                    fc_self.y      = UI.getContentTop()
+                end
+                orig_fc_init(fc_self)
+            end
+
+            -- When an external caller (e.g. native "Show Folder") changes the
+            -- path, set a flag so _doShowHS skips re-opening the homescreen.
+            -- SimpleUI's own path changes raise _navbar_suppress_path_change
+            -- before calling, so they never trigger this flag.
+            FileChooser.changeToPath = function(fc_self, path, focused_path)
+                local fm_ref = liveFM()
+                if fm_ref and fc_self.ui == fm_ref
+                        and not fm_ref._navbar_suppress_path_change then
+                    -- Do not set the flag while a book is being opened;
+                    -- changeToPath can be triggered mid-open and would cause
+                    -- ReaderUI to get the "No reader engine" error.
+                    local RUI = package.loaded["apps/reader/readerui"]
+                    if not (RUI and RUI.instance) then
+                        fm_ref._sui_show_folder_pending = true
+                    end
+                end
+                return orig_fc_changeToPath(fc_self, path, focused_path)
+            end
+        end
+
+        -- Patch FileManager.reinit so that external callers requesting a folder
+        -- work correctly when the homescreen is on top.
+        --
+        -- Without this, reinit() silently rebuilds the FM underneath the
+        -- homescreen and the user never sees the target folder.
+        --
+        -- When the homescreen IS open we skip reinit entirely and instead:
+        --   1. Close the homescreen intentionally (suppresses _doShowHS reopen).
+        --   2. Navigate the already-visible FM to the requested path directly,
+        --      bypassing the onShow "go home" reset that showFiles would trigger.
+        --   3. Rebuild the navbar bar with the Library tab active.
+        --   4. Set _sui_show_folder_pending so that the calling TouchMenu closing
+        --      afterwards does not trigger another _doShowHS.
+        -- When the homescreen is NOT open the call is a transparent pass-through.
+        if not FileManager._simpleui_reinit_patched then
+            FileManager._simpleui_reinit_patched = true
+            local orig_reinit = FileManager.reinit
+            FileManager.reinit = function(fm_self, path, focused_file)
+                -- Rotation calls reinit with path=nil; pass those through
+                -- unconditionally — they must go through orig_reinit so that
+                -- setupLayout rebuilds the FM at the new screen dimensions.
+                if not path then
+                    return orig_reinit(fm_self, path, focused_file)
+                end
+
+                local HS      = liveHS()
+                local hs_inst = HS and HS._instance
+
+                -- Resolve the target path the same way reinit would.
+                local ffiUtil = require("ffi/util")
+                local resolved = ffiUtil.realpath(path) or path
+
+                -- Detect whether a foreign fullscreen widget (History,
+                -- Collections, etc.) is on top of the FM. These widgets sit
+                -- above the FM in the UIManager stack and cover it entirely;
+                -- orig_reinit would call setupLayout and rebuild the FM
+                -- underneath them, producing a visible glitch. Instead we
+                -- close every such widget first, then navigate manually.
+                --
+                -- Strategy: collect every widget above the FM that is neither
+                -- the FM itself nor the SimpleUI homescreen (already handled
+                -- via hs_inst), then close them all before proceeding.
+                local overlays = {}
+                if not hs_inst then
+                    local stack = UI.getWindowStack()
+                    -- Stack is bottom-to-top; find the FM position first.
+                    local fm_pos = 0
+                    for i, entry in ipairs(stack) do
+                        if entry.widget == fm_self then fm_pos = i; break end
+                    end
+                    -- Everything above the FM that is not the HS is an overlay.
+                    for i = fm_pos + 1, #stack do
+                        local w = stack[i].widget
+                        if w then overlays[#overlays + 1] = w end
+                    end
+                end
+
+                -- Pass-through when nothing special is on top: orig_reinit is
+                -- correct and complete for the plain FM case.
+                if not hs_inst and #overlays == 0 then
+                    return orig_reinit(fm_self, path, focused_file)
+                end
+
+                -- From here: either the HS is open, or foreign widgets sit
+                -- above the FM. Close them all before navigating.
+
+                -- 1a. Close the homescreen intentionally (only when open).
+                if hs_inst then
+                    hs_inst._navbar_closing_intentionally = true
+                    pcall(function() UIManager:close(hs_inst) end)
+                    hs_inst._navbar_closing_intentionally = nil
+                end
+
+                -- 1b. Close any overlay widgets (History, Collections, …)
+                --     top-to-bottom so each close is clean.
+                for i = #overlays, 1, -1 do
+                    pcall(function() UIManager:close(overlays[i]) end)
+                end
+
+                -- 2. Navigate the FM to the requested path.
+                --    Suppress onPathChanged — we rebuild the bar explicitly below.
+                if fm_self.file_chooser and resolved then
+                    fm_self._navbar_suppress_path_change = true
+                    pcall(function() fm_self.file_chooser:changeToPath(resolved) end)
+                    fm_self._navbar_suppress_path_change = nil
+                end
+
+                -- 3. Update the title bar to show the new path.
+                if fm_self.updateTitleBarPath then
+                    pcall(function() fm_self:updateTitleBarPath(resolved, false) end)
+                end
+
+                -- 4. Activate the Library ("home") tab.
+                local sui = fm_self._simpleui_plugin
+                if sui then sui.active_action = "home" end
+                if fm_self._navbar_container then
+                    Bottombar.showActiveTab(fm_self, "home", Config.loadTabConfig())
+                end
+
+                -- 5. Suppress _doShowHS for the TouchMenu that closes after
+                --    the calling menu callback returns (relevant for hs_inst
+                --    case; harmless when only an overlay is present).
+                fm_self._sui_show_folder_pending = true
+            end
+        end
+
+        -- The title bar is built inside setupLayout and sizes the file chooser, so
+        -- its style metrics have to apply during the build.
+        Titlebar().runWithStyleMetrics(orig_setupLayout, fm_self)
+
+        -- Current screen geometry, compared below with the values stored by
+        -- the previous call.
+        local cur_w = Screen:getWidth()
+        local cur_h = Screen:getHeight()
+        local cur_gen = UI.getRotationGeneration()
+        local cur_mode = Screen:getRotationMode()
+        -- A rotation is detected from any of: width x height, rotation
+        -- generation, or rotation mode. A 180° flip keeps width x height, and a
+        -- rotation handled by the file manager alone does not bump the
+        -- generation, so each signal covers a case the others miss.
+        -- Fields stored on the instance start out nil on a freshly built file
+        -- manager; _has_prior_layout keeps that first call from counting as a
+        -- change.
+        local _has_prior_layout = (fm_self._navbar_layout_w ~= nil)
+        local _dims_changed = _has_prior_layout and (
+            fm_self._navbar_layout_w ~= cur_w
+            or fm_self._navbar_layout_h ~= cur_h
+            or fm_self._navbar_layout_gen ~= cur_gen
+            or fm_self._navbar_layout_mode ~= cur_mode)
+
+        -- Bar metrics are cached until invalidated. A rotation handled here
+        -- must drop that cache so the bars are measured for the new geometry.
+        if _dims_changed then
+            UI.invalidateDimCache()
+            logger.dbg("simpleui[rotation]: setupLayout invalidating dim cache",
+                "old_w=", fm_self._navbar_layout_w, "old_h=", fm_self._navbar_layout_h,
+                "new_w=", cur_w, "new_h=", cur_h,
+                "old_gen=", fm_self._navbar_layout_gen, "new_gen=", cur_gen,
+                "old_mode=", fm_self._navbar_layout_mode, "new_mode=", cur_mode)
+        end
+
+        -- Re-apply title-bar customisations to the fresh TitleBar instance that
+        -- orig_setupLayout just created.  We must use reapply (restore + apply)
+        -- rather than apply alone: apply guards itself with _titlebar_patched so
+        -- it is a no-op on subsequent calls (e.g. after a rotation reinit) unless
+        -- the flag is cleared first.  The restore step is safe on a brand-new
+        -- title_bar because apply() overwrites all geometry afterwards anyway.
+        Titlebar().reapply(fm_self)
+
+        -- The original setupLayout always rebuilds file_chooser, title_bar and
+        -- layout, so the content widget is taken fresh on every call and wrapped
+        -- once. fm_self[1] is raw content at this point, never an already
+        -- wrapped tree. The geometry is stored for the next call's comparison.
+        local inner_widget = fm_self[1]
+        fm_self._navbar_inner      = inner_widget
+        fm_self._navbar_layout_w    = cur_w
+        fm_self._navbar_layout_h    = cur_h
+        fm_self._navbar_layout_gen  = cur_gen
+        fm_self._navbar_layout_mode = cur_mode
+
+        local tabs = Config.loadTabConfig()
+        -- Recalculate the correct indicator from the FC path before wrapping.
+        -- When setupLayout runs after the reader closes, plugin.active_action
+        -- may already be "homescreen" (set by the screen reopen step to prepare
+        -- the HS re-open). The wrapWithNavbar call below would then build the
+        -- bar with "homescreen" active. Resolving the tab from the path keeps
+        -- the bar correct from the start, independently of the HS lifecycle.
+        local _wrap_active = plugin.active_action
+        local _fc_now = fm_self.file_chooser
+        if _fc_now and _fc_now.path then
+            _wrap_active = M._resolveTabForPath(_fc_now.path, tabs) or "home"
+        end
+        local navbar_container, wrapped, bar, topbar, bar_idx, topbar_on2, topbar_idx =
+            UI.wrapWithNavbar(inner_widget, _wrap_active, tabs)
+        UI.applyNavbarState(fm_self, navbar_container, bar, topbar, bar_idx, topbar_on2, topbar_idx, tabs)
+        fm_self[1] = wrapped
+        fm_self._simpleui_plugin = plugin
+
+        -- Resize pagination buttons (chevrons) on every setupLayout call so that
+        -- they use the correct Simple UI size after rotation rebuilds the FM.
+        -- onShow only fires on the first push to the UIManager stack, so without
+        -- this the buttons keep their default KOReader size after a rotation.
+        Bottombar.resizePaginationButtons(fm_self.file_chooser or fm_self, Bottombar.getPaginationIconSize())
+
+        -- After a rotation, the strip below the file chooser (the bottom bar) is
+        -- not part of any repaint the menu requests, and a partial refresh
+        -- leaves ghosting when the whole content changes orientation. A full
+        -- repaint is requested on the next UI tick, separate from the dirty
+        -- marks raised during this call.
+        if _dims_changed then
+            UIManager:scheduleIn(0, function()
+                UIManager:setDirty(fm_self, "full")
+            end)
+        end
+
+        plugin:_updateFMHomeIcon()
+
+        -- On the very first boot, schedule the homescreen auto-open for onShow.
+        if not _hs_boot_done then
+            _hs_boot_done = true
+            -- Note: we intentionally do NOT require the "homescreen" tab to be
+            -- present in the navbar. "Start with Home Screen" is a launch
+            -- behaviour, independent of whether the user has kept the tab.
+            logger.info("simpleui[diag]: first FM setupLayout start_with_hs=", isStartWithHS())
+            if isStartWithHS() then
+                plugin.active_action      = "homescreen"
+                fm_self._hs_autoopen_pending = true
+            end
+        end
+
+        -- onShow: fires once the FM is on the UIManager stack.
+        local orig_onShow = fm_self.onShow
+        fm_self.onShow = function(this)
+            Perf.mark("FileManager onShow start")
+            if orig_onShow then orig_onShow(this) end
+            Perf.mark("FileManager orig onShow done")
+            Bottombar.resizePaginationButtons(this.file_chooser or this, Bottombar.getPaginationIconSize())
+
+            -- Open the homescreen if it was flagged at setupLayout time (boot or rotation).
+            if this._hs_autoopen_pending then
+                this._hs_autoopen_pending = nil
+                local rot_qa_tap   = this._hs_rotation_on_qa_tap
+                local rot_goal_tap = this._hs_rotation_on_goal_tap
+                this._hs_rotation_on_qa_tap   = nil
+                this._hs_rotation_on_goal_tap = nil
+                UIManager:scheduleIn(0, function()
+                    local HS = liveHS() or (function()
+                        local ok, m = pcall(require, "screens/sui_homescreen"); return ok and m
+                    end)()
+                    if HS then
+                        _ensureGoalCallback(plugin)
+                        local qa_tap   = rot_qa_tap   or _makeQaTap(plugin)
+                        local goal_tap = rot_goal_tap or plugin._goalTapCallback
+                        HS.show(qa_tap, goal_tap)
+                    end
+                end)
+                return
+            end
+
+            -- Only run the "go home" reset on the first genuine show of this FM
+            -- instance. Skip it when the FM reappears after a sub-widget closes.
+            if this._navbar_already_shown then return end
+            this._navbar_already_shown = true
+
+            if this._navbar_container then
+                local t = Config.loadTabConfig()
+                -- The book-close target only applies to native reader closes
+                -- (KOReader onClose → showFileManager without an explicit SimpleUI
+                -- destination). Explicit paths (Homescreen, Library, …) never set
+                -- the pending flag and always force their own landing path.
+                local pending_folder = this._sui_return_to_book_folder_pending
+                this._sui_return_to_book_folder_pending = nil
+                local return_to_folder = pending_folder or Config.returnsToBookFolder()
+                if not return_to_folder then
+                    plugin.active_action = "home"
+                    local home = G_reader_settings:readSetting("home_dir")
+                    if home and this.file_chooser then
+                        -- Suppress onPathChanged: replaceBar below handles the bar.
+                        this._navbar_suppress_path_change = true
+                        this.file_chooser:changeToPath(home)
+                        this._navbar_suppress_path_change = nil
+                        -- Explicitly clear the subtitle since onPathChanged was skipped.
+                        if this.updateTitleBarPath then
+                            this:updateTitleBarPath(home, true)
+                        end
+                    end
+                end
+                local active = return_to_folder
+                    and M._resolveTabForPath(this.file_chooser and this.file_chooser.path, t)
+                    or "home"
+                Bottombar.showActiveTab(this, active, t)
+            end
+        end
+
+        -- onCloseAllMenus: fires when the KOReader main menu (TouchMenu) closes.
+        -- Re-registers touch zones and repaints the bar so stale handlers are fixed.
+        -- Also refreshes the homescreen QA tap callback: if the device suspended
+        -- while the touch menu was open over the homescreen, the HS survives but
+        -- its _on_qa_tap may be stale.  Refreshing it here covers the case where
+        -- the user simply closes the touch menu without sleeping (e.g. back-key),
+        -- and also acts as a safety net complementing the onResume fix.
+        local orig_onCloseAllMenus = fm_self.onCloseAllMenus
+        fm_self.onCloseAllMenus = function(this)
+            if orig_onCloseAllMenus then orig_onCloseAllMenus(this) end
+            -- Refresh the live homescreen's QA tap callback first so it is
+            -- current before any repaint that follows.
+            local HS_live = liveHS()
+            if HS_live and HS_live._instance then
+                HS_live._instance._on_qa_tap = _makeQaTap(plugin)
+            end
+            if not this._navbar_container then return end
+            -- Skip the bar update when navigate() set _navbar_tab_nav_in_progress:
+            -- navigate() updates the bar right after this returns.
+            if this._navbar_tab_nav_in_progress then return end
+            local t = Config.loadTabConfig()
+            plugin:_registerTouchZones(this)
+            Bottombar.setActiveTab(this, plugin.active_action, t)
+            Bottombar.repaintBar(this)
+            -- The menu tab bar overlaps the topbar: refresh the topbar region
+            -- so nothing of the closed menu stays on screen. The box is read
+            -- lazily, once the paint pass has positioned the topbar.
+            local bar_topbar = this._navbar_topbar
+            if bar_topbar then
+                UIManager:setDirty(this, function() return "ui", bar_topbar.dimen end)
+            end
+        end
+
+        plugin:_registerTouchZones(fm_self)
+
+        -- onPathChanged: update the active tab when the user navigates directories.
+        -- Skipped when _navbar_suppress_path_change is set (programmatic navigation).
+        fm_self.onPathChanged = function(this, new_path)
+            if this._navbar_suppress_path_change then return end
+
+            -- Normalise home_dir once and pass it down to avoid a second read.
+            local home_dir_norm = (G_reader_settings:readSetting("home_dir") or ""):gsub("/$", "")
+            if this.updateTitleBarPath then
+                local is_home = new_path and (new_path:gsub("/$", "") == home_dir_norm)
+                this:updateTitleBarPath(new_path, is_home or nil)
+            end
+
+            local t          = Config.loadTabConfig()
+            local new_active = M._resolveTabForPath(new_path, t, home_dir_norm) or "home"
+            plugin.active_action = new_active
+            if this._navbar_container then
+                Bottombar.showActiveTab(this, new_active, t)
+            end
+            plugin:_updateFMHomeIcon()
+
+            -- Marks the file browser as visited since the last homescreen
+            -- close (consumed by ScreenWidget:onCloseWidget).
+            local HS = liveHS()
+            if HS then HS._library_was_visited = true end
+        end
+
+        -- Navbar keyboard focus (D-pad devices only).
+        -- Pushes a transparent InputContainer that captures directional keys
+        -- while the user navigates tabs, then pops itself on Press or Back.
+        local function _enterNavbarKbFocus(return_fn)
+            if not Device:hasDPad() then return end
+            if not SUISettings:nilOrTrue("simpleui_bar_enabled") then return end
+            if _navbar_kb_capture then return end  -- already active
+
+            _navbar_kb_return_fn = return_fn or false
+
+            -- Find the index of the currently active tab.
+            local tabs = Config.loadTabConfig()
+            _navbar_kb_idx = 1
+            for i, t in ipairs(tabs) do
+                if t == plugin.active_action then _navbar_kb_idx = i; break end
+            end
+
+            -- Draw the bar with a focus-border on the active tab.
+            local target0 = M._getNavbarTarget and M._getNavbarTarget(liveFM()) or liveFM()
+            if target0 then
+                Bottombar.replaceBar(target0,
+                    Bottombar.buildBarWidgetWithKeyFocus(plugin.active_action, tabs, _navbar_kb_idx),
+                    tabs)
+                UIManager:setDirty(target0, "ui")
+            end
+
+            -- Build the transparent key-capture overlay.
+            local InputContainer = require("ui/widget/container/inputcontainer")
+            local Geom           = require("ui/geometry")
+            local capture = InputContainer:new{
+                dimen             = Geom:new{ x = 0, y = 0, w = Screen:getWidth(), h = Screen:getHeight() },
+                covers_fullscreen = false,
+            }
+            function capture:paintTo() end  -- fully transparent
+
+            local function _moveNavbar(delta)
+                local t2      = Config.loadTabConfig()
+                _navbar_kb_idx = ((_navbar_kb_idx - 1 + delta + #t2) % #t2) + 1
+                local target2 = M._getNavbarTarget and M._getNavbarTarget(liveFM()) or liveFM()
+                if target2 then
+                    Bottombar.replaceBar(target2,
+                        Bottombar.buildBarWidgetWithKeyFocus(plugin.active_action, t2, _navbar_kb_idx),
+                        t2)
+                    UIManager:setDirty(target2, "ui")
+                end
+            end
+
+            local function _exitNavbarKb()
+                _navbar_kb_capture = nil
+                UIManager:close(capture)
+                -- Restore the unfocused bar.
+                local fm2     = liveFM()
+                local target2 = M._getNavbarTarget and M._getNavbarTarget(fm2) or fm2
+                if target2 then
+                    local t2 = Config.loadTabConfig()
+                    Bottombar.replaceBar(target2, Bottombar.buildBarWidget(plugin.active_action, t2), t2)
+                    UIManager:setDirty(target2, "ui")
+                end
+                -- Call the return callback, or restore focus to the file chooser.
+                local ret_fn = _navbar_kb_return_fn
+                _navbar_kb_return_fn = nil
+                if ret_fn then
+                    ret_fn()
+                else
+                    local FC = package.loaded["ui/widget/filechooser"]
+                    local fm2i = liveFM()
+                    local fc   = FC and fm2i and fm2i.file_chooser
+                    if fc and fc.layout then
+                        fc:moveFocusTo(1, #fc.layout, FocusManager().FORCED_FOCUS)
+                    end
+                end
+            end
+
+            capture.key_events = {
+                NavbarKbLeft  = { { "Left"  } },
+                NavbarKbRight = { { "Right" } },
+                NavbarKbPress = { { "Press" } },
+                NavbarKbUp    = { { "Up"    } },
+            }
+            if Device.input and Device.input.group and Device.input.group.Back then
+                capture.key_events.NavbarKbBack = { { Device.input.group.Back } }
+            end
+
+            function capture:onNavbarKbLeft()  _moveNavbar(-1); return true end
+            function capture:onNavbarKbRight() _moveNavbar(1);  return true end
+            function capture:onNavbarKbUp()    _exitNavbarKb(); return true end
+            function capture:onNavbarKbBack()  _exitNavbarKb(); return true end
+            function capture:onNavbarKbPress()
+                _navbar_kb_capture = nil
+                UIManager:close(capture)
+                local t2     = Config.loadTabConfig()
+                local action = t2[_navbar_kb_idx]
+                local fm2    = liveFM()
+                if action and fm2 then
+                    local target = M._getNavbarTarget and M._getNavbarTarget(fm2) or fm2
+                    plugin:_navigate(action, target, t2, false)
+                end
+                return true
+            end
+
+            _navbar_kb_capture = capture
+            UIManager:show(capture)
+        end
+
+        -- Expose for ScreenWidget:onScreenFocusDown.
+        _enterNavbarKbFocus_fn = _enterNavbarKbFocus
+
+        -- On D-pad devices, pressing Down at the last file enters navbar focus
+        -- instead of wrapping back to the top of the list.
+        if Device:hasDPad() and fm_self.file_chooser then
+            local fc = fm_self.file_chooser
+            if rawget(fc, "_wrapAroundY") == nil then
+                local origWrapY = fc._wrapAroundY
+                fc._wrapAroundY = function(self_fc, dy)
+                    if dy > 0 and self_fc.page == (self_fc.total_pages or 1) then
+                        _enterNavbarKbFocus()
+                    else
+                        return origWrapY(self_fc, dy)
+                    end
+                end
+            end
+        end
+    end
+    _trackHooks(layout_state, { { FileManager, "setupLayout", orig_setupLayout } })
+    end -- if not setup_already_patched
+end
+
+-- ---------------------------------------------------------------------------
+-- Tab-to-path resolver
+-- Returns the tab id whose configured path matches the given filesystem path,
+-- or nil if no tab matches.
+-- Pass home_dir_norm when the caller has already read and normalised home_dir
+-- to avoid a redundant settings read.
+-- ---------------------------------------------------------------------------
+
+function M._resolveTabForPath(path, tabs, home_dir_norm)
+    if not path then return nil end
+    path = path:gsub("/$", "")
+    if home_dir_norm == nil then
+        local hd = G_reader_settings:readSetting("home_dir")
+        home_dir_norm = hd and hd:gsub("/$", "") or false
+    end
+    for _, tab_id in ipairs(tabs) do
+        if tab_id == "home" then
+            if home_dir_norm and path == home_dir_norm then return "home" end
+        elseif tab_id:match("^custom_qa_%d+$") then
+            local cfg = Config.getCustomQAConfig(tab_id)
+            if cfg.path and path == cfg.path:gsub("/$", "") then
+                return tab_id
+            end
+        end
+    end
+    return nil
+end
+
+-- Public entry point for ScreenWidget:onScreenFocusDown.
+function M.enterNavbarKbFocus(return_fn)
+    if _enterNavbarKbFocus_fn then
+        _enterNavbarKbFocus_fn(return_fn)
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- "Start with Home Screen" menu entry
+-- Injects the HomeScreen radio item into KOReader's Start With submenu.
+-- Patched once per session; a flag on the class prevents double-patching.
+-- ---------------------------------------------------------------------------
+
+function M.patchStartWithMenu()
+    local FileManagerMenu = package.loaded["apps/filemanager/filemanagermenu"]
+    if not FileManagerMenu then
+        local ok, m = pcall(require, "apps/filemanager/filemanagermenu")
+        FileManagerMenu = ok and m or nil
+    end
+    if not FileManagerMenu then return end
+    if FileManagerMenu._simpleui_startwith_patched then return end
+    local orig_fn = FileManagerMenu.getStartWithMenuTable
+    if not orig_fn then return end
+
+    FileManagerMenu._simpleui_startwith_patched = true
+    FileManagerMenu._simpleui_startwith_orig    = orig_fn
+
+    FileManagerMenu.getStartWithMenuTable = function(fmm_self)
+        local result = orig_fn(fmm_self)
+        local sub    = result.sub_item_table
+        if type(sub) ~= "table" then return result end
+
+        -- Native items read and write "start_with" directly, so only the
+        -- Home Screen radio item needs to be added.
+        table.insert(sub, math.max(1, #sub), {
+            text         = _("Home Screen"),
+            checked_func = Config.isStartWithHomescreen,
+            callback     = function() Config.setStartWithHomescreen(true) end,
+            radio        = true,
+        })
+
+        -- Update the parent item label when Home Screen is the active choice.
+        local orig_text_func = result.text_func
+        result.text_func = function()
+            if Config.isStartWithHomescreen() then
+                return _("Start with") .. ": " .. _("Home Screen")
+            end
+            return orig_text_func and orig_text_func() or _("Start with")
+        end
+        return result
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Widget height patches
+-- Shrink fullscreen widgets so they fit within the content area (below the
+-- navbar). Each patch stores the original constructor so teardownAll can
+-- restore it.
+-- ---------------------------------------------------------------------------
+
+function M.patchBookList(plugin)
+    local BookList    = require("ui/widget/booklist")
+    local orig_bl_new = BookList.new
+    plugin._orig_booklist_new = orig_bl_new
+    BookList.new = function(class, attrs, ...)
+        attrs = attrs or {}
+        if not attrs.height and not attrs._navbar_height_reduced then
+            UI.fitToContentArea(attrs)
+        end
+        return orig_bl_new(class, attrs, ...)
+    end
+end
+
+-- Patches the collections list menu (coll_list) height, and keeps the
+-- SimpleUI collections pool in sync when KOReader renames or deletes a collection.
+function M.patchCollections(plugin)
+    local ok, FMColl = pcall(require, "apps/filemanager/filemanagercollection")
+    if not (ok and FMColl) then return end
+
+    local Menu          = require("ui/widget/menu")
+    local orig_menu_new = Menu.new
+    plugin._orig_menu_new    = orig_menu_new
+    plugin._orig_fmcoll_show = FMColl.onShowCollList
+
+    -- patch_depth gates Menu.new so only menus created during onShowCollList
+    -- have their height reduced.
+    local patch_depth = 0
+
+    local orig_onShowCollList = FMColl.onShowCollList
+    FMColl.onShowCollList = function(fmc_self, ...)
+        patch_depth = patch_depth + 1
+        local ok2, result = pcall(orig_onShowCollList, fmc_self, ...)
+        patch_depth = patch_depth - 1
+        if not ok2 then error(result) end
+        return result
+    end
+
+    Menu.new = function(class, attrs, ...)
+        attrs = attrs or {}
+        if patch_depth > 0
+                and attrs.covers_fullscreen and attrs.is_borderless
+                and attrs.is_popout == false
+                and not attrs.height and not attrs._navbar_height_reduced then
+            UI.fitToContentArea(attrs)
+            attrs.name = attrs.name or "coll_list"
+        end
+        return orig_menu_new(class, attrs, ...)
+    end
+
+    local ok_rc, RC = pcall(require, "readcollection")
+    if not (ok_rc and RC) then return end
+
+    -- Remove a collection from the SimpleUI selected list and cover-override table.
+    local function _removeFromPool(name)
+        local CW = package.loaded["collectionswidget"]
+        if not CW then return end
+        local selected = CW.getSelected()
+        local changed  = false
+        for i = #selected, 1, -1 do
+            if selected[i] == name then
+                table.remove(selected, i)
+                changed = true
+                break  -- names are unique
+            end
+        end
+        if changed then CW.saveSelected(selected) end
+        local overrides = CW.getCoverOverrides()
+        if overrides[name] then
+            overrides[name] = nil
+            CW.saveCoverOverrides(overrides)
+        end
+    end
+
+    -- Rename a collection in the SimpleUI selected list and cover-override table.
+    local function _renameInPool(old_name, new_name)
+        local CW = package.loaded["collectionswidget"]
+        if not CW then return end
+        local selected = CW.getSelected()
+        local changed  = false
+        for i, name in ipairs(selected) do
+            if name == old_name then
+                selected[i] = new_name
+                changed = true
+            end
+        end
+        if changed then CW.saveSelected(selected) end
+        local overrides = CW.getCoverOverrides()
+        if overrides[old_name] then
+            overrides[new_name] = overrides[old_name]
+            overrides[old_name] = nil
+            CW.saveCoverOverrides(overrides)
+        end
+    end
+
+    if type(RC.removeCollection) == "function" then
+        local orig_remove = RC.removeCollection
+        plugin._orig_rc_remove = orig_remove
+        RC.removeCollection = function(rc_self, coll_name, ...)
+            local TBR = package.loaded["modules/module_tbr"]
+            -- The TBR collection cannot be permanently deleted.
+            -- Let RC delete it (so the KOReader UI gets its confirmation flow),
+            -- then immediately recreate it empty and sync settings.
+            local result = orig_remove(rc_self, coll_name, ...)
+            local ok2, err = pcall(function()
+                if TBR and coll_name == TBR.TBR_COLL_NAME then
+                    rc_self:addCollection(TBR.TBR_COLL_NAME)
+                    rc_self:write({ [TBR.TBR_COLL_NAME] = true })
+                    SUISettings:saveSetting("simpleui_tbr_list", {})
+                else
+                    _removeFromPool(coll_name)
+                    Config.purgeQACollection(coll_name)
+                    Config.invalidateTabsCache()
+                end
+                plugin:_scheduleRebuild()
+            end)
+            if not ok2 then logger.warn("simpleui: removeCollection hook:", tostring(err)) end
+            return result
+        end
+    end
+
+    if type(RC.renameCollection) == "function" then
+        local orig_rename = RC.renameCollection
+        plugin._orig_rc_rename = orig_rename
+        RC.renameCollection = function(rc_self, old_name, new_name, ...)
+            -- Prevent renaming the TBR collection — its name is the plugin's key.
+            local TBR = package.loaded["modules/module_tbr"]
+            if TBR and old_name == TBR.TBR_COLL_NAME then
+                UI.Notify.toast(_("The «To Be Read» collection cannot be renamed."), 2)
+                return  -- abort
+            end
+            local result = orig_rename(rc_self, old_name, new_name, ...)
+            local ok2, err = pcall(function()
+                _renameInPool(old_name, new_name)
+                Config.renameQACollection(old_name, new_name)
+                plugin:_scheduleRebuild()
+            end)
+            if not ok2 then logger.warn("simpleui: renameCollection hook:", tostring(err)) end
+            return result
+        end
+    end
+
+    -- ---------------------------------------------------------------------------
+    -- TBR hooks on RC.addItem / RC.removeItem:
+    -- Fire only when the user adds/removes books via the *native KOReader*
+    -- collections UI.  The plugin's addTBR/removeTBR functions bypass these
+    -- hooked methods entirely to avoid re-entrancy.
+    -- Responsibilities: enforce the 5-book cap on add; sync G_reader_settings.
+    -- ---------------------------------------------------------------------------
+
+    -- Helper: re-read the TBR list from RC and persist into G_reader_settings.
+    local function _syncTBRSettings(TBR)
+        local list = TBR.getTBRList()
+        SUISettings:saveSetting("simpleui_tbr_list", list)
+    end
+
+    local function _getTBR()
+        return package.loaded["modules/module_tbr"]
+    end
+
+    if type(RC.addItem) == "function" then
+        local orig_add = RC.addItem
+        plugin._orig_rc_additem = orig_add
+        RC.addItem = function(rc_self, file, coll_name, attr, ...)
+            local TBR = _getTBR()
+            orig_add(rc_self, file, coll_name, attr, ...)
+            if TBR and coll_name == TBR.TBR_COLL_NAME then
+                local ok2, err = pcall(function()
+                    _syncTBRSettings(TBR)
+                    plugin:_scheduleRebuild()
+                end)
+                if not ok2 then logger.warn("simpleui: RC.addItem TBR hook:", tostring(err)) end
+            end
+        end
+    end
+
+    if type(RC.removeItem) == "function" then
+        local orig_remove_item = RC.removeItem
+        plugin._orig_rc_removeitem = orig_remove_item
+        RC.removeItem = function(rc_self, file, coll_name, no_write, ...)
+            orig_remove_item(rc_self, file, coll_name, no_write, ...)
+            local TBR = _getTBR()
+            -- coll_name == nil means "remove from all collections".
+            if TBR and (coll_name == TBR.TBR_COLL_NAME or coll_name == nil) then
+                local ok2, err = pcall(function()
+                    _syncTBRSettings(TBR)
+                    plugin:_scheduleRebuild()
+                end)
+                if not ok2 then logger.warn("simpleui: RC.removeItem TBR hook:", tostring(err)) end
+            end
+        end
+    end
+
+    -- Patch FMColl.updateCollListItemTable to:
+    --   1. Hide the TBR collection when it is empty (no books).
+    --   2. Show the localised display name instead of the raw RC key.
+    if type(FMColl.updateCollListItemTable) == "function" then
+        local orig_update = FMColl.updateCollListItemTable
+        plugin._orig_fmcoll_update_coll_list = orig_update
+        FMColl.updateCollListItemTable = function(fmc_self, do_init, item_number)
+            orig_update(fmc_self, do_init, item_number)
+            local TBR = package.loaded["modules/module_tbr"]
+            if not TBR then return end
+            local coll_list = fmc_self.coll_list
+            if not (coll_list and coll_list.item_table) then return end
+            local tbr_name  = TBR.TBR_COLL_NAME
+            local tbr_empty = TBR.getTBRCount() == 0
+            local changed   = false
+            local filtered  = {}
+            for _, item in ipairs(coll_list.item_table) do
+                if item.name == tbr_name then
+                    if tbr_empty then
+                        -- Omit the TBR entry entirely when empty.
+                        changed = true
+                    else
+                        -- Replace the raw key with the localised display name.
+                        local disp = TBR.getDisplayName()
+                        if item.text ~= disp then
+                            item.text = disp
+                            changed   = true
+                        end
+                        filtered[#filtered + 1] = item
+                    end
+                else
+                    filtered[#filtered + 1] = item
+                end
+            end
+            if changed then
+                local new_title
+                pcall(function()
+                    new_title = T(_("Collections (%1)"), #filtered)
+                end)
+                if not new_title then
+                    new_title = "Collections (" .. #filtered .. ")"
+                end
+                coll_list:switchItemTable(new_title, filtered, -1)
+            end
+        end
+    end
+
+    -- Patch FMColl.getCollectionTitle so the TBR collection shows its
+    -- localised name whenever KOReader renders it (e.g. inside a book list).
+    if type(FMColl.getCollectionTitle) == "function" then
+        local orig_title = FMColl.getCollectionTitle
+        plugin._orig_fmcoll_get_coll_title = orig_title
+        FMColl.getCollectionTitle = function(fmc_self, collection_name)
+            local TBR = package.loaded["modules/module_tbr"]
+            if TBR and collection_name == TBR.TBR_COLL_NAME then
+                return TBR.getDisplayName()
+            end
+            return orig_title(fmc_self, collection_name)
+        end
+    end
+end
+
+-- Patches SortWidget and PathChooser to fit inside the content area.
+-- SortWidget also gets a title padding fix and a repaint hook after each sort.
+function M.patchFullscreenWidgets(plugin)
+    local ok_sw, SortWidget  = pcall(require, "ui/widget/sortwidget")
+    local ok_pc, PathChooser = pcall(require, "ui/widget/pathchooser")
+
+    if ok_sw and SortWidget then
+        local ok_tb, TitleBar = pcall(require, "ui/widget/titlebar")
+        local orig_sw_new     = SortWidget.new
+        plugin._orig_sortwidget_new = orig_sw_new
+
+        SortWidget.new = function(class, attrs, ...)
+            attrs = attrs or {}
+            if attrs.covers_fullscreen and not attrs._navbar_height_reduced then
+                UI.fitToContentArea(attrs)
+            end
+            -- Temporarily wrap TitleBar.new to inject horizontal padding, then
+            -- restore it immediately after SortWidget is built.
+            local orig_tb_new
+            if ok_tb and TitleBar and attrs.covers_fullscreen then
+                orig_tb_new = TitleBar.new
+                TitleBar.new = function(tb_class, tb_attrs, ...)
+                    tb_attrs = tb_attrs or {}
+                    tb_attrs.title_h_padding = UI.SIDE_M()
+                    return orig_tb_new(tb_class, tb_attrs, ...)
+                end
+            end
+            local ok_sw2, sw_or_err = pcall(orig_sw_new, class, attrs, ...)
+            if orig_tb_new then TitleBar.new = orig_tb_new end
+            if not ok_sw2 then error(sw_or_err, 2) end
+            local sw = sw_or_err
+            if not attrs.covers_fullscreen then return sw end
+
+            -- Zero the footer height to remove the pagination bar space.
+            local vfooter = sw[1] and sw[1][1] and sw[1][1][2] and sw[1][1][2][1]
+            if vfooter and vfooter[3] and vfooter[3].dimen then
+                vfooter[3].dimen.h = 0
+            end
+
+            -- Force a full repaint after each sort list update.
+            local orig_populate = sw._populateItems
+            if type(orig_populate) == "function" then
+                sw._populateItems = function(self_sw, ...)
+                    local result = orig_populate(self_sw, ...)
+                    UIManager:setDirty(nil, "ui")
+                    return result
+                end
+            end
+            return sw
+        end
+    end
+
+    if ok_pc and PathChooser then
+        local orig_pc_new = PathChooser.new
+        plugin._orig_pathchooser_new = orig_pc_new
+        PathChooser.new = function(class, attrs, ...)
+            attrs = attrs or {}
+            if attrs.covers_fullscreen and not attrs._navbar_height_reduced then
+                UI.fitToContentArea(attrs)
+            end
+            return orig_pc_new(class, attrs, ...)
+        end
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Cover Transition
+-- Shows the book cover full-screen for a brief moment right as the reader
+-- opens or closes, masking the layout/repaint flash that would otherwise be
+-- visible. Deliberately stateless and patch-free: it is only ever called
+-- from the two hooks that already exist for this purpose — the ReaderUI
+-- branch inside the single UIManager.show wrapper below (open side) and
+-- SimpleUIPlugin:onCloseDocument in main.lua (close side). No new
+-- monkey-patch is installed for this feature, so it cannot conflict with
+-- (or duplicate) any other UIManager.show / ReaderUI wrapper a user-supplied
+-- patch may already be maintaining.
+-- ---------------------------------------------------------------------------
+
+local CoverTransition = {}
+M.CoverTransition = CoverTransition
+
+local _ct_widget     = nil
+local _ct_close_task = nil
+
+-- Blitbuffer ownership: normally cover_bb comes straight from the
+-- BookInfoManager cache or from an already-open document — neither of those
+-- is ours to free. The one exception is the best-quality direct-extraction
+-- fallback below, which opens its own temporary document and therefore
+-- returns a bb nothing else is tracking. _ct_owned_bb is only ever set in
+-- that case, and only that bb ever gets :free()'d.
+local _ct_owned_bb = nil
+
+-- Lazy-loaded, same pattern as module_books_shared.getBookInfoManager(): no
+-- package.path manipulation needed, CoverBrowser (if present) has already
+-- registered "bookinfomanager" in package.loaded by the time SimpleUI reads it.
+local _ct_BookInfoManager -- nil = not yet resolved, false = unavailable
+local function _ctBookInfoManager()
+    if _ct_BookInfoManager == nil then
+        local ok, bim = pcall(require, "bookinfomanager")
+        _ct_BookInfoManager = ok and bim or false
+    end
+    return _ct_BookInfoManager or nil
+end
+
+function CoverTransition.isOpenEnabled()
+    return SUISettings:isTrue("simpleui_reader_cover_open")
+end
+
+function CoverTransition.isCloseEnabled()
+    return SUISettings:isTrue("simpleui_reader_cover_close")
+end
+
+-- Off by default (stretch-to-fill, the original behaviour). When on, the
+-- cover keeps its native aspect ratio — scaled to fit inside the screen
+-- rather than stretched to it — with the rest of the screen filled in
+-- black. Only changes how the widget is built in show() below; does not
+-- touch which cover source is used.
+function CoverTransition.isFitEnabled()
+    return SUISettings:isTrue("simpleui_reader_cover_fit")
+end
+
+-- Off by default. Only affects the single moment where no live document is
+-- available yet — the "Opening file '...'." notice substitution, before
+-- ReaderUI has actually loaded anything. In every other case (close side,
+-- and the second open-side call once ReaderUI is up) the cover already
+-- comes straight off the live document at full quality, so this toggle
+-- changes nothing there.
+function CoverTransition.isBestQualityEnabled()
+    return SUISettings:isTrue("simpleui_reader_cover_bestquality")
+end
+
+-- Only source: the CoverBrowser cache DB, if the plugin is installed and has
+-- already indexed the file. Deliberately does NOT fall back to opening the
+-- document directly (unlike a full re-implementation would) — that path
+-- means a second, temporary document render just to grab a thumbnail, which
+-- is the kind of extra SQLite/CRE work this feature exists to hide, not add.
+-- Cache misses simply skip the cover for that one transition, unless
+-- best-quality mode asks for the direct-extraction fallback below.
+local function _ctFindCoverBB(filepath)
+    if not filepath or filepath == "" then return nil end
+    local BIM = _ctBookInfoManager()
+    if not BIM then return nil end
+
+    local ok, info = pcall(function() return BIM:getBookInfo(filepath, true) end)
+    if not ok or not info then return nil end
+    if not info.has_cover or info.ignore_cover or not info.cover_bb then return nil end
+    return info.cover_bb
+end
+
+-- Best-quality fallback: opens the file itself just long enough to pull its
+-- native embedded cover, then closes it again. This is genuine extra I/O on
+-- the opening hot path (document open + provider load), so it is used only
+-- as a last resort — when the caller has no live document AND either the
+-- cache missed or best-quality mode is on — never as the first choice.
+-- Returns bb, true (the `true` marks it as owned: caller must free it).
+local function _ctExtractCoverDirect(filepath)
+    if not filepath or filepath == "" then return nil end
+    local ok_dr, DocumentRegistry = pcall(require, "document/documentregistry")
+    if not ok_dr or not DocumentRegistry or not DocumentRegistry:hasProvider(filepath) then
+        return nil
+    end
+
+    local ok_rui, ReaderUI = pcall(require, "apps/reader/readerui")
+    if not ok_rui or not ReaderUI then return nil end
+
+    local document
+    local ok, cover_bb = pcall(function()
+        local provider = ReaderUI:extendProvider(filepath, DocumentRegistry:getProvider(filepath))
+        document = DocumentRegistry:openDocument(filepath, provider)
+        if not document then return nil end
+        if document.loadDocument and not document:loadDocument(false) then return nil end
+        return document:getCoverPageImage()
+    end)
+
+    if document then
+        pcall(function() document:close() end)
+    end
+
+    if ok and cover_bb then return cover_bb, true end
+    if not ok then
+        logger.warn("simpleui/sui_patches: CoverTransition direct extraction failed", cover_bb)
+    end
+    return nil
+end
+
+-- Public: exposed so other SimpleUI modules can reuse the exact same cover
+-- source instead of re-implementing BookInfoManager lookup.
+--
+-- live_document, when given, is an already-open document object for
+-- `filepath` (e.g. widget.document in the ReaderUI-open branch below, or
+-- ui.document from onCloseDocument while a book is open).
+-- In that case the cover is read straight off the open document — the same
+-- zero-extra-I/O path KOReader's own BookInfo:getCoverImage() uses — instead
+-- of going through BookInfoManager. Custom covers (DocSettings custom cover
+-- file) are still honoured, since that is the one case where a *different*,
+-- normally tiny, file legitimately needs to be opened.
+--
+-- Second return value: true when the returned bb was obtained via the
+-- direct-extraction fallback and is therefore owned by the caller (must be
+-- :free()'d). Always nil/false for the live-document and cache paths, since
+-- those bbs are managed elsewhere (the open document, or BookInfoManager's
+-- own cache) and must never be freed here.
+function CoverTransition.findCoverBB(filepath, live_document)
+    if live_document then
+        local ok, bb = pcall(function()
+            local DocSettings = require("docsettings")
+            local custom_cover = DocSettings:findCustomCoverFile(filepath)
+            if custom_cover then
+                local DocumentRegistry = require("document/documentregistry")
+                local cover_doc = DocumentRegistry:openDocument(custom_cover)
+                if cover_doc then
+                    local cbb = cover_doc:getCoverPageImage()
+                    cover_doc:close()
+                    if cbb then return cbb end
+                end
+            end
+            return live_document:getCoverPageImage()
+        end)
+        if ok and bb then return bb end
+    end
+
+    local cache_bb = _ctFindCoverBB(filepath)
+    if cache_bb and not CoverTransition.isBestQualityEnabled() then
+        return cache_bb
+    end
+
+    -- Cache missed, or best-quality mode wants the sharper source anyway —
+    -- either way this only runs when there is no live document, i.e. the
+    -- single "Opening file '...'." notice-substitution moment.
+    local direct_bb, owned = _ctExtractCoverDirect(filepath)
+    if direct_bb then return direct_bb, owned end
+
+    return cache_bb
+end
+
+function CoverTransition.isShowing()
+    return _ct_widget ~= nil
+end
+
+-- Set by patchReaderShowCoroutine right before calling through to the
+-- original ReaderUI.showReaderCoroutine, and consumed by the very next
+-- UIManager.show call inside the wrapper below (which — in that narrow
+-- window — is always KOReader's own "Opening file '...'." InfoMessage).
+-- A plain string (the file being opened), not a boolean, so the wrapper
+-- doesn't need to re-derive the path from the InfoMessage's translated text.
+CoverTransition._pending_open_file = nil
+
+-- Cancels a pending scheduled close (used when a new transition starts
+-- before the previous one's auto-close has fired).
+local function _ctCancelPendingClose()
+    if _ct_close_task then
+        UIManager:unschedule(_ct_close_task)
+        _ct_close_task = nil
+    end
+end
+
+-- Frees the direct-extraction bb, if there is one. Safe to call unconditionally.
+local function _ctFreeOwnedBB()
+    if not _ct_owned_bb then return end
+    pcall(function() _ct_owned_bb:free() end)
+    _ct_owned_bb = nil
+end
+
+function CoverTransition.close()
+    _ctCancelPendingClose()
+    if _ct_widget then
+        pcall(function() UIManager:close(_ct_widget) end)
+        _ct_widget = nil
+    end
+    _ctFreeOwnedBB()
+end
+
+-- Builds the actual cover widget. Stretch (default) fills the screen exactly,
+-- distorting the cover's aspect ratio if it doesn't match the screen's.
+-- Fit mode (opt-in) preserves the cover's proportions instead, centering it
+-- over a black backdrop that covers the rest of the screen — matches how
+-- most cover-only reading apps present a book cover.
+-- Falls back to stretch if the bb doesn't expose dimensions, or on any error
+-- building the fit containers, so a layout hiccup never means no cover at all.
+local function _ctMakeCoverWidget(cover_bb, ImageWidget)
+    local screen_w, screen_h = Screen:getWidth(), Screen:getHeight()
+
+    local function stretch()
+        return ImageWidget:new{
+            image             = cover_bb,
+            width             = screen_w,
+            height            = screen_h,
+            alpha             = true,
+            image_disposable  = false,
+        }
+    end
+
+    if not CoverTransition.isFitEnabled() then
+        return stretch()
+    end
+
+    if not (cover_bb.getWidth and cover_bb.getHeight) then
+        return stretch()
+    end
+    local ok_size, cover_w, cover_h = pcall(function()
+        return cover_bb:getWidth(), cover_bb:getHeight()
+    end)
+    if not (ok_size and cover_w and cover_h and cover_w > 0 and cover_h > 0) then
+        return stretch()
+    end
+
+    local ok_fit, fit_widget = pcall(function()
+        local Blitbuffer      = require("ffi/blitbuffer")
+        local FrameContainer  = require("ui/widget/container/framecontainer")
+        local CenterContainer = require("ui/widget/container/centercontainer")
+
+        local scale_factor = math.min(screen_w / cover_w, screen_h / cover_h)
+        local image = ImageWidget:new{
+            image             = cover_bb,
+            scale_factor      = scale_factor,
+            alpha             = true,
+            image_disposable  = false,
+        }
+        return FrameContainer:new{
+            dimen      = { w = screen_w, h = screen_h },
+            padding    = 0,
+            bordersize = 0,
+            background = SUIStyle.COLOR.text_primary,
+            CenterContainer:new{
+                dimen = { w = screen_w, h = screen_h },
+                image,
+            },
+        }
+    end)
+    if ok_fit and fit_widget then return fit_widget end
+
+    logger.warn("simpleui/sui_patches: CoverTransition fit layout failed, falling back to stretch", fit_widget)
+    return stretch()
+end
+
+-- show(filepath, orig_show) — orig_show must be the pristine UIManager.show
+-- (i.e. the value captured before any wrapper ran), so the cover itself is
+-- never re-processed by the navbar-injection logic below.
+-- Returns true if a cover was actually displayed.
+function CoverTransition.show(filepath, orig_show, live_document)
+    local cover_bb, owned = CoverTransition.findCoverBB(filepath, live_document)
+    if not cover_bb then return false end
+
+    CoverTransition.close()
+    if owned then _ct_owned_bb = cover_bb end
+
+    local ok_iw, ImageWidget = pcall(require, "ui/widget/imagewidget")
+    if not ok_iw then
+        _ctFreeOwnedBB()
+        return false
+    end
+
+    local ok_w, widget_or_err = pcall(_ctMakeCoverWidget, cover_bb, ImageWidget)
+    if not ok_w then
+        logger.warn("simpleui/sui_patches: CoverTransition failed to build widget", widget_or_err)
+        _ctFreeOwnedBB()
+        return false
+    end
+
+    local widget = widget_or_err
+    local ok_show = pcall(orig_show, UIManager, widget, "full")
+    if not ok_show then
+        _ctFreeOwnedBB()
+        return false
+    end
+
+    UIManager:forceRePaint()
+    _ct_widget = widget
+    return true
+end
+
+-- Auto-closes the cover shortly after showing it, so it never lingers over
+-- the freshly-painted reader/FM if the caller forgets to close it explicitly.
+function CoverTransition.scheduleAutoClose(delay)
+    _ctCancelPendingClose()
+    _ct_close_task = function()
+        _ct_close_task = nil
+        CoverTransition.close()
+    end
+    UIManager:scheduleIn(delay or 0.15, _ct_close_task)
+end
+
+-- Keep the close-side cover above a destination (HS/FM) raised in the same
+-- tick as onClose, so the transition stays visible until auto-close.
+function CoverTransition.ensureOnTop()
+    if not _ct_widget then return end
+    local stack = UIManager._window_stack
+    if not stack then return end
+    for i = 1, #stack do
+        if stack[i].widget == _ct_widget then
+            if i ~= #stack then
+                local entry = table.remove(stack, i)
+                table.insert(stack, entry)
+            end
+            return
+        end
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Window hook steps
+-- Behaviour attached to UIManager.show and UIManager.close. Each step owns one
+-- concern and is registered in the shared window hooks
+-- (infra/sui_window_hooks.lua), which dispatch the steps in order.
+-- ---------------------------------------------------------------------------
+
+-- Widgets that receive navbar injection by name, in addition to those already
+-- sized to the content area (_navbar_height_reduced).
+local INJECT_NAMES = { collections = true, history = true, coll_list = true, homescreen = true }
+
+-- Widgets that receive wallpaper injection. Narrower than INJECT_NAMES:
+-- utility overlays that merely cover the screen (sort widgets, path choosers)
+-- keep their own background.
+local WALLPAPER_NAMES = { collections = true, history = true, coll_list = true }
+
+-- Active actions that are not tabs of the navigation bar.
+local NON_TAB_ACTIONS = { bookmark_browser = true, wifi_toggle = true, frontlight = true, power = true }
+
+local function _isReader(widget)
+    return widget.name == "ReaderUI"
+end
+
+-- Refreshes the folder listing of the live file manager, if any.
+local function _refreshLiveFileChooser()
+    local fm = liveFM()
+    if fm and fm.file_chooser then fm.file_chooser:refreshPath() end
+end
+
+-- ── show: cover transition ──────────────────────────────────────────────────
+
+-- Open side of the cover transition. The first show after a book open was
+-- requested is the loading notice (auto-dismissing, not fullscreen); the cover
+-- takes its place. Without a cover the notice is shown normally.
+local function _interceptOpenNotice(widget, _plugin, orig_show)
+    local file = CoverTransition._pending_open_file
+    if not file then return false end
+    CoverTransition._pending_open_file = nil
+    if not (widget and widget.timeout == 0.0 and not widget.covers_fullscreen) then
+        return false
+    end
+    local ok, shown = pcall(CoverTransition.show, file, orig_show)
+    return ok and shown and true or false
+end
+
+-- ── show: reader ────────────────────────────────────────────────────────────
+
+-- Wires the reader menu tab, reload handling and Home key of a shown reader.
+local function _wireReader(ctx)
+    pcall(M.wireReaderMenuFMTab, ctx.plugin, ctx.widget)
+    pcall(M.patchReloadDocument, ctx.plugin, ctx.widget)
+    pcall(M.wireReaderHomeKey,   ctx.plugin, ctx.widget)
+end
+
+-- Records whether this reader reopens a document that was reloaded in place
+-- and releases the placeholder that covered the screen during the reload.
+-- The placeholder is closed on the next tick so it stays until the reader
+-- being shown has actually covered the screen.
+local function _releaseReloadBlocker(ctx)
+    ctx.was_reload = UIManager._simpleui_reload_in_progress
+    local blocker = UIManager._simpleui_reload_blocker
+    if not blocker then return end
+    UIManager._simpleui_reload_blocker = nil
+    UIManager:nextTick(function()
+        pcall(WindowHooks.origClose(), UIManager, blocker)
+    end)
+end
+
+-- Shows the cover a beat before the reader paints, then closes it shortly
+-- after. Skipped for an in-place reload. The cover itself is shown through the
+-- unhooked show so it never goes through navbar injection.
+local function _showOpenCover(ctx)
+    if ctx.was_reload or not CoverTransition.isOpenEnabled() then return end
+    if CoverTransition.isShowing() then
+        CoverTransition.scheduleAutoClose(0.15)
+        return
+    end
+    local document = ctx.widget.document
+    local ok, shown = pcall(CoverTransition.show, document and document.file, ctx.orig, document)
+    if ok and shown then CoverTransition.scheduleAutoClose(0.15) end
+end
+
+-- The reader being shown ends the reload window.
+local function _endReloadWindow(ctx)
+    if ctx.was_reload then UIManager._simpleui_reload_in_progress = nil end
+end
+
+-- ── show: navbar injection ──────────────────────────────────────────────────
+
+-- Gate of the navbar step. Only the outermost show call injects, so a nested
+-- show issued while a widget is being shown is never wrapped twice.
+local function _shouldInjectNavbar(widget, ctx)
+    local desc = UI.BarInjection.matchWidget(widget)
+    ctx.bar_desc = desc
+    return ctx.outermost
+        and not widget._navbar_injected
+        and not widget._navbar_skip_inject
+        and widget ~= ctx.plugin.ui
+        -- Titlebar.applyToInjected guards itself when there is no title_bar,
+        -- so registered widgets do not need one.
+        and (widget.title_bar or desc ~= nil)
+        and (widget._navbar_height_reduced
+             or (widget.name and INJECT_NAMES[widget.name])
+             or desc ~= nil)
+end
+
+-- Sizes the widget to the area between the top bar and the navbar.
+local function _fitToContentArea(widget)
+    if widget._navbar_height_reduced then return end
+    local height, top = UI.getContentHeight(), UI.getContentTop()
+    if widget.dimen then
+        widget.dimen.h = height
+        widget.dimen.y = top
+    end
+    if widget[1] and widget[1].dimen then
+        widget[1].dimen.h = height
+        widget[1].dimen.y = top
+    end
+    widget._navbar_height_reduced = true
+end
+
+-- Activates the navbar tab that matches the widget and returns the action
+-- that became active, or nil when the widget has no tab.
+local function _activateWidgetTab(plugin, widget, tabs)
+    local tabs_set = tabsToSet(tabs)
+    local name = widget.name
+    if name == "collections" and Config.isFavoritesWidget(widget) and tabs_set["favorites"] then
+        return Bottombar.setActiveAndRefreshFM(plugin, "favorites", tabs)
+    elseif name == "history" and tabs_set["history"] then
+        return Bottombar.setActiveAndRefreshFM(plugin, "history", tabs)
+    elseif name == "homescreen" then
+        local action_id = _hsActionId(widget)
+        if tabs_set[action_id] then
+            -- The file manager bar is already correct when the action is
+            -- active; rebuilding it under a covering screen is redundant.
+            if plugin.active_action ~= action_id then
+                return Bottombar.setActiveAndRefreshFM(plugin, action_id, tabs)
+            end
+            return action_id
+        end
+    elseif name == "coll_list"
+           or (name == "collections" and not Config.isFavoritesWidget(widget)) then
+        if tabs_set["collections"] then
+            return Bottombar.setActiveAndRefreshFM(plugin, "collections", tabs)
+        end
+    end
+    return nil
+end
+
+-- Whether the navbar of the widget shows page arrows. A bar injection
+-- descriptor may declare it; otherwise it follows the widget's pagination.
+local function _isPageable(widget, desc)
+    local declared = desc and desc.is_pageable
+    if declared ~= nil then
+        if type(declared) == "function" then
+            local ok, pageable = pcall(declared, widget)
+            return ok and pageable == true
+        end
+        return declared == true
+    end
+    return type(widget.page_num) == "number"
+        or (widget.file_chooser and type(widget.file_chooser.page_num) == "number")
+end
+
+-- Applies a bar injection descriptor after the bar is in place: keeps it on
+-- the widget for the close side, activates the tab it asks for and fires its
+-- on_inject callback.
+local function _applyBarDescriptor(plugin, widget, desc, tabs)
+    widget._sui_bi_desc = desc
+    local action
+    if type(desc.get_active_action) == "function" then
+        local ok, result = pcall(desc.get_active_action, widget)
+        action = ok and result or nil
+    else
+        action = desc.active_action_id
+    end
+    if action then Bottombar.setActiveAndRefreshFM(plugin, action, tabs) end
+    if type(desc.on_inject) == "function" then
+        pcall(desc.on_inject, widget, { plugin = plugin, tabs = tabs })
+    end
+end
+
+-- The menu of the live file manager, resolved at call time because the file
+-- manager is recreated whenever the reader opens or closes.
+local function _fmMenu(plugin)
+    local fm = plugin.ui
+    if fm and fm.menu
+            and type(fm.menu.name) == "string"
+            and fm.menu.name:find("filemanager") then
+        return fm.menu
+    end
+    local inst = liveFM()
+    return inst and inst.menu or nil
+end
+
+-- True when a tap lands on an injected titlebar button (hamburger, close, ...).
+-- Those buttons share the top zone with the menu tap zone, so their taps must
+-- pass through. overlap_offset is preferred over dimen: it is always current,
+-- while dimen is only populated after the first paint.
+local function _tapOnTitlebarButton(widget, ges)
+    local pos = ges.pos
+    if not pos then return false end
+    local title_bar = widget.title_bar
+    local buttons = {}
+    if title_bar and title_bar.left_button  then buttons[#buttons + 1] = title_bar.left_button end
+    if title_bar and title_bar.right_button then buttons[#buttons + 1] = title_bar.right_button end
+    for _, button in ipairs(buttons) do
+        local width = button.width or (button.dimen and button.dimen.w) or 0
+        if width > 0 then
+            local hit = false
+            if button.overlap_offset then
+                local x = button.overlap_offset[1]
+                hit = pos.x >= x and pos.x <= x + width
+            elseif button.dimen and button.dimen.x then
+                local dimen = button.dimen
+                hit = pos.x >= dimen.x and pos.x <= dimen.x + width
+                    and pos.y >= (dimen.y or 0)
+                    and pos.y <= (dimen.y or 0) + (dimen.h or width)
+            end
+            if hit then return true end
+        end
+    end
+    return false
+end
+
+-- Registers the top-of-screen zones that open the main menu, matching what
+-- the file manager registers for itself.
+local function _registerMenuZones(widget, plugin)
+    if not widget.registerTouchZones then return end
+    if not (G_defaults:readSetting("DTAP_ZONE_MENU_EXT")) then return end
+    local zone = G_defaults:readSetting("DTAP_ZONE_MENU")
+    if not zone then return end
+
+    local ratio_h
+    if SUISettings:nilOrTrue("simpleui_topbar_enabled") then
+        ratio_h = require("screens/sui_topbar").TOTAL_TOP_H() / Screen:getHeight()
+    else
+        ratio_h = zone.h
+    end
+    local function topZone()
+        return { ratio_x = 0, ratio_y = 0, ratio_w = 1, ratio_h = ratio_h }
+    end
+
+    widget:registerTouchZones({
+        {
+            id          = "simpleui_menu_tap",
+            ges         = "tap",
+            screen_zone = topZone(),
+            handler     = function(ges)
+                if _tapOnTitlebarButton(widget, ges) then return false end
+                local menu = _fmMenu(plugin)
+                if menu then return menu:onTapShowMenu(ges) end
+            end,
+        },
+        {
+            id          = "simpleui_menu_swipe",
+            ges         = "swipe",
+            screen_zone = topZone(),
+            handler     = function(ges)
+                local menu = _fmMenu(plugin)
+                if menu then return menu:onSwipeShowMenu(ges) end
+            end,
+        },
+    })
+end
+
+-- On D-pad devices, pressing Down on the last item moves focus to the navbar.
+local function _wrapDpadFocusExit(widget)
+    if not Device:hasDPad() then return end
+    if rawget(widget, "_wrapAroundY") ~= nil or type(widget._wrapAroundY) ~= "function" then
+        return
+    end
+    local orig_wrap = widget._wrapAroundY
+    widget._wrapAroundY = function(self_w, dy)
+        if dy > 0 and self_w.page == (self_w.total_pages or 1) then
+            M.enterNavbarKbFocus(function()
+                if self_w.layout and self_w.moveFocusTo then
+                    self_w:moveFocusTo(1, #self_w.layout, FocusManager().FORCED_FOCUS)
+                end
+            end)
+            return true
+        end
+        return orig_wrap(self_w, dy)
+    end
+end
+
+-- Wraps the widget with the navbar and everything that goes with it.
+local function _injectNavbar(ctx)
+    local widget, plugin, desc = ctx.widget, ctx.plugin, ctx.bar_desc
+    widget._navbar_injected = true
+    ctx.navbar_injected = true
+
+    _fitToContentArea(widget)
+    Titlebar().applyToSub(widget)
+
+    local tabs = Config.loadTabConfig()
+    -- The pre-tap stash records the tab that was active before the tap, not
+    -- the one being opened.
+    local action_before = plugin._navbar_prev_action_pending or plugin.active_action
+    plugin._navbar_prev_action_pending = nil
+    local display_action = _activateWidgetTab(plugin, widget, tabs) or action_before
+    if not widget._navbar_inner then widget._navbar_inner = widget[1] end
+
+    -- Non-pageable widgets get a bar without page arrows from the start.
+    local container, wrapped, bar, topbar, bar_idx, topbar_on, topbar_idx =
+        UI.wrapWithNavbar(widget._navbar_inner, display_action, tabs, not _isPageable(widget, desc))
+    UI.applyNavbarState(widget, container, bar, topbar, bar_idx, topbar_on, topbar_idx, tabs)
+    widget._navbar_prev_action = action_before
+    widget[1]                  = wrapped
+
+    if desc then _applyBarDescriptor(plugin, widget, desc, tabs) end
+    plugin:_registerTouchZones(widget)
+    UI.applyGesturePriorityHandleEvent(widget)
+    _registerMenuZones(widget, plugin)
+
+    -- Native page_return_arrow is suppressed by Titlebar.applyToSub; do not
+    -- re-expand its leading span here.
+
+    _wrapDpadFocusExit(widget)
+    Bottombar.resizePaginationButtons(widget, Bottombar.getPaginationIconSize())
+end
+
+-- Replaces the subtitle of the injected widget with its page indicator (or
+-- nothing): the title bar may already hold the file manager path, which does
+-- not belong to this widget.
+local function _resetInjectedSubtitle(widget, plugin)
+    local title_bar = widget.title_bar
+    if title_bar and title_bar.subtitle_widget then
+        local page, pages = widget.page or 0, widget.page_num or 0
+        local text = ""
+        if M._subtitleEnabled and M._subtitleEnabled() and pages > 1 then
+            text = T(_("Page %1 of %2"), page, pages)
+        end
+        title_bar:setSubTitle(text, true)
+    end
+    M.setFMPathBase("", plugin.ui)
+end
+
+local function _finishNavbarInjection(ctx)
+    local widget = ctx.widget
+    _resetInjectedSubtitle(widget, ctx.plugin)
+    -- The homescreen repaints the full screen from its own onShow.
+    if widget.name ~= "homescreen" then
+        UIManager:setDirty(widget[1], "ui")
+    end
+end
+
+-- ── show: wallpaper and navpager ────────────────────────────────────────────
+
+local function _navbarWasInjected(_widget, ctx)
+    return ctx.navbar_injected == true
+end
+
+local function _injectWallpaper(ctx)
+    pcall(M.injectWallpaperIntoFullscreenWidget, ctx.widget)
+end
+
+-- Schedules a navpager arrow update for the next event-loop tick. The page
+-- state is captured now so a second page update in the same tick cannot race
+-- it; duplicate requests within one tick are dropped.
+local function _scheduleNavpagerRefresh(ctx)
+    if not SUISettings:isTrue("simpleui_bar_navpager_enabled") or _navpager_rebuild_pending then
+        return
+    end
+    local widget, plugin = ctx.widget, ctx.plugin
+    local has_prev, has_next = Config.getNavpagerState()
+    _navpager_rebuild_pending = true
+    UIManager:scheduleIn(0, function()
+        _navpager_rebuild_pending = false
+        if not SUISettings:isTrue("simpleui_bar_navpager_enabled") then return end
+        local fm = plugin.ui
+        if not (fm and fm._navbar_container) then return end
+        local target = (widget._navbar_container and widget) or fm
+        Bottombar.syncNavpagerArrows(target, plugin.active_action, has_prev, has_next)
+    end)
+end
+
+-- ── show: screen displacement ───────────────────────────────────────────────
+
+-- Gate of the displacement step: a fullscreen widget with its own identity
+-- that is not a screen, shown on top of everything else.
+local function _displacesScreen(widget, ctx)
+    return ctx.outermost
+        and (widget.title_bar or widget.name)
+        and widget.name ~= "homescreen"
+        and widget ~= ctx.plugin.ui
+        and not widget._sui_keep_homescreen
+end
+
+-- Closes the screen beneath a fullscreen widget and remembers which screen it
+-- was, so closing the widget brings it back. A screen parked under the system
+-- screensaver stays alive when parking survives suspend, and a screen stays
+-- alive while the main menu is open above it: the menu belongs to that screen.
+local function _displaceScreen(ctx)
+    local widget, plugin = ctx.widget, ctx.plugin
+    local engine = package.loaded["engines/sui_screen_engine"]
+    local keep_parked = engine and engine.SOFT_PARK_ENABLED and engine.KEEP_PARKED_ACROSS_SUSPEND
+    local stack = UI.getWindowStack()
+    for i, entry in ipairs(stack) do
+        local screen = entry.widget
+        if screen and screen.name == "homescreen" then
+            if keep_parked and screen._parked then return end
+            if _mainMenuOpenAbove(stack, i, plugin.ui) then return end
+            widget._sui_displaced_screen          = screen._id
+            screen._navbar_closing_intentionally = true
+            screen._navbar_closing_from_module   = true
+            UIManager:close(screen)
+            screen._navbar_closing_intentionally = nil
+            screen._navbar_closing_from_module   = nil
+            return
+        end
+    end
+end
+
+-- ── close: navbar restore ───────────────────────────────────────────────────
+
+local function _wasNavbarInjected(widget)
+    return widget._navbar_injected and not widget._navbar_closing_intentionally
+end
+
+-- Restores the navbar of the file manager when a collection list closes. With
+-- a collections widget still underneath the user returns to the collections
+-- list, so that tab stays active when the bar has it.
+local function _restoreCollectionsTab(widget, plugin)
+    local fm = liveFM()
+    if not (fm and fm._navbar_container) then return end
+    local tabs = Config.loadTabConfig()
+
+    local underlying
+    for _, entry in ipairs(UI.getWindowStack()) do
+        local other = entry.widget
+        if other and other ~= widget and other._navbar_injected
+                and (other.name == "collections" or other.name == "coll_list") then
+            underlying = other
+            break
+        end
+    end
+
+    local restored
+    if underlying then
+        restored = tabInTabs("collections", tabs) and "collections"
+            or underlying._navbar_prev_action
+    end
+    if not restored then
+        restored = (fm.file_chooser and M._resolveTabForPath(fm.file_chooser.path, tabs))
+            or tabs[1] or "home"
+    end
+    plugin.active_action = restored
+    Bottombar.showActiveTab(fm, restored, tabs)
+end
+
+-- Restores the active tab of an injected widget that closes normally and
+-- brings the folder breadcrumb back into the subtitle. Clearing the flag
+-- first makes a second close a no-op.
+local function _restoreNavbarTab(ctx)
+    local widget, plugin = ctx.widget, ctx.plugin
+    widget._navbar_injected = nil
+
+    if widget.name == "coll_list" then
+        _restoreCollectionsTab(widget, plugin)
+    else
+        plugin:_restoreTabInFM(nil, widget._navbar_prev_action)
+    end
+
+    local fm = liveFM()
+    local chooser = fm and fm.file_chooser
+    if chooser and chooser.path then
+        pcall(function() fm:updateTitleBarPath(chooser.path, false) end)
+    end
+end
+
+-- The descriptor stored at inject time is used, so on_close still fires after
+-- the descriptor was unregistered in the meantime.
+local function _hasBarCloseCallback(widget)
+    local desc = widget._sui_bi_desc
+    return desc and type(desc.on_close) == "function"
+end
+
+local function _fireBarCloseCallback(ctx)
+    pcall(ctx.widget._sui_bi_desc.on_close, ctx.widget, { plugin = ctx.plugin })
+end
+
+-- ── close: reload blocker and lazy refresh ──────────────────────────────────
+
+local function _closedReaderForReload(widget)
+    return _isReader(widget)
+        and UIManager._simpleui_reload_in_progress
+        and not UIManager._simpleui_reload_blocker
+end
+
+-- A reader closed for an in-place reload is about to be rebuilt in the same
+-- call. Closing it exposed the screen kept beneath it, which would be painted
+-- again by anything shown meanwhile (such as the loading notice). An invisible
+-- fullscreen placeholder takes the reader's place so that stays covered; it is
+-- released when the rebuilt reader is shown.
+local function _pushReloadBlocker(ctx)
+    local ok, WidgetContainer = pcall(require, "ui/widget/container/widgetcontainer")
+    if not (ok and WidgetContainer) then return end
+    local blocker = WidgetContainer:new{ covers_fullscreen = true }
+    if pcall(WindowHooks.origShow(), ctx.um, blocker) then
+        UIManager._simpleui_reload_blocker = blocker
+    end
+end
+
+local function _closedScreenExposesFileManager(widget)
+    return widget.name == "homescreen" and not widget._navbar_closing_intentionally
+end
+
+-- Consumes the lazy refresh request left when the reader closed without
+-- returning to its folder: the closing screen is about to expose the file
+-- list, which is refreshed on the next tick once the teardown is complete.
+local function _refreshExposedFileManager()
+    local fm = liveFM()
+    if not (fm and fm._sui_lazy_refresh_path) then return end
+    fm._sui_lazy_refresh_path = nil
+    UIManager:scheduleIn(0, _refreshLiveFileChooser)
+end
+
+-- ── close: screen reopen ────────────────────────────────────────────────────
+
+-- Shows screen `screen_id` (the built-in homescreen when nil) again, unless
+-- something else already took its place.
+local function _doShowHS(fm, plugin, screen_id)
+    if isAppExiting() then return end
+    local HS = liveHS()
+    if not HS then return end
+    local is_builtin = screen_id == nil or screen_id == "hs"
+    local engine = package.loaded["engines/sui_screen_engine"]
+    if is_builtin then
+        if HS._instance then return end
+    elseif not engine or engine.getInstance(screen_id) then
+        return
+    end
+
+    -- Another widget may have appeared since the reopen was scheduled. A
+    -- fullscreen one brings the screen back when it closes; an interactive
+    -- dialog stays untouched, since reopening over it would cover it.
+    local fm_module  = package.loaded["apps/filemanager/filemanager"]
+    local current_fm = (fm_module and fm_module.instance) or fm
+    for _, entry in ipairs(UI.getWindowStack()) do
+        local w = entry.widget
+        if w and w ~= current_fm then
+            if w.covers_fullscreen then
+                w._sui_displaced_screen = w._sui_displaced_screen or screen_id or "hs"
+                return
+            end
+            if not _isTransientToast(w) then return end
+        end
+    end
+
+    -- An external caller navigated the file manager to a folder.
+    if current_fm and current_fm._sui_show_folder_pending then
+        current_fm._sui_show_folder_pending = nil
+        return
+    end
+
+    _closeOrphanedPopups(fm, nil)
+
+    if is_builtin then
+        _showHSCold(plugin, HS, plugin.active_action)
+    else
+        require("infra/sui_screen_nav").reopen(screen_id)
+    end
+end
+
+-- Gate of the reopen step: a fullscreen widget with its own identity closed
+-- while the launch screen is the homescreen, while it displaced a screen, or
+-- while it was a reader. Selection checklists (title bar icon "check") and
+-- shortcut folders return control to their caller instead.
+local function _reopensScreen(widget, ctx)
+    return (_isReader(widget) or isStartWithHS() or widget._sui_displaced_screen)
+        and (widget.title_bar or widget.name)
+        and widget.name ~= "homescreen"
+        and widget ~= ctx.plugin.ui
+        and not widget._navbar_closing_intentionally
+        and not widget._navbar_hs_scheduled
+        and not (widget._manager and widget._manager.folder_shortcuts)
+        and widget.title_bar_left_icon ~= "check"
+        and not isAppExiting()
+end
+
+-- Hands the displaced screen over to another fullscreen widget that is still
+-- open: the screen comes back when that widget closes. True when one exists.
+local function _handOverDisplacedScreen(widget)
+    local fm = liveFM()
+    for _, entry in ipairs(UI.getWindowStack()) do
+        local w = entry.widget
+        if w and w ~= fm and w ~= widget and w.covers_fullscreen then
+            w._sui_displaced_screen = w._sui_displaced_screen or widget._sui_displaced_screen
+            return true
+        end
+    end
+    return false
+end
+
+-- Path for a reader that closed without the dedicated close-to-screen path
+-- (which sets tearing_down). A reader closed for an in-place reload never
+-- shows a screen: from the user's point of view the book was not closed.
+local function _reopenAfterReaderClose(plugin, reader)
+    if reader.tearing_down or UIManager._simpleui_reload_in_progress then return end
+
+    if Config.getBookCloseTarget() ~= Config.BOOK_CLOSE_TARGET.HOMESCREEN then
+        local HS = liveHS()
+        if HS then _dropParkedScreen(HS) end
+        UIManager:scheduleIn(0, _refreshLiveFileChooser)
+        return
+    end
+
+    local prev_action = plugin.active_action
+    if plugin.active_action == nil or not NON_TAB_ACTIONS[plugin.active_action] then
+        plugin.active_action = "homescreen"
+    end
+    local fm = liveFM()
+    if fm then fm._sui_lazy_refresh_path = true end
+    UIManager:nextTick(function()
+        if isAppExiting() then return end
+        -- The file manager is gone when the app is exiting from the reader.
+        if not liveFM() then return end
+        local reader_module = package.loaded["apps/reader/readerui"]
+        if reader_module and reader_module.instance then return end
+        local HS = liveHS()
+        if not HS then return end
+        if HS._instance and HS._instance._parked then
+            _raiseParkedScreen(plugin, HS, prev_action)
+        elseif not HS._instance then
+            _showHSCold(plugin, HS, prev_action)
+        end
+    end)
+end
+
+local function _reopenScreen(ctx)
+    local widget, plugin = ctx.widget, ctx.plugin
+    widget._navbar_hs_scheduled = true
+    if _handOverDisplacedScreen(widget) then return end
+
+    if _isReader(widget) then
+        _reopenAfterReaderClose(plugin, widget)
+        return
+    end
+    UIManager:scheduleIn(0, function()
+        if isAppExiting() then return end
+        local fm = liveFM()
+        if not fm then return end
+        local reader_module = package.loaded["apps/reader/readerui"]
+        if reader_module and reader_module.instance then return end
+        _doShowHS(fm, plugin, widget._sui_displaced_screen)
+    end)
+end
+
+-- ── registration ────────────────────────────────────────────────────────────
+
+local function registerWindowSteps()
+    local SHOW, CLOSE = WindowHooks.POINT.SHOW, WindowHooks.POINT.CLOSE
+    local show, close = WindowHooks.ORDER.show, WindowHooks.ORDER.close
+
+    local NativeSheets = require("features/dialogs/sui_native_sheets")
+    WindowHooks.register{
+        id = "native_sheets", point = SHOW, order = show.NATIVE_SHEETS,
+        intercept = NativeSheets.interceptShow,
+    }
+    local NativeArrange = require("features/dialogs/sui_native_arrange")
+    WindowHooks.register{
+        id = "native_arrange", point = SHOW, order = show.NATIVE_ARRANGE,
+        intercept = NativeArrange.interceptShow,
+    }
+    WindowHooks.register{
+        id = "cover_open_notice", point = SHOW, order = show.COVER_NOTICE,
+        intercept = _interceptOpenNotice,
+    }
+    local NativeWidgets = require("features/dialogs/sui_native_widgets")
+    WindowHooks.register{
+        id = "native_widgets", point = SHOW, order = show.NATIVE_WIDGETS,
+        intercept = NativeWidgets.interceptShow,
+    }
+    WindowHooks.register{
+        id = "reader_wiring", point = SHOW, order = show.READER_WIRING,
+        match = _isReader, enter = _wireReader,
+    }
+    WindowHooks.register{
+        id = "reader_reload_blocker", point = SHOW, order = show.READER_RELOAD,
+        match = _isReader, enter = _releaseReloadBlocker,
+    }
+    WindowHooks.register{
+        id = "reader_open_cover", point = SHOW, order = show.READER_COVER,
+        match = _isReader, enter = _showOpenCover,
+    }
+    WindowHooks.register{
+        id = "reader_reload_done", point = SHOW, order = show.READER_RELOAD_DONE,
+        match = _isReader, enter = _endReloadWindow,
+    }
+    WindowHooks.register{
+        id = "navbar_inject", point = SHOW, order = show.NAVBAR,
+        match = _shouldInjectNavbar, before = _injectNavbar, after = _finishNavbarInjection,
+    }
+    WindowHooks.register{
+        id = "navbar_wallpaper", point = SHOW, order = show.WALLPAPER,
+        match = _navbarWasInjected, after = _injectWallpaper,
+    }
+    WindowHooks.register{
+        id = "navbar_navpager", point = SHOW, order = show.NAVPAGER,
+        match = _navbarWasInjected, after = _scheduleNavpagerRefresh,
+    }
+    WindowHooks.register{
+        id = "screen_displace", point = SHOW, order = show.DISPLACE_SCREEN,
+        match = _displacesScreen, settled = _displaceScreen,
+    }
+
+    WindowHooks.register{
+        id = "native_sheets", point = CLOSE, order = close.NATIVE_SHEETS,
+        intercept = NativeSheets.interceptClose,
+    }
+    WindowHooks.register{
+        id = "native_widgets", point = CLOSE, order = close.NATIVE_WIDGETS,
+        intercept = NativeWidgets.interceptClose,
+    }
+    WindowHooks.register{
+        id = "navbar_restore", point = CLOSE, order = close.NAVBAR_RESTORE,
+        match = _wasNavbarInjected, before = _restoreNavbarTab,
+    }
+    WindowHooks.register{
+        id = "bar_injection_close", point = CLOSE, order = close.BAR_INJECTION_CLOSE,
+        match = _hasBarCloseCallback, before = _fireBarCloseCallback,
+    }
+    WindowHooks.register{
+        id = "reload_blocker", point = CLOSE, order = close.RELOAD_BLOCKER,
+        match = _closedReaderForReload, after = _pushReloadBlocker,
+    }
+    WindowHooks.register{
+        id = "lazy_refresh", point = CLOSE, order = close.LAZY_REFRESH,
+        match = _closedScreenExposesFileManager, after = _refreshExposedFileManager,
+    }
+    WindowHooks.register{
+        id = "screen_reopen", point = CLOSE, order = close.REOPEN_SCREEN,
+        match = _reopensScreen, after = _reopenScreen,
+    }
+end
+
+-- Installs the window hooks and registers the steps above.
+function M.patchWindowHooks(plugin)
+    registerWindowSteps()
+    WindowHooks.install(plugin)
+end
+
+-- ---------------------------------------------------------------------------
+-- Library pages — side margin
+-- Every display mode lays its items out over the full menu width. The hooks
+-- below inset the item area so its first and last items sit on the side
+-- margin shared with every other full-width surface.
+-- ---------------------------------------------------------------------------
+
+-- Menus of the library pages: file browser, history and collections.
+local LIBRARY_PAGE_NAMES = {
+    filemanager = true, history = true, collections = true, coll_list = true,
+}
+
+-- Distance between the side margin and the margin a display mode already
+-- applies at the item area edge. Zero outside the library pages.
+local function _sideInset(menu, native_margin)
+    if not (LIBRARY_PAGE_NAMES[menu.name] and menu.covers_fullscreen) then return 0 end
+    return math.max(0, UI.SIDE_M() - native_margin)
+end
+
+-- Menu fields that carry the full menu width. Display modes read them to size
+-- items and row separators, which must all share one width.
+local MENU_WIDTH_FIELDS = { "width", "screen_w" }
+
+-- Calls fn(menu, ...) with the menu width reduced by `inset` on both sides.
+local function _withInsetWidth(menu, inset, fn, ...)
+    if inset == 0 then return fn(menu, ...) end
+    local inner = menu.inner_dimen
+    inner.w = inner.w - 2 * inset
+    local saved = {}
+    for _, field in ipairs(MENU_WIDTH_FIELDS) do
+        saved[field] = menu[field]
+        if saved[field] then menu[field] = saved[field] - 2 * inset end
+    end
+    local ok, result = pcall(fn, menu, ...)
+    inner.w = inner.w + 2 * inset
+    for _, field in ipairs(MENU_WIDTH_FIELDS) do
+        if saved[field] then menu[field] = saved[field] end
+    end
+    if not ok then error(result, 0) end
+    return result
+end
+
+-- Shifts the item area right by `inset`, wrapping it on first use.
+local function _setBodyInset(menu, inset)
+    local body = menu._sui_inset_body
+    if not body then
+        if inset == 0 then return end
+        local HorizontalGroup = require("ui/widget/horizontalgroup")
+        local HorizontalSpan  = require("ui/widget/horizontalspan")
+        body = HorizontalGroup:new{
+            align = "top",
+            HorizontalSpan:new{ width = inset },
+            menu.item_group,
+        }
+        for i, child in ipairs(menu.content_group) do
+            if child == menu.item_group then
+                menu.content_group[i] = body
+                break
+            end
+        end
+        menu._sui_inset_body = body
+    end
+    body[1].width = inset
+    body:resetLayout()
+end
+
+-- Calls the class-level _recalculateDimen of the menu's current display mode,
+-- bypassing any instance override.
+local function _callClassRecalculate(menu, ...)
+    local instance_fn = rawget(menu, "_recalculateDimen")
+    menu._recalculateDimen = nil
+    local ok, err = pcall(menu._recalculateDimen, menu, ...)
+    menu._recalculateDimen = instance_fn
+    if not ok then error(err, 0) end
+end
+
+-- Classic list mode: the menu builds its own rows over the full menu width.
+-- Each row is narrowed by the inset and its content is moved in by the side
+-- margin through items_padding.
+local function _applyClassicInset(menu)
+    local side  = UI.SIDE_M()
+    local inset = math.max(0, side - Size.padding.fullscreen)
+    menu._sui_side_inset = 0
+    _setBodyInset(menu, 0)
+    menu.items_padding = side
+    menu.item_dimen.w  = menu.inner_dimen.w - 2 * inset
+end
+
+-- Instance-level _recalculateDimen of the library page menus. The display mode
+-- of a menu can change while it is open and rebinds the class-level function,
+-- so the classic inset is decided here on every layout pass. Mosaic and list
+-- modes are handled by the display mode hooks below.
+local function _libraryRecalculate(menu, ...)
+    _callClassRecalculate(menu, ...)
+    if menu._updateItemsBuildUI == nil and menu.item_dimen then
+        _applyClassicInset(menu)
+    end
+end
+
+-- Display modes hooked for the side margin, with the margin each one already
+-- applies at the item area edge. A mode without `native_margin` is hooked but
+-- never inset: the mosaic grid keeps its own margins.
+local SIDE_MARGIN_MODES = {
+    { module = "mosaicmenu" },
+    { module = "listmenu",   native_margin = function() return 0 end },
+}
+
+local SIDE_MARGIN_STATE = "_simpleui_side_margin"
+
+-- Installs the side margin hooks on `DisplayMode` unless already present.
+local function _installSideMargin(DisplayMode, native_margin, owner)
+    local function inset_of(menu)
+        return native_margin and _sideInset(menu, native_margin(menu)) or 0
+    end
+    local state = _acquireHooks(DisplayMode, SIDE_MARGIN_STATE, owner)
+    if not state then return end
+
+    local FileChooser      = require("ui/widget/filechooser")
+    local orig_recalculate = DisplayMode._recalculateDimen
+    local orig_build       = DisplayMode._updateItemsBuildUI
+
+    -- native_margin(menu) is read after the mode has run _recalculateDimen.
+    local function recalculate(menu, ...)
+        orig_recalculate(menu, ...)
+        local inset = inset_of(menu)
+        menu._sui_side_inset = inset
+        if inset > 0 then _withInsetWidth(menu, inset, orig_recalculate, ...) end
+    end
+
+    local function build(menu, ...)
+        local inset  = menu._sui_side_inset or 0
+        local result = _withInsetWidth(menu, inset, orig_build, ...)
+        _setBodyInset(menu, inset)
+        return result
+    end
+
+    -- The item builder holding the item class upvalue stays reachable here.
+    DisplayMode._simpleui_native_build = orig_build
+
+    for key, wrapped in pairs({
+        _recalculateDimen   = recalculate,
+        _updateItemsBuildUI = build,
+    }) do
+        local orig = _addHook(state, DisplayMode, key, wrapped)
+        -- The file browser binds display mode functions on its own class when
+        -- a mode is set up, so that binding is replaced as well.
+        if rawget(FileChooser, key) == orig then
+            _addHook(state, FileChooser, key, wrapped)
+        end
+    end
+end
+
+local function _uninstallSideMargin(DisplayMode, owner)
+    if _releaseHooks(DisplayMode, SIDE_MARGIN_STATE, owner) then
+        DisplayMode._simpleui_native_build = nil
+    end
+end
+
+function M.patchCoverMenuSideMargin(plugin)
+    for _, mode in ipairs(SIDE_MARGIN_MODES) do
+        local ok, DisplayMode = pcall(require, mode.module)
+        if ok and DisplayMode then
+            _installSideMargin(DisplayMode, mode.native_margin, plugin)
+        end
+    end
+end
+
+function M.unpatchCoverMenuSideMargin(plugin)
+    for _, mode in ipairs(SIDE_MARGIN_MODES) do
+        local DisplayMode = package.loaded[mode.module]
+        if DisplayMode then _uninstallSideMargin(DisplayMode, plugin) end
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Menu.init patch — pagination bar visibility
+-- Removes the pagination bar from fullscreen FM-style menus when
+-- "navbar_pagination_visible" is off, and fixes horizontal swipe propagation.
+-- ---------------------------------------------------------------------------
+
+local MENU_INIT_STATE = "_simpleui_menu_init"
+
+function M.patchMenuInitForPagination(plugin)
+    local Menu = require("ui/widget/menu")
+    -- Sub pages of the library.
+    local SUB_PAGE_NAMES = { history = true, collections = true, coll_list = true }
+    local state = _acquireHooks(Menu, MENU_INIT_STATE, plugin)
+    if not state then return end
+    local orig_menu_init = Menu.init
+
+    Menu.init = function(menu_self, ...)
+        -- Centralised keyboard-shortcut indicator suppression.
+        -- These are the lettered badges (W, E, R, …) drawn over book covers
+        -- on devices with a physical keyboard.  They overlap cover art and are
+        -- redundant on touch-first devices.
+        --
+        -- To re-enable the indicators, change the constant below to `true`:
+        --   local SUI_SHOW_SHORTCUT_INDICATORS = true
+        local SUI_SHOW_SHORTCUT_INDICATORS = false
+        if not SUI_SHOW_SHORTCUT_INDICATORS then
+            menu_self.is_enable_shortcut = false
+        end
+
+        if LIBRARY_PAGE_NAMES[menu_self.name] and menu_self.covers_fullscreen then
+            menu_self._recalculateDimen = _libraryRecalculate
+        end
+
+        -- The title bar is built inside init and sizes the item area, so the
+        -- tabs style metrics have to apply during the build.
+        if SUB_PAGE_NAMES[menu_self.name] and menu_self.covers_fullscreen then
+            Titlebar().runWithStyleMetrics(orig_menu_init, menu_self, ...)
+        else
+            orig_menu_init(menu_self, ...)
+        end
+
+        -- Apply icon overrides for collections/history/FM menus.
+        pcall(function()
+            local ok_ss, SS = pcall(require, "features/sui_style")
+            if not (ok_ss and SS) then return end
+            -- Pagination chevrons: present in all fullscreen menus after init().
+            if SS.applyPaginationIcons then
+                SS.applyPaginationIcons(menu_self)
+            end
+            -- Collections back button: only present in collections/coll_list.
+            if SS.applyCollBackIcon
+                    and (menu_self.name == "collections" or menu_self.name == "coll_list") then
+                SS.applyCollBackIcon(menu_self)
+            end
+        end)
+
+        -- Fix: Menu:onSwipe does not return true, so horizontal swipes propagate
+        -- to FM's filemanager_swipe zone and advance two pages. Wrap onSwipe to
+        -- consume the event after it is handled.
+        local is_target = LIBRARY_PAGE_NAMES[menu_self.name]
+            or (menu_self.covers_fullscreen and menu_self.is_borderless and menu_self.title_bar_fm_style)
+        if is_target then
+            local orig_onSwipe = menu_self.onSwipe
+            menu_self.onSwipe = function(self_m, arg, ges_ev)
+                if orig_onSwipe then
+                    orig_onSwipe(self_m, arg, ges_ev)
+                else
+                    Menu.onSwipe(self_m, arg, ges_ev)
+                end
+                return true
+            end
+        end
+
+        if SUISettings:nilOrTrue("simpleui_bar_pagination_visible") then return end
+        -- The structural fallback below (covers_fullscreen + is_borderless +
+        -- title_bar_fm_style) is also matched by native KOReader Menus that are
+        -- NOT FM-style overlays — e.g. ReaderSearch's "all results" Menu
+        -- (readersearch.lua sets all three flags too) — which only ever shows
+        -- while the FileManager is closed (book open, Reader active). Without
+        -- the liveFM() check, opening that menu while "Hide pagination bar" is
+        -- on would silently strip its page indicator and back button.
+        -- liveFM() ~= nil restricts the fallback to menus actually created
+        -- while FM is the active screen (e.g. Collections' property/folder
+        -- sub-lists, which have no explicit name), matching the same intent
+        -- as LIBRARY_PAGE_NAMES without re-exposing the Reader-side leak.
+        local is_fm_style_overlay = menu_self.covers_fullscreen
+                                 and menu_self.is_borderless
+                                 and menu_self.title_bar_fm_style
+                                 and liveFM() ~= nil
+        if not LIBRARY_PAGE_NAMES[menu_self.name] and not is_fm_style_overlay then
+            return
+        end
+
+        -- Collections widgets historically kept their layout untouched because the
+        -- native page_return_arrow lived inside return_button and was needed for
+        -- back-navigation. Since sui_titlebar.applyToSub now suppresses both
+        -- return_button and page_return_arrow (and owns back-navigation via
+        -- sub_back_btn), that concern no longer applies.
+        --
+        -- The user has explicitly asked to hide the pagination bar (general setting),
+        -- so honour that for collections / coll_list just like History and FM.
+
+        -- Remove all children except content_group to strip the pagination row
+        -- (page_info, return_button, etc.).
+        local content = menu_self[1] and menu_self[1][1]
+        if content then
+            for i = #content, 1, -1 do
+                if content[i] ~= menu_self.content_group then
+                    table.remove(content, i)
+                end
+            end
+        end
+
+        -- Override _recalculateDimen to suppress pagination widget updates.
+        -- page_return_arrow and page_info are no longer layout children here,
+        -- so nil them out during the call to prevent KOReader sizing them.
+        local layout_recalculate = rawget(menu_self, "_recalculateDimen") or _callClassRecalculate
+        menu_self._recalculateDimen = function(self_inner, no_recalculate_dimen)
+            local saved_arrow = self_inner.page_return_arrow
+            local saved_text  = self_inner.page_info_text
+            local saved_info  = self_inner.page_info
+            self_inner.page_return_arrow = nil
+            self_inner.page_info_text    = nil
+            self_inner.page_info         = nil
+            local ok, err = pcall(layout_recalculate, self_inner, no_recalculate_dimen)
+            self_inner.page_return_arrow = saved_arrow
+            self_inner.page_info_text    = saved_text
+            self_inner.page_info         = saved_info
+            if not ok then error(err, 2) end
+        end
+        menu_self:_recalculateDimen()
+    end
+
+    _trackHooks(state, { { Menu, "init", orig_menu_init } })
+end
+
+-- ---------------------------------------------------------------------------
+-- Menu.updatePageInfo + FileManager.updateTitleBarPath patches — navpager
+-- Rebuilds the navpager arrows and the title-bar subtitle after every page
+-- turn or directory change. Updates are coalesced per event-loop tick.
+-- ---------------------------------------------------------------------------
+
+local NAVPAGER_STATE = "_simpleui_navpager"
+
+function M.patchMenuForNavpager(plugin)
+    -- Keep the shared live-plugin pointer fresh regardless of call order
+    -- relative to patchFileManagerClass (installAll already calls this after
+    -- patchFileManagerClass, but this guards against future reordering).
+    _live_plugin = plugin
+
+    local Menu = require("ui/widget/menu")
+    local state = _acquireHooks(Menu, NAVPAGER_STATE, plugin)
+    if not state then return end
+
+    -- Resolved once as upvalues; used in the hot paths below.
+    local ffiUtil   = require("ffi/util")
+    local _template = ffiUtil.template
+
+    -- Returns the topmost fullscreen widget that has a navbar, falling back
+    -- to the FM. Prevents bar updates going to the FM when an injected widget
+    -- (Collections, Favorites…) is currently visible on top.
+    local function _getNavbarTarget(fm)
+        local stack = UI.getWindowStack()
+        for i = #stack, 1, -1 do
+            local w = stack[i] and stack[i].widget
+            if w and w.covers_fullscreen and w._navbar_container then return w end
+        end
+        return fm
+    end
+    M._getNavbarTarget = _getNavbarTarget
+
+    -- True when any subtitle (page indicator or pagination subtitle) should show.
+    local function _subtitleEnabled()
+        return SUISettings:isTrue("simpleui_bar_navpager_enabled")
+            or SUISettings:isTrue("simpleui_bar_pagination_show_subtitle")
+    end
+    M._subtitleEnabled = _subtitleEnabled
+
+    -- _fm_path_base: the path string last set by updateTitleBarPath (empty at home).
+    local _fm_path_base = ""
+
+    -- Writes the unified subtitle (path + "Page X of Y") in a single call.
+    local function _setSubtitleUnified(tb, path_base, page, page_num)
+        if not tb or not tb.subtitle_widget then return end
+        local parts = {}
+        if path_base and path_base ~= "" then
+            parts[#parts + 1] = path_base
+        end
+        if _subtitleEnabled() and page_num and page_num > 1 then
+            parts[#parts + 1] = _template(_("Page %1 of %2"), page, page_num)
+        end
+        tb:setSubTitle(table.concat(parts, "  ·  "), true)
+    end
+
+    -- menu_self is optional; when provided and the widget is an injected overlay
+    -- (history, collections, …) the FM path prefix is suppressed so it does not
+    -- bleed into a foreign title bar.
+    local function _setPageSubtitle(tb, page, page_num, menu_self)
+        if not tb or not tb.subtitle_widget then return end
+        local path_base = (menu_self and menu_self._navbar_injected) and "" or _fm_path_base
+        _setSubtitleUnified(tb, path_base, page, page_num)
+    end
+    M._setPageSubtitle = _setPageSubtitle
+
+    -- Called by external modules (e.g. sui_foldercovers) when entering a virtual
+    -- folder that does not go through updateTitleBarPath.
+    function M.setFMPathBase(text, fm_self)
+        _fm_path_base = text or ""
+        if fm_self then
+            local tb = fm_self.title_bar
+            local fc = fm_self.file_chooser
+            if tb and tb.subtitle_widget then
+                local pg     = fc and (fc.page     or 0) or 0
+                local pg_num = fc and (fc.page_num or 0) or 0
+                _setSubtitleUnified(tb, _fm_path_base, pg, pg_num)
+            end
+        end
+    end
+
+    -- Hook Menu.updatePageInfo to keep the subtitle and navpager arrows in sync.
+    local orig_updatePageInfo = Menu.updatePageInfo
+
+    local function updatePageInfo(menu_self, select_number)
+        orig_updatePageInfo(menu_self, select_number)
+
+        -- Fix: when the plugin has shrunk a fullscreen menu to getContentHeight(),
+        -- its dimen no longer covers the native page_info bar. Force a targeted
+        -- setDirty so CoverBrowser's chevrons repaint after each page turn.
+        if menu_self.page_info and menu_self._navbar_injected then
+            UIManager:setDirty(menu_self.show_parent or menu_self, "ui",
+                menu_self.page_info.dimen)
+        end
+
+        if not _subtitleEnabled() then return end
+
+        -- Read page state synchronously, exactly as the native bar does:
+        -- orig_updatePageInfo has already run _recalculateDimen, so page and
+        -- page_num are authoritative at this point.
+        local captured_page     = menu_self.page     or 0
+        local captured_page_num = menu_self.page_num or 0
+
+        -- Update the subtitle synchronously.
+        -- Pass menu_self so injected overlays (history, collections) do not
+        -- inherit the FM's current path in their subtitle.
+        _setPageSubtitle(menu_self.title_bar, captured_page, captured_page_num, menu_self)
+
+        -- Navpager arrow update: coalesce multiple calls within the same tick,
+        -- but read page/page_num from menu_self at execution time (not from the
+        -- snapshot above). This mirrors the native bar's logic — it always reads
+        -- self.page and self.page_num at the moment it runs — and avoids stale
+        -- snapshots when switchItemTable fires updatePageInfo before UIManager:show
+        -- (e.g. Collections, History), or when a second call in the same tick
+        -- would overwrite a pending snapshot with wrong values.
+        --
+        -- The reference to menu_self is safe: the closure only executes one tick
+        -- later while the widget is alive (it was just shown or just updated).
+        if _navpager_rebuild_pending then return end
+        _navpager_rebuild_pending = true
+
+        UIManager:scheduleIn(0, function()
+            _navpager_rebuild_pending = false
+            if not SUISettings:isTrue("simpleui_bar_navpager_enabled") then return end
+            -- Resolve the live plugin instance: the shared navpager hook state
+            -- guards this whole patch to a single installation per session, so
+            -- the `plugin` upvalue captured above can go stale once the FM is
+            -- recreated (reader return, rotation, suspend/resume). Falling back
+            -- to plugin.ui/.active_action on a stale instance here would build
+            -- the navpager-arrow bar against the wrong active tab.
+            local plugin = _live_plugin or plugin
+            local fm = plugin.ui
+            if not (fm and fm._navbar_container) then return end
+            -- Re-read page state from the live widget at execution time.
+            -- This is the same source of truth the native bar uses and guarantees
+            -- correctness regardless of when updatePageInfo was called relative
+            -- to UIManager:show (Collections/History call switchItemTable before
+            -- show, so the snapshot taken above may precede the final page_num).
+            local live_page     = menu_self.page     or 0
+            local live_page_num = menu_self.page_num or 0
+            local has_prev = live_page > 1
+            local has_next = live_page < live_page_num
+            Bottombar.syncNavpagerArrows(_getNavbarTarget(fm), plugin.active_action, has_prev, has_next)
+        end)
+    end
+    _addHook(state, Menu, "updatePageInfo", updatePageInfo)
+
+    -- Hook FileManager.updateTitleBarPath to update the subtitle and the
+    -- back-button visibility on every directory navigation.
+    -- The FM calls this instead of updatePageInfo, so it needs its own patch.
+    local FileManager = package.loaded["apps/filemanager/filemanager"]
+        or require("apps/filemanager/filemanager")
+
+    -- Normalise a filesystem path: strip trailing slash and resolve symlinks.
+    local function _norm(p)
+        if not p then return "" end
+        p = p:gsub("/$", "")
+        local ok, rp = pcall(ffiUtil.realpath, p)
+        if ok and rp then p = rp:gsub("/$", "") end
+        return p
+    end
+
+    local orig_updateTitleBarPath = FileManager.updateTitleBarPath
+
+    local function updateTitleBarPath(fm_self, path, force_home)
+        local fc_path    = fm_self.file_chooser and fm_self.file_chooser.path or nil
+        local home_dir   = _norm(G_reader_settings:readSetting("home_dir"))
+        local clean_path = _norm(path or fc_path)
+        local at_home    = force_home or (home_dir ~= "" and clean_path == home_dir)
+
+        -- Determine whether we are at the filesystem root (back button hidden).
+        -- Delegate to sui_titlebar's isAtRoot which owns the single authoritative
+        -- criterion (virtual paths, series-view, lock_home_folder all handled there).
+        local fc_cur  = fm_self.file_chooser
+        local ok_ti, TI = pcall(require, "screens/sui_titlebar")
+        local at_root
+        if ok_ti and TI and TI.isAtRoot then
+            at_root = TI.isAtRoot(fc_cur)
+        else
+            -- Fallback: path-only check when sui_titlebar is unavailable.
+            at_root = (clean_path == "/")
+            if not at_root and G_reader_settings:isTrue("lock_home_folder") and at_home then
+                at_root = true
+            end
+        end
+
+        -- Show or hide the back button and adjust the search button position.
+        local tb = fm_self.title_bar
+        if tb and tb.left_button and fm_self._titlebar_patched then
+            if at_root then
+                tb.left_button.overlap_offset = { Screen:getWidth() + 100, 0 }
+                tb.left_button.callback       = function() end
+                tb.left_button.hold_callback  = function() end
+                local sb = fm_self._titlebar_search_btn
+                local x  = fm_self._simpleui_search_x_compact
+                if sb and x and sb.overlap_offset then sb.overlap_offset = { x, 0 } end
+            else
+                local sb = fm_self._titlebar_search_btn
+                local x  = fm_self._simpleui_search_x
+                if sb and x and sb.overlap_offset then sb.overlap_offset = { x, 0 } end
+            end
+            UIManager:setDirty(tb.show_parent or fm_self, "ui", tb.dimen)
+        end
+
+        -- Build the subtitle: empty at home, path text in subfolders.
+        -- Call the original first when in a subfolder so it writes the path text,
+        -- then read it back so _setSubtitleUnified can combine path + page in one write.
+        if at_home then
+            _fm_path_base = ""
+        else
+            orig_updateTitleBarPath(fm_self, path)
+            local tb2     = fm_self.title_bar
+            _fm_path_base = (tb2 and tb2.subtitle_widget and tb2.subtitle_widget.text) or ""
+        end
+
+        local fc = fm_self.file_chooser
+        local tb3 = fm_self.title_bar
+        if tb3 and tb3.subtitle_widget then
+            local pg     = fc and (fc.page     or 0) or 0
+            local pg_num = fc and (fc.page_num or 0) or 0
+            _setSubtitleUnified(tb3, _fm_path_base, pg, pg_num)
+        end
+    end
+    _addHook(state, FileManager, "updateTitleBarPath", updateTitleBarPath)
+end
+
+-- ---------------------------------------------------------------------------
+-- showHSAfterResume
+-- Opens the homescreen after the device wakes from suspend.
+--
+-- Normal mode (force=false/nil): runs only when "Start with Homescreen" is
+-- active, the reader is closed, and the homescreen is not already visible.
+-- The homescreen tab does NOT need to be present in the navbar for this to
+-- fire.
+--
+-- Forced mode (force=true): used by "Return to Home Screen on Wakeup". Bypasses
+-- the isStartWithHS() gate entirely, and — unlike normal mode — also handles
+-- the reader being open: it closes the reader via closeReaderToHomescreen()
+-- first (which raises/shows the HS itself), then returns. This lets the
+-- feature work even when the user was mid-book at the moment of suspend.
+--
+-- Called from SimpleUIPlugin:onResume() in main.lua.
+-- ---------------------------------------------------------------------------
+
+function M.showHSAfterResume(plugin, force)
+    if not (force or isStartWithHS()) then return end
+
+    local RUI = package.loaded["apps/reader/readerui"]
+    if RUI and RUI.instance then
+        if not force then return end
+        -- Forced path: the reader is open on wakeup but the user wants the
+        -- Homescreen regardless. closeReaderToHomescreen() already performs
+        -- onClose(false) + showFileManager() + raising/showing the HS, so
+        -- there is nothing left to do here once it has been scheduled.
+        M.closeReaderToHomescreen(plugin, false)
+        return
+    end
+
+    local tabs = Config.loadTabConfig()
+    -- Note: we intentionally do NOT require the "homescreen" tab to be in
+    -- the navbar. "Start with Home Screen" is a launch behaviour that should
+    -- work regardless of whether the user keeps the tab visible.
+
+    local HS = liveHS()
+    if HS and HS._instance then
+        -- The homescreen was already open when the device suspended (e.g. the
+        -- touch menu was open on top of it).  We must NOT re-show the HS, but
+        -- we DO need to refresh the QA tap callback in case it captured a now-
+        -- stale FileManager reference.  main.lua:onResume does this too, but
+        -- the callback here is the authoritative one passed to HS.show() — keep
+        -- both in sync so whichever fires first is already correct.
+        HS._instance._on_qa_tap = _makeQaTap(plugin)
+        return
+    end
+
+    if isAppExiting() then return end
+
+    -- Defer until the event loop has settled after the resume chain.
+    UIManager:scheduleIn(0, function()
+        if isAppExiting() then return end
+        local RUI2 = package.loaded["apps/reader/readerui"]
+        if RUI2 and RUI2.instance then return end
+        local HS2 = liveHS()
+        if HS2 and HS2._instance then
+            -- Same staleness guard for the deferred path: the HS appeared
+            -- between the outer check and the scheduleIn(0) callback.
+            HS2._instance._on_qa_tap = _makeQaTap(plugin)
+            return
+        end
+
+        local fm = liveFM()
+        if not fm then return end
+
+        if not HS2 then
+            local ok, m = pcall(require, "screens/sui_homescreen")
+            HS2 = ok and m
+        end
+        if not HS2 then return end
+
+        local t           = Config.loadTabConfig()
+        local prev_action = plugin.active_action
+        Bottombar.setActiveAndRefreshFM(plugin, "homescreen", t)
+        _ensureGoalCallback(plugin)
+        -- Always start at page 1 after resume; restoring the last page
+        -- would be disorienting after waking from standby.
+        HS2._current_page = 1
+        HS2.show(_makeQaTap(plugin), plugin._goalTapCallback)
+        local hs_inst = HS2._instance
+        if hs_inst then hs_inst._navbar_prev_action = prev_action end
+    end)
+end
+
+-- ---------------------------------------------------------------------------
+-- Book Information dialog — restore FM path on close
+-- ---------------------------------------------------------------------------
+-- When "Book information" is opened from the File Manager, the KeyValuePage
+-- (KVP) widget is fullscreen.  When it closes, the screen reopen step sees no
+-- other fullscreen widget on the stack (the FM itself is explicitly excluded
+-- from the "other_open" check) and therefore calls _doShowHS, which pushes
+-- the HomeScreen on top of the FM.  This does not happen when the same dialog
+-- is opened from History, because History is still on the stack as a second
+-- fullscreen widget, so other_open = true and _doShowHS is skipped.
+--
+-- Fix: wrap filemanagerutil.genBookInformationButton so that, when the caller
+-- is the FM (not the reader), we (a) record the current file_chooser path
+-- before the dialog opens and (b) inject a wrapper around the KVP's
+-- close_callback that sets _sui_show_folder_pending = true (suppresses
+-- _doShowHS) and calls changeToPath to restore the folder if the FM drifted.
+-- ---------------------------------------------------------------------------
+
+function M.patchBookInfoNavigation(plugin)
+    local ok_util, fmutil = pcall(require, "apps/filemanager/filemanagerutil")
+    if not ok_util or not fmutil then return end
+    if fmutil._simpleui_bookinfo_nav_patched then return end
+    fmutil._simpleui_bookinfo_nav_patched = true
+
+    local orig_gen = fmutil.genBookInformationButton
+    plugin._orig_fmutil_gen_bookinfo = orig_gen
+
+    fmutil.genBookInformationButton = function(doc_settings_or_file, book_props, caller_callback, button_disabled)
+        local btn = orig_gen(doc_settings_or_file, book_props, caller_callback, button_disabled)
+        local orig_cb = btn.callback
+        btn.callback = function()
+            -- Capture the FM path *before* orig_cb fires (orig_cb calls
+            -- caller_callback which closes the file-dialog, then shows the KVP).
+            local FileManager = require("apps/filemanager/filemanager")
+            local fm = FileManager.instance
+            local saved_path = fm and fm.file_chooser and fm.file_chooser.path
+
+            orig_cb()
+
+            -- Only intervene when called from the FM (not from the reader).
+            if not saved_path then return end
+            if not (fm and fm.bookinfo and fm.bookinfo.kvp_widget) then return end
+
+            local kvp = fm.bookinfo.kvp_widget
+            local orig_close_cb = kvp.close_callback
+            kvp.close_callback = function()
+                -- Run the original close_callback first (metadata broadcast etc.).
+                if orig_close_cb then orig_close_cb() end
+
+                -- Suppress _doShowHS: by the time scheduleIn(0) fires this flag
+                -- will be checked and the HS open will be skipped.
+                local fm2 = require("apps/filemanager/filemanager").instance
+                if fm2 then
+                    fm2._sui_show_folder_pending = true
+                    -- Restore the folder the user was browsing, in case the FM
+                    -- drifted (e.g. a metadata write triggered a path change).
+                    if fm2.file_chooser and fm2.file_chooser.path ~= saved_path then
+                        fm2.file_chooser:changeToPath(saved_path)
+                    end
+                end
+            end
+        end
+        return btn
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Status changes: wrap filemanagerutil.genStatusButtonsRow (and
+-- genMultipleStatusButtonsRow) so that marking a book as finished/reading/
+-- abandoned from the library goes through the same reaction as every other
+-- status change (see _onStatusChanged).
+--
+-- Setting the status from the library writes the sidecar directly via
+-- filemanagerutil.saveSummary and no event is broadcast, so without this the
+-- finished-books ledger and the stats would only catch up on the next reading
+-- session.
+--
+-- Strategy: wrap both generators so that each status-button callback, after
+-- doing its own work, runs _onStatusChanged before the original
+-- caller_callback.
+-- ---------------------------------------------------------------------------
+
+local function _getStatsProvider()
+    local ok, SP = pcall(require, "modules/module_stats_provider")
+    return ok and SP or nil
+end
+
+-- Single reaction to a book's status or summary having changed, shared by
+-- every flow below. The stats provider updates the finished-books ledger,
+-- drops the cached sidecar data and flags the screens for a refresh;
+-- `doc_settings` is the settings object of a document open in the reader.
+-- A book that just became finished leaves the To Be Read list.
+local function _onStatusChanged(file, doc_settings)
+    local SP = _getStatsProvider()
+    if not SP then return end
+
+    local ok, finished = pcall(SP.bookChanged, file,
+        { doc_settings = doc_settings, status_changed = true })
+    if not (ok and finished) then return end
+
+    -- TBR is meant to hold unstarted books, so a finished book no longer
+    -- belongs there. Opt-out toggle in the TBR module's menu, on by default.
+    pcall(function()
+        local TBR = package.loaded["modules/module_tbr"]
+        if not (TBR and TBR.isAutoRemoveFinishedEnabled and TBR.removeTBR) then return end
+        if TBR.isAutoRemoveFinishedEnabled() then TBR.removeTBR(file) end
+    end)
+end
+
+function M.patchStatusButtons(plugin)
+    local ok_util, fmutil = pcall(require, "apps/filemanager/filemanagerutil")
+    if not ok_util or not fmutil then return end
+    if fmutil._simpleui_status_buttons_patched then return end
+    fmutil._simpleui_status_buttons_patched = true
+
+    -- ── genStatusButtonsRow ────────────────────────────────────────────────
+    -- The single-file variant changes status directly (no ConfirmBox), but
+    -- using caller_callback injection is simpler and equally correct: the
+    -- status is written before caller_callback() is called inside orig_gen_row.
+    --
+    -- Order matters here: caller_callback is what closes the dialog and
+    -- triggers the caller's own refresh (e.g. the homescreen repainting the
+    -- row the book was tapped from). _onStatusChanged must run first, so
+    -- that refresh already sees the post-change state instead of painting
+    -- once with stale data and only picking up the change on the next
+    -- unrelated repaint.
+    local orig_gen_row = fmutil.genStatusButtonsRow
+    plugin._orig_fmutil_gen_status_row = orig_gen_row
+
+    fmutil.genStatusButtonsRow = function(doc_settings_or_file, caller_callback)
+        -- Resolve the filepath once, before the buttons are built.
+        local file
+        if type(doc_settings_or_file) == "table" then
+            file = doc_settings_or_file:readSetting("doc_path")
+        else
+            file = doc_settings_or_file
+        end
+
+        local wrapped_callback = function()
+            if file then _onStatusChanged(file) end
+            if caller_callback then caller_callback() end
+        end
+        return orig_gen_row(doc_settings_or_file, wrapped_callback)
+    end
+
+    -- ── genMultipleStatusButtonsRow ────────────────────────────────────────
+    -- genMultipleStatusButtonsRow shows a ConfirmBox before actually changing
+    -- the status. We cannot wrap btn.callback (it fires before confirmation).
+    -- Instead, we inject _onStatusChanged into the caller_callback so it runs
+    -- after the status has been written to disk (inside ok_callback → caller_callback),
+    -- but before caller_callback itself — same ordering reason as above.
+    local orig_gen_multi = fmutil.genMultipleStatusButtonsRow
+    plugin._orig_fmutil_gen_status_multi = orig_gen_multi
+
+    fmutil.genMultipleStatusButtonsRow = function(files, caller_callback, button_disabled)
+        local wrapped_callback = function()
+            if type(files) == "table" then
+                for f in pairs(files) do
+                    _onStatusChanged(f)
+                end
+            end
+            if caller_callback then caller_callback() end
+        end
+        return orig_gen_multi(files, wrapped_callback, button_disabled)
+    end
+end
+
+function M.unpatchStatusButtons(plugin)
+    local fmutil = package.loaded["apps/filemanager/filemanagerutil"]
+    if not fmutil or not fmutil._simpleui_status_buttons_patched then return end
+
+    if plugin._orig_fmutil_gen_status_row then
+        fmutil.genStatusButtonsRow        = plugin._orig_fmutil_gen_status_row
+        plugin._orig_fmutil_gen_status_row = nil
+    end
+    if plugin._orig_fmutil_gen_status_multi then
+        fmutil.genMultipleStatusButtonsRow        = plugin._orig_fmutil_gen_status_multi
+        plugin._orig_fmutil_gen_status_multi      = nil
+    end
+    fmutil._simpleui_status_buttons_patched = nil
+end
+
+-- ---------------------------------------------------------------------------
+-- Reuse _onStatusChanged for the two status-change paths that live inside
+-- the reader itself, so the ledger update and TBR auto-removal apply there
+-- too, not just from the file manager (see patchStatusButtons above):
+--
+--   • ReaderStatus:markBook()      — "Mark as finished"/"Mark as reading" on
+--                                     the end-of-book dialog, and the
+--                                     end_document_auto_mark setting.
+--   • BookStatusWidget:onClose()   — the full-screen "Book status" page
+--                                     (Reading/Complete/On hold), reachable
+--                                     from the reader menu and from the
+--                                     end-of-book dialog's "Book status"
+--                                     button.
+-- ---------------------------------------------------------------------------
+
+function M.patchReaderMarkBook(plugin)
+    local ok_rs, ReaderStatus = pcall(require, "apps/reader/modules/readerstatus")
+    if not ok_rs or not ReaderStatus then return end
+    if ReaderStatus._simpleui_markbook_patched then return end
+    ReaderStatus._simpleui_markbook_patched = true
+
+    local orig_mark_book = ReaderStatus.markBook
+    plugin._orig_readerstatus_markbook = orig_mark_book
+
+    ReaderStatus.markBook = function(rs_self, ...)
+        orig_mark_book(rs_self, ...)
+        -- The reader's settings object is handed over so the completion date
+        -- is stamped on it: the reader flushes that same object when it
+        -- closes.
+        local file = rs_self.document and rs_self.document.file
+        if file then _onStatusChanged(file, rs_self.ui.doc_settings) end
+    end
+end
+
+function M.unpatchReaderMarkBook(plugin)
+    local ReaderStatus = package.loaded["apps/reader/modules/readerstatus"]
+    if not ReaderStatus or not ReaderStatus._simpleui_markbook_patched then return end
+
+    if plugin._orig_readerstatus_markbook then
+        ReaderStatus.markBook              = plugin._orig_readerstatus_markbook
+        plugin._orig_readerstatus_markbook = nil
+    end
+    ReaderStatus._simpleui_markbook_patched = nil
+end
+
+function M.patchBookStatusWidget(plugin)
+    local ok_bsw, BookStatusWidget = pcall(require, "ui/widget/bookstatuswidget")
+    if not ok_bsw or not BookStatusWidget then return end
+    if BookStatusWidget._simpleui_onclose_patched then return end
+    BookStatusWidget._simpleui_onclose_patched = true
+
+    local orig_on_close = BookStatusWidget.onClose
+    plugin._orig_bookstatuswidget_onclose = orig_on_close
+
+    BookStatusWidget.onClose = function(bsw_self, ...)
+        -- Capture before orig_on_close runs: it only flushes doc_settings
+        -- when self.updated is true, and readonly instances (e.g. the
+        -- screensaver's "bookstatus" mode) never set it.
+        local was_updated  = bsw_self.updated
+        local file         = bsw_self.ui and bsw_self.ui.document and bsw_self.ui.document.file
+        local doc_settings = bsw_self.ui and bsw_self.ui.doc_settings
+
+        -- orig_on_close flushes doc_settings, then calls self.close_callback
+        -- (which reveals/repaints whatever is behind this widget, e.g. the
+        -- homescreen), all before returning. Wrap close_callback itself so
+        -- _onStatusChanged runs first — otherwise the repaint happens with
+        -- stale state and the change only shows up on the next unrelated
+        -- repaint.
+        if was_updated and file then
+            local orig_close_callback = bsw_self.close_callback
+            bsw_self.close_callback = function(...)
+                _onStatusChanged(file, doc_settings)
+                if orig_close_callback then return orig_close_callback(...) end
+            end
+        end
+        return orig_on_close(bsw_self, ...)
+    end
+end
+
+function M.unpatchBookStatusWidget(plugin)
+    local BookStatusWidget = package.loaded["ui/widget/bookstatuswidget"]
+    if not BookStatusWidget or not BookStatusWidget._simpleui_onclose_patched then return end
+
+    if plugin._orig_bookstatuswidget_onclose then
+        BookStatusWidget.onClose              = plugin._orig_bookstatuswidget_onclose
+        plugin._orig_bookstatuswidget_onclose = nil
+    end
+    BookStatusWidget._simpleui_onclose_patched = nil
+end
+
+-- ---------------------------------------------------------------------------
+-- Reset: wrap filemanagerutil.genResetSettingsButton (and
+-- genMultipleResetSettingsButton) so that resetting a document's settings
+-- from an FM dialog ("Reset" button — file long-press, Collections, History,
+-- file searcher) goes through _onStatusChanged like a status change.
+--
+-- Resetting purges the whole sidecar, including summary.status, so a book
+-- previously marked "complete" stops being finished. After the purge,
+-- DocSettings:open(file) opens a fresh empty sidecar and reads back no
+-- summary, which counts as "not finished".
+-- ---------------------------------------------------------------------------
+function M.patchResetSettingsButton(plugin)
+    local ok_util, fmutil = pcall(require, "apps/filemanager/filemanagerutil")
+    if not ok_util or not fmutil then return end
+    if fmutil._simpleui_reset_button_patched then return end
+    fmutil._simpleui_reset_button_patched = true
+
+    -- ── genResetSettingsButton ──────────────────────────────────────────────
+    -- Resolve the filepath the same way genResetSettingsButton itself does,
+    -- before the button is built, so it's available to the wrapped callback
+    -- regardless of whether doc_settings_or_file is a DocSettings table or a
+    -- plain path string.
+    --
+    -- _onStatusChanged runs before caller_callback for the same reason as in
+    -- patchStatusButtons above: caller_callback triggers the caller's own
+    -- refresh, which must see the already-updated state.
+    local orig_gen_reset = fmutil.genResetSettingsButton
+    plugin._orig_fmutil_gen_reset = orig_gen_reset
+
+    fmutil.genResetSettingsButton = function(doc_settings_or_file, caller_callback, button_disabled)
+        local file
+        if type(doc_settings_or_file) == "table" then
+            file = doc_settings_or_file:readSetting("doc_path")
+        else
+            local ok_ffi, ffiUtil = pcall(require, "ffi/util")
+            file = (ok_ffi and ffiUtil.realpath(doc_settings_or_file)) or doc_settings_or_file
+        end
+
+        local wrapped_callback = function()
+            if file then _onStatusChanged(file) end
+            if caller_callback then caller_callback() end
+        end
+        return orig_gen_reset(doc_settings_or_file, wrapped_callback, button_disabled)
+    end
+
+    -- ── genMultipleResetSettingsButton ──────────────────────────────────────
+    local orig_gen_reset_multi = fmutil.genMultipleResetSettingsButton
+    plugin._orig_fmutil_gen_reset_multi = orig_gen_reset_multi
+
+    fmutil.genMultipleResetSettingsButton = function(files, caller_callback, button_disabled)
+        local wrapped_callback = function()
+            if type(files) == "table" then
+                for f in pairs(files) do
+                    _onStatusChanged(f)
+                end
+            end
+            if caller_callback then caller_callback() end
+        end
+        return orig_gen_reset_multi(files, wrapped_callback, button_disabled)
+    end
+end
+
+function M.unpatchResetSettingsButton(plugin)
+    local fmutil = package.loaded["apps/filemanager/filemanagerutil"]
+    if not fmutil or not fmutil._simpleui_reset_button_patched then return end
+
+    if plugin._orig_fmutil_gen_reset then
+        fmutil.genResetSettingsButton    = plugin._orig_fmutil_gen_reset
+        plugin._orig_fmutil_gen_reset    = nil
+    end
+    if plugin._orig_fmutil_gen_reset_multi then
+        fmutil.genMultipleResetSettingsButton    = plugin._orig_fmutil_gen_reset_multi
+        plugin._orig_fmutil_gen_reset_multi      = nil
+    end
+    fmutil._simpleui_reset_button_patched = nil
+end
+
+-- ---------------------------------------------------------------------------
+-- Action sheets for the file browser's long press
+--
+-- A long press on a book or a real folder in the file browser opens the
+-- shared action sheet (features/library/sui_book_hold_dialog.lua,
+-- features/library/sui_folder_hold_dialog.lua) instead of the native file
+-- dialog.
+--
+-- The hook is FileChooser:onMenuHold. The file manager assigns its own
+-- showFileDialog and onFileHold to the chooser instance, which shadow
+-- anything set on the class; onMenuHold is never overridden per instance.
+--
+-- Anything a sheet does not handle (virtual folders, selection mode, other
+-- choosers) goes to the previous onMenuHold. A sheet that fails to open also
+-- falls back to it.
+-- ---------------------------------------------------------------------------
+local HOLD_SHEETS = {
+    "features/library/sui_book_hold_dialog",
+    "features/library/sui_folder_hold_dialog",
+}
+
+function M.patchFileDialogSheets(plugin)
+    local FileChooser = require("ui/widget/filechooser")
+    if FileChooser._simpleui_hold_sheets_patched then return end
+    FileChooser._simpleui_hold_sheets_patched = true
+
+    local orig_onMenuHold = FileChooser.onMenuHold
+    plugin._orig_filechooser_onmenuhold_sheets = orig_onMenuHold
+
+    FileChooser.onMenuHold = function(fc, item)
+        for _i, module_name in ipairs(HOLD_SHEETS) do
+            local ok, Sheet = pcall(require, module_name)
+            if ok and Sheet.canHandle(fc, item) then
+                local shown, err = pcall(Sheet.showFromFileChooser, fc, item)
+                if shown then return true end
+                logger.warn("simpleui: action sheet failed: " .. tostring(err))
+                break
+            end
+        end
+        return orig_onMenuHold(fc, item)
+    end
+end
+
+function M.unpatchFileDialogSheets(plugin)
+    local FileChooser = package.loaded["ui/widget/filechooser"]
+    if not FileChooser or not FileChooser._simpleui_hold_sheets_patched then return end
+    if plugin._orig_filechooser_onmenuhold_sheets then
+        FileChooser.onMenuHold = plugin._orig_filechooser_onmenuhold_sheets
+        plugin._orig_filechooser_onmenuhold_sheets = nil
+    end
+    FileChooser._simpleui_hold_sheets_patched = nil
+end
+
+-- ---------------------------------------------------------------------------
+-- Choice dialogs of the history and of a collection
+-- The status of a book and the filters of the list are drawn selected in the
+-- sheets that stand in for their dialogs
+-- (features/dialogs/sui_native_choices.lua).
+-- ---------------------------------------------------------------------------
+-- Per manager: the method that shows a dialog → the wrapper that annotates it.
+local CHOICE_DIALOGS = {
+    {
+        module = "apps/filemanager/filemanagerhistory",
+        hooks  = { showHistDialog = "historyFilters", onMenuHold = "bookStatus" },
+    },
+    {
+        module = "apps/filemanager/filemanagercollection",
+        hooks  = { showCollDialog = "collectionFilters", onMenuHold = "bookStatus" },
+    },
+}
+
+local CHOICE_DIALOGS_STATE = "_simpleui_choice_dialogs"
+
+function M.patchChoiceDialogs(plugin)
+    local NativeChoices = require("features/dialogs/sui_native_choices")
+    for _i, entry in ipairs(CHOICE_DIALOGS) do
+        local ok, Manager = pcall(require, entry.module)
+        local state = ok and Manager and _acquireHooks(Manager, CHOICE_DIALOGS_STATE, plugin)
+        if state then
+            for key, wrap in pairs(entry.hooks) do
+                if Manager[key] then
+                    _addHook(state, Manager, key, NativeChoices[wrap](Manager[key]))
+                end
+            end
+        end
+    end
+end
+
+function M.unpatchChoiceDialogs(plugin)
+    for _i, entry in ipairs(CHOICE_DIALOGS) do
+        local Manager = package.loaded[entry.module]
+        if Manager then _releaseHooks(Manager, CHOICE_DIALOGS_STATE, plugin) end
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Text input dialogs of the file manager, the history and the collections
+-- Their inputs (file search and rename, history search, collection name,
+-- collection search and file type filter) are shown through the dialog facade
+-- (features/dialogs/sui_native_inputs.lua). Only the dialog an entry point
+-- shows while it runs is converted.
+-- ---------------------------------------------------------------------------
+-- Per owner: the methods that show an input dialog.
+local INPUT_DIALOGS = {
+    { module = "apps/filemanager/filemanager",             methods = { "showRenameFileDialog" } },
+    { module = "apps/filemanager/filemanagerfilesearcher", methods = { "onShowFileSearch" } },
+    { module = "apps/filemanager/filemanagerhistory",      methods = { "onSearchHistory" } },
+    { module = "apps/filemanager/filemanagercollection",   methods = {
+        "editCollectionName", "showCollFilterTypeDialog", "onShowCollectionsSearchDialog",
+    } },
+}
+
+local INPUT_DIALOGS_STATE = "_simpleui_input_dialogs"
+
+function M.patchInputDialogs(plugin)
+    local NativeInputs = require("features/dialogs/sui_native_inputs")
+    for _i, entry in ipairs(INPUT_DIALOGS) do
+        local ok, Owner = pcall(require, entry.module)
+        local state = ok and Owner and _acquireHooks(Owner, INPUT_DIALOGS_STATE, plugin)
+        if state then
+            for _j, key in ipairs(entry.methods) do
+                if Owner[key] then
+                    _addHook(state, Owner, key, NativeInputs.scoped(Owner[key]))
+                end
+            end
+        end
+    end
+end
+
+function M.unpatchInputDialogs(plugin)
+    for _i, entry in ipairs(INPUT_DIALOGS) do
+        local Owner = package.loaded[entry.module]
+        if Owner then _releaseHooks(Owner, INPUT_DIALOGS_STATE, plugin) end
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Global Text Size (Style ▸ Global Text Size)
+-- Patches ui/font.lua's Font:getFace() so Config.getFontScalePct() scales
+-- EVERY KOReader UI text size drawn through it — native menus, dialogs,
+-- titlebars, file browser AND SimpleUI's own FS_* widgets — from one choke
+-- point, since Font:getFace() is what the UI Font picker's Font.fontmap
+-- swap already flows through for every one of those surfaces. It does NOT
+-- touch the actual e-book reading font size: that's rendered by crengine
+-- via its own font-size setting, entirely separate from ui/font.lua.
+--
+-- No-op (never wraps getFace) when the setting is at its 100% default, so
+-- users who never touch it pay zero extra cost on this very hot path.
+-- Like the UI Font picker itself, a change only takes full effect after a
+-- restart — the scale is captured once, at install time.
+-- ---------------------------------------------------------------------------
+
+local FONT_GETFACE_STATE = "_simpleui_getface"
+
+function M.patchFontGetFace(plugin)
+    local Font = require("ui/font")
+    local scale = Config.getFontScalePct() / 100
+    if scale == 1 then return end  -- default: leave getFace fully untouched
+
+    local state = _acquireHooks(Font, FONT_GETFACE_STATE, plugin)
+    if not state then return end
+
+    local orig_getFace = Font.getFace
+    Font._simpleui_native_getface = orig_getFace  -- for fixed-box glyph faces
+
+    -- Reentrancy guard: Font:getFace() is not only called top-down by
+    -- widgets — it is also called RECURSIVELY from within itself via
+    -- ui/font.lua's _getFallbackFont(), which core's face_obj.getFallbackFont
+    -- callback exposes to libkoreader-xtext.so. That C module calls this
+    -- callback synchronously (lua_pcall) for every glyph missing from the
+    -- primary font during a single HarfBuzz shaping pass, and each call can
+    -- recurse back into THIS patched getFace for the next fallback candidate.
+    -- This wrapper must therefore never recurse unboundedly: past a fixed
+    -- depth it falls back to the *unpatched* getFace (no scale, no orig_size
+    -- rewrite), so a pathological call pattern degrades to "wrong size"
+    -- instead of "frozen UI".
+    local MAX_REENTRY_DEPTH = 16
+    local depth = 0
+
+    -- Scales the requested size, then restores the caller's pre-scale value
+    -- to face.orig_size: shrink-to-fit loops read it back, decrement it and
+    -- call getFace() again, so it must stay in unscaled units.
+    local function scaledGetFace(self, font, size, faceindex)
+        local sz = size
+        if not sz then sz = self.sizemap[font] end
+        local requested = sz
+        if sz then sz = math.max(1, math.floor(sz * scale)) end
+        local face = orig_getFace(self, font, sz, faceindex)
+        if face and face.orig_size ~= requested then
+            face.orig_size = requested
+        end
+        return face
+    end
+
+    Font.getFace = function(self, font, size, faceindex)
+        depth = depth + 1
+        if depth > MAX_REENTRY_DEPTH then
+            logger.warn("simpleui/style: Font:getFace reentrancy depth > "
+                        .. MAX_REENTRY_DEPTH .. " for font:", tostring(font),
+                        "- bypassing the scale patch to avoid a potential hang.")
+            depth = depth - 1
+            return orig_getFace(self, font, size, faceindex)
+        end
+
+        -- pcall so any error degrades to the native getFace instead of
+        -- propagating out of a C->Lua callback.
+        local ok, result = pcall(scaledGetFace, self, font, size, faceindex)
+
+        depth = depth - 1
+
+        if not ok then
+            logger.warn("simpleui/style: Font:getFace patch failed, falling back to native:", result)
+            return orig_getFace(self, font, size, faceindex)
+        end
+        return result
+    end
+    _trackHooks(state, { { Font, "getFace", orig_getFace } })
+end
+
+function M.unpatchFontGetFace(plugin)
+    local Font = package.loaded["ui/font"]
+    if Font and _releaseHooks(Font, FONT_GETFACE_STATE, plugin) then
+        Font._simpleui_native_getface = nil
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Icon colours in night mode (Style ▸ Icons ▸ Don't Invert Colored Icons in Night Mode)
+-- Night mode inverts the whole frame, which also flips the hues of coloured
+-- icons. ImageWidget:paintTo is wrapped so that an alpha icon holding a
+-- coloured bitmap is composited in displayed space: the covered region is
+-- inverted, the icon is painted as usual, and the region is inverted back.
+-- Frame inversion then restores the original colours, and the alpha channel
+-- keeps blending against the real background.
+-- Monochrome icons are painted as usual so they keep following the UI colours.
+-- ---------------------------------------------------------------------------
+
+-- Minimum channel spread (0-255) for a pixel to count as coloured.
+local _ICON_COLOR_SPREAD_MIN = 32
+
+local ICON_NIGHT_STATE = "_simpleui_icon_night_colors"
+
+function M.patchIconNightColors(plugin)
+    local ImageWidget = require("ui/widget/imagewidget")
+    local state = _acquireHooks(ImageWidget, ICON_NIGHT_STATE, plugin)
+    if not state then return end
+
+    local Blitbuffer = require("ffi/blitbuffer")
+    local orig_paintTo = ImageWidget.paintTo
+
+    local function isColorType(bb_type)
+        return bb_type == Blitbuffer.TYPE_BBRGB16
+            or bb_type == Blitbuffer.TYPE_BBRGB24
+            or bb_type == Blitbuffer.TYPE_BBRGB32
+    end
+
+    -- Bitmaps are shared through ImageCache, so the scan result is cached per
+    -- bitmap and released with it.
+    local has_color = setmetatable({}, { __mode = "k" })
+    local function hasColor(icon_bb)
+        local cached = has_color[icon_bb]
+        if cached ~= nil then return cached end
+        local found = false
+        if isColorType(icon_bb:getType()) then
+            for py = 0, icon_bb:getHeight() - 1 do
+                for px = 0, icon_bb:getWidth() - 1 do
+                    local c = icon_bb:getPixel(px, py):getColorRGB32()
+                    if c.alpha > 0
+                       and math.max(c.r, c.g, c.b) - math.min(c.r, c.g, c.b) >= _ICON_COLOR_SPREAD_MIN then
+                        found = true
+                        break
+                    end
+                end
+                if found then break end
+            end
+        end
+        has_color[icon_bb] = found
+        return found
+    end
+
+    ImageWidget.paintTo = function(self, bb, x, y)
+        if not (self.is_icon and self.alpha and Screen.night_mode
+                and SUIStyle.keepIconColorsInNight()
+                and Screen:isColorEnabled() and isColorType(bb:getType())) then
+            return orig_paintTo(self, bb, x, y)
+        end
+        local size = self:getSize()  -- renders the bitmap on first use
+        if not (self._bb and hasColor(self._bb)) then
+            return orig_paintTo(self, bb, x, y)
+        end
+
+        local w, h = size.w, size.h
+        local region = Blitbuffer.new(w, h, bb:getType())
+        region:blitFrom(bb, 0, 0, x, y, w, h)
+        region:invertRect(0, 0, w, h)
+        -- Dimming is applied after the round trip so it keeps lightening the
+        -- frame rather than the displayed image.
+        local dim = self.dim
+        self.dim = nil
+        orig_paintTo(self, region, 0, 0)
+        self.dim = dim
+        region:invertRect(0, 0, w, h)
+        if dim then region:lightenRect(0, 0, w, h) end
+        bb:blitFrom(region, x, y, 0, 0, w, h)
+        region:free()
+        self.dimen.x, self.dimen.y = x, y
+    end
+    _trackHooks(state, { { ImageWidget, "paintTo", orig_paintTo } })
+end
+
+function M.unpatchIconNightColors(plugin)
+    local ImageWidget = package.loaded["ui/widget/imagewidget"]
+    if ImageWidget then _releaseHooks(ImageWidget, ICON_NIGHT_STATE, plugin) end
+end
+
+-- ---------------------------------------------------------------------------
+-- Night mode change
+-- UIManager:ToggleNightMode runs once per change, after the screen has
+-- switched. The wallpaper cache and the homescreen layout are refreshed, the
+-- looks derived from settings are resolved again, and the navbars are rebuilt
+-- when a palette colour is on screen: it is pre-inverted at night and navbar
+-- widgets keep the colour they were built with.
+-- ---------------------------------------------------------------------------
+
+local NIGHT_MODE_STATE = "_simpleui_night_mode"
+
+function M.patchNightMode(plugin)
+    local orig = rawget(UIManager, "ToggleNightMode")
+    if not orig then return end
+    local state = _acquireHooks(UIManager, NIGHT_MODE_STATE, plugin)
+    if not state then return end
+
+    local Accent = require("infra/sui_accent")
+    UIManager.ToggleNightMode = function(self, ...)
+        local results = table.pack(orig(self, ...))
+        SUIWallpaper.onNightModeChanged()
+        SUISettings:invalidateDerived()
+        local live = _live_plugin
+        if live and (Accent.color() or Accent.secondaryColor()) then
+            local ok, err = pcall(live._rebuildAllNavbars, live)
+            if not ok then logger.warn("simpleui: accent navbar rebuild failed:", tostring(err)) end
+            local ok_tb, TB = pcall(require, "screens/sui_titlebar")
+            if ok_tb and TB then pcall(TB.refreshAccent) end
+        end
+        return table.unpack(results, 1, results.n)
+    end
+    _trackHooks(state, { { UIManager, "ToggleNightMode", orig } })
+end
+
+function M.unpatchNightMode(plugin)
+    _releaseHooks(UIManager, NIGHT_MODE_STATE, plugin)
+end
+
+-- ---------------------------------------------------------------------------
+-- installAll / teardownAll
+-- ---------------------------------------------------------------------------
+
+-- ---------------------------------------------------------------------------
+-- Debug: button bounds overlay
+-- When "simpleui_debug_button_bounds" is enabled, wraps Button:paintTo so
+-- every button draws a 2px border over itself, making it easy to verify
+-- the actual tap target real estate on device.
+-- ---------------------------------------------------------------------------
+
+function M.installButtonBoundsDebug(plugin)
+    local Button = package.loaded["ui/widget/button"]
+    if not Button then
+        -- Button not loaded yet; defer until first use via a lazy wrapper on
+        -- the Button module loader — we hook require instead.
+        local orig_require = _G.require
+        plugin._orig_require_for_bounds = orig_require
+        _G.require = function(modname, ...)
+            local result = orig_require(modname, ...)
+            if modname == "ui/widget/button" and not result._simpleui_bounds_patched then
+                M._wrapButtonPaintTo(plugin, result)
+            end
+            return result
+        end
+        return
+    end
+    if not Button._simpleui_bounds_patched then
+        M._wrapButtonPaintTo(plugin, Button)
+    end
+end
+
+function M._wrapButtonPaintTo(plugin, Button)
+    local Blitbuffer = require("ffi/blitbuffer")
+    local orig_paintTo = Button.paintTo
+    plugin._orig_button_paintTo = orig_paintTo
+    Button._simpleui_bounds_patched = true
+
+    Button.paintTo = function(btn_self, bb, x, y)
+        orig_paintTo(btn_self, bb, x, y)
+        if not SUISettings:isTrue("simpleui_debug_button_bounds") then return end
+        local dimen = btn_self:getSize()
+        if not dimen then return end
+        bb:paintBorder(x, y, dimen.w, dimen.h, 2, SUIStyle.COLOR.debug)
+    end
+end
+
+function M.uninstallButtonBoundsDebug(plugin)
+    -- Restore the require hook if we set one.
+    if plugin._orig_require_for_bounds then
+        _G.require = plugin._orig_require_for_bounds
+        plugin._orig_require_for_bounds = nil
+    end
+    -- Restore Button:paintTo if Button was already loaded when we patched it.
+    local Button = package.loaded["ui/widget/button"]
+    if Button and plugin._orig_button_paintTo then
+        Button.paintTo = plugin._orig_button_paintTo
+        plugin._orig_button_paintTo     = nil
+        Button._simpleui_bounds_patched = nil
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Reader-close helpers for gesture actions
+-- ---------------------------------------------------------------------------
+
+-- ---------------------------------------------------------------------------
+-- _prepareReaderClose
+--
+-- Flags for an explicit reader→Homescreen close.
+-- The book-close target is intentionally NOT applied here — that setting
+-- only affects native KOReader closes (see the screen reopen step / FM onShow).
+-- Explicit SimpleUI destinations always win (HS, Library, History, …).
+-- Returns: file, prev_action
+-- ---------------------------------------------------------------------------
+local function _prepareReaderClose(plugin, readerui, via_gesture)
+    local file = readerui.document and readerui.document.file
+    local fm_pre = liveFM()
+
+    -- Defer FM file-list scan until HS closes (I/O optimisation).
+    if fm_pre then
+        fm_pre._sui_lazy_refresh_path = true
+    end
+
+    local prev_action = plugin.active_action
+    plugin._closing_via_gesture = via_gesture
+    -- Mark tearing_down so the screen reopen step does not try
+    -- to re-open the HS a second time while our close is in progress.
+    readerui.tearing_down = true
+
+    return file, prev_action
+end
+
+-- ---------------------------------------------------------------------------
+-- ---------------------------------------------------------------------------
+-- Shared reader-exit helpers
+-- ---------------------------------------------------------------------------
+
+-- Move a widget to the top of the UIManager stack. Returns false if the
+-- widget is not on the stack.
+local function _promoteWidgetToTop(widget)
+    local stack = UIManager._window_stack
+    if not (stack and widget) then return false end
+    for i = 1, #stack do
+        if stack[i].widget == widget then
+            if i ~= #stack then
+                local entry = table.remove(stack, i)
+                table.insert(stack, entry)
+            end
+            return true
+        end
+    end
+    return false
+end
+
+-- Inject / refresh the Homescreen bottom bar on an existing instance.
+local function _injectHomescreenBar(plugin, inst, prev_action)
+    local tabs = Config.loadTabConfig()
+    Bottombar.setActiveAndRefreshFM(plugin, "homescreen", tabs)
+    Bottombar.setActiveTab(inst, "homescreen", tabs)
+    inst._navbar_injected = true
+    if prev_action ~= nil then
+        inst._navbar_prev_action = prev_action
+    end
+end
+
+-- Close the reader and restore the FileManager underneath.
+-- Does NOT set _suppress_closing_notice: that flag is reserved for
+-- reloadDocument (patchReloadDocument). Explicit exits must still show the
+-- "Closing book…" notice / cover transition when the user has them enabled.
+local function _teardownReader(readerui, file)
+    readerui:onClose(false)
+    readerui:showFileManager(file)
+end
+
+-- ---------------------------------------------------------------------------
+-- _raiseParkedScreen — warm-path promotion of a soft-parked screen instance.
+--
+-- Counterpart to ScreenWidget:onShowingReader's soft-park branch (see
+-- engines/sui_screen_engine.lua). When the reader opened, a parked HS was
+-- left alive at the bottom of the UIManager window stack instead of being
+-- torn down. This function:
+--   1. Confirms `instance` is actually parked (bails out otherwise).
+--   2. Moves it to the top of the window stack.
+--   3. Clears _parked, re-injects the navbar, refreshes data.
+--
+-- Returns true  → warm-path taken, caller must NOT build/show a fresh instance.
+-- Returns false → nothing was parked, or it was evicted unexpectedly.
+-- ---------------------------------------------------------------------------
+_raiseParkedScreen = function(plugin, screen_module, prev_action)
+    if isAppExiting() then return false end
+    local inst = screen_module and screen_module._instance
+    if not (inst and inst._parked) then return false end
+
+    if not _promoteWidgetToTop(inst) then
+        inst._parked = nil
+        if screen_module._instance == inst then screen_module._instance = nil end
+        return false
+    end
+
+    -- Orientation may have changed while parked under the reader
+    -- (onSetRotationMode ignores SetRotationMode while ReaderUI is open).
+    local cur_w = Screen:getWidth()
+    if inst._layout_sw ~= nil and inst._layout_sw ~= cur_w then
+        logger.dbg("simpleui[rotation]: raiseParked layout stale — cold reopen",
+            "layout_sw=", inst._layout_sw, "cur_w=", cur_w)
+        inst._parked = nil
+        UI.invalidateDimCache()
+        SUIWallpaper.freeCache()
+        inst._cfg_cache = nil
+        inst._navbar_closing_intentionally = true
+        UIManager:close(inst)
+        inst._navbar_closing_intentionally = nil
+        return false
+    end
+
+    inst._parked = nil
+    _injectHomescreenBar(plugin, inst, prev_action)
+    _ensureGoalCallback(plugin)
+    inst._on_qa_tap   = _makeQaTap(plugin)
+    inst._on_goal_tap = plugin._goalTapCallback
+
+    pcall(function() inst:_refresh(false) end)
+
+    -- Dimen-scoped dirty: avoids full-flash promotion on colour panels once
+    -- the instance is fully raised and dimen is current.
+    UIManager:setDirty(inst, function()
+        return "ui", inst.dimen
+    end)
+    closeClosingNotice(plugin)
+    return true
+end
+
+-- Closes a soft-parked screen instance for real instead of leaving it
+-- dangling alive-but-hidden. Used by any reader-close path that will NOT
+-- show the Homescreen this time (e.g. the Library or Book Folder close targets).
+_dropParkedScreen = function(screen_module)
+    local inst = screen_module and screen_module._instance
+    if not (inst and inst._parked) then return end
+    inst._parked = nil
+    inst._navbar_closing_intentionally = true
+    UIManager:close(inst)
+end
+
+-- ---------------------------------------------------------------------------
+-- _closeReaderToHomescreenSync
+--
+-- Shared by closeReaderToHomescreen (async nextTick) and wireReaderMenuFMTab
+-- (synchronous, so TouchMenu forceRePaint sees the destination already up).
+--
+-- Soft-park (fast, when cover-close transition is off):
+--   1. Inject bar + promote still-parked HS + full dirty (immediate paint).
+--      Keep _parked so ReaderUI onCloseWidget does not destroy it.
+--   2. Next tick: teardown reader, then _raiseParkedScreen (unpark + stats).
+--
+-- Cover-close enabled, or no parked instance: teardown first (cover paints
+-- over the book), then raise/show HS under the cover and re-assert cover on top.
+-- ---------------------------------------------------------------------------
+local function _closeReaderToHomescreenSync(plugin, readerui, file, prev_action)
+    if isAppExiting() then return end
+
+    local HS = liveHS() or (function()
+        local ok, m = pcall(require, "screens/sui_homescreen"); return ok and m
+    end)()
+
+    if not HS then
+        _teardownReader(readerui, file)
+        return
+    end
+
+    _closeOrphanedPopups(liveFM(), HS._instance)
+
+    local inst = HS._instance
+    -- Cover-close transition must paint over the book first. Skip HS-first
+    -- when it is enabled so onCloseDocument can show the cover on the
+    -- still-visible reader, then raise HS underneath the cover.
+    local cover_first = CoverTransition.isCloseEnabled()
+
+    if inst and inst._parked and not cover_first then
+        -- Immediate paint while still parked (survives onCloseWidget).
+        _injectHomescreenBar(plugin, inst, prev_action)
+        _promoteWidgetToTop(inst)
+        UIManager:setDirty(inst, "ui")
+
+        UIManager:nextTick(function()
+            if isAppExiting() then return end
+            local RUI2 = package.loaded["apps/reader/readerui"]
+            if not (RUI2 and RUI2.instance == readerui) then return end
+
+            _teardownReader(readerui, file)
+            if not _raiseParkedScreen(plugin, HS, prev_action) then
+                if not HS._instance then
+                    _showHSCold(plugin, HS, prev_action)
+                end
+            end
+        end)
+        return
+    end
+
+    -- Close-first: book (and optional cover) visible, then raise/show HS.
+    _teardownReader(readerui, file)
+    if not _raiseParkedScreen(plugin, HS, prev_action) then
+        if not HS._instance then
+            _showHSCold(plugin, HS, prev_action)
+        end
+    end
+    -- HS raise in the same tick would bury the cover; keep cover on top.
+    if CoverTransition.isShowing() then
+        CoverTransition.ensureOnTop()
+    end
+end
+
+-- via_gesture controls the closing-notice mode ("gesture_only" vs menu).
+-- Gesture / dispatcher / hardware Home: nextTick (no forceRePaint follows).
+-- TouchMenu FM tab: calls _closeReaderToHomescreenSync directly (sync).
+function M.closeReaderToHomescreen(plugin, via_gesture)
+    if via_gesture == nil then via_gesture = true end
+    local RUI = package.loaded["apps/reader/readerui"]
+    if not (RUI and RUI.instance) then return end
+    local readerui = RUI.instance
+    -- A close is already in progress for this reader.
+    if readerui.tearing_down then return end
+
+    local file, prev_action =
+        _prepareReaderClose(plugin, readerui, via_gesture)
+
+    UIManager:nextTick(function()
+        local RUI2 = package.loaded["apps/reader/readerui"]
+        if not (RUI2 and RUI2.instance == readerui) then return end
+        _closeReaderToHomescreenSync(plugin, readerui, file, prev_action)
+    end)
+end
+
+
+-- Suppress the "Closing book…" notice during document reloads triggered by
+-- formatting changes (font size, margins, line spacing, etc.).
+--
+-- KOReader's ReaderUI:reloadDocument() calls self:onClose(false) internally,
+-- which fires onCloseDocument — the same event we use to show the notice.
+-- There is no way to distinguish a reload-triggered close from a real close
+-- inside onCloseDocument itself, so we set _suppress_closing_notice on the
+-- plugin just before the original reloadDocument runs.  The flag is consumed
+-- (and cleared) unconditionally at the top of onCloseDocument.
+--
+-- Applied once per ReaderUI instance (guard: _simpleui_reload_patched).
+function M.patchReloadDocument(plugin, readerui)
+    if not readerui then return end
+    if readerui._simpleui_reload_patched then return end
+    local orig = readerui.reloadDocument
+    if type(orig) ~= "function" then return end
+    readerui.reloadDocument = function(self, ...)
+        plugin._suppress_closing_notice = true
+
+        -- Single source of truth for "we're inside a reloadDocument()-driven
+        -- close/reopen" for the whole window, both the close and the
+        -- reopen side. Lives on UIManager, NOT on `plugin` — the reload
+        -- rebuilds a brand new ReaderUI, and KOReader's plugin loader
+        -- constructs a brand new SimpleUIPlugin instance for it too (exactly
+        -- as it does for a normal open), re-running installAll and
+        -- recording that instance as the live plugin of the window hooks
+        -- *before* the rebuilt ReaderUI is ever shown. A flag set on the OLD
+        -- plugin instance would silently read back as nil by the time the
+        -- new ReaderUI's UIManager.show call happens — which is exactly what
+        -- let the Cover Transition guards below fail intermittently. UIManager
+        -- itself is never recreated, so a flag stored there survives the
+        -- plugin-instance swap, like the window hooks state does.
+        -- Read by:
+        --   - the close steps of the window hooks: push the reload blocker right after the
+        --     old ReaderUI closes, and stands the Home-Screen-raise fallback
+        --     down so it is never raised because of this close.
+        --   - patchReaderShowCoroutine / the reader steps of the window hooks: skip both
+        --     CoverTransition open-side trigger points for a reload (no
+        --     cover flash wanted either).
+        --
+        -- Cleared event-driven, by the reader steps of the window hooks, exactly when the
+        -- rebuilt ReaderUI is actually shown — NOT here on a fixed nextTick.
+        -- showReaderCoroutine's document load can legitimately span more
+        -- than one tick (slow opens, e.g. right after background
+        -- rerendering finishes), so a fixed one-tick clear here could fire
+        -- before the new ReaderUI is shown, leaving the guards below
+        -- unprotected for exactly the slow case where they matter most.
+        UIManager._simpleui_reload_in_progress = true
+
+        local ret = { orig(self, ...) }
+
+        -- Safety net only: if the reload errored out before the new
+        -- ReaderUI was ever shown, the event-driven clear in
+        -- those steps never run, and both this flag and the
+        -- blocker would otherwise linger forever. Give it a generous
+        -- real-time window (legitimate reloads with background
+        -- rerendering can themselves take several seconds) rather than a
+        -- single tick, so this never races the legitimate case.
+        UIManager:scheduleIn(8, function()
+            if not UIManager._simpleui_reload_in_progress then return end
+            UIManager._simpleui_reload_in_progress = nil
+            if UIManager._simpleui_reload_blocker then
+                local blocker_leftover = UIManager._simpleui_reload_blocker
+                UIManager._simpleui_reload_blocker = nil
+                pcall(WindowHooks.origClose(), UIManager, blocker_leftover)
+            end
+        end)
+
+        return table.unpack(ret)
+    end
+    readerui._simpleui_reload_patched = true
+end
+
+-- ---------------------------------------------------------------------------
+-- ReaderUI.showReaderCoroutine — class-level patch, installed once.
+--
+-- KOReader shows a plain "Opening file '...'." InfoMessage synchronously at
+-- the very top of showReaderCoroutine, before the (potentially slow) actual
+-- document load happens on the next tick. When Cover Transition's open side
+-- is enabled, that notice is what stays on screen for the whole load — our
+-- existing ReaderUI-shown hook further down fires too late to hide it, it
+-- only masks the final instant the reader itself appears.
+--
+-- Rather than reimplementing showReaderCoroutine's coroutine/crash-handling
+-- body (out of scope for this feature, and a maintenance burden across
+-- KOReader versions), this only flags the file about to be opened; the
+-- existing single UIManager.show wrapper below recognises the very next
+-- InfoMessage call as that notice and substitutes the cover for it. Nothing
+-- here duplicates or second-guesses KOReader's own opening logic.
+-- ---------------------------------------------------------------------------
+function M.patchReaderShowCoroutine(plugin)
+    local ok, ReaderUI = pcall(require, "apps/reader/readerui")
+    if not ok or not ReaderUI then return end
+    if ReaderUI._simpleui_show_coroutine_patched then return end
+    ReaderUI._simpleui_show_coroutine_patched = true
+
+    local orig = ReaderUI.showReaderCoroutine
+    ReaderUI.showReaderCoroutine = function(self, file, provider, seamless)
+        -- Reload-triggered reopen (font size, margins, line spacing, ...):
+        -- never engage the CoverTransition open side for it — no cover flash
+        -- wanted for an internal reload. KOReader's own "Opening file
+        -- '...'." notice is left alone and shows normally; the Home Screen
+        -- reveal it would otherwise sit over is handled directly in
+        -- the reload blocker close step, not by hiding this notice.
+        if not UIManager._simpleui_reload_in_progress
+                and not seamless and CoverTransition.isOpenEnabled() then
+            CoverTransition._pending_open_file = file
+        end
+        return orig(self, file, provider, seamless)
+    end
+end
+
+
+function M.wireReaderMenuFMTab(plugin, readerui)
+    if not (readerui and readerui.menu) then return end
+    local menu_ref = readerui.menu
+    if menu_ref._simpleui_fm_tab_wrapped then return end
+    local items = menu_ref.menu_items
+    if not (items and items.filemanager) then return end
+
+    items.filemanager.callback = function()
+        -- Synchronous close: TouchMenuItem:onTapSelect forceRePaint()s after
+        -- this callback, so the destination must already be on the stack.
+
+        if menu_ref.onTapCloseMenu then menu_ref:onTapCloseMenu() end
+
+        -- Native TouchMenu exit is the only path that honours the book-close
+        -- target. Explicit SimpleUI destinations (gesture Home, QA Home,
+        -- QA Library, …) never consult it.
+        local target = Config.getBookCloseTarget()
+        if target == Config.BOOK_CLOSE_TARGET.LIBRARY then
+            M.closeReaderToLibrary(plugin)
+            return
+        end
+        if target == Config.BOOK_CLOSE_TARGET.BOOK_FOLDER then
+            local file = readerui.document and readerui.document.file
+            local fm_pre = liveFM()
+            if fm_pre then
+                fm_pre._sui_return_to_book_folder_pending = true
+            end
+            plugin._closing_via_gesture = false
+            readerui.tearing_down = true
+            readerui:onClose(false)
+            readerui:showFileManager(file)
+            local HS = liveHS()
+            if HS then _dropParkedScreen(HS) end
+            plugin.active_action = "home"
+            return
+        end
+
+        local file, prev_action =
+            _prepareReaderClose(plugin, readerui, false)
+        _closeReaderToHomescreenSync(plugin, readerui, file, prev_action)
+    end
+    menu_ref._simpleui_fm_tab_wrapped = true
+end
+
+-- ---------------------------------------------------------------------------
+-- wireReaderHomeKey
+--
+-- Natively, ReaderUI:registerKeyEvents() binds the Home key to onHome(),
+-- which closes the reader straight into the file manager (onClose +
+-- showFileManager, no Homescreen). When the "Home Button Opens Home Screen"
+-- behaviour setting is on, redirect that single instance-level entry point
+-- to our flash-free reader→Homescreen path instead — the same one used by
+-- the "Go to Homescreen" gesture/dispatcher action — so the hardware button
+-- matches Start-with-Homescreen users' expectations instead of always
+-- dropping into the FM.
+--
+-- Gated on Config.deviceHasHomeKey() (event_map contains "Home"). Devices
+-- without a Home mapping never install the wrapper; the setting is also
+-- hidden from their menu (see makeBehaviourMenuItems).
+--
+-- via_gesture=true: a hardware button press behaves like a gesture, not a
+-- menu tap — no TouchMenu forceRePaint() follows it, so the async nextTick
+-- path (same as onSimpleUIGoHomescreen) is safe and keeps "gesture_only"
+-- closing-notice mode consistent.
+--
+-- Applied once per ReaderUI instance (guard: _simpleui_home_key_patched).
+-- ---------------------------------------------------------------------------
+function M.wireReaderHomeKey(plugin, readerui)
+    if not (readerui and Config.deviceHasHomeKey()) then return end
+    if readerui._simpleui_home_key_patched then return end
+    local orig = readerui.onHome
+    if type(orig) ~= "function" then return end
+
+    readerui.onHome = function(self, ...)
+        if SUISettings:isTrue("simpleui_home_key_opens_hs") then
+            M.closeReaderToHomescreen(plugin, true)
+            return true
+        end
+        return orig(self, ...)
+    end
+    readerui._simpleui_home_key_patched = true
+end
+
+-- Close the reader and land on the Library (FM at home_dir) with no
+-- Homescreen on top. Safe when the reader is not open (no-op).
+function M.closeReaderToLibrary(plugin)
+    local RUI = package.loaded["apps/reader/readerui"]
+    if not (RUI and RUI.instance) then return end
+    local readerui = RUI.instance
+
+    -- Skip HS re-open in the screen reopen step (same flag as tab-nav closes).
+    readerui._navbar_closing_intentionally = true
+
+    local file = readerui.document and readerui.document.file
+    plugin._closing_via_gesture = true
+    readerui.tearing_down = true
+    readerui:onClose()
+    readerui:showFileManager(file)
+
+    local HS = liveHS()
+    if HS then _dropParkedScreen(HS) end
+
+    UIManager:scheduleIn(0, function()
+        local fm_ref = liveFM()
+        if not fm_ref then return end
+        local home = G_reader_settings:readSetting("home_dir")
+        local lfs  = require("libs/libkoreader-lfs")
+        if not home or lfs.attributes(home, "mode") ~= "directory" then
+            home = require("device").home_dir
+        end
+        if home and fm_ref.file_chooser then
+            fm_ref._navbar_suppress_path_change = true
+            fm_ref.file_chooser:changeToPath(home)
+            fm_ref._navbar_suppress_path_change = nil
+            if fm_ref.updateTitleBarPath then
+                pcall(function() fm_ref:updateTitleBarPath(home, true) end)
+            end
+        elseif fm_ref.file_chooser then
+            fm_ref.file_chooser:refreshPath()
+        end
+        local tabs = Config.loadTabConfig()
+        plugin.active_action = "home"
+        Bottombar.showActiveTab(fm_ref, "home", tabs)
+    end)
+end
+
+
+-- Wallpaper in File Manager and fullscreen overlays
+-- Paints the SimpleUI homescreen wallpaper behind the FM, Collections,
+-- History, and other fullscreen surfaces when the "Show in FM" setting is on.
+--
+-- Widget tree after wrapWithNavbar (FM case):
+--   fm_self[1]              = simpleui FrameContainer  (background=COLOR_WHITE)
+--   fm_self[1][1]           = OverlapGroup (navbar_container, no background)
+--   fm_self[1][1][1]        = KOReader fm_ui FrameContainer (background=COLOR_WHITE)
+--   fm_self[1][1][1][1]     = FileChooser (Menu subclass)
+--   fm_self[1][1][1][1][1]  = Menu's inner FrameContainer (background=COLOR_WHITE)
+--   fm_self._navbar_inner   = same as fm_self[1][1][1] (saved before wrapping)
+--
+-- Widget tree after wrapWithNavbar (fullscreen overlay -- Collections, History):
+--   widget[1]               = simpleui FrameContainer  (background=COLOR_WHITE)
+--   widget[1][1]            = OverlapGroup (navbar_container)
+--   widget[1][1][1]         = original Menu widget
+--   widget[1][1][1][1]      = Menu's inner FrameContainer (background=COLOR_WHITE)
+--   widget._navbar_inner    = same as widget[1][1][1]
+--
+-- Fix: wrap paintTo on the outermost simpleui FrameContainer to paint wallpaper
+-- first; clear background=nil on every FrameContainer in the chain so none of
+-- them overwrite it with a white fill.  The _navbar_inner reference gives us
+-- direct access to the KOReader-level widgets without walking the full tree.
+-- ---------------------------------------------------------------------------
+
+-- Paint the wallpaper onto bb, anchored at y=0 (top of screen), with its tint.
+local function _paintWallpaper(bg_widget, bb, x, y)
+    if not bg_widget then return end
+    bg_widget:paintTo(bb, x, 0)
+    SUIWallpaper.paintTint(bb, x, 0, Screen:getWidth(), Screen:getHeight())
+end
+
+-- Returns the wallpaper background widget when the file manager wallpaper is
+-- active, else nil.
+local function _wallpaperBg()
+    if not SUIWallpaper.styleGetWallpaperShowInFM() then return nil end
+    return SUIWallpaper.styleGetBgWidget()
+end
+
+-- Paints the wallpaper behind the status bar and the bottom bar only, for when
+-- a bar is transparent but the wallpaper is not shown on all screens. It
+-- clears what was on screen before (closed menus, other screens) and leaves
+-- the content area to paint itself.
+local function _paintBarBands(bb, x)
+    if _wallpaperBg() or not SUIWallpaper.barsRevealWallpaper() then return end
+    local sw, sh = Screen:getWidth(), Screen:getHeight()
+    local bottom_h = Bottombar.TOTAL_H()
+    SUIWallpaper.paintEraser(bb, x, 0, sw, UI.getTopInset(), 0)
+    SUIWallpaper.paintEraser(bb, x, sh - bottom_h, sw, bottom_h, 0)
+end
+
+-- Recursively nil all COLOR_WHITE backgrounds in a widget tree.
+-- Stops at depth 12 to avoid runaway traversal.
+local function _clearWhiteBackgrounds(w, depth)
+    if not w or type(w) ~= "table" or depth > 12 then return end
+    if SUIStyle.isSurface(w.background) then
+        w.background = nil
+    end
+    for i = 1, #w do
+        _clearWhiteBackgrounds(w[i], depth + 1)
+    end
+end
+
+-- Inject the wallpaper paint hook into a fullscreen overlay widget
+-- (Collections, History, etc.) after wrapWithNavbar has run.
+--
+-- For overlays the widget object itself is stable — KOReader reuses the same
+-- Lua table across opens.  The hook is placed on widget[1] (the outer
+-- FrameContainer produced by wrapWithNavbar) guarded by _sui_wallpaper_patched
+-- so we only wrap paintTo once.  Backgrounds in the chain are cleared so
+-- they do not paint white over the wallpaper.
+--
+-- NOTE: This function is NOT used for the FM — see patchWallpaperFM below,
+-- which wraps paintTo on the FileManager instance itself (the stable object
+-- that sits in UIManager._window_stack and is never recreated).
+local function _injectWallpaperIntoWidget(widget)
+    if not widget then return end
+    local outer = widget[1]   -- simpleui outer FrameContainer
+    if not outer then return end
+    -- Bar bands are checked live on every paint, so a later setting change applies.
+    if not outer._sui_bands_patched then
+        outer._sui_bands_patched = true
+        local bands_pt = outer.paintTo
+        function outer:paintTo(bb, x, y)
+            _paintBarBands(bb, x)
+            bands_pt(self, bb, x, y)
+        end
+    end
+    if outer._sui_wallpaper_patched or not _wallpaperBg() then return end
+    outer._sui_wallpaper_patched = true
+
+    -- Clear opaque backgrounds in the widget chain.
+    outer.background = nil
+    local ni = widget._navbar_inner
+    if ni then
+        ni.background = nil
+        local ni1 = ni[1]
+        if ni1 then
+            ni1.background = nil
+            if ni1[1] then ni1[1].background = nil end
+        end
+    end
+
+    -- Deep-clear nested backgrounds (Button frames, item wrappers, etc.)
+    if ni then
+        _clearWhiteBackgrounds(ni, 0)
+    else
+        _clearWhiteBackgrounds(outer, 0)
+    end
+
+    -- Wrap paintTo on the outer FrameContainer.
+    local _orig_pt = outer.paintTo
+    function outer:paintTo(bb, x, y)
+        local live_bg = _wallpaperBg()
+        if live_bg then _paintWallpaper(live_bg, bb, x, y) end
+        _orig_pt(self, bb, x, y)
+    end
+end
+
+local WALLPAPER_STATE = "_simpleui_wallpaper"
+
+function M.patchWallpaperFM(plugin)
+    local FileManager = require("apps/filemanager/filemanager")
+
+    local state = _acquireHooks(FileManager, WALLPAPER_STATE, plugin)
+    if not state then return end
+    local installed = {}   -- { target, key, orig } of every hook set below
+
+    -- -----------------------------------------------------------------------
+    -- Core approach: wrap paintTo on the FileManager CLASS, not on transient
+    -- inner widgets.
+    --
+    -- Why inner widgets don't work:
+    --   Every setupLayout call (e.g. after closing a book) calls wrapWithNavbar,
+    --   which creates brand-new FrameContainer and OverlapGroup objects.  Any
+    --   paintTo hook installed on those objects is silently discarded the moment
+    --   setupLayout runs again — the FM's self[1] now points to the new objects
+    --   and the old ones (with the hook) are garbage-collected.
+    --
+    -- Why wrapping the class works:
+    --   UIManager._repaint() calls widget:paintTo() on the object that was
+    --   passed to UIManager:show() — the FileManager *instance*.  That instance
+    --   is never replaced (only its self[1] child changes).  By wrapping the
+    --   CLASS-level paintTo we intercept every repaint before any child widget
+    --   is painted, regardless of how many times setupLayout rebuilds self[1].
+    --
+    -- Flow per repaint:
+    --   1. Our hook fires first → _paintWallpaper() draws wallpaper onto Screen.bb
+    --   2. original WidgetContainer:paintTo → self[1]:paintTo (the outer FC)
+    --        → outer FC paints nothing (background=nil, bordersize=0, padding=0)
+    --        → OverlapGroup:paintTo → KOReader fm_ui FC (background=nil) → etc.
+    --
+    --   setupLayout also clears backgrounds in the chain (same as before) so
+    --   no white rectangle is drawn on top of the wallpaper.
+    -- -----------------------------------------------------------------------
+    local orig_fm_paintTo = FileManager.paintTo  -- nil: inherits WidgetContainer:paintTo
+    local base_wc_paintTo                        -- resolved lazily on first call
+
+    -- Recorded raw: nil when the class inherits WidgetContainer:paintTo.
+    installed[#installed + 1] = { FileManager, "paintTo", rawget(FileManager, "paintTo") }
+
+    FileManager.paintTo = function(fm_self, bb, x, y)
+        -- Only intercept the FileManager instance (not subclasses / other callers).
+        local _live_bg_fm = _wallpaperBg()
+        if _live_bg_fm then _paintWallpaper(_live_bg_fm, bb, x, y) else _paintBarBands(bb, x) end
+        -- Call the original paintTo (WidgetContainer:paintTo).
+        if orig_fm_paintTo then
+            orig_fm_paintTo(fm_self, bb, x, y)
+        else
+            if not base_wc_paintTo then
+                local WC = require("ui/widget/container/widgetcontainer")
+                base_wc_paintTo = WC.paintTo
+            end
+            base_wc_paintTo(fm_self, bb, x, y)
+        end
+    end
+
+    -- Chain after patchFileManagerClass.setupLayout so the widget tree is
+    -- already wrapped by wrapWithNavbar when our code runs.
+    -- The sole job of this setupLayout wrapper is now to clear the white
+    -- backgrounds in the newly-built widget chain so nothing paints a white
+    -- rectangle on top of the wallpaper that was already drawn by paintTo.
+    local base_setupLayout = FileManager.setupLayout
+    installed[#installed + 1] = { FileManager, "setupLayout", base_setupLayout }
+
+    FileManager.setupLayout = function(fm_self)
+        base_setupLayout(fm_self)
+
+        if not SUIWallpaper.styleGetWallpaperShowInFM() then return end
+
+        -- Clear all opaque backgrounds in the freshly-built widget chain.
+        -- wrapWithNavbar sets outer.background = COLOR_WHITE when the navbar
+        -- is not transparent; KOReader's setupLayout sets fm_ui.background =
+        -- COLOR_WHITE.  Nil them all so paintTo (above) can show through.
+        local outer = fm_self[1]
+        if outer then
+            outer.background = nil
+            local ni = fm_self._navbar_inner
+            if ni then
+                ni.background = nil
+                local ni1 = ni[1]
+                if ni1 then
+                    ni1.background = nil
+                    if ni1[1] then ni1[1].background = nil end
+                end
+                _clearWhiteBackgrounds(ni, 0)
+            else
+                _clearWhiteBackgrounds(outer, 0)
+            end
+        end
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Button frame background patch
+    -- button.lua always sets frame.background = COLOR_WHITE when the Button
+    -- has no explicit self.background colour (the else branch, line ~226).
+    -- This makes chevrons, coll_back, and other icon Buttons paint a white
+    -- rectangle behind them even with bordersize=0.
+    -- Fix: wrap Button:paintTo to temporarily nil frame.background while
+    -- wallpaper-in-FM or a bar surface behind native controls is active, then
+    -- restore it after the paint call.
+    -- We guard against double-patching by saving our own orig ref.
+    -- -----------------------------------------------------------------------
+    local ok_btn, Button = pcall(require, "ui/widget/button")
+    if ok_btn and Button then
+        local orig_btn_pt = Button.paintTo
+        installed[#installed + 1] = { Button, "paintTo", orig_btn_pt }
+
+        Button.paintTo = function(btn_self, bb, x, y)
+            -- Only intercept when: a backdrop shows behind the button, no
+            -- explicit button colour, and the frame FrameContainer exists and
+            -- has a background.
+            if not btn_self.background and btn_self[1] and btn_self[1].background
+                    and (SUIWallpaper.styleGetWallpaperShowInFM()
+                         or SUIWallpaper.paintsBehindNativeControls()) then
+                local saved = btn_self[1].background
+                btn_self[1].background = nil
+                orig_btn_pt(btn_self, bb, x, y)
+                btn_self[1].background = saved
+            else
+                orig_btn_pt(btn_self, bb, x, y)
+            end
+        end
+    end
+
+    -- -----------------------------------------------------------------------
+    -- IconWidget alpha patch
+    -- Button:paintTo above already nils frame.background to avoid painting the
+    -- white rectangle of the FrameContainer. But the IconWidget inside the Button
+    -- (chevrons, coll_back) and inside the native KOReader TitleBar IconButton
+    -- (home, hamburger, plus) was rendered with alpha=false by default:
+    -- the lazy _render() composites the icon onto a white BB and caches this
+    -- "flat" version — the white pixels get baked in.
+    -- Even with frame.background=nil, IconWidget:paintTo calls blitFrom()
+    -- (without alpha-blending) and paints those white pixels directly over
+    -- the wallpaper.
+    --
+    -- Fix: wrap IconWidget:init to set self.alpha = true when the FM wallpaper
+    -- is active. Since _render() is lazy (called on the first paintTo via
+    -- getSize()), the flag is read BEFORE the cache lookup, forcing the
+    -- "...|alpha" hash and compositing with the alpha channel intact, without
+    -- touching the background already painted by the wallpaper.
+    -- The same alpha is requested when icon night-mode colours are kept
+    -- (see patchIconNightColors), which composites over the real background.
+    --
+    -- original_in_nightmode=false: native ImageWidget/KOReader field.
+    -- When alpha=true and the screen is in night mode, ImageWidget:paintTo
+    -- inverts the image again (to cancel out the global screen inversion).
+    -- For icons over wallpapers this is undesirable — we disable it here.
+    -- Guard: only acts if iw_self.alpha is still false, avoiding overwriting
+    -- explicit configurations set by the widgets themselves.
+    -- -----------------------------------------------------------------------
+    local ok_iw, IconWidget = pcall(require, "ui/widget/iconwidget")
+    if ok_iw and IconWidget then
+        local orig_iw_init = IconWidget.init
+        installed[#installed + 1] = { IconWidget, "init", orig_iw_init }
+        -- Expose the unwrapped init so that the icon-registration upvalue scan in
+        -- sui_menu.lua and sui_quicksettings_bar.lua can find ICONS_PATH / ICONS_DIRS
+        -- even after this patch replaces IconWidget.init.  Without this, rawget(iw,"init")
+        -- returns our wrapper, whose upvalues don't include ICONS_PATH/ICONS_DIRS, causing
+        -- Strategy 3 / Layer 3 to fire on every normal build and double-wrap init again.
+        IconWidget._simpleui_orig_init_for_scan = orig_iw_init
+
+        IconWidget.init = function(iw_self, ...)
+            orig_iw_init(iw_self, ...)
+            -- Only intervenes when the icon does not yet have an explicit alpha
+            -- defined by the instantiating widget. The FM wallpaper needs the
+            -- alpha channel to show through; the night-mode colour option needs
+            -- it to composite the icon over the real background, and so does a
+            -- bar surface behind native controls.
+            if not iw_self.alpha then
+                if SUIWallpaper.styleGetWallpaperShowInFM() then
+                    iw_self.alpha = true
+                    iw_self.original_in_nightmode = false
+                elseif SUIStyle.keepIconColorsInNight() or SUIWallpaper.paintsBehindNativeControls() then
+                    iw_self.alpha = true
+                end
+            end
+        end
+    end
+
+
+-- Text colours of content on the pagination surface, or nil when it has no
+-- foreground (plain white or gray): then nothing is recoloured.
+local function _paginationInk()
+    local surface = SUIWallpaper.resolveBar("pagination")
+    if surface.foreground then return Backdrop.contentColors(surface) end
+end
+
+-- Paints the pagination surface (tone, opacity and frame) behind the page
+-- info and draws its text and arrows in the surface's text colour. Both are
+-- read on every paint, so a menu created before a change still reflects it,
+-- and a menu created while the surface was not painted still picks up a later
+-- change.
+local function _applyPaginationScrim(menu_self)
+    local page_info = menu_self and menu_self.page_info
+    if not page_info or page_info._sui_pagination_scrim then return end
+    page_info._sui_pagination_scrim = true
+    local orig_paint = page_info.paintTo
+    function page_info:paintTo(bb, x, y)
+        local h = (self.dimen and self.dimen.h) or 0
+        if h <= 0 then
+            local sz = self.getSize and self:getSize()
+            h = sz and sz.h or 0
+        end
+        SUIWallpaper.paintPaginationBar(bb, y, h)
+        local fg, dim = _paginationInk()
+        if not fg then return orig_paint(self, bb, x, y) end
+        local label = menu_self.page_info_text and menu_self.page_info_text.label_widget
+        local texts = label and not label.update and { label } or {}
+        local icons = {}
+        for _, key in ipairs({ "page_info_first_chev", "page_info_left_chev",
+                               "page_info_right_chev", "page_info_last_chev" }) do
+            icons[#icons + 1] = menu_self[key]
+        end
+        return UI.paintInk(fg, dim, texts, icons, orig_paint, self, bb, x, y)
+    end
+
+    -- The return arrow sits in the same bar but outside the page info.
+    local arrow = menu_self.page_return_arrow
+    if arrow and not arrow._sui_pagination_ink then
+        arrow._sui_pagination_ink = true
+        local orig_arrow_paint = arrow.paintTo
+        function arrow:paintTo(bb, x, y)
+            local fg, dim = _paginationInk()
+            if not fg then return orig_arrow_paint(self, bb, x, y) end
+            return UI.paintInkIcon(self, bb, x, y, self.enabled == false and dim or fg,
+                orig_arrow_paint)
+        end
+    end
+end
+
+    -- -----------------------------------------------------------------------
+    -- Menu.init background patch
+    -- Menu:init (menu.lua ~913) always creates self[1] = FrameContainer with
+    -- background = COLOR_WHITE. _injectWallpaperIntoWidget nils it once, but
+    -- every setupLayout call re-creates the full widget tree via Menu:init.
+    -- Wrap Menu.init so fullscreen FM-style menus always get nil backgrounds
+    -- when wallpaper is active, and paint the pagination bar surface (tone,
+    -- opacity and frame) whether or not one is.  We chain on top of whatever
+    -- Menu.init is current (may already be wrapped by
+    -- patchMenuInitForPagination).
+    -- -----------------------------------------------------------------------
+    local ok_menu, Menu = pcall(require, "ui/widget/menu")
+    if ok_menu and Menu then
+        local orig_menu_init = Menu.init
+        installed[#installed + 1] = { Menu, "init", orig_menu_init }
+
+        Menu.init = function(menu_self, ...)
+            orig_menu_init(menu_self, ...)
+            -- Covers two cases:
+            --   1. Fullscreen borderless overlays (Collections, History, etc.)
+            --   2. FM FileChooser (name == "filemanager") — does not have
+            --      covers_fullscreen or is_borderless but occupies the whole screen.
+            --      Without this, Menu:init resets background=COLOR_WHITE on every
+            --      file list rebuild and the original condition never catches it.
+            local is_fm_file_chooser   = (menu_self.name == "filemanager")
+            -- Gate by the same name allowlist used for the actual wallpaper-image
+            -- injection (WALLPAPER_NAMES). Without
+            -- this, ANY covers_fullscreen+is_borderless Menu gets its background
+            -- nil'd — including ReaderSearch's "all results" Menu (readersearch.lua
+            -- sets covers_fullscreen=true, is_borderless=true too), which has
+            -- nothing painting a backdrop behind it, leaving the book page behind
+            -- it visible through the now-transparent search results list.
+            local is_fullscreen_overlay = menu_self.covers_fullscreen
+                                       and menu_self.is_borderless
+                                       and menu_self.name
+                                       and WALLPAPER_NAMES[menu_self.name]
+            if (is_fm_file_chooser or is_fullscreen_overlay) and menu_self[1] then
+                if SUIWallpaper.styleGetWallpaperShowInFM() then
+                    -- Clear the outer FrameContainer KOReader always builds white.
+                    menu_self[1].background = nil
+                    -- Also clear the inner OverlapGroup's first FrameContainer child.
+                    local inner = menu_self[1][1]
+                    if inner and inner[1] then
+                        inner[1].background = nil
+                    end
+                end
+                -- Surface behind the native page/pagination bar.
+                pcall(_applyPaginationScrim, menu_self)
+            end
+        end
+    end
+
+    -- -----------------------------------------------------------------------
+    -- UnderlineContainer colour patch
+    -- UnderlineContainer (used by MosaicMenuItem and ListMenuItem as the
+    -- per-item root widget) defaults to color = COLOR_WHITE so its focus
+    -- indicator line is invisible by default.  Against a white Menu background
+    -- that's fine, but against a wallpaper the white line is very visible
+    -- under every book item even when the item is not focused.
+    -- Fix: wrap UnderlineContainer:paintTo so that when wallpaper is active
+    -- and color == COLOR_WHITE (the "hidden / unfocused" state), we skip the
+    -- bb:paintRect call that draws the white line.
+    -- -----------------------------------------------------------------------
+    local ok_uc, UnderlineContainer = pcall(require, "ui/widget/container/underlinecontainer")
+    if ok_uc and UnderlineContainer then
+        local Blitbuffer = require("ffi/blitbuffer")
+        local orig_uc_pt = UnderlineContainer.paintTo
+        installed[#installed + 1] = { UnderlineContainer, "paintTo", orig_uc_pt }
+
+        UnderlineContainer.paintTo = function(uc_self, bb, x, y)
+            if SUIWallpaper.styleGetWallpaperShowInFM() and SUIStyle.isSurface(uc_self.color) then
+                -- Paint only the child, skip the white underline.
+                local container_size = uc_self:getSize()
+                if not uc_self.dimen then
+                    local Geom = require("ui/geometry")
+                    uc_self.dimen = Geom:new{ x = x, y = y, w = container_size.w, h = container_size.h }
+                else
+                    uc_self.dimen.x = x
+                    uc_self.dimen.y = y
+                end
+                local content_size = uc_self[1]:getSize()
+                uc_self[1]:paintTo(bb, x, y)
+            else
+                orig_uc_pt(uc_self, bb, x, y)
+            end
+        end
+    end
+
+    -- -----------------------------------------------------------------------
+    -- TextBoxWidget transparent-composite patch
+    -- TextBoxWidget fills its internal blitbuffer (_bb) with
+    -- self.bgcolor = COLOR_WHITE before each paintTo, even with
+    -- bordersize=0 and without FrameContainer. This causes an opaque white
+    -- background on book titles in "Detailed" and "Detailed with Cover" views,
+    -- on the pagination bar text, and in any TextBoxWidget inside
+    -- the FM when the wallpaper is active.
+    --
+    -- Reuses the same technique as UI.makeAlphaTextBox (sui_core.lua):
+    --   1. renders the TBW into a shared 8-bit scratch buffer with bgcolor=white (normal)
+    --   2. inverts the scratch buffer (text=white/mask, background=black/transparent)
+    --   3. colorblitFromRGB32 composites with the original fgcolor over the
+    --      destination bb (which already has the wallpaper painted underneath)
+    --
+    -- Only intervenes when: active wallpaper AND bgcolor == COLOR_WHITE (i.e.
+    -- the default white background — custom bgcolors are respected).
+    -- -----------------------------------------------------------------------
+    local ok_tbw, TextBoxWidget = pcall(require, "ui/widget/textboxwidget")
+    if ok_tbw and TextBoxWidget then
+        local orig_tbw_pt = TextBoxWidget.paintTo
+        installed[#installed + 1] = { TextBoxWidget, "paintTo", orig_tbw_pt }
+
+        TextBoxWidget.paintTo = function(tbw_self, bb, x, y)
+            if not (SUIWallpaper.styleGetWallpaperShowInFM()
+                    and SUIStyle.isSurface(tbw_self.bgcolor)) then
+                return orig_tbw_pt(tbw_self, bb, x, y)
+            end
+
+            local dimen = tbw_self:getSize()
+            local w, h  = dimen.w, dimen.h
+            if w <= 0 or h <= 0 then
+                return orig_tbw_pt(tbw_self, bb, x, y)
+            end
+
+            local fgcolor = tbw_self.fgcolor or SUIStyle.COLOR.text_primary
+            UI.paintWithAlphaMask(tbw_self, bb, x, y, w, h, fgcolor, orig_tbw_pt)
+        end
+    end
+
+    -- -----------------------------------------------------------------------
+    -- ProgressWidget bgcolor patch
+    -- ProgressWidget (reading progress bar in mosaic and list views)
+    -- is created with bgcolor = COLOR_WHITE and paints a background rectangle
+    -- directly in paintTo, without going through FrameContainer.
+    -- Fix: temporarily replace bgcolor with nil during paint to omit the
+    -- white fill; the border and the fill bar (fillcolor/bordercolor)
+    -- are drawn over the existing wallpaper.
+    -- -----------------------------------------------------------------------
+    local ok_pw, ProgressWidget = pcall(require, "ui/widget/progresswidget")
+    if ok_pw and ProgressWidget then
+        local Blitbuffer = require("ffi/blitbuffer")
+        local orig_pw_pt = ProgressWidget.paintTo
+        installed[#installed + 1] = { ProgressWidget, "paintTo", orig_pw_pt }
+
+        ProgressWidget.paintTo = function(pw_self, bb, x, y)
+            if SUIWallpaper.styleGetWallpaperShowInFM()
+                    and SUIStyle.isSurface(pw_self.bgcolor) then
+                local saved = pw_self.bgcolor
+                pw_self.bgcolor = nil
+                orig_pw_pt(pw_self, bb, x, y)
+                pw_self.bgcolor = saved
+            else
+                orig_pw_pt(pw_self, bb, x, y)
+            end
+        end
+    end
+
+    _trackHooks(state, installed)
+end
+
+-- ---------------------------------------------------------------------------
+-- ffi/util.purgeDir safety patch
+-- Root cause: purgeDir iterates a directory with lfs.dir(), then calls
+-- lfs.attributes(fullpath) on each entry. If an entry disappears between
+-- the lfs.dir() listing and the lfs.attributes() call (race condition with
+-- macOS .DS_Store / temp files, or files removed mid-iteration), attributes
+-- is nil and `attributes.mode` crashes with "attempt to index a nil value".
+--
+-- Strategy: require("ffi/util") returns the same cached table that
+-- filemanager.lua holds as its local `ffiUtil` upvalue.  Replacing
+-- ffiUtil.purgeDir on that table means every caller — including the
+-- recursive call inside purgeDir itself — picks up the safe version,
+-- because the recursive call is `util.purgeDir(fullpath)` via the table,
+-- not a local upvalue.
+--
+-- The patch is applied once (guarded by _simpleui_purgeDir_patched) and
+-- reversed cleanly in teardownAll.
+-- ---------------------------------------------------------------------------
+function M.patchPurgeDir(plugin)
+    local ok, ffiUtil = pcall(require, "ffi/util")
+    if not ok or not ffiUtil or not ffiUtil.purgeDir then return end
+    if ffiUtil._simpleui_purgeDir_patched then return end
+    ffiUtil._simpleui_purgeDir_patched = true
+
+    local lfs          = require("libs/libkoreader-lfs")
+    local orig_purgeDir = ffiUtil.purgeDir
+    if plugin then plugin._orig_ffi_purgeDir = orig_purgeDir end
+
+    ffiUtil.purgeDir = function(dir)
+        local ok2, err
+        ok2, err = lfs.attributes(dir)
+        if not ok2 or err ~= nil then
+            return nil, err
+        end
+        for f in lfs.dir(dir) do
+            if f ~= "." and f ~= ".." then
+                local fullpath = ffiUtil.joinPath(dir, f)
+                local attributes = lfs.attributes(fullpath)
+                if not attributes then
+                    -- Entry disappeared between lfs.dir() and lfs.attributes()
+                    -- (race condition with .DS_Store, temp files, etc.); skip.
+                elseif attributes.mode == "directory" then
+                    ok2, err = ffiUtil.purgeDir(fullpath)
+                    if not ok2 or err ~= nil then return ok2, err end
+                else
+                    ok2, err = os.remove(fullpath)
+                    if not ok2 or err ~= nil then return ok2, err end
+                end
+            end
+        end
+        return os.remove(dir)
+    end
+end
+
+-- Finished books outlive their file. Before a deletion the sidecar state of
+-- the affected books is recorded in the ledger (the sidecar is unrecoverable
+-- once purged), and afterwards the books are flagged as gone. Covers the
+-- single-file and folder deletes of FileManager:deleteFile and the
+-- multi-selection delete of FileManager:deleteSelectedFiles, which removes
+-- files without going through deleteFile.
+
+-- Records the finished books at `path` — a file, or every book file under a
+-- folder — in the ledger.
+local function _recordFinishedBooks(SP, path, is_file)
+    if is_file then
+        pcall(SP.syncBook, path)
+        return
+    end
+    local util = require("util")
+    local ok_dr, DocumentRegistry = pcall(require, "document/documentregistry")
+    util.findFiles(path, function(fpath)
+        if ok_dr and DocumentRegistry and DocumentRegistry:hasProvider(fpath) then
+            pcall(SP.syncBook, fpath)
+        end
+    end, true)
+end
+
+function M.patchDeleteFile(FileManager, plugin)
+    if FileManager._simpleui_deleteFile_patched then return end
+    FileManager._simpleui_deleteFile_patched = true
+
+    local orig_deleteFile          = FileManager.deleteFile
+    local orig_deleteSelectedFiles = FileManager.deleteSelectedFiles
+    if plugin then
+        plugin._orig_fm_deleteFile          = orig_deleteFile
+        plugin._orig_fm_deleteSelectedFiles = orig_deleteSelectedFiles
+    end
+
+    FileManager.deleteFile = function(fm_self, file, is_file)
+        if not is_file then
+            if not file then
+                logger.warn("simpleui: deleteFile called with nil folder path, aborting")
+                return false
+            end
+            local lfs2 = require("libs/libkoreader-lfs")
+            if not lfs2.attributes(file, "mode") then
+                logger.warn("simpleui: deleteFile: folder gone before purgeDir:", tostring(file))
+                -- Return true so post_delete_callback fires and FM refreshes.
+                return true
+            end
+        end
+
+        local SP = _getStatsProvider()
+        if not SP then return orig_deleteFile(fm_self, file, is_file) end
+
+        pcall(_recordFinishedBooks, SP, file, is_file)
+        local deleted = orig_deleteFile(fm_self, file, is_file)
+        if deleted then pcall(SP.markBooksGone, { file }) end
+        return deleted
+    end
+
+    FileManager.deleteSelectedFiles = function(fm_self)
+        local SP = _getStatsProvider()
+        if not SP then return orig_deleteSelectedFiles(fm_self) end
+
+        local selected = {}
+        for file in pairs(fm_self.selected_files) do
+            selected[#selected + 1] = file
+            pcall(_recordFinishedBooks, SP, file, true)
+        end
+        orig_deleteSelectedFiles(fm_self)
+
+        local lfs2    = require("libs/libkoreader-lfs")
+        local removed = {}
+        for _, file in ipairs(selected) do
+            if not lfs2.attributes(file, "mode") then removed[#removed + 1] = file end
+        end
+        if #removed > 0 then pcall(SP.markBooksGone, removed) end
+    end
+end
+
+-- patchHistoryMenuHold
+-- Wraps FileManagerHistory.onMenuHold so that CoverBrowser's injected
+-- "Refresh cached book information" (and sibling) buttons do not crash when
+-- booklist_menu has been nilled by its close_callback before the button fires.
+--
+-- Root cause: CoverBrowser.addFileDialogButtons captures the FileManagerHistory
+-- *class* as `widget` and calls widget.getMenuInstance() inside each button
+-- callback.  getMenuInstance() resolves ui.history.booklist_menu at call time,
+-- which is nil if the close_callback already ran (SimpleUI's altered widget
+-- lifecycle can trigger this earlier than stock KOReader does).
+--
+-- Fix: override getMenuInstance() to return the booklist_menu instance that was
+-- live at the moment of the hold.  We install a thin wrapper around onMenuHold
+-- that captures `self` (= booklist_menu, valid at hold time) and temporarily
+-- replaces getMenuInstance with a closure over that reference for the duration
+-- of the dialog's lifetime.  The original is restored when the dialog closes.
+-- A session guard prevents double-patching across FM lifecycle cycles.
+function M.patchHistoryMenuHold()
+    local ok, FMH = pcall(require, "apps/filemanager/filemanagerhistory")
+    if not (ok and FMH) then return end
+    if FMH._sui_onMenuHold_patched then return end
+    FMH._sui_onMenuHold_patched = true
+
+    local orig_getMenuInstance = FMH.getMenuInstance
+    local orig_onMenuHold      = FMH.onMenuHold
+
+    FMH.onMenuHold = function(bm_self, item)
+        -- bm_self is the booklist_menu instance (valid here, may be nil later).
+        -- Temporarily override the class-level getMenuInstance so CoverBrowser's
+        -- button callbacks resolve to this specific instance instead of going
+        -- through ui.history.booklist_menu (which may be nil by then).
+        local overridden = false
+        if bm_self and orig_getMenuInstance then
+            overridden = true
+            FMH.getMenuInstance = function()
+                return bm_self
+            end
+        end
+
+        local result = orig_onMenuHold(bm_self, item)
+
+        -- Restore after the dialog is shown.  We do this via a close hook on
+        -- the file_dialog so getMenuInstance remains valid for as long as the
+        -- dialog is on screen, and is restored the moment it closes.
+        if overridden then
+            local dlg = bm_self and bm_self.file_dialog
+            if dlg then
+                local orig_on_close = dlg.onCloseWidget
+                dlg.onCloseWidget = function(dlg_self, ...)
+                    FMH.getMenuInstance = orig_getMenuInstance
+                    if orig_on_close then
+                        return orig_on_close(dlg_self, ...)
+                    end
+                end
+            else
+                -- No dialog was created (e.g. hold on a non-file item); restore now.
+                FMH.getMenuInstance = orig_getMenuInstance
+            end
+        end
+
+        return result
+    end
+end
+
+-- Called by the wallpaper step of the window hooks after a fullscreen overlay (Collections,
+-- History, etc.) has been wrapped with wrapWithNavbar and shown.
+function M.injectWallpaperIntoFullscreenWidget(widget)
+    if not widget then return end
+    -- Only inject wallpaper into the known FM-style overlay widgets.
+    -- Utility overlays that happen to set covers_fullscreen (SortWidget,
+    -- PathChooser, etc.) must be left untouched.
+    if not WALLPAPER_NAMES[widget.name] then return end
+    _injectWallpaperIntoWidget(widget)
+end
+
+
+function M.installAll(plugin)
+    UIManager._simpleui_exiting = nil
+    M.patchPurgeDir(plugin)
+    local ok_fm, FileManager = pcall(require, "apps/filemanager/filemanager")
+    if ok_fm and FileManager then M.patchDeleteFile(FileManager, plugin) end
+    M.patchFileManagerClass(plugin)
+    M.patchStartWithMenu()
+    M.patchBookList(plugin)
+    M.patchHistoryMenuHold()
+    M.patchCollections(plugin)
+    M.patchFullscreenWidgets(plugin)
+    M.patchWindowHooks(plugin)
+    M.patchReaderShowCoroutine(plugin)
+    M.patchMenuInitForPagination(plugin)
+    M.patchCoverMenuSideMargin(plugin)
+    M.patchMenuForNavpager(plugin)
+    M.patchBookInfoNavigation(plugin)
+    M.patchStatusButtons(plugin)
+    M.patchReaderMarkBook(plugin)
+    M.patchBookStatusWidget(plugin)
+    M.patchResetSettingsButton(plugin)
+    M.patchFileDialogSheets(plugin)
+    M.patchChoiceDialogs(plugin)
+    M.patchInputDialogs(plugin)
+    M.patchFontGetFace(plugin)
+    M.patchIconNightColors(plugin)
+    M.patchNightMode(plugin)
+    -- Register the tab icon step in the shared menu hooks so system icon
+    -- overrides survive menu rebuilds (FM and Reader).
+    local ok_ss, SUIStyle = pcall(require, "features/sui_style")
+    if ok_ss and SUIStyle then
+        pcall(SUIStyle.installTabIconPatch)
+    end
+    -- Install button-bounds overlay when the debug setting is on at startup.
+    if SUISettings:isTrue("simpleui_debug_button_bounds") then
+        M.installButtonBoundsDebug(plugin)
+    end
+    -- Folder covers are installed only when the feature is enabled to avoid
+    -- wrapping MosaicMenuItem.update unconditionally, which would hide the
+    -- BookInfoManager upvalue from code that locates it by upvalue lookup.
+    -- FC.install() is also called from sui_menu.lua when the toggle is turned on.
+    local ok_fc, FC = pcall(require, "features/library/sui_foldercovers")
+    if ok_fc and FC and FC.isEnabled() then
+        pcall(FC.install)
+    end
+    -- Generated cover for books without one — independent of the toggle above.
+    if ok_fc and FC then pcall(FC.installPlaceholder) end
+    -- Finished-books mode for the file browser — also independent of the toggle.
+    local ok_fb, FB = pcall(require, "features/library/sui_finished_books")
+    if ok_fb and FB then pcall(FB.install) end
+    -- Series grouping (books grouped inline inside a real folder) is a
+    -- separate module from folder covers now — installed unconditionally;
+    -- it checks SG.isEnabled() internally before doing anything.
+    local ok_sg, SG = pcall(require, "features/library/sui_series_grouping")
+    if ok_sg and SG then
+        pcall(SG.install)
+    end
+    -- External metadata providers (e.g. companion reader plugins storing
+    -- their own document metadata) — installed unconditionally; the patch
+    -- itself is a no-op for any file none of its sources recognizes.
+    local ok_mp, MP = pcall(require, "features/library/sui_metadata_providers")
+    if ok_mp and MP then
+        pcall(MP.install)
+    end
+    -- Virtual author/series browser — installed only when the feature is enabled
+    -- in settings (default: on). When disabled, FileChooser is left unpatched so
+    -- other code that customises the same widget can run unobstructed.
+    local ok_bm, BM = pcall(require, "features/library/sui_library_browse")
+    if ok_bm and BM and BM.isEnabled() then pcall(BM.install) end
+    -- Wallpaper in FM and fullscreen overlay surfaces.
+    M.patchWallpaperFM(plugin)
+
+    -- ------------------------------------------------------------------
+    -- Reader-only patches.
+    --
+    -- installAll runs once per SimpleUIPlugin instantiation, and KOReader
+    -- instantiates one plugin per host UI — both the FileManager AND the
+    -- ReaderUI call SimpleUIPlugin:init() (hence installAll) separately.
+    -- wireReaderMenuFMTab / patchReloadDocument only make sense when
+    -- plugin.ui is a ReaderUI, so guard on plugin.ui.document, a field
+    -- only ReaderUI instances have (FileManager has no .document).
+    --
+    -- The reader's "File browser" tab callback closes the reader directly,
+    -- bypassing _prepareReaderClose (which sets readerui.tearing_down), so
+    -- both hooks are required for a clean return to the Homescreen.
+    -- ------------------------------------------------------------------
+    if plugin.ui and plugin.ui.document then
+        M.wireReaderMenuFMTab(plugin, plugin.ui)
+        M.patchReloadDocument(plugin, plugin.ui)
+        M.wireReaderHomeKey(plugin, plugin.ui)
+    end
+end
+
+function M.teardownAll(plugin)
+    -- The wallpaper hooks were installed last and sit on top of the others, so
+    -- they are released first.
+    local FM_wp = package.loaded["apps/filemanager/filemanager"]
+    if FM_wp and _releaseHooks(FM_wp, WALLPAPER_STATE, plugin) then
+        local IW_wp = package.loaded["ui/widget/iconwidget"]
+        if IW_wp then IW_wp._simpleui_orig_init_for_scan = nil end
+    end
+
+    -- Cover Transition holds no monkey-patch of its own (it is only ever
+    -- invoked from hooks owned by other patches in this file), but it can
+    -- have a widget on screen or a pending auto-close timer at teardown time.
+    pcall(CoverTransition.close)
+
+    -- Restore ffi/util.purgeDir patch.
+    local ffiUtil = package.loaded["ffi/util"]
+    if ffiUtil and ffiUtil._simpleui_purgeDir_patched and plugin._orig_ffi_purgeDir then
+        ffiUtil.purgeDir                  = plugin._orig_ffi_purgeDir
+        ffiUtil._simpleui_purgeDir_patched = nil
+        plugin._orig_ffi_purgeDir         = nil
+    end
+
+    -- Restore FileManager.deleteFile / deleteSelectedFiles patch.
+    local FM = package.loaded["apps/filemanager/filemanager"]
+    if FM and FM._simpleui_deleteFile_patched and plugin._orig_fm_deleteFile then
+        FM.deleteFile                    = plugin._orig_fm_deleteFile
+        FM.deleteSelectedFiles           = plugin._orig_fm_deleteSelectedFiles
+        FM._simpleui_deleteFile_patched  = nil
+        plugin._orig_fm_deleteFile          = nil
+        plugin._orig_fm_deleteSelectedFiles = nil
+    end
+
+    -- Restore the UIManager hooks first (highest call frequency).
+    WindowHooks.uninstall(plugin)
+
+    -- Restore widget class patches via package.loaded.
+    local BookList = package.loaded["ui/widget/booklist"]
+    if BookList and plugin._orig_booklist_new then
+        BookList.new              = plugin._orig_booklist_new
+        plugin._orig_booklist_new = nil
+    end
+
+    local Menu = package.loaded["ui/widget/menu"]
+    if Menu then
+        if plugin._orig_menu_new then
+            Menu.new              = plugin._orig_menu_new
+            plugin._orig_menu_new = nil
+        end
+        _releaseHooks(Menu, MENU_INIT_STATE, plugin)
+        _releaseHooks(Menu, NAVPAGER_STATE, plugin)
+    end
+
+    M.unpatchCoverMenuSideMargin(plugin)
+
+    local FileManager = package.loaded["apps/filemanager/filemanager"]
+    if FileManager then
+        if _releaseHooks(FileManager, FM_LAYOUT_STATE, plugin)
+                and FileManager._simpleui_gesture_priority_applied then
+            UI.unapplyGesturePriorityHandleEvent(FileManager)
+        end
+    end
+
+    local FMColl = package.loaded["apps/filemanager/filemanagercollection"]
+    if FMColl then
+        if plugin._orig_fmcoll_show then
+            FMColl.onShowCollList    = plugin._orig_fmcoll_show
+            plugin._orig_fmcoll_show = nil
+        end
+        if plugin._orig_fmcoll_update_coll_list then
+            FMColl.updateCollListItemTable       = plugin._orig_fmcoll_update_coll_list
+            plugin._orig_fmcoll_update_coll_list = nil
+        end
+        if plugin._orig_fmcoll_get_coll_title then
+            FMColl.getCollectionTitle           = plugin._orig_fmcoll_get_coll_title
+            plugin._orig_fmcoll_get_coll_title  = nil
+        end
+    end
+
+    local RC = package.loaded["readcollection"]
+    if RC then
+        if plugin._orig_rc_remove then
+            RC.removeCollection    = plugin._orig_rc_remove
+            plugin._orig_rc_remove = nil
+        end
+        if plugin._orig_rc_rename then
+            RC.renameCollection    = plugin._orig_rc_rename
+            plugin._orig_rc_rename = nil
+        end
+        if plugin._orig_rc_additem then
+            RC.addItem              = plugin._orig_rc_additem
+            plugin._orig_rc_additem = nil
+        end
+        if plugin._orig_rc_removeitem then
+            RC.removeItem              = plugin._orig_rc_removeitem
+            plugin._orig_rc_removeitem = nil
+        end
+    end
+
+    local SortWidget = package.loaded["ui/widget/sortwidget"]
+    if SortWidget and plugin._orig_sortwidget_new then
+        SortWidget.new              = plugin._orig_sortwidget_new
+        plugin._orig_sortwidget_new = nil
+    end
+
+    local PathChooser = package.loaded["ui/widget/pathchooser"]
+    if PathChooser and plugin._orig_pathchooser_new then
+        PathChooser.new              = plugin._orig_pathchooser_new
+        plugin._orig_pathchooser_new = nil
+    end
+
+    local FileChooser = package.loaded["ui/widget/filechooser"]
+    if FileChooser and plugin._orig_fc_init then
+        FileChooser.init            = plugin._orig_fc_init
+        FileChooser._navbar_patched = nil
+        plugin._orig_fc_init        = nil
+    end
+
+    local fmutil = package.loaded["apps/filemanager/filemanagerutil"]
+    if fmutil and fmutil._simpleui_bookinfo_nav_patched then
+        if plugin._orig_fmutil_gen_bookinfo then
+            fmutil.genBookInformationButton       = plugin._orig_fmutil_gen_bookinfo
+            plugin._orig_fmutil_gen_bookinfo      = nil
+        end
+        fmutil._simpleui_bookinfo_nav_patched = nil
+    end
+    M.unpatchStatusButtons(plugin)
+    M.unpatchReaderMarkBook(plugin)
+    M.unpatchBookStatusWidget(plugin)
+    M.unpatchResetSettingsButton(plugin)
+    M.unpatchFileDialogSheets(plugin)
+    M.unpatchInputDialogs(plugin)
+    M.unpatchChoiceDialogs(plugin)
+    M.unpatchFontGetFace(plugin)
+    M.unpatchNightMode(plugin)
+    M.unpatchIconNightColors(plugin)
+
+    local FMH = package.loaded["apps/filemanager/filemanagerhistory"]
+    if FMH and FMH._sui_onMenuHold_patched then
+        FMH._sui_onMenuHold_patched = nil
+        -- The patched onMenuHold and its getMenuInstance override restore
+        -- themselves on dialog close; clearing the guard suffices for re-enable.
+    end
+
+    local FileManagerMenu = package.loaded["apps/filemanager/filemanagermenu"]
+    if FileManagerMenu and FileManagerMenu._simpleui_startwith_patched then
+        FileManagerMenu.getStartWithMenuTable   = FileManagerMenu._simpleui_startwith_orig
+        FileManagerMenu._simpleui_startwith_orig    = nil
+        FileManagerMenu._simpleui_startwith_patched = nil
+    end
+    -- Restore the FM and Reader menu methods and drop every registered step.
+    local MenuHooks = package.loaded["infra/sui_menu_hooks"]
+    if MenuHooks then MenuHooks.uninstall() end
+
+    local Dispatcher = package.loaded["dispatcher"]
+    if Dispatcher and Dispatcher._simpleui_execute_patched then
+        Dispatcher.execute                   = Dispatcher._simpleui_execute_orig
+        Dispatcher._simpleui_execute_orig    = nil
+        Dispatcher._simpleui_execute_patched = nil
+    end
+
+    M.uninstallButtonBoundsDebug(plugin)
+
+    -- Clear transient close-path flag.
+    plugin._closing_via_gesture = nil
+
+    -- Reset module-level state so a re-enable cycle starts clean.
+    -- Transient flags are cleared unconditionally.
+    _hs_boot_done             = false
+    _hs_pending_after_reader  = false
+    _navpager_rebuild_pending = false
+
+    -- Clear lazy-refresh flag on the FM instance, if any.
+    local fm_td = liveFM()
+    if fm_td then fm_td._sui_lazy_refresh_path = nil end
+
+    if _navbar_kb_capture then
+        UIManager:close(_navbar_kb_capture)
+        _navbar_kb_capture = nil
+    end
+    _navbar_kb_idx       = 1
+    _navbar_kb_return_fn = nil
+    _enterNavbarKbFocus_fn = nil
+
+    Config.reset()
+
+    local Registry = package.loaded["modules/moduleregistry"]
+    if Registry then Registry.invalidate() end
+
+    local FC = package.loaded["features/library/sui_foldercovers"]
+    if FC then pcall(FC.uninstall) end
+    if FC then pcall(FC.uninstallPlaceholder) end
+
+    local FB = package.loaded["features/library/sui_finished_books"]
+    if FB then pcall(FB.uninstall) end
+
+    local SG = package.loaded["features/library/sui_series_grouping"]
+    if SG then pcall(SG.uninstall) end
+
+    local BM = package.loaded["features/library/sui_library_browse"]
+    if BM then
+        pcall(BM.uninstall)
+        pcall(BM.reset)
+    end
+end
+
+-- ---------------------------------------------------------------------------
+-- Dispatcher:execute patch
+-- When the homescreen is active, UIManager:sendEvent delivers only to the top
+-- widget. Since the HS sits on top, events like ShowColl / ShowCollList are
+-- never received by the FM. Fix: temporarily sink the HS to the bottom of the
+-- window stack so the FM's plugins receive sendEvent normally, then restore.
+-- ---------------------------------------------------------------------------
+
+do
+    local ok, Dispatcher = pcall(require, "dispatcher")
+    if ok and Dispatcher and not Dispatcher._simpleui_execute_patched then
+        local orig_execute = Dispatcher.execute
+        Dispatcher._simpleui_execute_orig = orig_execute
+
+        Dispatcher.execute = function(self, settings, exec_props)
+            local HS = liveHS()
+            if not (HS and HS._instance) then
+                return orig_execute(self, settings, exec_props)
+            end
+
+            -- Sink the HS to the bottom of the stack.
+            local stack   = UIManager._window_stack
+            local hs_inst = HS._instance
+            local hs_idx  = nil
+            for i, entry in ipairs(stack) do
+                if entry.widget == hs_inst then hs_idx = i; break end
+            end
+            if hs_idx and hs_idx > 1 then
+                local entry = table.remove(stack, hs_idx)
+                table.insert(stack, 1, entry)
+            end
+
+            local ok2, err = pcall(orig_execute, self, settings, exec_props)
+
+            -- Restore the HS to its original position regardless of outcome.
+            if hs_idx and hs_idx > 1 then
+                for i, entry in ipairs(stack) do
+                    if entry.widget == hs_inst then
+                        local e = table.remove(stack, i)
+                        table.insert(stack, hs_idx, e)
+                        break
+                    end
+                end
+            end
+
+            if not ok2 then
+                logger.warn("simpleui: Dispatcher:execute error:", err)
+            end
+        end
+
+        Dispatcher._simpleui_execute_patched = true
+    end
+end
+
+return M

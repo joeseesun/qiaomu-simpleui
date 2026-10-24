@@ -1,0 +1,25 @@
+name: Verify plugin
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python tests/test_customizations.py
+      - run: |
+          python - <<'PY'
+          from pathlib import Path
+          import polib
+          for locale in ['zh_CN', 'zh_TW']:
+              po = polib.pofile(str(Path('simpleui.koplugin/locale') / (locale + '.po')), check_for_duplicates=True)
+              po.to_binary()
+          PY
+      - run: python scripts/package.py

@@ -1,0 +1,386 @@
+-- module_heatmap.lua — Simple UI
+-- Homescreen card for the reading heatmap: the calendar grid (one cell per
+-- day, last N weeks), the time-of-day grid (one cell per weekday x
+-- hour-of-day) or the hours-of-day bars (reading per hour, all weekdays
+-- together), picked via the "Type" menu item — a card only has room for one
+-- view at a time, unlike the full-screen popup. Tapping
+-- the card opens the full-screen popup (screens/sui_heatmap_popup.lua),
+-- which shows both grids together and lets the user page back through
+-- earlier blocks.
+
+local Blitbuffer      = require("ffi/blitbuffer")
+local CenterContainer  = require("ui/widget/container/centercontainer")
+local Device           = require("device")
+local Font             = require("ui/font")
+local Geom             = require("ui/geometry")
+local GestureRange     = require("ui/gesturerange")
+local InputContainer   = require("ui/widget/container/inputcontainer")
+local TextWidget       = require("ui/widget/textwidget")
+local VerticalGroup    = require("ui/widget/verticalgroup")
+local VerticalSpan     = require("ui/widget/verticalspan")
+local Screen           = Device.screen
+local _ = require("infra/sui_i18n").translate
+local T = require("ffi/util").template
+
+local Config      = require("infra/sui_config")
+local UI          = require("infra/sui_core")
+local SUISettings = require("infra/sui_store")
+local SUIStyle    = require("features/sui_style")
+local HD          = require("engines/sui_heatmap_data")
+local HW          = require("engines/sui_heatmap_widgets")
+local Charts      = require("engines/sui_stats_charts")
+local Chrome      = require("features/sui_module_chrome")
+local PAD         = UI.PAD
+
+local SETTING_WEEKS          = "heatmap_weeks"
+local DEFAULT_WEEKS          = 24
+local MIN_WEEKS, MAX_WEEKS   = 6, 26
+
+local SETTING_MODE  = "heatmap_view_mode"
+local MODE_CALENDAR = "calendar"
+local MODE_DAYPART  = "time_of_day"
+local MODE_HOURS    = "hours_of_day"
+local DEFAULT_MODE  = MODE_CALENDAR
+
+local SETTING_SHOW_LEGEND  = "heatmap_show_legend"
+local SHOW_LEGEND_DEFAULT  = true
+
+local function getWeeks(pfx)
+    local v = tonumber(SUISettings:readSetting(pfx .. SETTING_WEEKS))
+    if not v then return DEFAULT_WEEKS end
+    return math.max(MIN_WEEKS, math.min(MAX_WEEKS, math.floor(v)))
+end
+
+local function setWeeks(pfx, weeks)
+    SUISettings:saveSetting(pfx .. SETTING_WEEKS, math.max(MIN_WEEKS, math.min(MAX_WEEKS, math.floor(weeks))))
+end
+
+-- Which view the card shows: the calendar heatmap (one cell per day), the
+-- time-of-day heatmap (one cell per weekday x hour-of-day) — the two grids
+-- the full-screen popup shows together, offered here as alternate
+-- single-view card modes since a card doesn't have room for both — or the
+-- hours-of-day bars.
+local function getMode(pfx)
+    local v = SUISettings:readSetting(pfx .. SETTING_MODE)
+    if v == MODE_DAYPART or v == MODE_HOURS then return v end
+    return DEFAULT_MODE
+end
+
+-- Hour numbers under the bars of the hours-of-day view; the other bars have
+-- no label.
+local HOUR_AXIS = {}
+for hour = 0, 23 do HOUR_AXIS[hour + 1] = hour % 6 == 0 and tostring(hour) or "" end
+
+local function setMode(pfx, mode)
+    SUISettings:saveSetting(pfx .. SETTING_MODE, mode)
+end
+
+-- "Less [ ][ ][ ][ ][ ] More" legend row below the grid — purely
+-- decorative once a person already knows the shading convention, so it's
+-- optional like the section label, not tied to Type/Weeks/Scale.
+local function getShowLegend(pfx)
+    local v = SUISettings:readSetting(pfx .. SETTING_SHOW_LEGEND)
+    if v == nil then return SHOW_LEGEND_DEFAULT end
+    return v == true
+end
+
+local function setShowLegend(pfx, show)
+    SUISettings:saveSetting(pfx .. SETTING_SHOW_LEGEND, show)
+end
+
+-- Shared geometry, used by both build() (which additionally reads the DB)
+-- and getHeight() (which must not — see moduleregistry.lua's contract:
+-- getHeight(ctx) gets no width of its own and no chance to touch ctx.db_conn
+-- outside the normal build() pass). num_cols only depends on `weeks` and
+-- today's date, so it's cheap to compute without querying anything by
+-- running the grid layout over an empty data table.
+--
+-- weeks is always exactly "Weeks shown" — Scale never changes it. Instead
+-- Scale multiplies the cell size directly, the same "autofit base × scale"
+-- convention GridRenderer.computeAutoFitCell (engines/sui_book_grid.lua)
+-- uses for every book-grid module: the autofit size is whatever exactly
+-- fills grid_w for num_cols columns at 100%, and raw_scale scales that base
+-- up or down without touching num_cols. Below 100% the grid no longer fills
+-- the full column width; the CenterContainer around the whole card body
+-- already centers it, same as an under-filled book-grid row would.
+--
+-- The pixel bases below (cell floor / legend / gaps / font) are deliberately
+-- small, so the module's default footprint stays compact on e-ink screens.
+local function computeLayout(w, ctx)
+    local pfx    = (ctx and ctx.pfx) or "simpleui_hs_"
+    local weeks  = getWeeks(pfx)
+    local lf     = (ctx and ctx.landscape_factor) or (UI.isLandscape() and UI.getLandscapeFactor() or 1)
+    -- RAW (not multiplied by lf) on purpose: `w` here (ctx.col_w) is
+    -- already landscape-narrowed, so folding lf into the cell scale too
+    -- would shrink the grid twice. Same reasoning module_currently.lua
+    -- applies to its own thumb_scale calculation.
+    --
+    -- Capped at 100%: num_cols is fixed (up to 60 for the calendar grid),
+    -- unlike a book-grid row's handful of columns, so there's no gap left
+    -- to absorb growth past the autofit size — going higher would either
+    -- overflow the card or force cells to overlap. Reads from both the
+    -- per-module setting and the global "Link Scale" value, so the cap
+    -- applies regardless of which one set it.
+    local raw_scale = math.min(1.0, Config.getModuleScaleRaw("heatmap", pfx))
+    local scale     = raw_scale * lf
+
+    -- Layout font: only used to size the weekday-label column and, from
+    -- that, the grid's own cell size (below) — kept at its original tiny,
+    -- scale-linked size so the calendar cells stay the size they've
+    -- always been, independent of the display font's size (next).
+    local layout_fs    = math.max(6, math.floor(6 * scale))
+    local layout_fonts = { small = Font:getFace(SUIStyle.FACE_REGULAR, layout_fs) }
+
+    -- Display font: what the weekday/month labels and the legend text
+    -- actually render in. Matches the full-screen popup's own caption
+    -- size (screens/sui_heatmap_popup.lua) rather than scaling with this
+    -- module's own Scale setting, so card and popup read the same.
+    local display_fonts = { small = Font:getFace(SUIStyle.FACE_REGULAR, UI.SZ(SUIStyle.FS_CAPTION)) }
+
+    local start_t, end_t = HD.getWeekBlockRange(weeks, 0)
+
+    local mode = getMode(pfx)
+    local num_cols
+    if mode == MODE_DAYPART or mode == MODE_HOURS then
+        num_cols = 24
+    else
+        local _cols, cal_cols = HW.buildRangeGrid({}, start_t, end_t)
+        num_cols = cal_cols
+    end
+
+    local gap        = Screen:scaleBySize(2)
+    -- Size the weekday column with the same face used to paint it (display
+    -- fonts). Using the tiny layout face here made cells overflow avail_w
+    -- once the wider display labels were drawn.
+    local wd_label_w = HW.getWeekdayLabelWidth(display_fonts)
+    local grid_w     = w - wd_label_w - gap
+    -- Half of the original 8px target floor; the hard 2px (half of the
+    -- original 4px) underneath it is a legibility backstop, not a
+    -- "default size" — it only bites at the very bottom of the Scale range.
+    local min_cell      = math.max(Screen:scaleBySize(2), math.floor(Screen:scaleBySize(4) * scale))
+    local autofit_cell  = math.max(1, math.floor((grid_w - (num_cols - 1) * gap) / num_cols))
+    -- Never exceed autofit: a min_cell larger than the fitted size would
+    -- make the grid wider than avail_w and break label alignment.
+    local cell_size     = math.min(autofit_cell, math.max(min_cell, math.floor(autofit_cell * raw_scale)))
+
+    -- Row heights below are estimated off the display font, since that's
+    -- what's actually rendered for the labels and the legend text.
+    local sample = TextWidget:new{ text = "Xxx", face = display_fonts.small }
+    local label_h = sample:getSize().h
+    sample:free()
+
+    -- Legend cell size now matches the popup's own default (see
+    -- sui_heatmap_widgets.lua's HW.buildLegend), not a scale-linked size.
+    -- Only sized in when the legend is actually shown (see
+    -- SETTING_SHOW_LEGEND) — hidden, it contributes neither height nor gap.
+    local show_legend   = getShowLegend(pfx)
+    local legend_cell   = Screen:scaleBySize(11)
+    local legend_h, gap_v = 0, 0
+    if show_legend then
+        local legend_sample = TextWidget:new{ text = _("Less"), face = display_fonts.small }
+        legend_h = math.max(legend_cell, legend_sample:getSize().h)
+        legend_sample:free()
+        -- Half of the original 8px gap above the legend.
+        gap_v = math.floor(Screen:scaleBySize(4) * scale)
+    end
+
+    local body_h = label_h + Screen:scaleBySize(6)
+                 + 7 * cell_size + 6 * Screen:scaleBySize(2)
+                 + gap_v + legend_h
+    -- The bars have no legend: they take the height of the grid views.
+    if mode == MODE_HOURS then
+        show_legend, legend_h, gap_v = false, 0, 0
+    end
+
+    return {
+        pfx = pfx, weeks = weeks, mode = mode, fonts = display_fonts,
+        avail_w = w, start_t = start_t, end_t = end_t,
+        cell_size = cell_size, body_h = body_h, gap_v = gap_v,
+        legend_h = legend_h, legend_cell = legend_cell, show_legend = show_legend,
+    }
+end
+
+local function openPopup()
+    require("screens/sui_stats_launcher").open("heatmap")
+end
+
+local M = {}
+
+M.id          = "heatmap"
+M.name        = _("Reading Heatmap")
+M.label       = _("Reading Heatmap")
+M.enabled_key = "heatmap_enabled"
+M.default_on  = false
+
+-- Right-aligned indicator of the selected Type on the section label row —
+-- the weeks count in Calendar mode, or "Time of day" in that mode — so the
+-- card's title row reflects which grid it's currently showing, and at what
+-- range. Rendered in the section label's right-hand slot (see
+-- engines/sui_section_label.lua), the same one the page indicator uses, so it
+-- shares its font/color/right alignment.
+function M.label_right_func(ctx)
+    local pfx  = (ctx and ctx.pfx) or "simpleui_hs_"
+    local mode = getMode(pfx)
+    if mode == MODE_DAYPART then return _("Time of day") end
+    if mode == MODE_HOURS then return _("Hours of day") end
+    return T(_("%1 weeks"), getWeeks(pfx))
+end
+
+function M.build(w, ctx)
+    local L = computeLayout(w, ctx)
+    -- Labels follow the content colours over the module fill.
+    local label_fg = (ctx and ctx.ink or Chrome.PLAIN_INK).sub
+
+    local grid_widget
+    if L.mode == MODE_HOURS then
+        local wd_hour_map, fatal = HD.getWeekdayHourReadingData(L.start_t, L.end_t, ctx and ctx.db_conn)
+        if fatal and ctx then ctx.db_conn_fatal = true end
+        local hours, peak_hour = HD.hourTotals(wd_hour_map)
+        local bar_w, gap = Charts.fitBars(#hours, L.avail_w, L.cell_size)
+        grid_widget = bar_w and Charts.bars{
+            values = hours, bar_w = bar_w, gap = gap, avail_h = L.body_h,
+            color = (ctx and ctx.ink or Chrome.PLAIN_INK).blk, highlight = peak_hour and peak_hour + 1,
+            labels = HOUR_AXIS, label_face = L.fonts.small, label_color = label_fg,
+        } or VerticalSpan:new{ width = L.body_h }
+    elseif L.mode == MODE_DAYPART then
+        local wd_hour_map, fatal = HD.getWeekdayHourReadingData(L.start_t, L.end_t, ctx and ctx.db_conn)
+        if fatal and ctx then ctx.db_conn_fatal = true end
+        local is_12h = G_reader_settings:isTrue("twelve_hour_clock")
+        grid_widget = HW.buildDayPartHeatmap(wd_hour_map, L.fonts, L.avail_w, is_12h,
+            { cell_size = L.cell_size, label_fg = label_fg })
+    else
+        local daily_map, fatal = HD.getDailyReadingData(L.start_t, L.end_t, ctx and ctx.db_conn)
+        if fatal and ctx then ctx.db_conn_fatal = true end
+        grid_widget = HW.buildRangeHeatmap(daily_map, L.start_t, L.end_t, L.fonts, L.avail_w,
+            { cell_size = L.cell_size, label_fg = label_fg })
+    end
+
+    -- Wrapped the same way as the legend below: below 100% Scale the grid's
+    -- own intrinsic width (wd_label_w + num_cols*cell_size + gaps) is
+    -- narrower than avail_w, and body's "align = left" would otherwise pin
+    -- it to the left edge instead of centering it under a full-width card.
+    local grid_box = CenterContainer:new{
+        dimen = Geom:new{ w = L.avail_w, h = grid_widget:getSize().h },
+        grid_widget,
+    }
+
+    local body = VerticalGroup:new{ align = "left", grid_box }
+    if L.show_legend then
+        local legend = HW.buildLegend(L.fonts, L.legend_cell, label_fg)
+        table.insert(body, VerticalSpan:new{ width = L.gap_v })
+        table.insert(body, CenterContainer:new{ dimen = Geom:new{ w = L.avail_w, h = legend:getSize().h }, legend })
+    end
+
+    local tappable = InputContainer:new{
+        dimen = Geom:new{ w = w, h = body:getSize().h },
+        [1]   = body,
+    }
+    tappable.ges_events = {
+        TapHeatmap = { GestureRange:new{ ges = "tap", range = function() return tappable.dimen end } },
+    }
+    function tappable:onTapHeatmap()
+        openPopup()
+        return true
+    end
+
+    return tappable
+end
+
+function M.getHeight(ctx)
+    -- Match chrome contentWidth: full column minus label-aligned outer margins.
+    local col_w = (ctx and (ctx.col_w or ctx.inner_w)) or UI.getInnerW()
+    local content_w = math.max(1, col_w - UI.PAD * 2)
+    local L = computeLayout(content_w, ctx)
+    return L.body_h
+end
+
+function M.invalidateCache()
+    HD.invalidate()
+end
+
+local function _makeWeeksItem(ctx_menu)
+    local pfx = ctx_menu.pfx
+    local _lc = ctx_menu._
+    return Config.makeStepperItem{
+        text_func  = function() return _lc("Weeks shown") end,
+        unit       = "",
+        get        = function() return getWeeks(pfx) end,
+        set        = function(v) setWeeks(pfx, v) end,
+        title      = _lc("Weeks shown"),
+        info       = _lc("How many weeks of history to include, and (in Calendar view) how many weeks the grid shows — this count is unaffected by Scale, which only resizes the cells. In Time of day view, this only changes how much history feeds the shading — the grid itself always has one column per hour."),
+        value_min  = MIN_WEEKS,
+        value_max  = MAX_WEEKS,
+        value_step = 1,
+        default_value = DEFAULT_WEEKS,
+        refresh    = ctx_menu.refresh,
+    }
+end
+
+local function _makeScaleItem(ctx_menu)
+    local pfx = ctx_menu.pfx
+    local _lc = ctx_menu._
+    return Config.makeScaleItem{
+        text_func    = function() return _lc("Scale") end,
+        enabled_func = function() return not Config.isScaleLinked() end,
+        title        = _lc("Scale"),
+        info         = _lc("Scale for this module.\n100% is the default size. Capped at 100% here: the grid always has as many columns as \"Weeks shown\" (or, in Time of day view, 24), so there's no room to grow the cells past their autofit size without the grid overflowing the card."),
+        get          = function() return Config.getModuleScalePct("heatmap", pfx) end,
+        set          = function(v) Config.setModuleScale(v, "heatmap", pfx) end,
+        value_max    = 100,
+        refresh      = ctx_menu.refresh,
+    }
+end
+
+local function _makeViewItem(ctx_menu)
+    local pfx = ctx_menu.pfx
+    local _lc = ctx_menu._
+    return Config.makeRadioSubmenuItem{
+        text    = _lc("Type"),
+        options = {
+            { value = MODE_CALENDAR, label = _lc("Calendar") },
+            { value = MODE_DAYPART,  label = _lc("Time of day") },
+            { value = MODE_HOURS,    label = _lc("Hours of day") },
+        },
+        get     = function() return getMode(pfx) end,
+        set     = function(v) setMode(pfx, v) end,
+        refresh = ctx_menu.refresh,
+    }
+end
+
+local function _makeAppearanceItem(ctx_menu)
+    local pfx = ctx_menu.pfx
+    local _lc = ctx_menu._
+    return {
+        text_func      = function() return _lc("Appearance") end,
+        sub_item_table = {
+            Config.makeLabelToggleItem("heatmap", ctx_menu.refresh, _lc),
+            Config.makeLabelPlacementItem("heatmap", ctx_menu.refresh, _lc),
+            {
+                text           = _lc("Show legend"),
+                checked_func   = function() return getShowLegend(pfx) end,
+                keep_menu_open = true,
+                callback       = function()
+                    setShowLegend(pfx, not getShowLegend(pfx))
+                    ctx_menu.refresh()
+                end,
+            },
+                                },
+    }
+end
+
+function M.getMenuItems(ctx_menu)
+    local appearance = _makeAppearanceItem(ctx_menu)
+    local extra = appearance and appearance.sub_item_table or { appearance }
+    return Config.buildModuleMenu({
+        content = {
+            _makeViewItem(ctx_menu),
+            _makeWeeksItem(ctx_menu),
+        },
+        appearance = {
+            size  = { _makeScaleItem(ctx_menu) },
+            extra = extra,
+        },
+    }, ctx_menu)
+end
+
+return M
