@@ -1,0 +1,6297 @@
+# Simple UI — KOReader plugin
+# Translation template
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: simpleui\n"
+"POT-Creation-Date: 2026-10-22 11:13+0000\n"
+"Language: cs_CZ\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n>=2 && n<=4 ? 1 : 2));\n"
+
+#: modules/module_reading_goals.lua:1202
+msgid "  Set Goal  (%d hr/month)"
+msgstr "  Nastavit cíl  (%d hod/měsíc)"
+
+#: modules/module_reading_goals.lua:1214
+msgid "  Set Goal  (%d min/day)"
+msgstr "  Nastavit cíl  (%d min/den)"
+
+#: modules/module_reading_goals.lua:1190
+msgid "  Set Goal  (%s)"
+msgstr "  Nastavit cíl  (%s)"
+
+#: modules/module_reading_goals.lua:1201 modules/module_reading_goals.lua:1213
+msgid "  Set Goal  (disabled)"
+msgstr "  Nastavit cíl  (vypnuto)"
+
+#: infra/sui_text.lua:97
+msgid " et al."
+msgstr " a kol."
+
+#: engines/sui_book_grid.lua:463 features/library/sui_foldercovers.lua:1236
+msgid " p."
+msgstr " str."
+
+#: engines/sui_book_grid.lua:1533
+msgid "% Read (ascending)"
+msgstr "% přečteno (vzestupně)"
+
+#: engines/sui_book_grid.lua:1534
+msgid "% Read (descending)"
+msgstr "% přečteno (sestupně)"
+
+#: modules/critter/phrases.lua:190
+msgid "%.1f hours read today!"
+msgstr ""
+
+#: modules/module_heatmap.lua:226
+msgid "%1 weeks"
+msgstr "%1 týdnů"
+
+#: engines/sui_book_grid.lua:1900 engines/sui_book_grid.lua:1905
+#: modules/module_reading_stats.lua:1153 screens/sui_menu.lua:3118
+#: screens/sui_menu.lua:3122
+msgid "%1 × %2"
+msgstr "%1 × %2"
+
+#: features/sui_backup.lua:697
+msgid "%d files (%s)"
+msgstr "%d souborů (%s)"
+
+#: modules/module_reading_goals.lua:1140
+msgid "%d hr/month"
+msgstr "%d hod/měsíc"
+
+#: modules/module_reading_goals.lua:1142
+msgid "%d min/day"
+msgstr "%d min/den"
+
+#: features/sui_backup.lua:695
+msgid "%d settings"
+msgstr "%d nastavení"
+
+#: engines/sui_book_grid.lua:842
+msgid "%d%%"
+msgstr "%d%%"
+
+#: engines/sui_book_grid.lua:902 engines/sui_book_grid.lua:914
+msgid "%d%% Read"
+msgstr "Přečteno %d%%"
+
+#: screens/sui_stats_windows.lua:3141
+msgid "%d/%d days · %d/%d min to next freeze"
+msgstr "%d/%d dní · %d/%d min do dalšího zmrazení"
+
+#: infra/sui_book_stats.lua:192
+msgid "%s left"
+msgstr "zbývá %s"
+
+#: infra/sui_book_stats.lua:191 modules/module_reading_goals.lua:737
+#: modules/module_reading_goals.lua:757
+msgid "%s read"
+msgstr "přečteno %s"
+
+#: modules/module_quick_actions.lua:367
+msgid "(%d/%d — at limit)"
+msgstr "(%d/%d — na limitu)"
+
+#: engines/sui_book_sources.lua:383
+msgid "(collection not found)"
+msgstr "(kolekce nenalezena)"
+
+#: screens/sui_menu.lua:198
+msgid ""
+"0% transparent, 100% solid. Applies across the full width of the title bar."
+msgstr "0% průhledné, 100% plné. Použije se na celou šířku titulní lišty."
+
+#: screens/sui_menu.lua:202
+msgid ""
+"0% transparent, 100% solid. Applies to the native page bar in Library, "
+"History, Collections and similar screens."
+msgstr ""
+"0% průhledné, 100% plné. Použije se na nativní stránkovací lištu v Knihovně, "
+"Historii, Kolekcích a podobných obrazovkách."
+
+#: features/library/sui_label_options.lua:151
+msgid ""
+"0% transparent, 100% solid. Only the background changes; the text stays "
+"solid."
+msgstr ""
+
+#: infra/sui_config.lua:1445
+msgid ""
+"0% transparent, 100% solid. Values in between add a scrim over the wallpaper."
+msgstr ""
+"0% průhledné, 100% plné. Hodnoty mezi tím přidají přes tapetu ztmavující "
+"překryv."
+
+#: engines/sui_group_cell.lua:262
+msgid "4-Cover Grid"
+msgstr "Mřížka 4 obálek"
+
+#: features/sui_cover_elements.lua:318
+msgid "4-Cover Grid (Mosaic View Only)"
+msgstr "Mřížka 4 obálek (pouze mozaikové zobrazení)"
+
+#: modules/critter/phrases.lua:92
+msgid "A chapter pairs well with a coffee."
+msgstr ""
+
+#: screens/sui_onboarding.lua:188
+msgid "A folder named \"Books\" will be created and set as the library home."
+msgstr ""
+"Bude vytvořena složka \"Books\" a nastavena jako domovská složka knihovny."
+
+#: screens/sui_stats_windows.lua:2805
+msgid ""
+"A freeze can only bridge a single missed day right after an active one — "
+"yesterday doesn't qualify."
+msgstr ""
+"Zmrazení může překlenout pouze jeden vynechaný den hned po aktivním dni — "
+"včerejšek tuto podmínku nesplňuje."
+
+#: modules/critter/phrases.lua:84
+msgid "A fresh day, a fresh page."
+msgstr ""
+
+#: modules/critter/phrases.lua:240
+msgid "A good book helps."
+msgstr ""
+
+#: modules/critter/phrases.lua:170
+msgid "A new book awaits!"
+msgstr ""
+
+#: modules/critter/phrases.lua:203
+msgid "A new personal best!"
+msgstr ""
+
+#: modules/critter/phrases.lua:236
+msgid "A new week of stories."
+msgstr ""
+
+#: features/sui_presets.lua:346
+msgid "A preset named \"%s\" already exists."
+msgstr "Předvolba s názvem \"%s\" již existuje."
+
+#: features/sui_presets.lua:355
+msgid ""
+"A preset named \"%s\" already exists.\n"
+"Overwrite it?"
+msgstr ""
+"Předvolba s názvem \"%s\" již existuje.\n"
+"Přepsat ji?"
+
+#: screens/sui_menu.lua:984 screens/sui_menu.lua:1123 screens/sui_menu.lua:1729
+msgid ""
+"A restart is required to apply the new bar size across all layouts.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Pro použití nové velikosti lišty ve všech rozvrženích je nutný restart.\n"
+"\n"
+"Restartovat nyní?"
+
+#: screens/sui_menu.lua:3962
+msgid ""
+"A restart is required to apply the new text size everywhere.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Pro použití nové velikosti textu všude je nutný restart.\n"
+"\n"
+"Restartovat nyní?"
+
+#: _meta.lua:6
+msgid "A simple UI for KOReader"
+msgstr "Jednoduché UI pro KOReader"
+
+#: screens/sui_stats_windows.lua:2475
+msgid "ALL TIME"
+msgstr "CELKEM"
+
+#: screens/sui_menu.lua:4198 screens/sui_settings_window.lua:374
+#: screens/sui_settings_window.lua:1040
+msgid "About"
+msgstr "O aplikaci"
+
+#: features/library/sui_label_options.lua:134 features/sui_style.lua:1426
+msgid "Accent"
+msgstr ""
+
+#: screens/sui_menu.lua:3218
+msgid "Accent Color"
+msgstr ""
+
+#: features/sui_quickactions.lua:2387 features/sui_quickactions.lua:2620
+msgid "Action"
+msgstr "Akce"
+
+#: modules/module_action_list.lua:219
+msgid "Action List"
+msgstr "Seznam akcí"
+
+#: features/sui_quickactions.lua:2593
+msgid "Action Type"
+msgstr "Typ akce"
+
+#: features/sui_quickactions.lua:1167
+msgid "Action error: %s"
+msgstr "Chyba akce: %s"
+
+#: features/sui_quickactions.lua:2612
+msgid "Action name…"
+msgstr "Název akce…"
+
+#: features/sui_quickactions.lua:1160
+msgid "Action not available: %s"
+msgstr "Akce není k dispozici: %s"
+
+#: modules/module_tab_grid.lua:642
+msgid "Active Tab Color"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1510
+msgid "Add Action"
+msgstr "Přidat akci"
+
+#: features/sui_manual_books.lua:105
+msgid "Add Book"
+msgstr ""
+
+#: screens/sui_menu.lua:1417 screens/sui_menu.lua:1455
+msgid "Add Button"
+msgstr "Přidat tlačítko"
+
+#: engines/sui_screen_engine.lua:2075 engines/sui_window.lua:1143
+#: features/sui_arrange.lua:385 screens/sui_menu.lua:916
+#: screens/sui_menu.lua:953 screens/sui_menu.lua:1996 screens/sui_menu.lua:2026
+#: screens/sui_quicksettings_bar.lua:1426 screens/sui_settings_window.lua:1048
+msgid "Add Item"
+msgstr "Přidat položku"
+
+#: features/sui_manual_books.lua:159
+msgid "Add Manual Books"
+msgstr ""
+
+#: features/sui_manual_books.lua:172
+msgid "Add Manual Count"
+msgstr ""
+
+#: screens/sui_settings_window.lua:1045 screens/sui_settings_window.lua:1171
+msgid "Add Module"
+msgstr "Přidat modul"
+
+#: screens/sui_settings_window.lua:1140
+msgid "Add Page"
+msgstr "Přidat stránku"
+
+#: features/sui_manual_books.lua:167
+msgid "Add Single Book"
+msgstr ""
+
+#: modules/module_tab_grid.lua:869
+#, fuzzy
+msgid "Add Tab"
+msgstr "Přidat stránku"
+
+#: modules/module_action_list.lua:287 modules/module_quick_actions.lua:349
+#: screens/sui_menu.lua:1916 screens/sui_quicksettings_bar.lua:1509
+msgid "Add at least 2 actions to arrange."
+msgstr "Pro uspořádání přidejte alespoň 2 akce."
+
+#: features/sui_collection_arrange.lua:35
+msgid "Add at least 2 books to arrange."
+msgstr "Pro uspořádání přidejte alespoň 2 knihy."
+
+#: modules/critter/module_critter.lua:559
+msgid "Add at least 2 decorations to arrange."
+msgstr ""
+
+#: modules/module_reading_stats.lua:1143
+msgid "Add at least 2 stats to arrange."
+msgstr "Pro uspořádání přidejte alespoň 2 statistiky."
+
+#: modules/module_tab_grid.lua:868 screens/sui_menu.lua:363
+#, fuzzy
+msgid "Add at least 2 tabs to arrange."
+msgstr "Pro uspořádání přidejte alespoň 2 statistiky."
+
+#: modules/module_tbr.lua:342
+msgid "Add to To Be Read"
+msgstr "Přidat do K přečtení"
+
+#: modules/critter/module_critter.lua:541
+msgid "Add your own critters in %1"
+msgstr ""
+
+#: modules/critter/module_critter.lua:685
+msgid "Add your own decorations in %1"
+msgstr ""
+
+#: screens/sui_menu.lua:2328
+msgid "After closing a book"
+msgstr "Po zavření knihy"
+
+#: infra/sui_config.lua:2035 modules/critter/module_critter.lua:678
+#: modules/module_action_list.lua:342 modules/module_quick_actions.lua:472
+#: modules/module_quote.lua:1484
+msgid "Alignment"
+msgstr "Zarovnání"
+
+#: screens/sui_menu.lua:3278 screens/sui_menu.lua:3937
+msgid "All caps"
+msgstr ""
+
+#: engines/sui_window.lua:4294 screens/sui_settings_window.lua:813
+msgid "All items have already been added."
+msgstr "Všechny položky již byly přidány."
+
+#: screens/sui_settings_window.lua:791
+msgid "All modules have already been added."
+msgstr "Všechny moduly již byly přidány."
+
+#: features/sui_quickactions.lua:3312
+msgid "All recent books are finished."
+msgstr "Všechny nedávné knihy jsou dokončené."
+
+#: modules/module_reading_stats.lua:248
+msgid "All time"
+msgstr ""
+
+#: modules/module_reading_stats.lua:249
+msgid "All time — Books"
+msgstr "Celkem — Knihy"
+
+#: modules/module_reading_stats.lua:248
+msgid "All time — Time"
+msgstr "Celkem — Čas"
+
+#: screens/sui_menu.lua:2436
+msgid "Always"
+msgstr "Vždy"
+
+#: modules/module_clock.lua:1095 modules/module_clock.lua:1114
+msgid "Analogue"
+msgstr "Analogové"
+
+#: infra/sui_goals.lua:44
+msgid "Annual Goal"
+msgstr "Roční cíl"
+
+#: infra/sui_goals.lua:45
+msgid "Annual Reading Goal"
+msgstr "Roční čtenářský cíl"
+
+#: modules/critter/phrases.lua:215
+msgid "Annual goal reached!"
+msgstr ""
+
+#: features/sui_module_chrome.lua:251 features/sui_module_chrome.lua:272
+#: infra/sui_config.lua:1201 modules/module_heatmap.lua:354
+#: modules/module_reading_goals.lua:1256 modules/module_reading_goals.lua:1322
+msgid "Appearance"
+msgstr "Vzhled"
+
+#: features/sui_backup.lua:112
+msgid "Appearance & Style"
+msgstr "Vzhled"
+
+#: features/dialogs/sui_dialogs.lua:285 features/sui_accent_picker.lua:104
+msgid "Apply"
+msgstr "Použít"
+
+#: infra/sui_core.lua:1462
+msgid "Applying preset…"
+msgstr "Použít paletu…"
+
+#: infra/sui_datenames.lua:29
+msgid "Apr"
+msgstr "Duben"
+
+#: infra/sui_datenames.lua:36
+msgid "April"
+msgstr "Duben"
+
+#: features/dialogs/sui_dialogs.lua:221
+msgid "Are you sure you want to reboot the device?"
+msgstr ""
+
+#: features/sui_arrange.lua:384 infra/sui_config.lua:2208
+msgid "Arrange"
+msgstr "Uspořádat"
+
+#: modules/critter/module_critter.lua:557 modules/module_action_list.lua:285
+#: modules/module_quick_actions.lua:347 screens/sui_menu.lua:1920
+msgid "Arrange %s"
+msgstr "Uspořádat %s"
+
+#: screens/sui_quicksettings_bar.lua:1581
+msgid "Arrange Book Details"
+msgstr ""
+
+#: screens/sui_menu.lua:1373 screens/sui_menu.lua:1380
+#: screens/sui_menu.lua:1557 screens/sui_menu.lua:1572
+msgid "Arrange Buttons"
+msgstr "Uspořádat tlačítka"
+
+#: engines/sui_book_sources.lua:399
+msgid "Arrange Collection"
+msgstr "Uspořádat kolekci"
+
+#: engines/sui_screen_engine.lua:2074 modules/module_coverdeck.lua:1594
+#: modules/module_currently.lua:1349 screens/sui_bottombar.lua:787
+#: screens/sui_menu.lua:656 screens/sui_menu.lua:723 screens/sui_menu.lua:730
+#: screens/sui_menu.lua:1910 screens/sui_quicksettings_bar.lua:1425
+#: screens/sui_settings_window.lua:1069 screens/sui_topbar.lua:635
+msgid "Arrange Items"
+msgstr "Uspořádat položky"
+
+#: screens/sui_quicksettings_bar.lua:1507
+msgid "Arrange Quick Settings"
+msgstr "Uspořádat rychlá nastavení"
+
+#: modules/module_reading_stats.lua:1141
+msgid "Arrange Reading Stats"
+msgstr "Uspořádat statistiky čtení"
+
+#: modules/module_coverdeck.lua:1585 modules/module_currently.lua:1341
+#: screens/sui_quicksettings_bar.lua:1568
+msgid "Arrange Statistics"
+msgstr "Uspořádat statistiky"
+
+#: modules/module_tab_grid.lua:865 screens/sui_menu.lua:361
+msgid "Arrange Tabs"
+msgstr "Uspořádat karty"
+
+#: engines/sui_book_sources.lua:359
+msgid "Arrange To Be Read List"
+msgstr "Uspořádat seznam K přečtení"
+
+#: features/sui_presets.lua:157
+msgid "At a Glance"
+msgstr "Na první pohled"
+
+#: screens/sui_menu.lua:1599
+msgid "At least one item must stay visible."
+msgstr "Alespoň jedna položka musí zůstat viditelná."
+
+#: infra/sui_datenames.lua:30
+msgid "Aug"
+msgstr "srp"
+
+#: infra/sui_datenames.lua:37
+msgid "August"
+msgstr "Srpen"
+
+#: features/sui_manual_books.lua:109 modules/module_coverdeck.lua:125
+#: modules/module_coverdeck.lua:1611 modules/module_currently.lua:278
+#: modules/module_currently.lua:1374 modules/module_quote.lua:1446
+#: modules/module_quote.lua:1467 screens/sui_quicksettings_bar.lua:218
+msgid "Author"
+msgstr "Autor"
+
+#: engines/sui_book_grid.lua:1532 modules/module_library.lua:205
+msgid "Author (A–Z)"
+msgstr "Autor (A–Z)"
+
+#: screens/sui_menu.lua:4016
+msgid "Author: %s"
+msgstr "Autor: %s"
+
+#: features/library/sui_library_browse.lua:67
+#: features/sui_quickactions.lua:1004 infra/sui_config.lua:141
+msgid "Authors"
+msgstr "Autoři"
+
+#: engines/sui_group_cell.lua:263 features/sui_cover_elements.lua:319
+msgid "Auto (Single ↔ 4-Cover Grid)"
+msgstr "Automaticky (jedna ↔ mřížka 4 obálek)"
+
+#: features/library/sui_group_actions.lua:63
+msgid "Auto (first book)"
+msgstr "Automaticky (první kniha)"
+
+#: screens/sui_menu.lua:2271
+msgid "Auto-rotate"
+msgstr "Automaticky otáčet"
+
+#: screens/sui_menu.lua:4021
+msgid "Automatic Update Check"
+msgstr "Automatická kontrola aktualizací"
+
+#: screens/sui_stats_windows.lua:1147 screens/sui_stats_windows.lua:2215
+#: screens/sui_stats_windows.lua:3611
+msgid "Average per day"
+msgstr "Průměr za den"
+
+#: screens/sui_stats_windows.lua:1149 screens/sui_stats_windows.lua:3613
+msgid "Average per page"
+msgstr "Průměr na stránku"
+
+#: modules/module_reading_stats.lua:260
+msgid "Average session"
+msgstr ""
+
+#: modules/critter/phrases.lua:268
+msgid "Aww, you're here!"
+msgstr ""
+
+#: screens/sui_titlebar.lua:114 screens/sui_titlebar.lua:120
+msgid "Back"
+msgstr "Zpět"
+
+#: features/sui_style.lua:100
+msgid "Back Button"
+msgstr "Tlačítko Zpět"
+
+#: features/library/sui_label_options.lua:150 infra/sui_config.lua:1509
+#: screens/sui_menu.lua:217
+msgid "Background Opacity"
+msgstr "Neprůhlednost pozadí"
+
+#: features/sui_quickactions.lua:994
+msgid "Backup"
+msgstr "Zpět"
+
+#: screens/sui_menu.lua:4043
+msgid "Backup & Restore"
+msgstr "Záloha a obnovení"
+
+#: features/sui_backup.lua:673
+msgid "Backup created"
+msgstr "Záloha vytvořena"
+
+#: features/sui_backup.lua:925 features/sui_backup.lua:1127
+msgid "Backup created:"
+msgstr "Záloha vytvořena:"
+
+#: features/sui_backup.lua:922 features/sui_backup.lua:1130
+msgid "Backup failed."
+msgstr "Zálohování selhalo."
+
+#: features/sui_backup.lua:984
+msgid "Backup loaded. Choose what to import, then tap \"Restore Selected…\"."
+msgstr ""
+"Záloha načtena. Vyberte, co importovat, a potom klepněte na „Obnovit "
+"vybrané…“."
+
+#: features/sui_backup.lua:1041
+msgid ""
+"Backup restored.\n"
+"Restart KOReader now to finish applying all changes?"
+msgstr ""
+"Záloha obnovena.\n"
+"Restartovat KOReader nyní, aby se dokončilo použití všech změn?"
+
+#: features/sui_backup.lua:615
+msgid ""
+"Backup was made by a newer SimpleUI version. Please update this plugin first."
+msgstr ""
+"Záloha byla vytvořena novější verzí SimpleUI. Nejprve prosím aktualizujte "
+"tento plugin."
+
+#: engines/sui_book_grid.lua:2095 engines/sui_group_cell.lua:319
+#: features/sui_cover_elements.lua:81
+msgid "Badge"
+msgstr "Štítek"
+
+#: infra/sui_config.lua:1403 infra/sui_config.lua:1405
+msgid "Badge Size"
+msgstr "Velikost štítku"
+
+#: features/sui_cover_elements.lua:67
+msgid "Banner"
+msgstr "Banner"
+
+#: engines/sui_book_grid.lua:1990
+msgid "Bar"
+msgstr "Lišta"
+
+#: engines/sui_book_grid.lua:1992
+msgid "Bar + Text"
+msgstr "Lišta + text"
+
+#: screens/sui_menu.lua:540 screens/sui_menu.lua:1021 screens/sui_menu.lua:1102
+#: screens/sui_menu.lua:1194
+msgid "Bar Size"
+msgstr "Velikost lišty"
+
+#: modules/module_quick_actions.lua:459 screens/sui_quicksettings_bar.lua:1659
+msgid "Bare"
+msgstr "Bez pozadí"
+
+#: features/sui_backup.lua:122 screens/sui_menu.lua:4160
+#: screens/sui_settings_window.lua:335 screens/sui_settings_window.lua:1037
+msgid "Bars"
+msgstr "Lišty"
+
+#: infra/sui_config.lua:203 modules/module_clock.lua:196
+#: modules/module_clock.lua:1083
+msgid "Battery"
+msgstr "Baterie"
+
+#: infra/sui_config.lua:1207 screens/sui_menu.lua:2625
+#: screens/sui_settings_window.lua:459 screens/sui_settings_window.lua:1050
+msgid "Behaviour"
+msgstr "Chování"
+
+#: engines/sui_group_cell.lua:231
+#, fuzzy
+msgid "Below Cover"
+msgstr "Jedna obálka"
+
+#: screens/sui_stats_windows.lua:1990 screens/sui_stats_windows.lua:2010
+msgid "Best streak"
+msgstr "Nejlepší série"
+
+#: infra/sui_config.lua:201
+msgid "Bluetooth"
+msgstr "Bluetooth"
+
+#: features/sui_style.lua:2486
+msgid "Bold"
+msgstr "Tučné"
+
+#: features/sui_style.lua:2488
+msgid "Bold italic"
+msgstr "Tučná kurzíva"
+
+#: screens/sui_quicksettings_bar.lua:1603
+msgid "Book"
+msgstr ""
+
+#: screens/sui_menu.lua:2479
+msgid "Book Cover Transition"
+msgstr "Přechod s obálkou knihy"
+
+#: screens/sui_quicksettings_bar.lua:1580
+msgid "Book Details"
+msgstr ""
+
+#: screens/sui_menu.lua:2333
+msgid "Book Folder"
+msgstr "Složka"
+
+#: features/sui_quickactions.lua:2199
+msgid "Book Info"
+msgstr "Informace o knize"
+
+#: infra/sui_config.lua:1842
+msgid "Book Menu"
+msgstr "Nabídka knihy"
+
+#: features/sui_cover_elements.lua:107
+msgid "Book Stack"
+msgstr ""
+
+#: screens/sui_menu.lua:2891
+msgid "Book Stack Style"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:3666
+msgid "Book Statistics"
+msgstr "Statistiky knihy"
+
+#: main.lua:1235
+msgid "Book statistics"
+msgstr "Statistiky knihy"
+
+#: screens/sui_settings_window.lua:345
+msgid "Book-browser settings"
+msgstr "Nastavení prohlížeče knih"
+
+#: features/sui_quickactions.lua:500
+msgid "Bookmark browser"
+msgstr "Prohlížeč záložek"
+
+#: features/sui_quickactions.lua:441
+msgid "Bookmark browser requires a newer KOReader. Please update."
+msgstr "Prohlížeč záložek vyžaduje novější KOReader. Prosím aktualizujte."
+
+#: features/sui_quickactions.lua:864 infra/sui_config.lua:133
+msgid "Bookmarks"
+msgstr "Záložky"
+
+#: engines/sui_book_sources.lua:400 modules/module_library.lua:266
+#: modules/module_reading_stats.lua:249
+msgid "Books"
+msgstr "Knihy"
+
+#: modules/critter/phrases.lua:261
+msgid "Books are tiny adventures."
+msgstr ""
+
+#: modules/critter/phrases.lua:44
+msgid "Books this year"
+msgstr ""
+
+#: infra/sui_goals.lua:46
+msgid "Books to read in %s:"
+msgstr "Knihy k přečtení v %s:"
+
+#: engines/sui_group_cell.lua:298 features/library/sui_label_options.lua:146
+#: features/sui_cover_elements.lua:96 modules/module_tab_grid.lua:598
+msgid "Bottom"
+msgstr "Dole"
+
+#: screens/sui_menu.lua:1158 screens/sui_menu.lua:1159
+#: screens/sui_menu.lua:1197
+msgid "Bottom Margin"
+msgstr "Spodní okraj"
+
+#: screens/sui_menu.lua:2480
+msgid ""
+"Briefly show the book cover full-screen when opening or closing a book, "
+"masking the page-layout flash. Normally requires the book to already be "
+"indexed by the cover browser (its cover must have been seen at least once in "
+"a grid/list view) — see \"High-Quality Cover\" below to also cover un-"
+"indexed books."
+msgstr ""
+"Při otevření nebo zavření knihy krátce zobrazí obálku přes celou obrazovku a "
+"zakryje probliknutí rozvržení stránky. Obvykle vyžaduje, aby kniha už byla "
+"zaindexovaná prohlížečem obálek (její obálka musela být alespoň jednou "
+"zobrazena v mřížce nebo seznamu) — viz níže „Vysoce kvalitní obálka“, která "
+"pokryje i nezaindexované knihy."
+
+#: features/sui_accent_picker.lua:92 features/sui_quickactions.lua:930
+#: infra/sui_config.lua:136 infra/sui_config.lua:202
+msgid "Brightness"
+msgstr "Jas"
+
+#: screens/sui_titlebar.lua:116
+msgid "Browse"
+msgstr "Procházet"
+
+#: features/sui_style.lua:117
+msgid "Browse Button (author)"
+msgstr "Tlačítko Procházet (autor)"
+
+#: features/sui_style.lua:111
+msgid "Browse Button (default)"
+msgstr "Tlačítko Procházet (výchozí)"
+
+#: features/sui_style.lua:123
+msgid "Browse Button (series)"
+msgstr "Tlačítko Procházet (série)"
+
+#: features/sui_style.lua:129
+msgid "Browse Button (tags)"
+msgstr "Tlačítko Procházet (štítky)"
+
+#: features/sui_style.lua:1265
+msgid "Browse Icons"
+msgstr "Ikony procházení"
+
+#: engines/sui_book_sources.lua:433 features/library/sui_library_browse.lua:571
+msgid "Browse by"
+msgstr "Procházet podle"
+
+#: features/sui_quickactions.lua:666
+msgid "Browse by Authors/Series/Tags not available."
+msgstr "Procházení podle autorů/sérií/štítků není k dispozici."
+
+#: screens/sui_titlebar.lua:1146
+msgid "Browse library"
+msgstr "Procházet knihovnu"
+
+#: features/sui_quickactions.lua:2142 screens/sui_menu.lua:2202
+#: screens/sui_menu.lua:3469
+msgid "Browse…"
+msgstr "Procházet"
+
+#: modules/module_quick_actions.lua:455 screens/sui_quicksettings_bar.lua:1655
+msgid "Button Type"
+msgstr "Typ tlačítka"
+
+#: screens/sui_titlebar.lua:1152
+msgid "By author"
+msgstr "Podle autora"
+
+#: screens/sui_menu.lua:2519
+msgid ""
+"By default the cover is stretched to fill the whole screen, which can "
+"distort it if its proportions don't match your screen's. When on, the cover "
+"keeps its original proportions instead, centered over a black background."
+msgstr ""
+"Ve výchozím nastavení se obálka roztáhne přes celou obrazovku, což ji může "
+"zkreslit, pokud její poměr stran neodpovídá obrazovce. Je-li zapnuto, obálka "
+"si zachová původní poměr stran a zobrazí se uprostřed na černém pozadí."
+
+#: screens/sui_titlebar.lua:1153
+msgid "By series"
+msgstr "Podle série"
+
+#: screens/sui_titlebar.lua:1154
+msgid "By tags"
+msgstr "Podle štítků"
+
+#: screens/sui_heatmap_popup.lua:67 screens/sui_stats_windows.lua:2826
+msgid "CALENDAR"
+msgstr "KALENDÁŘ"
+
+#: modules/module_heatmap.lua:340
+msgid "Calendar"
+msgstr "Kalendář"
+
+#: features/dialogs/sui_dialogs.lua:170 features/dialogs/sui_dialogs.lua:278
+#: features/dialogs/sui_dialogs.lua:388
+#: features/library/sui_library_search.lua:57
+#: features/sui_accent_picker.lua:103 features/sui_backup.lua:1029
+#: features/sui_manual_books.lua:91 features/sui_presets.lua:965
+#: features/sui_presets.lua:981 features/sui_presets.lua:1019
+#: features/sui_presets.lua:1039 features/sui_quickactions.lua:1596
+#: features/sui_quickactions.lua:1865 features/sui_quickactions.lua:2067
+#: features/sui_quickactions.lua:2581 features/sui_quickactions.lua:2933
+#: features/sui_quickactions.lua:3250 features/sui_style.lua:1284
+#: infra/sui_updater.lua:500 infra/sui_updater.lua:517
+#: modules/module_quote.lua:1303 screens/sui_menu.lua:3722
+#: screens/sui_menu.lua:3742 screens/sui_menu.lua:3783
+#: screens/sui_menu.lua:3805 screens/sui_menu.lua:4059
+#: screens/sui_stats_windows.lua:621
+msgid "Cancel"
+msgstr "Zrušit"
+
+#: modules/module_reading_stats.lua:1185
+msgid "Cards"
+msgstr "Karty"
+
+#: features/library/sui_label_options.lua:145 infra/sui_config.lua:2026
+#: screens/sui_menu.lua:672 screens/sui_menu.lua:879
+msgid "Center"
+msgstr "Uprostřed"
+
+#: modules/module_reading_stats.lua:270
+msgid "Charts — This week"
+msgstr ""
+
+#: modules/module_reading_stats.lua:273
+msgid "Charts — When you read (%d-week average)"
+msgstr ""
+
+#: screens/sui_menu.lua:4032
+msgid "Check for Updates"
+msgstr "Zkontrolovat aktualizace"
+
+#: infra/sui_updater.lua:633
+msgid "Checking for updates…"
+msgstr "Kontrolují se aktualizace…"
+
+#: features/sui_accent_picker.lua:80
+msgid "Choose a color"
+msgstr ""
+
+#: screens/sui_onboarding.lua:192
+msgid "Choose a different folder"
+msgstr "Vybrat jinou složku"
+
+#: features/sui_backup.lua:999
+msgid "Choose backup file"
+msgstr "Vybrat soubor zálohy"
+
+#: features/sui_backup.lua:1153
+msgid "Choose backup file…"
+msgstr "Vybrat soubor zálohy…"
+
+#: engines/sui_asset_browser.lua:91
+msgid "Choose file"
+msgstr "Vybrat soubor"
+
+#: features/sui_quickactions.lua:2155 features/sui_quickactions.lua:2177
+msgid "Choose icon"
+msgstr "Vybrat ikonu"
+
+#: screens/sui_menu.lua:3479
+msgid "Choose icon pack"
+msgstr "Vybrat balíček ikon"
+
+#: screens/sui_onboarding.lua:211
+msgid ""
+"Choose the folder where you will place all your books. Simple UI uses it to "
+"show your books in the Library."
+msgstr ""
+"Vyberte složku, do které budete ukládat všechny knihy. Simple UI ji použije "
+"k zobrazení knih v Knihovně."
+
+#: screens/sui_quicksettings_bar.lua:1691
+msgid ""
+"Choose the menus that open directly on the Quick Settings tab instead of the "
+"last used tab."
+msgstr ""
+
+#: screens/sui_menu.lua:2210
+msgid "Choose wallpaper"
+msgstr "Zesvětlit tapetu"
+
+#: screens/sui_onboarding.lua:124
+msgid "Choose your initial layout"
+msgstr "Vyberte počáteční rozvržení"
+
+#: features/sui_cover_elements.lua:114 modules/module_coverdeck.lua:1484
+#: screens/sui_menu.lua:1761 screens/sui_menu.lua:2894
+#: screens/sui_menu.lua:3277 screens/sui_menu.lua:3937
+#: screens/sui_quicksettings_bar.lua:1602
+#: screens/sui_quicksettings_bar.lua:1614
+msgid "Classic"
+msgstr "Klasické"
+
+#: features/sui_accent_picker.lua:101 screens/sui_menu.lua:3220
+msgid "Clear"
+msgstr ""
+
+#: features/sui_presets.lua:172 features/sui_presets.lua:236
+#: infra/sui_config.lua:199 modules/module_clock.lua:194
+#: modules/module_clock.lua:744 modules/module_clock.lua:1083
+msgid "Clock"
+msgstr "Hodiny"
+
+#: modules/module_clock.lua:1091
+msgid "Clock Style"
+msgstr "Styl hodin"
+
+#: modules/module_currently.lua:1439
+msgid "Clock icon"
+msgstr ""
+
+#: screens/sui_titlebar.lua:119
+msgid "Close"
+msgstr "Zavřít"
+
+#: screens/sui_menu.lua:2432
+msgid "Closing Book Notice"
+msgstr "Upozornění při zavírání knihy"
+
+#: main.lua:1859
+msgid "Closing book…"
+msgstr "Zavírá se kniha…"
+
+#: features/sui_quickactions.lua:2046
+msgid "Codepoint out of valid Unicode range (0–10FFFF)."
+msgstr "Kódový bod je mimo platný rozsah Unicode (0–10FFFF)."
+
+#: engines/sui_book_sources.lua:381 features/sui_quickactions.lua:2477
+#: features/sui_quickactions.lua:2596 modules/module_feat_coll.lua:79
+msgid "Collection"
+msgstr "Kolekce"
+
+#: modules/module_collections.lua:490
+msgid "Collection Menu"
+msgstr "Nabídka kolekce"
+
+#: features/library/sui_group_actions.lua:137
+msgid "Collection \"%1\" created with %2 books."
+msgstr "Kolekce \"%1\" byla vytvořena s %2 knihami."
+
+#: features/library/sui_group_actions.lua:110
+msgid "Collection already exists: %1"
+msgstr "Kolekce již existuje: %1"
+
+#: modules/module_collections.lua:319
+msgid "Collection is empty."
+msgstr "Kolekce je prázdná."
+
+#: features/sui_quickactions.lua:3022
+msgid "Collection not available: %s"
+msgstr "Kolekce není k dispozici: %s"
+
+#: features/sui_quickactions.lua:517 features/sui_quickactions.lua:753
+#: features/sui_quickactions.lua:2201 infra/sui_config.lua:127
+#: modules/module_collections.lua:354 modules/module_collections.lua:366
+#: modules/module_collections.lua:380 modules/module_collections.lua:414
+#: modules/module_collections.lua:483 modules/module_collections.lua:484
+#: modules/module_coverdeck.lua:1538
+msgid "Collections"
+msgstr "Kolekce"
+
+#: infra/sui_patches.lua:1283
+msgid "Collections (%1)"
+msgstr "Kolekce (%1)"
+
+#: features/sui_quickactions.lua:760
+msgid "Collections not available."
+msgstr "Kolekce nejsou k dispozici."
+
+#: features/sui_style.lua:191
+msgid "Collections: Back Button"
+msgstr "Kolekce: tlačítko Zpět"
+
+#: features/library/sui_label_options.lua:148
+#: features/sui_cover_elements.lua:257 infra/sui_config.lua:1059
+#: infra/sui_config.lua:1491
+msgid "Color"
+msgstr "Barva"
+
+#: screens/sui_menu.lua:3995
+msgid "Colors"
+msgstr ""
+
+#: infra/sui_config.lua:1711 infra/sui_config.lua:1713
+msgid "Column Width (Bento Grid)"
+msgstr "Šířka sloupce (bento mřížka)"
+
+#: engines/sui_book_grid.lua:1911 modules/module_reading_stats.lua:1163
+msgid "Columns"
+msgstr "Sloupce"
+
+#: modules/module_currently.lua:1431 modules/module_reading_goals.lua:1262
+msgid "Compact"
+msgstr "Kompaktní"
+
+#: features/sui_quickactions.lua:2068
+msgid "Confirm"
+msgstr "Potvrdit"
+
+#: infra/sui_config.lua:1182 screens/sui_menu.lua:2756
+msgid "Content"
+msgstr "Pokračovat"
+
+#: features/sui_quickactions.lua:786 infra/sui_config.lua:130
+#: screens/sui_onboarding.lua:417 screens/sui_onboarding.lua:423
+#: screens/sui_onboarding.lua:435 screens/sui_onboarding.lua:441
+msgid "Continue"
+msgstr "Pokračovat"
+
+#: features/sui_backup.lua:1128
+msgid "Copy this file somewhere safe (e.g. over USB)."
+msgstr "Zkopírujte tento soubor někam do bezpečí (např. přes USB)."
+
+#: engines/sui_book_grid.lua:1994
+msgid "Corner Badge"
+msgstr "Rohový štítek"
+
+#: features/sui_backup.lua:916 features/sui_backup.lua:991
+#: features/sui_backup.lua:1110
+msgid "Could not determine backup folder."
+msgstr "Nepodařilo se určit složku balíčků"
+
+#: features/sui_style.lua:2661
+msgid "Could not determine packs folder"
+msgstr "Nepodařilo se určit složku balíčků"
+
+#: features/sui_backup.lua:560
+msgid "Could not open backup file for writing"
+msgstr "Nepodařilo se otevřít ZIP (neplatný formát nebo poškozený soubor)"
+
+#: screens/sui_stats_windows.lua:67
+msgid "Could not open statistics database."
+msgstr "Nepodařilo se otevřít databázi statistik."
+
+#: features/sui_style.lua:2663
+msgid "Could not open zip (invalid format or corrupted)"
+msgstr "Nepodařilo se otevřít ZIP (neplatný formát nebo poškozený soubor)"
+
+#: features/sui_backup.lua:572
+msgid "Could not write backup file"
+msgstr "Nepodařilo se určit složku balíčků"
+
+#: features/sui_stats_menu.lua:103
+msgid ""
+"Count manually tracked books in the all-time total of books finished. They "
+"always count towards the year they belong to."
+msgstr ""
+
+#: features/sui_presets.lua:192 features/sui_presets.lua:210
+#: modules/module_coverdeck.lua:837
+msgid "Cover Deck"
+msgstr "Přehled obálek"
+
+#: screens/sui_menu.lua:3007
+msgid "Cover Settings"
+msgstr "Nastavení obálek"
+
+#: screens/sui_menu.lua:2787
+msgid "Cover Shadow"
+msgstr "Stín obálky"
+
+#: engines/sui_book_grid.lua:1865 engines/sui_book_grid.lua:1867
+#: modules/module_coverdeck.lua:1472 modules/module_coverdeck.lua:1473
+#: modules/module_currently.lua:1264 modules/module_currently.lua:1265
+msgid "Cover Size"
+msgstr "Velikost obálky"
+
+#: modules/module_currently.lua:1279 modules/module_currently.lua:1280
+msgid "Cover Spacing"
+msgstr "Rozestup obálky"
+
+#: engines/sui_group_cell.lua:259
+msgid "Cover Style"
+msgstr "Styl obálky"
+
+#: features/sui_cover_elements.lua:331
+msgid "Cover Type"
+msgstr ""
+
+#: engines/sui_group_cell.lua:587 modules/module_collections.lua:315
+msgid "Cover for \"%s\""
+msgstr "Obálka pro \"%s\""
+
+#: infra/sui_compat_check.lua:131
+msgid ""
+"CoverBrowser plugin is not enabled, some features will not work correctly."
+msgstr ""
+"Plugin CoverBrowser není povolen, některé funkce nebudou fungovat správně."
+
+#: modules/module_coverdeck.lua:123 screens/sui_menu.lua:3917
+msgid "Covers"
+msgstr "Obálky"
+
+#: features/library/sui_group_actions.lua:105
+#: screens/sui_settings_window.lua:1128
+msgid "Create"
+msgstr "Vytvořit"
+
+#: features/sui_quickactions.lua:1632 features/sui_quickactions.lua:2840
+msgid "Create Quick Action"
+msgstr "Vytvořit rychlou akci"
+
+#: screens/sui_settings_window.lua:1121
+msgid "Create Screen"
+msgstr "Vytvořit obrazovku"
+
+#: screens/sui_onboarding.lua:187
+msgid "Create a \"Books\" folder"
+msgstr "Vytvořit složku \"Books\""
+
+#: features/library/sui_facet_groups.lua:139
+#: features/library/sui_foldercovers.lua:607
+#: features/library/sui_foldercovers.lua:622
+#: features/library/sui_library_browse.lua:887
+#: features/library/sui_series_grouping.lua:401
+msgid "Create collection"
+msgstr "Vytvořit kolekci"
+
+#: screens/sui_settings_window.lua:1126
+msgid "Create screen"
+msgstr "Vytvořit obrazovku"
+
+#: features/sui_backup.lua:913 features/sui_backup.lua:1124
+msgid "Creating backup…"
+msgstr "Načítají se záložky…"
+
+#: modules/critter/module_critter.lua:522
+msgid "Critter"
+msgstr ""
+
+#: features/sui_backup.lua:161
+msgid "Critter images and phrases from sui_critters/"
+msgstr ""
+
+#: modules/critter/module_critter.lua:670
+msgid "Critter position"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:1988 screens/sui_stats_windows.lua:2008
+msgid "Current streak"
+msgstr "Aktuální série"
+
+#: features/sui_presets.lua:158 features/sui_presets.lua:172
+#: features/sui_presets.lua:236 modules/module_currently.lua:334
+#: modules/module_currently.lua:335
+msgid "Currently Reading"
+msgstr "Právě čtené"
+
+#: infra/sui_config.lua:3045
+msgid "Custom"
+msgstr "Vlastní"
+
+#: features/sui_quickactions.lua:1834 features/sui_quickactions.lua:1837
+msgid "Custom Actions"
+msgstr "Vlastní akce"
+
+#: modules/module_quote.lua:1422
+msgid "Custom File"
+msgstr "Vlastní soubor"
+
+#: modules/module_quote.lua:1427
+msgid "Custom File + My Highlights"
+msgstr "Vlastní soubor + moje zvýraznění"
+
+#: features/sui_quickactions.lua:1525 features/sui_quickactions.lua:1629
+msgid "Custom Quick Actions"
+msgstr "Vlastní rychlé akce"
+
+#: infra/sui_custom_screens.lua:158
+msgid "Custom Screen"
+msgstr "Vlastní obrazovka"
+
+#: features/sui_quickactions.lua:1844 features/sui_quickactions.lua:1847
+msgid "Custom Screens"
+msgstr "Vlastní obrazovky"
+
+#: screens/sui_settings_window.lua:479
+msgid "Custom Screens unavailable."
+msgstr "Vlastní obrazovky nejsou k dispozici."
+
+#: infra/sui_config.lua:206 screens/sui_menu.lua:35
+msgid "Custom Text"
+msgstr "Vlastní text"
+
+#: features/sui_backup.lua:133
+msgid "Custom actions, rows and dispatcher bindings"
+msgstr "Vlastní akce, řádky a vazby dispatcheru"
+
+#: features/sui_backup.lua:160
+msgid "Custom critters"
+msgstr ""
+
+#: features/sui_backup.lua:154
+msgid "Custom icons"
+msgstr "Vlastní akce"
+
+#: features/sui_backup.lua:148
+msgid "Custom quotes"
+msgstr "Vlastní akce"
+
+#: screens/sui_onboarding.lua:333
+msgid "Custom wallpapers and icons"
+msgstr "Vlastní tapety a ikony"
+
+#: screens/sui_onboarding.lua:325
+msgid "Customize even more"
+msgstr "Přizpůsobit ještě více"
+
+#: features/library/sui_hold_rows.lua:254
+msgid "Cut"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2506 screens/sui_stats_windows.lua:3080
+msgid "DAY STREAK"
+msgstr "SÉRIE DNŮ"
+
+#: infra/sui_goals.lua:65
+msgid "Daily Goal"
+msgstr "Denní cíl"
+
+#: infra/sui_goals.lua:66
+msgid "Daily Reading Goal"
+msgstr "Denní čtenářský cíl"
+
+#: modules/module_reading_stats.lua:244 modules/module_reading_stats.lua:245
+msgid "Daily average"
+msgstr ""
+
+#: modules/module_reading_stats.lua:245
+msgid "Daily avg — Pages"
+msgstr "Denní průměr — Stránky"
+
+#: modules/module_reading_stats.lua:244
+msgid "Daily avg — Time"
+msgstr "Denní průměr — Čas"
+
+#: modules/critter/phrases.lua:219 modules/critter/phrases.lua:226
+msgid "Daily goal reached!"
+msgstr ""
+
+#: features/library/sui_label_options.lua:131 features/sui_style.lua:1482
+msgid "Dark"
+msgstr "Tmavé"
+
+#: screens/sui_menu.lua:2282
+msgid "Darken"
+msgstr "Tmavé"
+
+#: features/sui_presets.lua:235
+msgid "Dashboard"
+msgstr "Přehled"
+
+#: modules/module_clock.lua:195 modules/module_clock.lua:1083
+msgid "Date"
+msgstr "Zobrazit datum"
+
+#: modules/module_library.lua:206
+msgid "Date added (newest)"
+msgstr "Datum přidání (nejnovější)"
+
+#: modules/module_library.lua:207
+msgid "Date added (oldest)"
+msgstr "Datum přidání (nejstarší)"
+
+#: screens/sui_stats_windows.lua:580
+msgid "Date finished"
+msgstr "Datum dokončení"
+
+#: screens/sui_stats_windows.lua:573
+msgid "Date started"
+msgstr "Datum zahájení"
+
+#: screens/sui_stats_windows.lua:889 screens/sui_stats_windows.lua:3380
+msgid "Days"
+msgstr "Dny"
+
+#: modules/critter/phrases.lua:47
+msgid "Days and months"
+msgstr ""
+
+#: infra/sui_book_stats.lua:177
+msgid "Days of reading"
+msgstr "Dny čtení"
+
+#: infra/sui_datenames.lua:30
+msgid "Dec"
+msgstr "pro"
+
+#: infra/sui_datenames.lua:38
+msgid "December"
+msgstr "Prosinec"
+
+#: features/dialogs/sui_dialogs.lua:265 features/sui_cover_elements.lua:113
+#: features/sui_quickactions.lua:2126 features/sui_quickactions.lua:2388
+#: features/sui_style.lua:2463 features/sui_style.lua:2510
+#: infra/sui_config.lua:997 infra/sui_config.lua:1054
+#: modules/module_currently.lua:1303 modules/module_reading_goals.lua:1261
+#: modules/module_tab_grid.lua:645 screens/sui_menu.lua:439
+#: screens/sui_menu.lua:568 screens/sui_menu.lua:2893 screens/sui_menu.lua:3255
+#: screens/sui_titlebar.lua:1151
+msgid "Default"
+msgstr "Výchozí"
+
+#: features/sui_quickactions.lua:2392
+msgid "Default (Folder)"
+msgstr "Výchozí (složka)"
+
+#: features/sui_quickactions.lua:2395
+msgid "Default (Plugin)"
+msgstr "Výchozí (plugin)"
+
+#: features/sui_quickactions.lua:2399
+msgid "Default (System)"
+msgstr "Výchozí (systém)"
+
+#: modules/module_quote.lua:1417
+msgid "Default Quotes"
+msgstr "Výchozí citáty"
+
+#: infra/sui_config.lua:1446
+msgid "Default: %1"
+msgstr "Výchozí: %1"
+
+#: features/sui_style.lua:210
+msgid "Default: Folder"
+msgstr "Výchozí: složka"
+
+#: features/sui_style.lua:231
+msgid "Default: Group"
+msgstr "Výchozí: Skupina"
+
+#: features/sui_style.lua:217
+msgid "Default: Plugin"
+msgstr "Výchozí: plugin"
+
+#: features/sui_style.lua:224
+msgid "Default: System"
+msgstr "Výchozí: systém"
+
+#: engines/sui_window.lua:2361 engines/sui_window.lua:3723
+#: features/library/sui_hold_rows.lua:138 features/sui_manual_books.lua:85
+#: features/sui_manual_books.lua:90 features/sui_presets.lua:977
+#: features/sui_presets.lua:980 features/sui_presets.lua:1018
+#: features/sui_quickactions.lua:1595 features/sui_quickactions.lua:2927
+#: features/sui_quickactions.lua:2932 screens/sui_menu.lua:3738
+#: screens/sui_menu.lua:3741 screens/sui_menu.lua:3782
+#: screens/sui_settings_window.lua:537 screens/sui_settings_window.lua:585
+#: screens/sui_settings_window.lua:663
+msgid "Delete"
+msgstr "Smazat"
+
+#: screens/sui_menu.lua:4058
+msgid "Delete Settings"
+msgstr "Smazat nastavení"
+
+#: screens/sui_settings_window.lua:535
+msgid "Delete \"%s\"? This removes its layout, modules and Quick Action."
+msgstr "Smazat „%s“? Tím se odstraní její rozvržení, moduly a rychlá akce."
+
+#: features/sui_presets.lua:979 features/sui_presets.lua:1017
+#: screens/sui_menu.lua:3740 screens/sui_menu.lua:3781
+msgid "Delete preset \"%s\"?"
+msgstr "Smazat předvolbu \"%s\"?"
+
+#: features/sui_quickactions.lua:1594 features/sui_quickactions.lua:2931
+msgid "Delete quick action \"%s\"?"
+msgstr "Smazat rychlou akci \"%s\"?"
+
+#: features/sui_manual_books.lua:89
+msgid "Delete this book?"
+msgstr ""
+
+#: modules/module_currently.lua:280 modules/module_currently.lua:1376
+msgid "Description"
+msgstr "Popis"
+
+#: modules/module_currently.lua:1493
+msgid "Description Alignment"
+msgstr "Zarovnání popisu"
+
+#: modules/module_reading_goals.lua:1127
+msgid "Detail"
+msgstr "Detail"
+
+#: modules/module_reading_goals.lua:1274
+msgid "Detail Below Ring"
+msgstr "Detail pod kruhem"
+
+#: modules/module_reading_goals.lua:1273
+msgid "Detail Inside Ring"
+msgstr "Detail uvnitř kruhu"
+
+#: modules/module_currently.lua:1430
+msgid "Detailed"
+msgstr "Podrobné"
+
+#: modules/module_reading_stats.lua:1186
+msgid "Detailed Cards"
+msgstr ""
+
+#: modules/critter/module_critter.lua:697
+msgid "Details"
+msgstr ""
+
+#: features/sui_quickactions.lua:2204
+msgid "Dictionary Lookup"
+msgstr "Vyhledat ve slovníku"
+
+#: modules/module_clock.lua:1096 modules/module_clock.lua:1100
+msgid "Digital"
+msgstr "Digitální"
+
+#: screens/sui_menu.lua:2395
+msgid "Disable \"Lock Scale\" first to set a custom label scale."
+msgstr ""
+"Pro nastavení vlastní velikosti popisků nejprve vypněte „Uzamknout měřítko“."
+
+#: infra/sui_config.lua:1382
+msgid "Disable \"Lock Scale\" first to set a per-module scale."
+msgstr ""
+"Pro nastavení měřítka jednotlivých modulů nejprve vypněte „Uzamknout "
+"měřítko“."
+
+#: infra/sui_config.lua:204
+msgid "Disk Usage"
+msgstr "Využití disku"
+
+#: features/sui_quickactions.lua:2981
+msgid "Dispatcher not available."
+msgstr "Dispatcher není k dispozici."
+
+#: screens/sui_menu.lua:3060
+msgid "Display"
+msgstr "Zobrazení"
+
+#: screens/sui_menu.lua:3903
+msgid "Don't Invert Colored Icons in Night Mode"
+msgstr "Invertovat v nočním režimu"
+
+#: modules/critter/phrases.lua:108
+msgid "Don't forget to rest."
+msgstr ""
+
+#: features/sui_quickactions.lua:2582
+msgid "Done"
+msgstr "Hotovo"
+
+#: screens/sui_menu.lua:476
+msgid "Dot Pager"
+msgstr "Tečkované stránkování"
+
+#: infra/sui_updater.lua:516
+msgid "Download and install"
+msgstr "Stáhnout a nainstalovat"
+
+#: infra/sui_updater.lua:515
+msgid "Download and install now?"
+msgstr "Stáhnout a nainstalovat nyní?"
+
+#: infra/sui_updater.lua:441
+msgid "Download error: "
+msgstr "Chyba při stahování: "
+
+#: infra/sui_updater.lua:417
+msgid "Downloading Simple UI %s…"
+msgstr "Stahuje se Simple UI %s…"
+
+#: modules/module_currently.lua:1306
+msgid "Dynamic"
+msgstr "Dynamické"
+
+#: features/sui_quickactions.lua:2914
+msgid "Edit"
+msgstr "Upravit"
+
+#: features/sui_manual_books.lua:105
+msgid "Edit Book"
+msgstr ""
+
+#: screens/sui_menu.lua:623 screens/sui_menu.lua:625 screens/sui_menu.lua:854
+msgid "Edit Custom Text"
+msgstr "Upravit vlastní text"
+
+#: screens/sui_menu.lua:2153 screens/sui_settings_window.lua:414
+msgid "Edit Home Screen Layout"
+msgstr "Upravit rozvržení domovské obrazovky"
+
+#: features/sui_quickactions.lua:2320
+msgid "Edit Quick Action"
+msgstr "Upravit rychlou akci"
+
+#: modules/module_clock.lua:255
+msgid "Eight"
+msgstr "Osm"
+
+#: modules/module_clock.lua:258
+msgid "Eighteen"
+msgstr "Osmnáct"
+
+#: modules/module_clock.lua:256
+msgid "Eleven"
+msgstr "Jedenáct"
+
+#: screens/sui_menu.lua:847
+msgid "Empty"
+msgstr "Prázdné"
+
+#: features/library/sui_foldercovers.lua:1431
+msgid "Empty folder"
+msgstr ""
+
+#: infra/sui_compat_check.lua:132
+msgid "Enable"
+msgstr "zapnuto"
+
+#: features/sui_quickactions.lua:667
+msgid "Enable 'Browse by Author / Series / Tags' in the library menu first."
+msgstr ""
+"Nejprve v nabídce knihovny zapněte „Procházet podle autora / série / štítků“."
+
+#: screens/sui_menu.lua:2945
+msgid "Enable Browse by Author / Series / Tags"
+msgstr "Zapnout procházení podle autora / série / štítků"
+
+#: screens/sui_menu.lua:2929
+msgid "Enable Library Custom Covers"
+msgstr "Zapnout vlastní obálky knihovny"
+
+#: screens/sui_menu.lua:1078
+msgid "Enable Navigation Bar"
+msgstr "Zapnout navigační lištu"
+
+#: screens/sui_quicksettings_bar.lua:1484
+msgid "Enable Quick Settings Bar"
+msgstr "Zapnout lištu rychlých nastavení"
+
+#: screens/sui_menu.lua:801
+msgid "Enable Status Bar"
+msgstr "Zapnout stavovou lištu"
+
+#: screens/sui_menu.lua:1742
+msgid "Enable Title Bar"
+msgstr "Zapnout horní lištu"
+
+#: screens/sui_menu.lua:2244
+msgid "Enable Wallpaper"
+msgstr "Zapnout tapetu"
+
+#: features/sui_style.lua:2301
+msgid "Enable custom UI font"
+msgstr "Zapnout vlastní písmo rozhraní"
+
+#: features/sui_accent_picker.lua:54
+msgid "Enter a color like #2F6FDB."
+msgstr ""
+
+#: features/sui_quickactions.lua:2096
+msgid ""
+"Enter the Unicode codepoint (hex) of a Nerd Fonts symbol.\n"
+"You can look up codes with wakamaifondue.com using the file:\n"
+"  /koreader/fonts/nerdfonts/symbols.ttf\n"
+"Leave blank and press OK to remove a Nerd Font icon."
+msgstr ""
+"Zadejte kódový bod Unicode (hex) symbolu Nerd Fonts.\n"
+"Kódy můžete vyhledat na wakamaifondue.com pomocí souboru:\n"
+"  /koreader/fonts/nerdfonts/symbols.ttf\n"
+"Ponechte prázdné a stiskněte OK pro odstranění ikony Nerd Font."
+
+#: screens/sui_menu.lua:3540
+msgid "Error applying pack:"
+msgstr "Chyba při použití balíčku:"
+
+#: infra/sui_updater.lua:638
+msgid "Error checking for updates."
+msgstr "Chyba při kontrole aktualizací."
+
+#: infra/sui_updater.lua:643
+msgid "Error checking for updates: "
+msgstr "Chyba při kontrole aktualizací: "
+
+#: features/sui_presets.lua:1117 screens/sui_menu.lua:3887
+msgid "Error exporting preset: "
+msgstr "Chyba při exportu předvolby: "
+
+#: features/sui_style.lua:2710
+msgid "Error extracting zip: "
+msgstr "Chyba při rozbalování ZIPu: "
+
+#: features/sui_presets.lua:1091 screens/sui_menu.lua:3860
+msgid "Error importing preset: "
+msgstr "Chyba při importu předvolby: "
+
+#: modules/module_reading_goals.lua:1026
+msgid "Error in Reading Goals: check crash.log"
+msgstr "Chyba v Čtenářských cílech: zkontrolujte crash.log"
+
+#: screens/sui_menu.lua:3458
+msgid "Error installing pack:"
+msgstr "Chyba při instalaci balíčku:"
+
+#: modules/critter/phrases.lua:265
+msgid "Every page counts."
+msgstr ""
+
+#: screens/sui_stats_windows.lua:1158
+msgid "Exclude from goals"
+msgstr "Vyloučit z cílů"
+
+#: screens/sui_stats_windows.lua:745 screens/sui_stats_windows.lua:751
+msgid "Excluded"
+msgstr "Vyloučeno"
+
+#: screens/sui_quicksettings_bar.lua:1008
+msgid "Exit"
+msgstr ""
+
+#: features/sui_style.lua:202
+msgid "Exit Book Button"
+msgstr ""
+
+#: features/sui_backup.lua:1118
+msgid "Export"
+msgstr "Exportovat předvolbu"
+
+#: features/sui_backup.lua:1138
+msgid "Export Full Backup…"
+msgstr "Exportovat úplnou zálohu…"
+
+#: features/sui_backup.lua:1105
+msgid "Export now…"
+msgstr "Exportovat nyní…"
+
+#: features/sui_presets.lua:1105 screens/sui_menu.lua:3874
+msgid "Export preset"
+msgstr "Exportovat předvolbu"
+
+#: screens/sui_settings_window.lua:425 screens/sui_settings_window.lua:1036
+msgid "Extra Custom Screens"
+msgstr "Další vlastní obrazovky"
+
+#: screens/sui_menu.lua:544
+msgid "Extra Small"
+msgstr "Velmi malé"
+
+#: features/sui_manual_books.lua:129
+msgid "Extra books read in %d, on top of the automatic count:"
+msgstr ""
+
+#: infra/sui_updater.lua:442
+msgid "Extraction error: "
+msgstr "Chyba při rozbalování: "
+
+#: screens/sui_stats_windows.lua:3191
+msgid "FREEZES"
+msgstr "ZMRAZENÍ"
+
+#: screens/sui_menu.lua:4052
+msgid "Factory Reset"
+msgstr "Tovární reset"
+
+#: features/library/sui_finished_books.lua:62
+msgid "Fade"
+msgstr ""
+
+#: screens/sui_menu.lua:2676
+msgid "Fade Intensity"
+msgstr "Intenzita zesvětlení"
+
+#: features/library/sui_finished_books.lua:63
+msgid ""
+"Fades finished book covers in the file browser. Other lists show them as "
+"usual."
+msgstr ""
+
+#: screens/sui_menu.lua:2677
+msgid ""
+"Fades finished book covers towards white.\n"
+"50% is the default."
+msgstr ""
+"Zesvětlí obálky dokončených knih směrem k bílé.\n"
+"50 % je výchozí hodnota."
+
+#: screens/sui_menu.lua:2283
+msgid "Fades the wallpaper towards black."
+msgstr "Ztmaví tapetu směrem k černé."
+
+#: screens/sui_menu.lua:2277
+msgid "Fades the wallpaper towards white to improve text readability."
+msgstr "Zesvětlí tapetu směrem k bílé pro lepší čitelnost textu."
+
+#: modules/critter/phrases.lua:118
+msgid "Fancy a chapter or two?"
+msgstr ""
+
+#: features/sui_quickactions.lua:851 features/sui_quickactions.lua:2200
+#: infra/sui_config.lua:132 modules/module_coverdeck.lua:1495
+msgid "Favorites"
+msgstr "Oblíbené"
+
+#: features/sui_quickactions.lua:858
+msgid "Favorites not available."
+msgstr "Oblíbené nejsou k dispozici."
+
+#: modules/module_feat_coll.lua:108 modules/module_feat_coll.lua:165
+msgid "Featured Collection"
+msgstr "Vybraná kolekce"
+
+#: modules/module_feat_coll.lua:56
+msgid "Featured Collection — tap to configure"
+msgstr "Vybraná kolekce — klepnutím nastavíte"
+
+#: infra/sui_datenames.lua:29
+msgid "Feb"
+msgstr "úno"
+
+#: infra/sui_datenames.lua:36
+msgid "February"
+msgstr "Únor"
+
+#: features/sui_quickactions.lua:460
+msgid "Fetching bookmarks…"
+msgstr "Načítají se záložky…"
+
+#: modules/module_clock.lua:257
+msgid "Fifteen"
+msgstr "Patnáct"
+
+#: modules/module_clock.lua:263
+msgid "Fifty"
+msgstr "Padesát"
+
+#: screens/sui_quicksettings_bar.lua:1678
+msgid "File Browser"
+msgstr ""
+
+#: features/sui_quickactions.lua:839
+msgid "File Manager not available."
+msgstr "Správce souborů není k dispozici."
+
+#: features/sui_quickactions.lua:2202
+msgid "File Search"
+msgstr "Hledání souborů"
+
+#: features/sui_backup.lua:598
+msgid "File not found."
+msgstr "Soubor nebyl nalezen: "
+
+#: features/sui_style.lua:2657
+msgid "File not found: "
+msgstr "Soubor nebyl nalezen: "
+
+#: modules/module_library.lua:208
+msgid "File size (largest)"
+msgstr "Velikost souboru (největší)"
+
+#: modules/module_library.lua:209
+msgid "File size (smallest)"
+msgstr "Velikost souboru (nejmenší)"
+
+#: engines/sui_asset_browser.lua:274
+msgid "Filter by name…"
+msgstr "Filtrovat podle názvu…"
+
+#: features/sui_manual_books.lua:111
+msgid "Finished"
+msgstr ""
+
+#: features/library/sui_finished_books.lua:84 features/sui_stats_menu.lua:133
+msgid "Finished Books"
+msgstr "Dokončené knihy"
+
+#: modules/module_clock.lua:254
+msgid "Five"
+msgstr "Pět"
+
+#: modules/module_quote.lua:1453 modules/module_quote.lua:1484
+msgid "Fixed Height"
+msgstr "Pevná výška"
+
+#: screens/sui_menu.lua:3969
+msgid "Flat"
+msgstr "Ploché"
+
+#: modules/module_library.lua:265
+msgid "Flat Library"
+msgstr "Plochá knihovna"
+
+#: features/library/sui_label_options.lua:140 screens/sui_menu.lua:1098
+msgid "Floating"
+msgstr ""
+
+#: modules/module_coverdeck.lua:1485
+msgid "Flow"
+msgstr ""
+
+#: features/sui_quickactions.lua:2595
+msgid "Folder"
+msgstr "Složka"
+
+#: features/sui_cover_elements.lua:89
+msgid "Folder Count"
+msgstr ""
+
+#: features/sui_style.lua:1268
+msgid "Folder Covers"
+msgstr "Obálky složek"
+
+#: features/sui_style.lua:239
+msgid "Folder Covers: Empty Folder"
+msgstr "Obálky složek: prázdná složka"
+
+#: features/sui_cover_elements.lua:121
+msgid "Folder Name"
+msgstr "Název složky"
+
+#: features/sui_cover_elements.lua:128
+msgid "Folder Name Text Size"
+msgstr "Velikost textu názvu složky"
+
+#: features/sui_quickactions.lua:2203
+msgid "Folder Shortcuts"
+msgstr "Zástupci složek"
+
+#: features/library/sui_foldercovers.lua:524
+#: features/library/sui_group_actions.lua:80
+#: features/library/sui_library_browse.lua:443
+#: features/library/sui_series_grouping.lua:103
+msgid "Folder cover"
+msgstr "Obálka složky"
+
+#: features/sui_backup.lua:128
+msgid "Folder covers, browse modes, series grouping"
+msgstr "Obálky složek, režimy procházení, seskupování sérií"
+
+#: screens/sui_menu.lua:2843
+msgid "Folders"
+msgstr ""
+
+#: engines/sui_book_grid.lua:1973 modules/module_coverdeck.lua:1650
+#: modules/module_currently.lua:1407
+msgid "Follow Style"
+msgstr ""
+
+#: screens/sui_menu.lua:3237
+msgid "Follow accent"
+msgstr ""
+
+#: screens/sui_menu.lua:3240
+msgid "Follows accent"
+msgstr ""
+
+#: infra/sui_config.lua:1021 screens/sui_quicksettings_bar.lua:1646
+msgid "Font"
+msgstr "Písmo rozhraní"
+
+#: modules/module_quote.lua:1482
+msgid "Fonts"
+msgstr "Písmo rozhraní"
+
+#: features/sui_backup.lua:113
+msgid "Fonts, icon assignments, icon presets"
+msgstr "Písma, přiřazení ikon, předvolby ikon"
+
+#: modules/module_clock.lua:263
+msgid "Forty"
+msgstr "Čtyřicet"
+
+#: modules/module_clock.lua:254
+msgid "Four"
+msgstr "Čtyři"
+
+#: modules/module_clock.lua:257
+msgid "Fourteen"
+msgstr "Čtrnáct"
+
+#: infra/sui_config.lua:1499
+msgid "Frame"
+msgstr "Rámeček"
+
+#: screens/sui_menu.lua:3980
+msgid "Framed"
+msgstr "Orámované"
+
+#: features/sui_stats_menu.lua:64
+msgid "Freezes"
+msgstr "Zmrazení"
+
+#: screens/sui_stats_windows.lua:2786
+msgid ""
+"Freezes can only cover a single missed day, and only right after an active "
+"one. Tap yesterday's cell to use one, when eligible."
+msgstr ""
+"Zmrazení může pokrýt pouze jeden vynechaný den, a to jen hned po aktivním "
+"dni. Pokud je to možné, klepnutím na včerejší políčko jedno použijete."
+
+#: engines/sui_heatmap_widgets.lua:127 infra/sui_datenames.lua:43
+msgid "Fri"
+msgstr "Pá"
+
+#: infra/sui_datenames.lua:49
+msgid "Friday"
+msgstr "Pátek"
+
+#: screens/sui_quicksettings_bar.lua:581
+msgid "Frontlight"
+msgstr "Přední osvětlení"
+
+#: screens/sui_quicksettings_bar.lua:1621
+msgid "Frontlight Slider"
+msgstr "Posuvník předního osvětlení"
+
+#: features/sui_quickactions.lua:414
+msgid "Frontlight not available on this device."
+msgstr "Přední osvětlení není na tomto zařízení k dispozici."
+
+#: features/library/sui_label_options.lua:141
+msgid "Full Width"
+msgstr ""
+
+#: screens/sui_menu.lua:1097
+msgid "Full-width"
+msgstr ""
+
+#: modules/critter/phrases.lua:48
+msgid "General"
+msgstr ""
+
+#: features/sui_backup.lua:681
+msgid "General — %d settings"
+msgstr "Obecné — %d nastavení"
+
+#: screens/sui_menu.lua:2451
+msgid "Gesture Only"
+msgstr "Pouze gesto"
+
+#: screens/sui_menu.lua:3951 screens/sui_menu.lua:3952
+msgid "Global Text Size"
+msgstr "Globální velikost textu"
+
+#: screens/sui_settings_window.lua:361
+msgid "Global custom actions & icons"
+msgstr "Globální vlastní akce a ikony"
+
+#: screens/sui_menu.lua:3953
+msgid ""
+"Global scale applied to all of KOReader's interface text — menus, dialogs, "
+"titles, and Simple UI. It does not change the book's reading font size, "
+"which has its own setting.\n"
+"100% is the default size. Useful when a chosen UI font (see UI Font above) "
+"renders smaller or larger than usual."
+msgstr ""
+"Globální měřítko použité na veškerý text rozhraní KOReaderu — nabídky, "
+"dialogy, nadpisy a Simple UI. Nemění velikost písma pro čtení knihy, která "
+"má vlastní nastavení.\n"
+"100% je výchozí velikost. Hodí se, když se zvolené písmo rozhraní (viz Písmo "
+"UI výše) zobrazuje menší nebo větší než obvykle."
+
+#: screens/sui_menu.lua:2377
+msgid ""
+"Global scale for all modules.\n"
+"Individual overrides in Module Settings take precedence.\n"
+"100% is the default size."
+msgstr ""
+"Globální měřítko pro všechny moduly.\n"
+"Individuální nastavení v Nastavení modulů mají přednost.\n"
+"100% je výchozí velikost."
+
+#: screens/sui_onboarding.lua:326
+msgid "Go to Settings > Home Screen to edit your layout whenever you want."
+msgstr "Rozvržení můžete kdykoli upravit v Nastavení > Domovská obrazovka."
+
+#: modules/module_reading_goals.lua:1182 modules/module_reading_goals.lua:1223
+#: modules/module_reading_goals.lua:1235
+msgid "Goals"
+msgstr "Cíle"
+
+#: features/sui_backup.lua:137
+msgid "Goals & Streaks"
+msgstr "Cíle a série"
+
+#: modules/critter/phrases.lua:87
+msgid "Good afternoon!"
+msgstr ""
+
+#: modules/critter/phrases.lua:117
+msgid "Good afternoon, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:95
+msgid "Good evening!"
+msgstr ""
+
+#: modules/critter/phrases.lua:121
+msgid "Good evening, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:79
+msgid "Good morning!"
+msgstr ""
+
+#: modules/critter/phrases.lua:113
+msgid "Good morning, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:103
+msgid "Good night!"
+msgstr ""
+
+#: modules/critter/phrases.lua:125
+msgid "Good night, %s!"
+msgstr ""
+
+#: features/library/sui_label_options.lua:130 infra/sui_config.lua:1482
+#: modules/module_tab_grid.lua:647
+msgid "Gray"
+msgstr ""
+
+#: modules/critter/phrases.lua:145
+msgid "Great going, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:42
+msgid "Greetings"
+msgstr ""
+
+#: engines/sui_book_grid.lua:1898 engines/sui_book_grid.lua:1909
+#: modules/module_reading_stats.lua:1158 modules/module_reading_stats.lua:1161
+msgid "Grid size"
+msgstr "Velikost mřížky"
+
+#: features/sui_quickactions.lua:2330 features/sui_quickactions.lua:2585
+msgid "Group"
+msgstr "Skupina"
+
+#: modules/module_tab_grid.lua:923
+#, fuzzy
+msgid "Group Covers"
+msgstr "Obálky"
+
+#: screens/sui_menu.lua:2725
+msgid "Group by Book Series"
+msgstr "Seskupit podle knižní série"
+
+#: features/sui_quickactions.lua:2601
+msgid "Group of Quick Actions"
+msgstr "Skupina rychlých akcí"
+
+#: features/sui_quickactions.lua:2577
+msgid "Group: select actions"
+msgstr "Skupina: vyberte akce"
+
+#: modules/module_currently.lua:1307
+msgid ""
+"Grows or shrinks the cover so its height always matches the text column, "
+"keeping the cover's proportions.\n"
+"The spacing between cover and text stays as set above.\n"
+"The Cover size setting still applies on top of this, and the cover never "
+"shrinks below its 100% size."
+msgstr ""
+"Zvětšuje nebo zmenšuje obálku tak, aby její výška vždy odpovídala textovému "
+"sloupci, přičemž zachovává poměr stran obálky.\n"
+"Rozestup mezi obálkou a textem zůstává podle nastavení výše.\n"
+"Nastavení velikosti obálky se stále použije navíc a obálka se nikdy nezmenší "
+"pod 100 % své velikosti."
+
+#: modules/critter/phrases.lua:235
+msgid "Happy Monday!"
+msgstr ""
+
+#: modules/critter/phrases.lua:229
+msgid "Happy New Year!"
+msgstr ""
+
+#: modules/critter/phrases.lua:247
+msgid "Happy weekend!"
+msgstr ""
+
+#: modules/critter/phrases.lua:80
+msgid "Have a great %s."
+msgstr ""
+
+#: screens/sui_menu.lua:1104
+msgid ""
+"Height of the bottom navigation bar.\n"
+"100% is the default size."
+msgstr ""
+"Výška spodní navigační lišty.\n"
+"100% je výchozí velikost."
+
+#: modules/module_spacer.lua:91
+msgid ""
+"Height of the spacer.\n"
+"100% is the default size.\n"
+"Tap the arrows for fine steps, hold for larger ones."
+msgstr ""
+"Výška mezery.\n"
+"100% je výchozí velikost.\n"
+"Klepnutím na šipky provedete jemné kroky, podržením větší."
+
+#: screens/sui_menu.lua:965
+msgid ""
+"Height of the top status bar.\n"
+"100% is the default size."
+msgstr ""
+"Výška horní stavové lišty.\n"
+"100% je výchozí velikost."
+
+#: modules/critter/phrases.lua:276
+msgid "Hello, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:257
+msgid "Hello, reader!"
+msgstr ""
+
+#: features/sui_accent_picker.lua:56
+msgid "Hex Color"
+msgstr ""
+
+#: engines/sui_group_cell.lua:285 modules/module_tab_grid.lua:588
+#: screens/sui_menu.lua:460 screens/sui_menu.lua:519
+msgid "Hidden"
+msgstr "Skryté"
+
+#: features/library/sui_finished_books.lua:65
+msgid "Hide"
+msgstr "Skrýt"
+
+#: engines/sui_group_cell.lua:271
+msgid "Hide Book Stack"
+msgstr "Skrýt stoh knih"
+
+#: features/sui_source_menu.lua:110
+msgid "Hide Currently Reading book"
+msgstr "Právě čtené"
+
+#: modules/module_quick_actions.lua:334 modules/module_quick_actions.lua:420
+#: screens/sui_menu.lua:1943 screens/sui_quicksettings_bar.lua:1650
+msgid "Hide Label"
+msgstr "Skrýt popisek"
+
+#: screens/sui_menu.lua:3021
+msgid "Hide Selection Underline"
+msgstr "Skrýt podtržení výběru"
+
+#: screens/sui_menu.lua:998
+msgid "Hide Wi-Fi Icon When Off"
+msgstr "Skrýt ikonu Wi‑Fi, když je vypnutá"
+
+#: screens/sui_menu.lua:527
+msgid ""
+"Hides the pagination bar on the homescreen.\n"
+"Not available when Navpager is active."
+msgstr ""
+"Skryje stránkovací lištu na domovské obrazovce.\n"
+"Není dostupné, když je aktivní Navpager."
+
+#: screens/sui_menu.lua:2506
+msgid "High-Quality Cover"
+msgstr "Vysoce kvalitní obálka"
+
+#: screens/sui_stats_windows.lua:1152 screens/sui_stats_windows.lua:3616
+msgid "Highlights"
+msgstr "Zvýraznění"
+
+#: features/sui_quickactions.lua:510 features/sui_quickactions.lua:765
+#: features/sui_quickactions.lua:2198 infra/sui_config.lua:128
+msgid "History"
+msgstr "Historie"
+
+#: features/sui_quickactions.lua:772
+msgid "History not available."
+msgstr "Historie není k dispozici."
+
+#: features/sui_quickactions.lua:706 infra/sui_config.lua:126
+msgid "Home"
+msgstr "Domů"
+
+#: engines/sui_screen_engine.lua:927 features/sui_backup.lua:117
+#: infra/sui_patches.lua:1029 infra/sui_patches.lua:1039
+#: screens/sui_menu.lua:2331 screens/sui_menu.lua:4165
+#: screens/sui_settings_window.lua:327 screens/sui_settings_window.lua:1035
+msgid "Home Screen"
+msgstr "Domovská obrazovka"
+
+#: screens/sui_settings_window.lua:1051
+msgid "Home Screen Presets"
+msgstr "Předvolby domovské obrazovky"
+
+#: screens/sui_menu.lua:473
+msgid "Home Screen Style"
+msgstr "Styl domovské obrazovky"
+
+#: features/sui_quickactions.lua:527
+msgid "Home folder"
+msgstr "Domovská složka"
+
+#: features/sui_quickactions.lua:529
+msgid "Home folder + subfolders"
+msgstr "Domovská složka + podsložky"
+
+#: screens/sui_menu.lua:2566
+msgid "Home key opens Home Screen"
+msgstr "Tlačítko Domů na PocketBooku otevírá domovskou obrazovku"
+
+#: features/sui_quickactions.lua:747
+msgid "Homescreen not available."
+msgstr "Domovská obrazovka není k dispozici."
+
+#: modules/module_currently.lua:1281
+msgid ""
+"Horizontal space between the cover and the text.\n"
+"100% is the default spacing."
+msgstr ""
+"Vodorovný prostor mezi obálkou a textem.\n"
+"100 % je výchozí rozestup."
+
+#: modules/module_heatmap.lua:225 modules/module_heatmap.lua:342
+msgid "Hours of day"
+msgstr ""
+
+#: infra/sui_goals.lua:56
+msgid "Hours per month:"
+msgstr "Hodin měsíčně:"
+
+#: modules/module_heatmap.lua:310
+msgid ""
+"How many weeks of history to include, and (in Calendar view) how many weeks "
+"the grid shows — this count is unaffected by Scale, which only resizes the "
+"cells. In Time of day view, this only changes how much history feeds the "
+"shading — the grid itself always has one column per hour."
+msgstr ""
+"Kolik týdnů historie zahrnout a (v zobrazení Kalendář) kolik týdnů se "
+"zobrazí v mřížce — tento počet neovlivňuje Měřítko, které pouze mění "
+"velikost buněk. V zobrazení Denní doba tato hodnota jen mění, kolik historie "
+"ovlivňuje stínování — mřížka má vždy jeden sloupec na hodinu."
+
+#: features/sui_accent_picker.lua:84
+msgid "Hue"
+msgstr ""
+
+#: modules/critter/phrases.lua:280
+msgid "I missed you, %s!"
+msgstr ""
+
+#: features/sui_quickactions.lua:2355 features/sui_quickactions.lua:2359
+msgid "Icon"
+msgstr "Ikona"
+
+#: screens/sui_menu.lua:3378
+msgid "Icon Packs"
+msgstr "Balíčky ikon"
+
+#: screens/sui_menu.lua:3555
+msgid "Icon Presets"
+msgstr "Předvolby ikon"
+
+#: screens/sui_menu.lua:1021 screens/sui_menu.lua:1127
+#: screens/sui_menu.lua:1128 screens/sui_menu.lua:1195
+msgid "Icon Size"
+msgstr "Velikost ikon"
+
+#: features/sui_backup.lua:155
+msgid "Icon files and installed packs from sui_icons/"
+msgstr "Soubory ikon a nainstalované balíčky ze sui_icons/"
+
+#: features/sui_quickactions.lua:2351
+msgid "Icon: Default"
+msgstr "Ikona: Výchozí"
+
+#: screens/sui_menu.lua:241 screens/sui_menu.lua:3324
+msgid "Icons"
+msgstr "Ikony"
+
+#: screens/sui_menu.lua:242
+msgid "Icons only"
+msgstr "Pouze ikony"
+
+#: screens/sui_menu.lua:3904
+msgid ""
+"Icons that contain color keep their original colors in night mode instead of "
+"being inverted.\n"
+"Monochrome icons are not affected and keep following the interface colors.\n"
+"Requires a color screen."
+msgstr ""
+"Ikony obsahující barvu si v nočním režimu ponechají původní barvy místo "
+"invertování.\n"
+"Monochromatických ikon se to netýká a dál se řídí barvami rozhraní.\n"
+"Vyžaduje barevnou obrazovku."
+
+#: screens/sui_settings_window.lua:353
+msgid "Icons, fonts and appearance"
+msgstr "Ikony, písma a vzhled"
+
+#: screens/sui_onboarding.lua:330
+msgid ""
+"If you selected the Momentum Preset, long press the Reading Goal module to "
+"choose and set your reading goals."
+msgstr ""
+"Pokud jste vybrali předvolbu Momentum, dlouhým stiskem modulu Čtenářské cíle "
+"vyberete a nastavíte své čtenářské cíle."
+
+#: features/sui_backup.lua:1148
+msgid "Import Backup…"
+msgstr "Importovat zálohu…"
+
+#: features/sui_presets.lua:1068 screens/sui_menu.lua:3836
+msgid "Import preset"
+msgstr "Importovat předvolbu"
+
+#: features/sui_stats_menu.lua:102
+msgid "Include Manual Books in All Time Total"
+msgstr ""
+
+#: modules/critter/module_critter.lua:612
+msgid "Included"
+msgstr ""
+
+#: modules/critter/module_critter.lua:613
+msgid "Included and mine"
+msgstr ""
+
+#: infra/sui_compat_check.lua:219
+msgid "Incompatible items have been disabled:"
+msgstr "Nekompatibilní položky byly vypnuty:"
+
+#: engines/sui_group_cell.lua:232
+#, fuzzy
+msgid "Inside Cover"
+msgstr "Jedna obálka"
+
+#: screens/sui_menu.lua:3463
+msgid "Install pack from ZIP"
+msgstr "Nainstalovat balíček ze ZIPu"
+
+#: screens/sui_menu.lua:2674
+msgid "Intensity"
+msgstr "Intenzita"
+
+#: screens/sui_menu.lua:1327
+msgid ""
+"Invalid arrangement.\n"
+"Keep items between the Left and Right separators."
+msgstr ""
+"Neplatné uspořádání.\n"
+"Ponechte položky mezi oddělovači Vlevo a Vpravo."
+
+#: screens/sui_menu.lua:695
+msgid ""
+"Invalid arrangement.\n"
+"Keep the Left, Center and Right separators in order."
+msgstr ""
+"Neplatné uspořádání.\n"
+"Ponechte oddělovače Vlevo, Uprostřed a Vpravo v tomto pořadí."
+
+#: features/sui_presets.lua:565 features/sui_presets.lua:748
+msgid "Invalid data"
+msgstr "Neplatná data"
+
+#: features/sui_quickactions.lua:2042
+msgid "Invalid input. Please enter 1–6 hexadecimal digits (0–9, A–F)."
+msgstr "Neplatný vstup. Zadejte prosím 1–6 hexadecimálních číslic (0–9, A–F)."
+
+#: features/sui_presets.lua:561 features/sui_presets.lua:744
+msgid "Invalid preset file"
+msgstr "Neplatný soubor předvolby"
+
+#: screens/sui_menu.lua:2273
+msgid "Invert in Night Mode"
+msgstr "Invertovat v nočním režimu"
+
+#: modules/critter/phrases.lua:243
+msgid "It's Friday!"
+msgstr ""
+
+#: features/sui_style.lua:2487
+msgid "Italic"
+msgstr "Kurzíva"
+
+#: infra/sui_config.lua:1177 infra/sui_config.lua:2123
+#: modules/module_coverdeck.lua:1593 modules/module_coverdeck.lua:1605
+#: modules/module_currently.lua:1348 modules/module_currently.lua:1360
+#: modules/module_reading_stats.lua:1139 screens/sui_menu.lua:813
+#: screens/sui_menu.lua:818 screens/sui_menu.lua:889 screens/sui_menu.lua:1030
+#: screens/sui_menu.lua:1953 screens/sui_menu.lua:1958
+#: screens/sui_menu.lua:1984
+msgid "Items"
+msgstr "Položky"
+
+#: infra/sui_datenames.lua:29
+msgid "Jan"
+msgstr "led"
+
+#: infra/sui_datenames.lua:36
+msgid "January"
+msgstr "Leden"
+
+#: infra/sui_datenames.lua:30
+msgid "Jul"
+msgstr "Červenec"
+
+#: infra/sui_datenames.lua:37
+msgid "July"
+msgstr "Červenec"
+
+#: infra/sui_datenames.lua:29
+msgid "Jun"
+msgstr "Červen"
+
+#: infra/sui_datenames.lua:37
+msgid "June"
+msgstr "Červen"
+
+#: infra/sui_config.lua:2028 modules/module_quick_actions.lua:474
+msgid "Justified"
+msgstr "Do bloku"
+
+#: screens/sui_menu.lua:497
+msgid "KOReader"
+msgstr "KOReader"
+
+#: modules/critter/phrases.lua:132
+msgid "Keep it going."
+msgstr ""
+
+#: modules/critter/phrases.lua:166
+msgid "Keep turning pages."
+msgstr ""
+
+#: modules/critter/phrases.lua:149
+msgid "Keep your streak alive!"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:3067
+msgid "LAST %d DAYS"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2508
+msgid "LAST 7 DAYS"
+msgstr "POSLEDNÍCH 7 DNÍ"
+
+#: engines/sui_group_cell.lua:321 infra/sui_config.lua:1116
+#: modules/module_action_list.lua:340 modules/module_action_list.lua:355
+#: modules/module_collections.lua:485 modules/module_quick_actions.lua:441
+#: modules/module_reading_goals.lua:1127 modules/module_reading_stats.lua:1130
+#: screens/sui_quicksettings_bar.lua:1634
+msgid "Label"
+msgstr "Popisek"
+
+#: screens/sui_menu.lua:1150
+msgid "Label Font"
+msgstr "Popisek"
+
+#: screens/sui_menu.lua:2397
+msgid "Label Scale"
+msgstr "Měřítko popisků"
+
+#: screens/sui_menu.lua:1138 screens/sui_menu.lua:1139
+#: screens/sui_menu.lua:1196
+msgid "Label Size"
+msgstr "Velikost popisků"
+
+#: infra/sui_config.lua:2060
+msgid "Label inside background"
+msgstr ""
+
+#: screens/sui_menu.lua:2392
+msgid "Labels"
+msgstr "Popisky"
+
+#: screens/sui_menu.lua:3120
+msgid "Landscape mosaic mode"
+msgstr "Režim mozaiky na šířku"
+
+#: features/sui_backup.lua:1061
+msgid "Last backup: %s%s"
+msgstr "Poslední záloha: %s%s"
+
+#: features/sui_backup.lua:1058
+msgid "Last backup: never"
+msgstr "Poslední záloha: nikdy"
+
+#: features/dialogs/sui_dialogs.lua:212
+msgid "Later"
+msgstr "Později"
+
+#: features/library/sui_label_options.lua:139 modules/module_currently.lua:1300
+#: modules/module_reading_goals.lua:1259 screens/sui_menu.lua:1095
+msgid "Layout"
+msgstr "Rozvržení"
+
+#: screens/sui_settings_window.lua:1042 screens/sui_settings_window.lua:1043
+msgid "Layout Editor"
+msgstr "Editor rozvržení"
+
+#: screens/sui_quicksettings_bar.lua:1600
+msgid ""
+"Layout of the Quick Settings panel in the reader. The file browser always "
+"uses the classic layout."
+msgstr ""
+
+#: features/sui_backup.lua:118
+msgid "Layout, modules, custom screens, presets"
+msgstr "Zatím nejsou žádné vlastní obrazovky."
+
+#: screens/sui_settings_window.lua:329
+msgid "Layout, wallpaper, presets and behaviour"
+msgstr "Rozvržení, tapeta, předvolby a chování"
+
+#: infra/sui_config.lua:2025 modules/module_quick_actions.lua:475
+#: screens/sui_menu.lua:666 screens/sui_menu.lua:875 screens/sui_menu.lua:1294
+#: screens/sui_menu.lua:1501
+msgid "Left"
+msgstr "Vlevo"
+
+#: modules/critter/module_critter.lua:682
+msgid "Left decorations"
+msgstr ""
+
+#: engines/sui_heatmap_widgets.lua:410 modules/module_heatmap.lua:180
+msgid "Less"
+msgstr "Méně"
+
+#: modules/critter/phrases.lua:273 modules/critter/phrases.lua:281
+msgid "Let's read something."
+msgstr ""
+
+#: screens/sui_menu.lua:3305 screens/sui_menu.lua:3307
+msgid "Letter Spacing"
+msgstr ""
+
+#: features/library/sui_library_browse.lua:76 features/sui_backup.lua:127
+#: features/sui_quickactions.lua:677 infra/sui_config.lua:125
+#: infra/sui_config.lua:443 modules/module_reading_stats.lua:280
+#: modules/module_reading_stats.lua:281 modules/module_reading_stats.lua:282
+#: screens/sui_menu.lua:2332 screens/sui_menu.lua:2803
+#: screens/sui_menu.lua:2876 screens/sui_menu.lua:4169
+#: screens/sui_settings_window.lua:343 screens/sui_settings_window.lua:1038
+#: screens/sui_titlebar.lua:1208 screens/sui_titlebar.lua:1253
+msgid "Library"
+msgstr "Knihovna"
+
+#: screens/sui_menu.lua:2912
+msgid "Library Badges"
+msgstr ""
+
+#: screens/sui_menu.lua:1775 screens/sui_menu.lua:1778
+msgid "Library Buttons"
+msgstr "Tlačítka knihovny"
+
+#: screens/sui_menu.lua:2743
+msgid "Library Captions"
+msgstr ""
+
+#: features/sui_presets.lua:209
+msgid "Library View"
+msgstr "Zobrazení knihovny"
+
+#: screens/sui_menu.lua:2866
+msgid ""
+"Library captions are enabled. Folder names are shown in the caption strip "
+"under each cover instead of on the cover."
+msgstr ""
+
+#: screens/sui_menu.lua:2739
+msgid ""
+"Library captions changed.\n"
+"\n"
+"Restart now?"
+msgstr ""
+
+#: features/library/sui_label_options.lua:129 features/sui_style.lua:1483
+msgid "Light"
+msgstr "Světlé"
+
+#: screens/sui_menu.lua:2276
+msgid "Lighten"
+msgstr "Zesvětlit"
+
+#: modules/module_reading_stats.lua:1187
+msgid "List"
+msgstr "Seznam"
+
+#: screens/sui_menu.lua:2982
+msgid ""
+"Lists books without an author, series or tag as a separate group in the "
+"Authors, Series and Tags views."
+msgstr ""
+
+#: screens/sui_stats_launcher.lua:47
+msgid "Loading statistics…"
+msgstr "Načítají se statistiky…"
+
+#: screens/sui_menu.lua:2362
+msgid "Lock Scale"
+msgstr "Uzamknout měřítko"
+
+#: infra/sui_config.lua:1844
+msgid "Long Press"
+msgstr "Dlouhý stisk"
+
+#: screens/sui_onboarding.lua:321
+msgid "Long press to customize"
+msgstr "Přizpůsobení dlouhým stiskem"
+
+#: modules/module_reading_stats.lua:257
+msgid "Longest session"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1611
+msgid "Look of the frontlight and warmth sliders."
+msgstr ""
+
+#: features/sui_backup.lua:553 features/sui_backup.lua:602
+#: features/sui_presets.lua:544 features/sui_presets.lua:556
+#: features/sui_presets.lua:727 features/sui_presets.lua:739
+msgid "LuaSettings module unavailable"
+msgstr "Modul LuaSettings není k dispozici"
+
+#: screens/sui_onboarding.lua:287
+msgid "Make it yours"
+msgstr "Přizpůsobte si to"
+
+#: screens/sui_menu.lua:2567
+msgid ""
+"Makes the device's physical Home key open the SimpleUI Home Screen — while "
+"reading and while browsing files — instead of KOReader's native Home "
+"behaviour. The file browser title-bar home icon still goes to the home "
+"folder."
+msgstr ""
+"Zajistí, aby fyzické tlačítko Domů na zařízení vždy otevřelo domovskou "
+"obrazovku SimpleUI — při čtení i při procházení souborů — namísto nativního "
+"chování tlačítka Domů v KOReaderu."
+
+#: features/sui_presets.lua:953 features/sui_presets.lua:998
+#: features/sui_presets.lua:1003 screens/sui_menu.lua:3710
+#: screens/sui_menu.lua:3761 screens/sui_menu.lua:3766
+msgid "Manage presets"
+msgstr "Spravovat předvolby"
+
+#: features/sui_manual_books.lua:145 screens/sui_stats_windows.lua:766
+msgid "Manual Yearly Count"
+msgstr ""
+
+#: features/sui_manual_books.lua:128
+msgid "Manual Yearly Count — %d"
+msgstr ""
+
+#: modules/module_collections.lua:215
+msgid "Manual order"
+msgstr "Ruční pořadí"
+
+#: infra/sui_datenames.lua:29
+msgid "Mar"
+msgstr "Březen"
+
+#: infra/sui_datenames.lua:36
+msgid "March"
+msgstr "Březen"
+
+#: screens/sui_quicksettings_bar.lua:625
+msgid "Max"
+msgstr "Max"
+
+#: infra/sui_datenames.lua:29 infra/sui_datenames.lua:37
+msgid "May"
+msgstr "Květen"
+
+#: modules/critter/phrases.lua:230
+msgid "May your year be full of good books."
+msgstr ""
+
+#: screens/sui_titlebar.lua:113 screens/sui_titlebar.lua:118
+msgid "Menu"
+msgstr "Menu"
+
+#: features/sui_style.lua:86
+msgid "Menu Button"
+msgstr "Tlačítko Menu"
+
+#: modules/critter/module_critter.lua:697
+msgid "Message"
+msgstr ""
+
+#: modules/module_clock.lua:324
+msgid "Midnight"
+msgstr "Půlnoc"
+
+#: modules/critter/phrases.lua:46
+msgid "Milestones and goals"
+msgstr ""
+
+#: features/sui_presets.lua:171
+msgid "Mindful Reading"
+msgstr "Vědomé čtení"
+
+#: modules/critter/module_critter.lua:614
+msgid "Mine only"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1615
+msgid "Minimal"
+msgstr ""
+
+#: screens/sui_menu.lua:370
+msgid "Minimum 1 tab required in navpager mode."
+msgstr "V režimu navpager je vyžadována minimálně 1 karta."
+
+#: screens/sui_menu.lua:371
+msgid "Minimum 2 tabs required. Select another tab first."
+msgstr "Jsou vyžadovány minimálně 2 karty. Nejprve vyberte jinou kartu."
+
+#: infra/sui_goals.lua:67
+msgid "Minutes per day:"
+msgstr "Minut denně:"
+
+#: modules/critter/phrases.lua:272
+msgid "Missed me?"
+msgstr ""
+
+#: screens/sui_menu.lua:436
+msgid "Mode"
+msgstr "Režim"
+
+#: screens/sui_menu.lua:3292 screens/sui_menu.lua:3935
+msgid "Module Labels"
+msgstr ""
+
+#: screens/sui_menu.lua:2373
+msgid "Module Scale"
+msgstr "Měřítko modulu"
+
+#: infra/sui_config.lua:1841 screens/sui_menu.lua:2160
+msgid "Module Settings"
+msgstr "Nastavení modulů"
+
+#: screens/sui_menu.lua:3382
+msgid "Module unavailable"
+msgstr "Modul není k dispozici"
+
+#: screens/sui_menu.lua:2372 screens/sui_menu.lua:2593
+#: screens/sui_menu.lua:2808 screens/sui_menu.lua:2882
+msgid "Modules"
+msgstr "Moduly"
+
+#: screens/sui_menu.lua:2148
+msgid "Modules  (%d)"
+msgstr "Moduly  (%d)"
+
+#: engines/sui_screen_engine.lua:2741
+msgid ""
+"Modules exceed the visible area.\n"
+"Move some to another page or adjust the scale."
+msgstr ""
+"Moduly přesahují viditelnou oblast.\n"
+"Přesuňte některé na jinou stránku nebo upravte měřítko."
+
+#: features/sui_presets.lua:191
+msgid "Momentum"
+msgstr "Momentum"
+
+#: engines/sui_heatmap_widgets.lua:127 infra/sui_datenames.lua:43
+msgid "Mon"
+msgstr "Po"
+
+#: infra/sui_datenames.lua:48
+msgid "Monday"
+msgstr "Pondělí"
+
+#: modules/critter/phrases.lua:239
+msgid "Mondays, right?"
+msgstr ""
+
+#: infra/sui_goals.lua:54
+msgid "Monthly Goal"
+msgstr "Měsíční cíl"
+
+#: infra/sui_goals.lua:55
+msgid "Monthly Reading Goal"
+msgstr "Měsíční čtenářský cíl"
+
+#: engines/sui_heatmap_widgets.lua:416
+msgid "More"
+msgstr "Více"
+
+#: main.lua:1183
+msgid "More by %s (%d)"
+msgstr "Další od %s (%d)"
+
+#: modules/critter/phrases.lua:177
+msgid "More than halfway there!"
+msgstr ""
+
+#: engines/sui_window.lua:3706
+msgid "Move down"
+msgstr "Přesunout dolů"
+
+#: engines/sui_window.lua:3700 screens/sui_settings_window.lua:682
+#: screens/sui_settings_window.lua:717
+msgid "Move to page"
+msgstr "Přesunout na stránku"
+
+#: engines/sui_window.lua:3703
+msgid "Move up"
+msgstr "Přesunout nahoru"
+
+#: modules/module_quote.lua:1418
+msgid "My Highlights"
+msgstr "Moje zvýraznění"
+
+#: features/sui_presets.lua:308
+msgid "My Presets"
+msgstr "Moje předvolby"
+
+#: features/sui_quickactions.lua:2612 modules/critter/module_critter.lua:591
+msgid "Name"
+msgstr "Název"
+
+#: modules/module_collections.lua:216
+msgid "Name (A–Z)"
+msgstr "Název (A–Z)"
+
+#: modules/module_collections.lua:217
+msgid "Name (Z–A)"
+msgstr "Název (Z–A)"
+
+#: features/sui_cover_elements.lua:68
+msgid "Native"
+msgstr "Nativní"
+
+#: screens/sui_bottombar.lua:788 screens/sui_menu.lua:2634
+msgid "Navigation Bar"
+msgstr "Navigační lišta"
+
+#: screens/sui_menu.lua:2290
+msgid "Navigation Bar Opacity"
+msgstr "Velikost navigační lišty"
+
+#: screens/sui_menu.lua:1103
+msgid "Navigation Bar Size"
+msgstr "Velikost navigační lišty"
+
+#: screens/sui_menu.lua:1085
+msgid ""
+"Navigation Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Navigační lišta bude po restartu %s.\n"
+"\n"
+"Restartovat nyní?"
+
+#: features/sui_backup.lua:123
+msgid "Navigation, status, title and quick settings bars"
+msgstr "Navigační, stavové, titulní a rychlé nastavovací lišty"
+
+#: features/sui_style.lua:1267 screens/sui_menu.lua:449
+msgid "Navpager"
+msgstr "Navpager"
+
+#: screens/sui_menu.lua:456
+msgid ""
+"Navpager enabled.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Navpager je zapnutý.\n"
+"\n"
+"Restartovat nyní?"
+
+#: features/sui_style.lua:180
+msgid "Navpager: Next"
+msgstr "Navpager: další"
+
+#: features/sui_style.lua:172
+msgid "Navpager: Previous"
+msgstr "Navpager: předchozí"
+
+#: features/sui_quickactions.lua:2095
+msgid "Nerd Font Icon"
+msgstr "Ikona Nerd Font"
+
+#: features/sui_quickactions.lua:2132
+msgid "Nerd Font symbol…"
+msgstr "Symbol Nerd Font…"
+
+#: features/sui_quickactions.lua:278
+msgid "Network manager unavailable."
+msgstr "Správce sítě není k dispozici."
+
+#: screens/sui_menu.lua:2462
+msgid "Never"
+msgstr "Nikdy"
+
+#: engines/sui_book_grid.lua:519 engines/sui_book_sources.lua:336
+#: features/library/sui_cover_widgets.lua:509
+#: features/library/sui_foldercovers.lua:1278
+#: features/library/sui_foldercovers.lua:1649
+msgid "New"
+msgstr "Nové"
+
+#: engines/sui_book_grid.lua:2108
+msgid "New Badge Color"
+msgstr "Barva štítku nových knih"
+
+#: features/sui_cover_elements.lua:75
+msgid "New Book"
+msgstr "Nová kniha"
+
+#: engines/sui_book_grid.lua:2100 engines/sui_book_grid.lua:2113
+msgid "New Book Badge"
+msgstr "Štítek nové knihy"
+
+#: engines/sui_book_sources.lua:321 modules/module_new_books.lua:17
+msgid "New Books"
+msgstr "Nové knihy"
+
+#: features/sui_quickactions.lua:2320
+msgid "New Quick Action"
+msgstr "Nová rychlá akce"
+
+#: features/library/sui_group_actions.lua:103
+msgid "New collection name"
+msgstr "Název nové kolekce"
+
+#: modules/critter/phrases.lua:251
+msgid "New month, new chapters!"
+msgstr ""
+
+#: features/sui_manual_books.lua:151 screens/sui_bottombar.lua:457
+msgid "Next"
+msgstr "Další"
+
+#: modules/critter/phrases.lua:192
+msgid "Nice work."
+msgstr ""
+
+#: features/sui_quickactions.lua:939 infra/sui_config.lua:137
+msgid "Night Mode"
+msgstr "Noční režim"
+
+#: modules/module_clock.lua:255
+msgid "Nine"
+msgstr "Devět"
+
+#: modules/module_clock.lua:259
+msgid "Nineteen"
+msgstr "Devatenáct"
+
+#: screens/sui_stats_windows.lua:1159
+msgid "No"
+msgstr "Ne"
+
+#: modules/module_quote.lua:1399
+msgid "No .lua files found in sui_quotes/"
+msgstr "Ve složce sui_quotes/ nebyly nalezeny žádné soubory .lua"
+
+#: screens/sui_menu.lua:3501
+msgid ""
+"No .zip files found.\n"
+"Place .zip files in:\n"
+"%1"
+msgstr ""
+"Nebyly nalezeny žádné soubory .zip.\n"
+"Umístěte soubory .zip do:\n"
+"%1"
+
+#: screens/sui_quicksettings_bar.lua:1508
+msgid "No actions active yet."
+msgstr "Zatím nejsou aktivní žádné akce."
+
+#: features/sui_quickactions.lua:1631 modules/module_action_list.lua:85
+#: modules/module_action_list.lua:104 modules/module_quick_actions.lua:145
+#: modules/module_quick_actions.lua:515
+msgid "No actions configured"
+msgstr "Nejsou nastaveny žádné akce"
+
+#: modules/module_action_list.lua:84 modules/module_action_list.lua:103
+#: modules/module_quick_actions.lua:144
+msgid "No actions configured  —  long press to configure"
+msgstr "Nejsou nastaveny žádné akce  —  nastavíte je dlouhým stiskem"
+
+#: screens/sui_quicksettings_bar.lua:759
+msgid ""
+"No actions configured.\n"
+"Go to Bars → Quick Settings Bar."
+msgstr ""
+"Nejsou nastaveny žádné akce.\n"
+"Přejděte na Lišty → Lišta rychlých nastavení."
+
+#: features/sui_backup.lua:1183
+msgid "No backup loaded yet."
+msgstr "Zatím nebyla otevřena žádná kniha"
+
+#: features/sui_quickactions.lua:798
+msgid "No book in history."
+msgstr "V historii není žádná kniha."
+
+#: screens/sui_stats_windows.lua:673
+msgid "No books finished"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:786
+msgid "No books finished in %s"
+msgstr "V %s nebyly dokončeny žádné knihy"
+
+#: features/library/sui_foldercovers.lua:528
+#: features/library/sui_foldercovers.lua:631
+msgid "No books found in this folder."
+msgstr "V této složce nebyly nalezeny žádné knihy."
+
+#: features/library/sui_series_grouping.lua:107
+#: features/library/sui_series_grouping.lua:122
+msgid "No books found in this series."
+msgstr "V této sérii nebyly nalezeny žádné knihy."
+
+#: engines/sui_group_cell.lua:591 features/library/sui_facet_groups.lua:146
+#: features/library/sui_group_actions.lua:45
+#: features/library/sui_group_actions.lua:97
+#: features/library/sui_library_browse.lua:447
+#: features/library/sui_library_browse.lua:471
+msgid "No books found."
+msgstr "Nebyly nalezeny žádné knihy."
+
+#: engines/sui_book_sources.lua:361
+msgid "No books in To Be Read list."
+msgstr "V seznamu K přečtení nejsou žádné knihy."
+
+#: engines/sui_book_sources.lua:401
+msgid "No books in this collection."
+msgstr "V této kolekci nejsou žádné knihy."
+
+#: modules/module_tab_grid.lua:506
+#, fuzzy
+msgid "No books in this tab"
+msgstr "V historii není žádná kniha."
+
+#: engines/sui_screen_engine.lua:271
+msgid "No books opened yet"
+msgstr "Zatím nebyla otevřena žádná kniha"
+
+#: modules/module_coverdeck.lua:896 modules/module_currently.lua:460
+msgid "No books to show yet — open a book to see it here."
+msgstr ""
+"Zatím nejsou žádné knihy k zobrazení — otevřete knihu a zobrazí se zde."
+
+#: modules/module_feat_coll.lua:145 modules/module_feat_coll.lua:174
+msgid "No collection selected"
+msgstr "Není vybrána žádná kolekce"
+
+#: modules/module_feat_coll.lua:144
+msgid "No collection selected  —  long press to configure"
+msgstr "Není vybrána žádná kolekce  —  dlouhým stiskem nastavíte"
+
+#: modules/module_coverdeck.lua:1543
+msgid "No collections found"
+msgstr "Nebyly nalezeny žádné kolekce"
+
+#: modules/module_collections.lua:416 modules/module_collections.lua:457
+#: modules/module_feat_coll.lua:88
+msgid "No collections found."
+msgstr "Nebyly nalezeny žádné kolekce."
+
+#: modules/module_collections.lua:523
+msgid "No collections selected"
+msgstr "Nejsou vybrány žádné kolekce"
+
+#: modules/module_collections.lua:522
+msgid "No collections selected  —  long press to configure"
+msgstr "Nejsou vybrány žádné kolekce  —  nastavíte je dlouhým stiskem"
+
+#: modules/module_quote.lua:948
+msgid ""
+"No custom quotes found. Add a .lua file to the plugin's sui_quotes/ folder "
+"and select it in Settings."
+msgstr ""
+"Nebyly nalezeny žádné vlastní citáty. Přidejte soubor .lua do složky "
+"sui_quotes/ pluginu a vyberte jej v Nastavení."
+
+#: screens/sui_settings_window.lua:486
+msgid "No custom screens yet."
+msgstr "Zatím nejsou žádné vlastní obrazovky."
+
+#: modules/critter/module_critter.lua:558
+msgid "No decorations selected."
+msgstr ""
+
+#: infra/sui_updater.lua:498
+msgid ""
+"No download file found.\n"
+"\n"
+"Open the releases page?"
+msgstr ""
+"Nebyl nalezen žádný soubor ke stažení.\n"
+"\n"
+"Otevřít stránku vydání?"
+
+#: features/sui_presets.lua:536 features/sui_presets.lua:719
+msgid "No export directory"
+msgstr "Chybí exportní složka"
+
+#: screens/sui_stats_windows.lua:54
+msgid "No filepath."
+msgstr "Chybí cesta k souboru."
+
+#: features/sui_quickactions.lua:3059
+msgid ""
+"No folder, collection or plugin configured.\n"
+"Go to Simple UI → Settings → Quick Actions to set one."
+msgstr ""
+"Není nastavena žádná složka, kolekce ani plugin.\n"
+"Přejděte do Simple UI → Nastavení → Rychlé akce a jednu nastavte."
+
+#: features/sui_style.lua:2314
+msgid "No fonts found."
+msgstr "Nebyla nalezena žádná písma."
+
+#: modules/module_tab_grid.lua:506
+#, fuzzy
+msgid "No groups in this tab"
+msgstr "V této kolekci nejsou žádné knihy."
+
+#: modules/module_quote.lua:1014
+msgid "No highlights found. Open a book and highlight some passages."
+msgstr ""
+"Nebyla nalezena žádná zvýraznění. Otevřete knihu a zvýrazněte některé pasáže."
+
+#: features/library/sui_library_search.lua:175
+msgid "No home folder set."
+msgstr "Domovská složka"
+
+#: features/sui_quickactions.lua:2162
+msgid "No icons found in:"
+msgstr "V tomto umístění nebyly nalezeny žádné ikony:"
+
+#: engines/sui_window.lua:3406 engines/sui_window.lua:4025
+msgid "No items available."
+msgstr "Nejsou dostupné žádné položky."
+
+#: engines/sui_window.lua:3934 infra/sui_config.lua:2124
+#: modules/module_action_list.lua:286 modules/module_collections.lua:383
+#: modules/module_quick_actions.lua:348 modules/module_reading_goals.lua:1229
+#: modules/module_reading_stats.lua:1142 screens/sui_menu.lua:362
+#: screens/sui_menu.lua:831 screens/sui_menu.lua:891 screens/sui_menu.lua:1410
+#: screens/sui_menu.lua:1517 screens/sui_menu.lua:1620
+#: screens/sui_menu.lua:1961 screens/sui_menu.lua:1986
+msgid "No items selected."
+msgstr "Nejsou vybrány žádné položky."
+
+#: screens/sui_settings_window.lua:605 screens/sui_settings_window.lua:728
+msgid "No modules"
+msgstr "Žádné moduly"
+
+#: screens/sui_settings_window.lua:714
+msgid "No other pages available."
+msgstr "Nejsou dostupné žádné další stránky."
+
+#: screens/sui_menu.lua:3522
+msgid "No packs found."
+msgstr "Nebyly nalezeny žádné balíčky."
+
+#: features/sui_quickactions.lua:2483
+msgid "No plugins found."
+msgstr "Nebyly nalezeny žádné pluginy."
+
+#: features/sui_presets.lua:1075 screens/sui_menu.lua:3844
+msgid ""
+"No preset files found.\n"
+"Place .lua files in:\n"
+"%1"
+msgstr ""
+"Nebyly nalezeny žádné soubory předvoleb.\n"
+"Umístěte soubory .lua do:\n"
+"%1"
+
+#: features/sui_presets.lua:1052 screens/sui_menu.lua:3820
+msgid "No presets found."
+msgstr "Nebyly nalezeny žádné předvolby."
+
+#: modules/module_quote.lua:979
+msgid "No quotes found."
+msgstr "Nebyly nalezeny žádné citáty."
+
+#: features/sui_quickactions.lua:3294
+msgid "No recent books."
+msgstr "Žádné nedávné knihy."
+
+#: features/library/sui_library_search.lua:185
+msgid "No results for: %1"
+msgstr "Žádné výsledky pro: %1"
+
+#: screens/sui_stats_windows.lua:63 screens/sui_stats_windows.lua:97
+#: screens/sui_stats_windows.lua:3297
+msgid "No statistics found for this book."
+msgstr "Pro tuto knihu nebyly nalezeny žádné statistiky."
+
+#: modules/module_coverdeck.lua:1586 modules/module_currently.lua:1342
+#: screens/sui_quicksettings_bar.lua:1569
+msgid "No statistics selected."
+msgstr "Nejsou vybrány žádné statistiky."
+
+#: modules/module_reading_stats.lua:912
+msgid "No stats selected"
+msgstr "Nejsou vybrány žádné statistiky"
+
+#: modules/module_reading_stats.lua:911
+msgid "No stats selected  —  long press to configure"
+msgstr "Nejsou vybrány žádné statistiky  —  nastavíte je dlouhým stiskem"
+
+#: features/sui_quickactions.lua:2500
+msgid "No system actions found."
+msgstr "Nebyly nalezeny žádné systémové akce."
+
+#: modules/module_tab_grid.lua:1037 modules/module_tab_grid.lua:1118
+msgid "No tabs"
+msgstr ""
+
+#: modules/module_tab_grid.lua:1037
+#, fuzzy
+msgid "No tabs  —  long press to configure"
+msgstr "Nejsou vybrány žádné statistiky  —  nastavíte je dlouhým stiskem"
+
+#: modules/module_tab_grid.lua:867
+msgid "No tabs."
+msgstr ""
+
+#: screens/sui_menu.lua:2233
+msgid "No wallpapers found."
+msgstr "Nebyly nalezeny žádné tapety."
+
+#: engines/sui_book_grid.lua:1989 engines/sui_book_grid.lua:2094
+#: features/sui_quickactions.lua:2405 infra/sui_config.lua:1054
+msgid "None"
+msgstr "Žádné"
+
+#: modules/module_clock.lua:327
+msgid "Noon"
+msgstr "Poledne"
+
+#: features/sui_backup.lua:607 features/sui_backup.lua:611
+#: features/sui_backup.lua:621 features/sui_backup.lua:809
+#: features/sui_backup.lua:966
+msgid "Not a valid backup file."
+msgstr "Neplatný soubor zálohy."
+
+#: modules/critter/module_critter.lua:585 modules/module_reading_goals.lua:1136
+#: screens/sui_menu.lua:3222 screens/sui_menu.lua:3240
+msgid "Not set"
+msgstr "Nenastaveno"
+
+#: screens/sui_stats_windows.lua:1153 screens/sui_stats_windows.lua:3617
+msgid "Notes"
+msgstr "Poznámky"
+
+#: features/sui_backup.lua:1020
+msgid "Nothing selected to import."
+msgstr "Není vybráno nic k importu."
+
+#: infra/sui_datenames.lua:30
+msgid "Nov"
+msgstr "lis"
+
+#: infra/sui_datenames.lua:38
+msgid "November"
+msgstr "Listopad"
+
+#: engines/sui_book_grid.lua:1883 engines/sui_book_grid.lua:1884
+msgid "Number of Books"
+msgstr "Počet knih"
+
+#: modules/module_tab_grid.lua:586
+#, fuzzy
+msgid "Numbers"
+msgstr "Listopad"
+
+#: modules/module_clock.lua:345
+msgid "O'Clock"
+msgstr "hodin"
+
+#: features/dialogs/sui_dialogs.lua:172 features/dialogs/sui_dialogs.lua:400
+#: features/sui_quickactions.lua:2068 infra/sui_compat_check.lua:133
+msgid "OK"
+msgstr "OK"
+
+#: infra/sui_datenames.lua:30
+msgid "Oct"
+msgstr "říj"
+
+#: infra/sui_datenames.lua:38
+msgid "October"
+msgstr "Říjen"
+
+#: engines/sui_book_grid.lua:2061 engines/sui_book_grid.lua:2087
+#: features/sui_cover_elements.lua:275 modules/module_coverdeck.lua:1687
+#: modules/module_currently.lua:1451 screens/sui_menu.lua:1258
+#: screens/sui_menu.lua:1468 screens/sui_menu.lua:2703
+#: screens/sui_menu.lua:2852 screens/sui_menu.lua:4143
+msgid "Off"
+msgstr "Vypnuto"
+
+#: modules/module_clock.lua:290
+msgid "Oh"
+msgstr "nula"
+
+#: engines/sui_book_grid.lua:2061 engines/sui_book_grid.lua:2087
+#: features/sui_cover_elements.lua:277 features/sui_cover_elements.lua:282
+#: modules/module_coverdeck.lua:1687 modules/module_currently.lua:1451
+#: screens/sui_menu.lua:1258 screens/sui_menu.lua:1468
+#: screens/sui_menu.lua:2852 screens/sui_menu.lua:4143
+msgid "On"
+msgstr "Zapnuto"
+
+#: modules/module_coverdeck.lua:1637
+msgid "On side covers too"
+msgstr "I na bočních obálkách"
+
+#: modules/module_clock.lua:253
+msgid "One"
+msgstr "Jedna"
+
+#: modules/critter/phrases.lua:100
+msgid "One more chapter before bed."
+msgstr ""
+
+#: modules/critter/phrases.lua:198
+msgid "One page at a time."
+msgstr ""
+
+#: engines/sui_screen_engine.lua:590 features/library/sui_library_search.lua:56
+#: features/library/sui_library_search.lua:129
+#: features/sui_quickactions.lua:3249 modules/module_quote.lua:1302
+#: screens/sui_stats_windows.lua:620
+msgid "Open"
+msgstr "Otevřít"
+
+#: screens/sui_quicksettings_bar.lua:1690
+msgid "Open Menu on Quick Settings"
+msgstr ""
+
+#: engines/sui_group_cell.lua:606
+msgid "Open Module Settings"
+msgstr "Otevřít nastavení modulu"
+
+#: engines/sui_screen_engine.lua:280
+msgid "Open a book to get started"
+msgstr "Začněte otevřením knihy"
+
+#: infra/sui_updater.lua:499
+msgid "Open in browser"
+msgstr "Otevřít v prohlížeči"
+
+#: features/library/sui_book_hold_dialog.lua:257
+msgid "Open module settings"
+msgstr "Otevřít nastavení modulu"
+
+#: engines/sui_screen_engine.lua:589 features/library/sui_library_search.lua:55
+#: features/sui_quickactions.lua:3248 modules/module_quote.lua:1301
+#: screens/sui_stats_windows.lua:618
+msgid "Open this file?"
+msgstr "Otevřít tento soubor?"
+
+#: features/library/sui_book_hold_dialog.lua:197
+msgid "Open with…"
+msgstr "Otevřít pomocí…"
+
+#: screens/sui_menu.lua:2532
+msgid "Overflow Warning"
+msgstr "Upozornění na přesah"
+
+#: features/sui_presets.lua:356 features/sui_presets.lua:964
+#: features/sui_presets.lua:1038 screens/sui_menu.lua:3721
+#: screens/sui_menu.lua:3804
+msgid "Overwrite"
+msgstr "Přepsat"
+
+#: features/sui_presets.lua:353
+msgid "Overwrite preset"
+msgstr ""
+
+#: features/sui_presets.lua:963 features/sui_presets.lua:1037
+msgid "Overwrite preset \"%s\" with the current homescreen settings?"
+msgstr "Přepsat předvolbu \"%s\" aktuálním nastavením domovské obrazovky?"
+
+#: screens/sui_menu.lua:3720 screens/sui_menu.lua:3803
+msgid "Overwrite preset \"%s\" with the current icon settings?"
+msgstr "Přepsat předvolbu \"%s\" aktuálním nastavením ikon?"
+
+#: screens/sui_menu.lua:3537
+msgid ""
+"Pack \"%s\" applied.\n"
+"%d icons replaced."
+msgstr ""
+"Balíček \"%s\" byl použit.\n"
+"Nahrazeno ikon: %d."
+
+#: screens/sui_menu.lua:3455
+msgid ""
+"Pack \"%s\" installed.\n"
+"You can now apply it from the list."
+msgstr ""
+"Balíček \"%s\" byl nainstalován.\n"
+"Nyní jej můžete použít ze seznamu."
+
+#: features/sui_style.lua:2715
+msgid "Pack folder not accessible: "
+msgstr "Složka balíčku není přístupná: "
+
+#: infra/sui_book_stats.lua:175
+msgid "Page"
+msgstr ""
+
+#: engines/sui_screen_engine.lua:1952 engines/sui_window.lua:1742
+#: infra/sui_patches.lua:2038 infra/sui_patches.lua:2809
+msgid "Page %1 of %2"
+msgstr "Strana %1 z %2"
+
+#: screens/sui_settings_window.lua:579 screens/sui_settings_window.lua:691
+#: screens/sui_settings_window.lua:1057
+msgid "Page %d"
+msgstr "Strana %d"
+
+#: infra/sui_book_stats.lua:188
+msgid "Page %s/%s"
+msgstr ""
+
+#: screens/sui_settings_window.lua:578 screens/sui_settings_window.lua:690
+#: screens/sui_settings_window.lua:1056
+msgid "Page 1 (Home)"
+msgstr "Strana 1 (Domů)"
+
+#: modules/critter/phrases.lua:264
+msgid "Page by page!"
+msgstr ""
+
+#: features/sui_cover_elements.lua:53 screens/sui_stats_windows.lua:891
+#: screens/sui_stats_windows.lua:3382
+msgid "Pages"
+msgstr "Stránky"
+
+#: engines/sui_book_grid.lua:2043 engines/sui_book_grid.lua:2059
+msgid "Pages Badge"
+msgstr "Štítek stránek"
+
+#: engines/sui_book_grid.lua:2054
+msgid "Pages Badge Color"
+msgstr "Barva štítku stránek"
+
+#: modules/module_reading_stats.lua:245 screens/sui_stats_windows.lua:2217
+msgid "Pages per day"
+msgstr "Stránek za den"
+
+#: modules/module_reading_stats.lua:263
+msgid "Pages per hour"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2234 screens/sui_stats_windows.lua:2250
+msgid "Pages read"
+msgstr "Přečtené stránky"
+
+#: modules/module_tab_grid.lua:581
+#, fuzzy
+msgid "Pagination"
+msgstr "Stránkovací lišta"
+
+#: features/sui_style.lua:1266 screens/sui_menu.lua:2636
+msgid "Pagination Bar"
+msgstr "Stránkovací lišta"
+
+#: screens/sui_menu.lua:2289
+msgid "Pagination Bar Opacity"
+msgstr "Stránkovací lišta"
+
+#: screens/sui_menu.lua:466
+msgid ""
+"Pagination bar hidden.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Stránkovací lišta je skrytá.\n"
+"\n"
+"Restartovat nyní?"
+
+#: screens/sui_menu.lua:445
+msgid ""
+"Pagination bar set to Default.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Stránkovací lišta je nastavena na Výchozí.\n"
+"\n"
+"Restartovat nyní?"
+
+#: screens/sui_menu.lua:552 screens/sui_menu.lua:564 screens/sui_menu.lua:576
+msgid ""
+"Pagination bar size will change after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Velikost stránkovací lišty se změní po restartu.\n"
+"\n"
+"Restartovat nyní?"
+
+#: features/sui_style.lua:155
+msgid "Pagination: First Page"
+msgstr "Stránkování: první stránka"
+
+#: features/sui_style.lua:163
+msgid "Pagination: Last Page"
+msgstr "Stránkování: poslední stránka"
+
+#: features/sui_style.lua:147
+msgid "Pagination: Next Page"
+msgstr "Stránkování: další stránka"
+
+#: features/sui_style.lua:139
+msgid "Pagination: Previous Page"
+msgstr "Stránkování: předchozí stránka"
+
+#: features/sui_quickactions.lua:2453
+msgid "Path chooser not available."
+msgstr "Výběr cesty není k dispozici."
+
+#: features/sui_style.lua:2704
+msgid "Path does not exist: "
+msgstr "Cesta neexistuje: "
+
+#: modules/module_reading_goals.lua:1127
+msgid "Percentage"
+msgstr "Procent přečteno"
+
+#: infra/sui_book_stats.lua:176
+msgid "Percentage read"
+msgstr "Procent přečteno"
+
+#: modules/critter/module_critter.lua:610
+msgid "Phrases"
+msgstr ""
+
+#: screens/sui_onboarding.lua:193
+msgid "Pick any existing folder to use as the library home."
+msgstr "Vyberte libovolnou existující složku jako domovskou složku knihovny."
+
+#: modules/critter/phrases.lua:252
+msgid "Pick your next read."
+msgstr ""
+
+#: modules/module_quote.lua:1407
+msgid "Place .lua files in the plugin's sui_quotes/ folder"
+msgstr "Umístěte soubory .lua do složky sui_quotes/ pluginu"
+
+#: screens/sui_menu.lua:3523
+msgid "Place a folder or .zip in:"
+msgstr "Umístěte složku nebo .zip do:"
+
+#: screens/sui_menu.lua:2235
+msgid "Place images in:"
+msgstr "Umístěte obrázky do:"
+
+#: screens/sui_onboarding.lua:334
+msgid ""
+"Place your files in koreader/settings/simpleui/sui_wallpapers or sui_icons."
+msgstr ""
+"Umístěte soubory do koreader/settings/simpleui/sui_wallpapers nebo sui_icons."
+
+#: screens/sui_menu.lua:3027
+msgid "Placeholder Cover for Bookless Folders"
+msgstr "Zástupná obálka pro složky bez knih"
+
+#: engines/sui_group_cell.lua:228
+#, fuzzy
+msgid "Placement"
+msgstr "Umístěte obrázky do:"
+
+#: infra/sui_compat_check.lua:155
+msgid ""
+"Please delete the Project: Title plugin from your plugins folder and restart "
+"KOReader."
+msgstr ""
+"Odstraňte prosím plugin Project: Title ze složky pluginů a restartujte "
+"KOReader."
+
+#: screens/sui_stats_windows.lua:509
+msgid "Please enter a date in YYYY-MM-DD format."
+msgstr "Zadejte prosím datum ve formátu RRRR-MM-DD."
+
+#: features/sui_presets.lua:339
+msgid "Please enter a name for the preset."
+msgstr "Zadejte prosím název předvolby."
+
+#: features/sui_manual_books.lua:56
+msgid "Please enter a start or finish date."
+msgstr ""
+
+#: features/sui_manual_books.lua:50
+msgid "Please enter a title."
+msgstr ""
+
+#: features/sui_manual_books.lua:53
+msgid "Please enter dates as YYYY-MM-DD or YYYY."
+msgstr ""
+
+#: infra/sui_compat_check.lua:122
+msgid "Please restart KOReader for the change to take effect."
+msgstr "Aby se změna projevila, restartujte prosím KOReader."
+
+#: features/sui_quickactions.lua:2616
+msgid "Please select an action."
+msgstr "Vyberte prosím akci."
+
+#: modules/critter/phrases.lua:248
+msgid "Plenty of time for reading."
+msgstr ""
+
+#: features/sui_quickactions.lua:2494 features/sui_quickactions.lua:2598
+msgid "Plugin"
+msgstr "Plugin"
+
+#: features/sui_quickactions.lua:3005
+msgid "Plugin error: %s"
+msgstr "Chyba pluginu: %s"
+
+#: features/sui_quickactions.lua:3007
+msgid "Plugin not available: %s"
+msgstr "Plugin není k dispozici: %s"
+
+#: screens/sui_menu.lua:3124
+msgid "Portrait list mode"
+msgstr "Režim seznamu na výšku"
+
+#: screens/sui_menu.lua:3116
+msgid "Portrait mosaic mode"
+msgstr "Režim mozaiky na výšku"
+
+#: features/library/sui_label_options.lua:143
+#: features/sui_cover_elements.lua:92 modules/module_tab_grid.lua:595
+msgid "Position"
+msgstr "Pozice"
+
+#: features/sui_quickactions.lua:972 infra/sui_config.lua:139
+msgid "Power"
+msgstr "Napájení"
+
+#: screens/sui_menu.lua:2518
+msgid "Preserve Cover Proportions"
+msgstr "Zachovat poměr stran obálky"
+
+#: features/sui_stats_menu.lua:89
+msgid "Preserve Deleted Books in Statistics"
+msgstr "Zachovat smazané knihy ve statistikách"
+
+#: features/sui_presets.lua:1088 screens/sui_menu.lua:3855
+msgid "Preset \"%s\" imported."
+msgstr "Předvolba \"%s\" byla importována."
+
+#: features/sui_presets.lua:868 features/sui_presets.lua:914
+#: screens/sui_menu.lua:3670
+msgid "Preset \"%s\" not found."
+msgstr "Předvolba \"%s\" nebyla nalezena."
+
+#: features/sui_presets.lua:943 screens/sui_menu.lua:3698
+msgid "Preset \"%s\" saved."
+msgstr "Předvolba \"%s\" byla uložena."
+
+#: features/sui_presets.lua:969 features/sui_presets.lua:1043
+#: screens/sui_menu.lua:3727 screens/sui_menu.lua:3810
+msgid "Preset \"%s\" updated."
+msgstr "Předvolba \"%s\" byla aktualizována."
+
+#: features/sui_presets.lua:1115 screens/sui_menu.lua:3885
+msgid ""
+"Preset exported to:\n"
+"%s"
+msgstr ""
+"Předvolba exportována do:\n"
+"%s"
+
+#: features/sui_presets.lua:936 screens/sui_menu.lua:3692
+msgid "Preset name"
+msgstr "Název předvolby"
+
+#: features/sui_presets.lua:538 features/sui_presets.lua:721
+msgid "Preset not found"
+msgstr "Předvolba nebyla nalezena"
+
+#: screens/sui_menu.lua:2605 screens/sui_settings_window.lua:447
+msgid "Presets"
+msgstr "Předvolby"
+
+#: screens/sui_settings_window.lua:870
+msgid "Presets module unavailable."
+msgstr "Modul předvoleb není k dispozici."
+
+#: screens/sui_onboarding.lua:322
+msgid ""
+"Press and hold any element on the screen (like modules or bars) to quickly "
+"customize its settings."
+msgstr ""
+"Stisknutím a podržením libovolného prvku na obrazovce (například modulů nebo "
+"lišt) rychle upravíte jeho nastavení."
+
+#: screens/sui_bottombar.lua:457
+msgid "Prev"
+msgstr "Předch."
+
+#: features/sui_cover_elements.lua:61
+msgid "Progress"
+msgstr "Průběh"
+
+#: modules/module_coverdeck.lua:1628 modules/module_coverdeck.lua:1685
+#: modules/module_currently.lua:1396 modules/module_currently.lua:1449
+msgid "Progress Badge"
+msgstr "Odznak průběhu"
+
+#: engines/sui_book_grid.lua:2015 modules/module_coverdeck.lua:1648
+#: modules/module_currently.lua:1405
+msgid "Progress Badge Color"
+msgstr "Barva štítku průběhu"
+
+#: screens/sui_menu.lua:3966
+msgid "Progress Bar Type"
+msgstr "Typ ukazatele průběhu"
+
+#: engines/sui_book_grid.lua:2020
+msgid "Progress Indicator"
+msgstr "Indikátor průběhu"
+
+#: engines/sui_book_grid.lua:2007
+msgid "Progress Style"
+msgstr "Styl průběhu"
+
+#: engines/sui_book_grid.lua:2163 modules/module_currently.lua:1377
+msgid "Progress Text"
+msgstr "Průběh"
+
+#: infra/sui_config.lua:1206
+msgid "Progress and Badges"
+msgstr "Průběh a štítky"
+
+#: modules/module_currently.lua:1415
+msgid "Progress and Stats"
+msgstr "Průběh a statistiky"
+
+#: modules/module_coverdeck.lua:126 modules/module_currently.lua:281
+#: screens/sui_quicksettings_bar.lua:220
+msgid "Progress bar"
+msgstr "Ukazatel průběhu"
+
+#: modules/module_currently.lua:1418
+msgid "Progress bar style"
+msgstr "Styl ukazatele průběhu"
+
+#: infra/sui_compat_check.lua:154
+msgid "Project: Title is not compatible with Simple UI."
+msgstr "Project: Title není kompatibilní se Simple UI."
+
+#: infra/sui_config.lua:1189
+msgid "Proportions"
+msgstr "Pozice"
+
+#: features/sui_backup.lua:132 features/sui_quickactions.lua:1536
+#: features/sui_quickactions.lua:3213 modules/module_action_list.lua:283
+#: modules/module_quick_actions.lua:345 modules/module_quick_actions.lua:419
+#: screens/sui_menu.lua:2137 screens/sui_menu.lua:4186
+#: screens/sui_quicksettings_bar.lua:1505 screens/sui_settings_window.lua:359
+msgid "Quick Actions"
+msgstr "Rychlé akce"
+
+#: screens/sui_menu.lua:4190
+msgid "Quick Actions  (%d/%d — %d left)"
+msgstr "Rychlé akce  (%d/%d — zbývá %d)"
+
+#: screens/sui_menu.lua:4188
+msgid "Quick Actions  (%d/%d — at limit)"
+msgstr "Rychlé akce  (%d/%d — na limitu)"
+
+#: features/sui_quickactions.lua:1518 features/sui_quickactions.lua:1856
+#: screens/sui_menu.lua:3361
+msgid "Quick Actions Icons"
+msgstr "Ikony rychlých akcí"
+
+#: modules/module_quick_actions.lua:274 modules/module_quick_actions.lua:331
+#: modules/module_quick_actions.lua:501 screens/sui_menu.lua:1887
+msgid "Quick Actions Row"
+msgstr "Řádek rychlých akcí"
+
+#: features/sui_style.lua:1269
+msgid "Quick Settings"
+msgstr ""
+
+#: screens/sui_menu.lua:2638 screens/sui_quicksettings_bar.lua:1427
+msgid "Quick Settings Bar"
+msgstr "Lišta rychlých nastavení"
+
+#: screens/sui_onboarding.lua:398 screens/sui_onboarding.lua:399
+msgid "Quick Tips"
+msgstr "Rychlé tipy"
+
+#: features/sui_quickactions.lua:604
+msgid "Quit"
+msgstr "Ukončit"
+
+#: features/sui_quickactions.lua:607
+msgid "Quitting…"
+msgstr "Ukončuje se…"
+
+#: modules/module_quote.lua:1446 modules/module_quote.lua:1467
+msgid "Quote"
+msgstr "Citát"
+
+#: features/sui_presets.lua:172 features/sui_presets.lua:236
+#: modules/module_quote.lua:1131
+msgid "Quote of the Day"
+msgstr "Citát dne"
+
+#: features/sui_backup.lua:149
+msgid "Quote pool files from sui_quotes/"
+msgstr "Ve složce sui_quotes/ nebyly nalezeny žádné soubory .lua"
+
+#: modules/module_quote.lua:1419
+msgid "Quotes + My Highlights"
+msgstr "Citáty + moje zvýraznění"
+
+#: infra/sui_config.lua:205
+msgid "RAM Usage"
+msgstr "Využití RAM"
+
+#: features/sui_quickactions.lua:804 infra/sui_config.lua:131
+#: modules/module_library.lua:210
+msgid "Random"
+msgstr "Náhodné"
+
+#: modules/critter/phrases.lua:150
+msgid "Read a little today to reach day %d."
+msgstr ""
+
+#: modules/critter/phrases.lua:155
+msgid "Read a little today to start a new one."
+msgstr ""
+
+#: modules/critter/phrases.lua:142
+msgid "Read again tomorrow to keep it going."
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1677
+msgid "Reader"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1599
+msgid "Reader Layout"
+msgstr ""
+
+#: features/sui_presets.lua:192 features/sui_presets.lua:237
+#: features/sui_stats_menu.lua:138 modules/module_reading_goals.lua:794
+#: modules/module_reading_goals.lua:795
+msgid "Reading Goals"
+msgstr "Čtenářské cíle"
+
+#: features/sui_stats_menu.lua:135 modules/module_heatmap.lua:210
+#: modules/module_heatmap.lua:211 screens/sui_heatmap_popup.lua:123
+msgid "Reading Heatmap"
+msgstr "Mapa aktivity čtení"
+
+#: features/sui_stats_menu.lua:132 screens/sui_stats_windows.lua:2517
+msgid "Reading Insights"
+msgstr "Přehled čtení"
+
+#: features/sui_presets.lua:192 features/sui_presets.lua:237
+#: modules/module_reading_stats.lua:772
+msgid "Reading Stats"
+msgstr "Statistiky čtení"
+
+#: features/sui_backup.lua:138
+msgid "Reading goals, streak mode and freeze bank"
+msgstr "Cíle čtení, režim série a zásoba zmrazení"
+
+#: modules/module_reading_stats.lua:268
+msgid "Reading sessions"
+msgstr ""
+
+#: modules/critter/phrases.lua:43
+msgid "Reading streak"
+msgstr ""
+
+#: modules/critter/phrases.lua:258 modules/critter/phrases.lua:277
+msgid "Ready for a good story?"
+msgstr ""
+
+#: features/sui_stats_menu.lua:65
+msgid "Real streak only"
+msgstr "Pouze skutečná série"
+
+#: features/dialogs/sui_dialogs.lua:222 features/sui_quickactions.lua:590
+msgid "Reboot"
+msgstr "Restartovat zařízení"
+
+#: engines/sui_book_sources.lua:272 features/sui_quickactions.lua:777
+#: features/sui_quickactions.lua:3356 infra/sui_config.lua:129
+msgid "Recent"
+msgstr "Nedávné"
+
+#: engines/sui_book_sources.lua:271 features/sui_presets.lua:210
+#: modules/module_coverdeck.lua:1493 modules/module_recent.lua:23
+msgid "Recent Books"
+msgstr "Nedávné knihy"
+
+#: modules/module_reading_stats.lua:256 modules/module_reading_stats.lua:259
+#: modules/module_reading_stats.lua:262 modules/module_reading_stats.lua:267
+msgid "Records"
+msgstr ""
+
+#: modules/module_reading_stats.lua:259
+msgid "Records — Average session"
+msgstr ""
+
+#: modules/module_reading_stats.lua:256
+msgid "Records — Longest session"
+msgstr ""
+
+#: modules/module_reading_stats.lua:262
+msgid "Records — Pages/hour"
+msgstr ""
+
+#: modules/module_reading_stats.lua:267
+msgid "Records — Sessions"
+msgstr ""
+
+#: features/sui_style.lua:2485
+msgid "Regular"
+msgstr "Běžné"
+
+#: modules/module_tbr.lua:342
+msgid "Remove from To Be Read"
+msgstr "Odebrat z K přečtení"
+
+#: modules/module_tbr.lua:278
+msgid "Remove from list when finished"
+msgstr "Odebrat ze seznamu po dokončení"
+
+#: engines/sui_window.lua:2358 engines/sui_window.lua:3712
+#: features/library/sui_hold_rows.lua:271 features/sui_presets.lua:373
+#: features/sui_presets.lua:974 screens/sui_menu.lua:3571
+#: screens/sui_menu.lua:3733
+msgid "Rename"
+msgstr "Přejmenovat"
+
+#: features/sui_presets.lua:371 screens/sui_menu.lua:3569
+msgid "Rename \"%s\""
+msgstr "Přejmenovat \"%s\""
+
+#: screens/sui_settings_window.lua:521
+msgid "Rename screen"
+msgstr "Přejmenovat obrazovku"
+
+#: screens/sui_menu.lua:2495
+msgid ""
+"Replaces the \"Closing book…\" notice above with the cover for that close, "
+"when a cover is available."
+msgstr ""
+"Nahradí výše uvedené oznámení „Zavírá se kniha…“ obálkou při zavírání, pokud "
+"je obálka k dispozici."
+
+#: screens/sui_menu.lua:452
+msgid ""
+"Replaces the pagination bar with Prev/Next arrows at the edges of the "
+"navigation bar.\n"
+"The arrows dim when there is no previous or next page.\n"
+"With navpager active, as few as 1 tab and at most 4 tabs can be configured."
+msgstr ""
+"Nahradí stránkovací lištu šipkami Předch./Další na okrajích navigační "
+"lišty.\n"
+"Šipky se ztlumí, pokud není předchozí nebo další stránka.\n"
+"Při aktivním navpageru lze nastavit minimálně 1 a maximálně 4 karty."
+
+#: features/sui_quickactions.lua:1864 features/sui_style.lua:1283
+#: screens/sui_menu.lua:2418 screens/sui_stats_windows.lua:526
+msgid "Reset"
+msgstr "Obnovit"
+
+#: features/sui_quickactions.lua:1858 features/sui_style.lua:1277
+msgid "Reset All"
+msgstr "Obnovit vše"
+
+#: features/sui_quickactions.lua:2682
+msgid "Reset All Quick Action Icons"
+msgstr "Obnovit všechny ikony rychlých akcí"
+
+#: features/sui_style.lua:1116
+msgid "Reset All System Icons"
+msgstr "Obnovit všechny systémové ikony"
+
+#: features/sui_quickactions.lua:1863
+msgid "Reset all Quick Actions icons to default?"
+msgstr "Obnovit všechny ikony rychlých akcí na výchozí?"
+
+#: screens/sui_menu.lua:2417
+msgid "Reset all scales to default (100%)? This cannot be undone."
+msgstr ""
+"Obnovit všechna měřítka na výchozí hodnotu (100 %)? Tuto akci nelze vrátit."
+
+#: features/sui_style.lua:1282
+msgid "Reset all system icons to default?"
+msgstr "Obnovit všechny systémové ikony na výchozí?"
+
+#: screens/sui_menu.lua:2412
+msgid "Reset to Default Scale"
+msgstr "Obnovit výchozí měřítko"
+
+#: features/dialogs/sui_dialogs.lua:211 features/sui_quickactions.lua:584
+msgid "Restart"
+msgstr "Restartovat"
+
+#: features/sui_backup.lua:1042 infra/sui_compat_check.lua:123
+#: infra/sui_compat_check.lua:223
+msgid "Restart now"
+msgstr "Restartovat"
+
+#: features/sui_style.lua:2267
+msgid "Restart to fully apply the UI font change."
+msgstr "Pro úplné použití změny písma rozhraní restartujte aplikaci."
+
+#: features/sui_quickactions.lua:586
+msgid "Restarting…"
+msgstr "Restartovat"
+
+#: features/sui_backup.lua:1028
+msgid "Restore"
+msgstr "Restartovat"
+
+#: features/sui_backup.lua:1175
+msgid "Restore Selected…"
+msgstr "Obnovit vybrané…"
+
+#: features/sui_backup.lua:1033
+msgid "Restore failed."
+msgstr "Obnovení selhalo."
+
+#: features/sui_backup.lua:892
+msgid "Restore failed. Your previous configuration was kept unchanged."
+msgstr "Obnovení selhalo. Vaše předchozí konfigurace zůstala beze změny."
+
+#: features/sui_backup.lua:1027
+msgid ""
+"Restore this backup? Existing settings for these categories will be "
+"replaced. Saved presets are merged — yours are kept."
+msgstr ""
+"Obnovit tuto zálohu? Stávající nastavení těchto kategorií budou nahrazena. "
+"Uložené předvolby se sloučí — vaše zůstanou zachovány."
+
+#: screens/sui_menu.lua:2346
+msgid "Return to Home Screen on Wakeup"
+msgstr "Po probuzení návrat na domovskou obrazovku"
+
+#: engines/sui_book_grid.lua:2096 features/sui_cover_elements.lua:82
+msgid "Ribbon"
+msgstr "Stuha"
+
+#: infra/sui_config.lua:2027 modules/module_quick_actions.lua:476
+#: screens/sui_menu.lua:678 screens/sui_menu.lua:883 screens/sui_menu.lua:1309
+#: screens/sui_menu.lua:1507
+msgid "Right"
+msgstr "Vpravo"
+
+#: modules/critter/module_critter.lua:683
+msgid "Right decorations"
+msgstr ""
+
+#: modules/module_reading_goals.lua:1282
+msgid "Ring Alignment"
+msgstr "Zarovnání"
+
+#: modules/module_reading_goals.lua:1270
+msgid "Ring Style"
+msgstr "Styl"
+
+#: modules/module_reading_goals.lua:1263
+msgid "Rings"
+msgstr "Nastavení"
+
+#: modules/critter/phrases.lua:83
+msgid "Rise and read!"
+msgstr ""
+
+#: modules/module_quick_actions.lua:457 screens/sui_quicksettings_bar.lua:1657
+msgid "Round"
+msgstr "Kulaté"
+
+#: engines/sui_book_grid.lua:1993
+msgid "Round Overlay"
+msgstr "Kruhový překryv"
+
+#: modules/module_tab_grid.lua:633
+#, fuzzy
+msgid "Round Pill"
+msgstr "Kulaté"
+
+#: modules/module_quick_actions.lua:458 screens/sui_quicksettings_bar.lua:1658
+msgid "Rounded Square"
+msgstr "Zaoblený čtverec"
+
+#: engines/sui_book_grid.lua:1919 modules/module_reading_stats.lua:1171
+msgid "Rows"
+msgstr "Řádky"
+
+#: infra/sui_datenames.lua:43
+msgid "Sat"
+msgstr "So"
+
+#: features/sui_accent_picker.lua:88
+msgid "Saturation"
+msgstr ""
+
+#: infra/sui_datenames.lua:49
+msgid "Saturday"
+msgstr "Sobota"
+
+#: features/sui_manual_books.lua:106 features/sui_manual_books.lua:134
+#: features/sui_presets.lua:937 features/sui_quickactions.lua:2610
+#: infra/sui_goals.lua:115 screens/sui_menu.lua:3693
+#: screens/sui_settings_window.lua:524 screens/sui_stats_windows.lua:514
+msgid "Save"
+msgstr "Uložit"
+
+#: features/sui_presets.lua:930 screens/sui_menu.lua:3686
+msgid "Save as new preset"
+msgstr "Uložit jako novou předvolbu"
+
+#: features/sui_backup.lua:1115
+msgid "Save backup as"
+msgstr "Uložit zálohu jako"
+
+#: screens/sui_menu.lua:3691
+msgid "Save icon preset"
+msgstr "Uložit předvolbu ikon"
+
+#: features/sui_presets.lua:935
+msgid "Save preset"
+msgstr "Uložit předvolbu"
+
+#: engines/sui_book_grid.lua:1856 engines/sui_book_grid.lua:1858
+#: modules/critter/module_critter.lua:648
+#: modules/critter/module_critter.lua:650 modules/module_action_list.lua:304
+#: modules/module_action_list.lua:306 modules/module_clock.lua:1055
+#: modules/module_clock.lua:1057 modules/module_coverdeck.lua:1463
+#: modules/module_coverdeck.lua:1465 modules/module_currently.lua:1250
+#: modules/module_currently.lua:1252 modules/module_heatmap.lua:323
+#: modules/module_heatmap.lua:325 modules/module_quick_actions.lua:428
+#: modules/module_quick_actions.lua:430 modules/module_quote.lua:1355
+#: modules/module_quote.lua:1359 modules/module_quote.lua:1480
+#: modules/module_reading_goals.lua:1107 modules/module_reading_goals.lua:1109
+#: modules/module_reading_stats.lua:1111 modules/module_reading_stats.lua:1113
+#: screens/sui_menu.lua:2358
+msgid "Scale"
+msgstr "Měřítko"
+
+#: features/sui_cover_elements.lua:293
+msgid ""
+"Scale for the badges (progress, pages, etc.).\n"
+"100% is the default size."
+msgstr ""
+
+#: modules/module_currently.lua:1266
+msgid ""
+"Scale for the cover thumbnail only.\n"
+"100% is the default size.\n"
+"When Dynamic Cover Size is on, this scales the cover relative to its current "
+"dynamic size instead, and the cover never shrinks below its 100% size."
+msgstr ""
+"Měřítko pouze pro miniaturu obálky.\n"
+"100% je výchozí velikost.\n"
+"Je-li zapnutá dynamická velikost obálky, mění se tím místo toho měřítko "
+"obálky vzhledem k její aktuální dynamické velikosti a obálka se nikdy "
+"nezmenší pod 100 % své velikosti."
+
+#: modules/module_coverdeck.lua:1474
+msgid ""
+"Scale for the cover thumbnails only.\n"
+"100% is the default size."
+msgstr ""
+"Měřítko pouze pro miniatury obálek.\n"
+"100% je výchozí velikost."
+
+#: engines/sui_book_grid.lua:1868
+msgid ""
+"Scale for the cover thumbnails only.\n"
+"Text and progress bar follow the module scale.\n"
+"100% is the default size."
+msgstr ""
+"Měřítko pouze pro miniatury obálek.\n"
+"Text a ukazatel průběhu se řídí měřítkem modulu.\n"
+"100% je výchozí velikost."
+
+#: features/sui_cover_elements.lua:129
+msgid ""
+"Scale for the folder name overlay text.\n"
+"100% is the default size."
+msgstr ""
+"Měřítko pro text překryvu názvu složky.\n"
+"100% je výchozí velikost."
+
+#: engines/sui_group_cell.lua:313
+#, fuzzy
+msgid "Scale for the group count badge."
+msgstr "Měřítko štítku s počtem kolekcí."
+
+#: screens/sui_quicksettings_bar.lua:1639
+msgid ""
+"Scale for the label text.\n"
+"100% is the default size."
+msgstr ""
+"Měřítko pro text popisku.\n"
+"100% je výchozí velikost."
+
+#: modules/module_coverdeck.lua:1619 modules/module_currently.lua:1387
+msgid "Scale for the progress badge."
+msgstr "Měřítko odznaku průběhu."
+
+#: engines/sui_book_grid.lua:1960
+msgid ""
+"Scale for this module's corner badges (progress, pages, series, new book)."
+msgstr ""
+"Měřítko rohových štítků tohoto modulu (průběh, stránky, série, nová kniha)."
+
+#: modules/module_coverdeck.lua:1466
+msgid "Scale for this module."
+msgstr "Měřítko pro tento modul."
+
+#: engines/sui_book_grid.lua:1859 modules/critter/module_critter.lua:651
+#: modules/module_action_list.lua:307 modules/module_clock.lua:1058
+#: modules/module_currently.lua:1253 modules/module_quick_actions.lua:431
+#: modules/module_quote.lua:1361 modules/module_reading_goals.lua:1110
+#: modules/module_reading_stats.lua:1114
+msgid ""
+"Scale for this module.\n"
+"100% is the default size."
+msgstr ""
+"Měřítko pro tento modul.\n"
+"100% je výchozí velikost."
+
+#: modules/module_heatmap.lua:326
+msgid ""
+"Scale for this module.\n"
+"100% is the default size. Capped at 100% here: the grid always has as many "
+"columns as \"Weeks shown\" (or, in Time of day view, 24), so there's no room "
+"to grow the cells past their autofit size without the grid overflowing the "
+"card."
+msgstr ""
+"Měřítko pro tento modul.\n"
+"100% je výchozí velikost. Zde je omezeno na 100 %: mřížka má vždy tolik "
+"sloupců, kolik určuje „Zobrazené týdny“ (nebo 24 v zobrazení Denní doba), "
+"takže buňky nemají prostor růst nad svou automatickou velikost, aniž by "
+"mřížka přesáhla kartu."
+
+#: screens/sui_menu.lua:2376
+msgid ""
+"Scales all modules and labels together.\n"
+"100% is the default size."
+msgstr ""
+"Mění měřítko všech modulů a popisků zároveň.\n"
+"100% je výchozí velikost."
+
+#: screens/sui_menu.lua:2398
+msgid ""
+"Scales the module label text above each module, on top of the size set in "
+"Style > Module Labels.\n"
+"100% is the default size."
+msgstr ""
+
+#: screens/sui_menu.lua:3040
+msgid "Scan Subfolders for Covers"
+msgstr "Hledat obálky i v podsložkách"
+
+#: screens/sui_settings_window.lua:523 screens/sui_settings_window.lua:1127
+msgid "Screen name"
+msgstr "Název obrazovky"
+
+#: screens/sui_menu.lua:2329
+msgid ""
+"Screen shown after closing a book. Gestures and quick actions that name a "
+"destination always open that destination."
+msgstr ""
+"Obrazovka zobrazená po zavření knihy. Gesta a rychlé akce, které určují cíl, "
+"vždy otevřou daný cíl."
+
+#: features/library/sui_library_search.lua:181
+#: features/sui_quickactions.lua:889 infra/sui_config.lua:134
+#: screens/sui_titlebar.lua:115 screens/sui_titlebar.lua:1251
+msgid "Search"
+msgstr "Hledat"
+
+#: features/sui_style.lua:93
+msgid "Search Button"
+msgstr "Tlačítko Hledat"
+
+#: features/sui_quickactions.lua:906
+msgid "Search Library not available."
+msgstr "Historie není k dispozici."
+
+#: features/library/sui_library_search.lua:180
+msgid "Search library"
+msgstr "Procházet knihovnu"
+
+#: features/library/sui_library_search.lua:162
+msgid "Search results: %1"
+msgstr "Výsledky hledání: %1"
+
+#: features/library/sui_label_options.lua:135 features/sui_style.lua:1429
+msgid "Secondary"
+msgstr ""
+
+#: screens/sui_menu.lua:3235
+msgid "Secondary Color"
+msgstr ""
+
+#: engines/sui_window.lua:2347 engines/sui_window.lua:3697
+#: features/library/sui_hold_rows.lua:246
+msgid "Select"
+msgstr "Vybrat"
+
+#: features/sui_presets.lua:875 features/sui_presets.lua:883
+#: features/sui_presets.lua:888 screens/sui_menu.lua:3677
+msgid "Select Preset"
+msgstr "Vybrat předvolbu"
+
+#: screens/sui_menu.lua:2254
+msgid "Select Wallpaper"
+msgstr "Vybrat tapetu"
+
+#: modules/module_collections.lua:358
+msgid "Select at least 2 collections to arrange."
+msgstr "Pro uspořádání vyberte alespoň 2 kolekce."
+
+#: infra/sui_datenames.lua:30
+msgid "Sep"
+msgstr "zář"
+
+#: infra/sui_datenames.lua:38
+msgid "September"
+msgstr "Září"
+
+#: features/library/sui_library_browse.lua:68
+#: features/sui_quickactions.lua:1005 infra/sui_config.lua:143
+#: modules/module_currently.lua:279 modules/module_currently.lua:1375
+msgid "Series"
+msgstr "Série"
+
+#: engines/sui_book_grid.lua:2069 engines/sui_book_grid.lua:2085
+msgid "Series Badge"
+msgstr "Štítek série"
+
+#: engines/sui_book_grid.lua:2080
+msgid "Series Badge Color"
+msgstr "Barva štítku série"
+
+#: features/sui_cover_elements.lua:57
+msgid "Series Index"
+msgstr "Pořadí v sérii"
+
+#: screens/sui_menu.lua:40
+msgid "Set"
+msgstr "Nastavit"
+
+#: modules/module_reading_goals.lua:1170
+msgid "Set Goal"
+msgstr "Nastavit cíl"
+
+#: features/library/sui_folder_hold_dialog.lua:36
+msgid "Set as HOME folder"
+msgstr ""
+
+#: modules/module_collections.lua:332
+msgid "Set collection cover"
+msgstr "Nastavit obálku kolekce"
+
+#: engines/sui_group_cell.lua:580
+#, fuzzy
+msgid "Set cover"
+msgstr "Nastavit obálku složky"
+
+#: features/library/sui_foldercovers.lua:561
+#: features/library/sui_library_browse.lua:879
+#: features/library/sui_series_grouping.lua:386
+msgid "Set folder cover"
+msgstr "Nastavit obálku složky"
+
+#: screens/sui_onboarding.lua:204 screens/sui_onboarding.lua:397
+msgid "Set the Home Folder"
+msgstr "Nastavit domovskou složku"
+
+#: screens/sui_onboarding.lua:329
+msgid "Set your reading goal"
+msgstr "Nastavte si čtenářský cíl"
+
+#: features/sui_quickactions.lua:982 infra/sui_config.lua:140
+msgid "Settings"
+msgstr "Nastavení"
+
+#: screens/sui_settings_window.lua:303 screens/sui_settings_window.lua:308
+msgid "Settings not found."
+msgstr "Nastavení nebylo nalezeno."
+
+#: screens/sui_menu.lua:1007 screens/sui_menu.lua:1034
+#: screens/sui_menu.lua:1176 screens/sui_menu.lua:2544
+#: screens/sui_quicksettings_bar.lua:1685
+msgid "Settings on Long Tap"
+msgstr "Nastavení při dlouhém stisku"
+
+#: modules/critter/phrases.lua:122
+msgid "Settle in with a good book."
+msgstr ""
+
+#: modules/module_clock.lua:255
+msgid "Seven"
+msgstr "Sedm"
+
+#: modules/module_clock.lua:258
+msgid "Seventeen"
+msgstr "Sedmnáct"
+
+#: infra/sui_config.lua:1714
+msgid ""
+"Share of the row this module occupies.\n"
+"100% = full width. Modules under 100% share a row when their widths fit "
+"(bento grid)."
+msgstr ""
+"Podíl řádku, který tento modul zabírá.\n"
+"100% = plná šířka. Moduly pod 100% sdílejí řádek, pokud se jejich šířky "
+"vejdou (bento mřížka)."
+
+#: features/library/sui_finished_books.lua:59
+#: features/sui_cover_elements.lua:236 screens/sui_menu.lua:2747
+msgid "Show"
+msgstr ""
+
+#: modules/module_clock.lua:1067
+msgid "Show Battery"
+msgstr "Zobrazit baterii"
+
+#: modules/module_clock.lua:1065
+msgid "Show Clock"
+msgstr "Zobrazit hodiny"
+
+#: modules/module_clock.lua:1066
+msgid "Show Date"
+msgstr "Zobrazit datum"
+
+#: modules/module_action_list.lua:316 modules/module_action_list.lua:342
+msgid "Show Icon"
+msgstr "Zobrazit ikonu"
+
+#: screens/sui_menu.lua:589
+msgid "Show Page Count in Title Bar"
+msgstr "Zobrazit počet stránek v horní liště"
+
+#: screens/sui_menu.lua:2981
+msgid "Show Uncategorized Items"
+msgstr ""
+
+#: screens/sui_menu.lua:2433
+msgid ""
+"Show a brief \"Closing book…\" notice when closing a book, preventing "
+"accidental double-taps while e-ink refreshes."
+msgstr ""
+"Při zavírání knihy zobrazí krátké upozornění „Zavírá se kniha…“, aby se "
+"během obnovy e-inku předešlo nechtěnému dvojitému klepnutí."
+
+#: features/sui_stats_menu.lua:118
+msgid ""
+"Show a brief \"Loading statistics…\" notice when opening a statistics "
+"window, preventing accidental double-taps while e-ink refreshes."
+msgstr ""
+"Při otevření okna statistik krátce zobrazí upozornění „Načítají se "
+"statistiky…“, aby se předešlo nechtěným dvojitým klepnutím při obnově e-ink "
+"displeje."
+
+#: engines/sui_book_sources.lua:276 modules/module_coverdeck.lua:1661
+#: modules/module_recent.lua:49
+msgid "Show finished books"
+msgstr "Zobrazit dokončené knihy"
+
+#: modules/module_reading_stats.lua:1206
+msgid "Show icons"
+msgstr ""
+
+#: modules/module_heatmap.lua:359
+msgid "Show legend"
+msgstr "Zobrazit legendu"
+
+#: screens/sui_menu.lua:2494
+msgid "Show on Close"
+msgstr "Zobrazit při zavření"
+
+#: screens/sui_menu.lua:2483
+msgid "Show on Open"
+msgstr "Zobrazit při otevření"
+
+#: infra/sui_config.lua:2047
+msgid "Show section label"
+msgstr "Zobrazit popisek sekce"
+
+#: screens/sui_quicksettings_bar.lua:1626
+msgid ""
+"Show the frontlight and warmth sliders below the book details in the Book "
+"layout."
+msgstr ""
+
+#: screens/sui_menu.lua:2259
+msgid "Show wallpaper on all screens"
+msgstr "Zobrazit tapetu na všech obrazovkách"
+
+#: screens/sui_menu.lua:2851
+msgid "Shown in captions"
+msgstr ""
+
+#: screens/sui_menu.lua:593
+msgid ""
+"Shows \"Page X of Y\" in the title bar subtitle when browsing the library, "
+"history or collections.\n"
+"Navpager enables this automatically.\n"
+"Not available when Navpager is active."
+msgstr ""
+"Při procházení knihovny, historie nebo kolekcí zobrazuje v podtitulku horní "
+"lišty „Strana X z Y“.\n"
+"Navpager tuto volbu zapíná automaticky.\n"
+"Není dostupné, když je aktivní Navpager."
+
+#: screens/sui_menu.lua:484
+msgid ""
+"Shows a row of dots at the bottom of the homescreen.\n"
+"The active page dot is filled; the others are dimmed.\n"
+"Always active when Navpager is selected."
+msgstr ""
+"Zobrazuje řadu teček ve spodní části domovské obrazovky.\n"
+"Tečka aktivní stránky je vyplněná, ostatní jsou ztlumené.\n"
+"Při zvoleném Navpageru je vždy aktivní."
+
+#: engines/sui_book_grid.lua:1535
+msgid "Shuffle"
+msgstr "Zamíchat"
+
+#: modules/module_library.lua:244
+msgid "Shuffle now"
+msgstr "Zamíchat nyní"
+
+#: modules/module_currently.lua:1420
+msgid "Simple"
+msgstr "Jednoduchý"
+
+#: _meta.lua:5 main.lua:2336 main.lua:2349 screens/sui_menu.lua:4143
+#: screens/sui_menu.lua:4220
+msgid "Simple UI"
+msgstr "Simple UI"
+
+#: infra/sui_updater.lua:448
+msgid ""
+"Simple UI %s installed.\n"
+"\n"
+"Restart KOReader to apply the update?"
+msgstr ""
+"Simple UI %s bylo nainstalováno.\n"
+"\n"
+"Restartovat KOReader pro použití aktualizace?"
+
+#: infra/sui_updater.lua:492
+msgid ""
+"Simple UI %s is available!\n"
+"You have %s."
+msgstr ""
+"Simple UI %s je k dispozici!\n"
+"Máte %s."
+
+#: screens/sui_settings_window.lua:1034
+msgid "Simple UI Settings"
+msgstr "Nastavení Simple UI"
+
+#: screens/sui_onboarding.lua:294
+msgid ""
+"Simple UI is designed to be simple and flexible. Here are a few tips to get "
+"the most out of it."
+msgstr ""
+"Simple UI je navrženo tak, aby bylo jednoduché a flexibilní. Zde je několik "
+"tipů, jak z něj vytěžit maximum."
+
+#: infra/sui_updater.lua:486
+msgid "Simple UI is up to date (%s)."
+msgstr "Simple UI je aktuální (%s)."
+
+#: main.lua:201
+msgid ""
+"Simple UI was updated (%s → %s).\n"
+"\n"
+"A restart is recommended to apply all changes cleanly."
+msgstr ""
+"Simple UI bylo aktualizováno (%s → %s).\n"
+"\n"
+"Pro čisté použití všech změn se doporučuje restart."
+
+#: screens/sui_menu.lua:4153
+msgid ""
+"Simple UI will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Simple UI bude po restartu %s.\n"
+"\n"
+"Restartovat nyní?"
+
+#: main.lua:991
+msgid "Simple UI: Go to Homescreen"
+msgstr "Simple UI: přejít na domovskou obrazovku"
+
+#: main.lua:997
+msgid "Simple UI: Go to Library"
+msgstr "Simple UI: přejít do knihovny"
+
+#: main.lua:1021
+msgid "Simple UI: Navigation Bar"
+msgstr "Simple UI: Navigační lišta"
+
+#: main.lua:1015
+msgid "Simple UI: Recent"
+msgstr "Simple UI: Nedávné"
+
+#: main.lua:1009
+msgid "Simple UI: Settings"
+msgstr "Simple UI: nastavení"
+
+#: main.lua:1003
+msgid "Simple UI: Toggle Homescreen / Library"
+msgstr "Simple UI: přepnout domovskou obrazovku / knihovnu"
+
+#: engines/sui_group_cell.lua:261 features/sui_cover_elements.lua:317
+msgid "Single Cover"
+msgstr "Jedna obálka"
+
+#: modules/module_clock.lua:254
+msgid "Six"
+msgstr "Šest"
+
+#: modules/module_clock.lua:258
+msgid "Sixteen"
+msgstr "Šestnáct"
+
+#: features/sui_cover_elements.lua:291 infra/sui_config.lua:1030
+#: modules/module_action_list.lua:301 modules/module_action_list.lua:334
+#: screens/sui_menu.lua:963 screens/sui_menu.lua:1721
+#: screens/sui_quicksettings_bar.lua:1637
+#: screens/sui_quicksettings_bar.lua:1638
+msgid "Size"
+msgstr "Velikost"
+
+#: screens/sui_menu.lua:3293
+msgid ""
+"Size of the module labels.\n"
+"100% is the default size."
+msgstr ""
+
+#: screens/sui_menu.lua:1129
+msgid ""
+"Size of the tab icons.\n"
+"100% is the default size."
+msgstr ""
+"Velikost ikon karet.\n"
+"100% je výchozí velikost."
+
+#: screens/sui_menu.lua:1140
+msgid ""
+"Size of the tab label text.\n"
+"100% is the default size."
+msgstr ""
+"Velikost textu popisku karty.\n"
+"100% je výchozí velikost."
+
+#: modules/module_tab_grid.lua:668
+#, fuzzy
+msgid ""
+"Size of the tab labels.\n"
+"100% matches the homescreen section labels."
+msgstr ""
+"Velikost textu popisku karty.\n"
+"100% je výchozí velikost."
+
+#: screens/sui_menu.lua:1723
+msgid ""
+"Size of the title bar buttons and tabs.\n"
+"100% is the default size."
+msgstr ""
+
+#: engines/sui_book_grid.lua:2165 modules/critter/module_critter.lua:698
+#: modules/module_action_list.lua:356 modules/module_clock.lua:1084
+#: modules/module_coverdeck.lua:1612 modules/module_currently.lua:1379
+#: modules/module_quick_actions.lua:442 modules/module_quote.lua:1447
+#: modules/module_quote.lua:1468 modules/module_reading_goals.lua:1128
+#: modules/module_reading_stats.lua:1131
+msgid ""
+"Size of this text.\n"
+"100% is the default size."
+msgstr ""
+"Velikost textu popisku karty.\n"
+"100% je výchozí velikost."
+
+#: features/sui_quickactions.lua:597
+msgid "Sleep"
+msgstr "Uspat"
+
+#: modules/critter/phrases.lua:104
+msgid "Sleep well. The book will keep."
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1610
+msgid "Slider Style"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1625
+msgid "Sliders in Book Layout"
+msgstr ""
+
+#: screens/sui_menu.lua:556
+msgid "Small"
+msgstr "Malé"
+
+#: infra/sui_backdrop.lua:81
+msgid "Solid"
+msgstr "Plné"
+
+#: engines/sui_book_grid.lua:1548 modules/module_collections.lua:443
+#: modules/module_library.lua:225
+msgid "Sort"
+msgstr "Řazení"
+
+#: modules/module_coverdeck.lua:1530 modules/module_quote.lua:1415
+msgid "Source"
+msgstr "Zdroj"
+
+#: screens/sui_menu.lua:1160
+msgid ""
+"Space below the bottom navigation bar.\n"
+"100% is the default spacing."
+msgstr ""
+"Prostor pod spodní navigační lištou.\n"
+"100% je výchozí rozestup."
+
+#: screens/sui_menu.lua:3308
+msgid ""
+"Space between the characters of a module label, as a percentage of its text "
+"size."
+msgstr ""
+
+#: modules/module_spacer.lua:58 modules/module_spacer.lua:112
+msgid "Spacer"
+msgstr "Mezera"
+
+#: modules/module_spacer.lua:89 modules/module_spacer.lua:90
+msgid "Spacer Size"
+msgstr "Velikost mezery"
+
+#: modules/module_clock.lua:1131 modules/module_clock.lua:1132
+msgid "Spacing"
+msgstr "Rozestup"
+
+#: modules/module_tab_grid.lua:634
+msgid "Square Pill"
+msgstr ""
+
+#: screens/sui_onboarding.lua:447
+msgid "Start using Simple UI"
+msgstr "Začít používat Simple UI"
+
+#: infra/sui_patches.lua:1039 infra/sui_patches.lua:1041
+#: screens/sui_menu.lua:2318
+msgid "Start with"
+msgstr "Spustit s"
+
+#: screens/sui_onboarding.lua:131
+msgid "Start with a ready-made layout. You can change everything later."
+msgstr "Začněte s hotovým rozvržením. Vše můžete později změnit."
+
+#: features/sui_manual_books.lua:110
+msgid "Started"
+msgstr ""
+
+#: modules/module_coverdeck.lua:127 modules/module_coverdeck.lua:1584
+#: modules/module_coverdeck.lua:1604 modules/module_coverdeck.lua:1611
+#: modules/module_currently.lua:282 modules/module_currently.lua:1340
+#: modules/module_currently.lua:1359 screens/sui_quicksettings_bar.lua:219
+#: screens/sui_quicksettings_bar.lua:1567
+msgid "Statistics"
+msgstr "Statistiky"
+
+#: features/sui_stats_menu.lua:117
+msgid "Statistics Loading Notice"
+msgstr "Oznámení o načítání statistik"
+
+#: screens/sui_stats_windows.lua:58
+msgid "Statistics database library not available."
+msgstr "Knihovna databáze statistik není k dispozici."
+
+#: features/sui_quickactions.lua:966
+msgid "Statistics plugin not available."
+msgstr "Plugin statistik není k dispozici."
+
+#: features/sui_quickactions.lua:951 infra/sui_config.lua:138
+#: screens/sui_menu.lua:2621 screens/sui_settings_window.lua:388
+#: screens/sui_settings_window.lua:453
+msgid "Stats"
+msgstr "Statistiky"
+
+#: modules/module_currently.lua:1428
+msgid "Stats layout"
+msgstr "Rozvržení statistik"
+
+#: features/sui_stats_menu.lua:57 modules/module_coverdeck.lua:1711
+#: modules/module_currently.lua:1484 modules/module_reading_goals.lua:1310
+msgid "Stats updated successfully."
+msgstr "Statistiky byly úspěšně aktualizovány."
+
+#: screens/sui_menu.lua:2633
+msgid "Status Bar"
+msgstr "Stavová lišta"
+
+#: screens/sui_menu.lua:2287
+msgid "Status Bar Opacity"
+msgstr "Velikost stavové lišty"
+
+#: screens/sui_menu.lua:964
+msgid "Status Bar Size"
+msgstr "Velikost stavové lišty"
+
+#: screens/sui_menu.lua:808
+msgid ""
+"Status Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Stavová lišta bude po restartu %s.\n"
+"\n"
+"Restartovat nyní?"
+
+#: modules/module_reading_stats.lua:282
+msgid "Status — Abandoned"
+msgstr "Stav — Opuštěné"
+
+#: modules/module_reading_stats.lua:281
+msgid "Status — Reading"
+msgstr "Stav — Rozečtené"
+
+#: modules/module_reading_stats.lua:280
+msgid "Status — Unread"
+msgstr "Stav — Nepřečtené"
+
+#: screens/sui_settings_window.lua:337
+msgid "Status, title, navigation and pagination"
+msgstr "Stav, název, navigace a stránkování"
+
+#: modules/critter/phrases.lua:107
+msgid "Still awake?"
+msgstr ""
+
+#: features/sui_stats_menu.lua:134 modules/module_reading_stats.lua:250
+#: screens/sui_stats_windows.lua:3227
+msgid "Streak"
+msgstr "Série"
+
+#: features/sui_stats_menu.lua:62
+msgid "Streak Mode"
+msgstr "Režim série"
+
+#: modules/critter/phrases.lua:141
+msgid "Streak started!"
+msgstr ""
+
+#: screens/sui_menu.lua:2269
+msgid "Stretch to fill screen"
+msgstr "Roztáhnout přes celou obrazovku"
+
+#: features/sui_cover_elements.lua:110 infra/sui_config.lua:1023
+#: modules/module_coverdeck.lua:1482 modules/module_reading_stats.lua:1183
+#: modules/module_tab_grid.lua:584 modules/module_tab_grid.lua:631
+#: screens/sui_menu.lua:1758 screens/sui_menu.lua:3275
+#: screens/sui_menu.lua:4177 screens/sui_settings_window.lua:351
+#: screens/sui_settings_window.lua:1039
+msgid "Style"
+msgstr "Styl"
+
+#: screens/sui_menu.lua:1781 screens/sui_menu.lua:1784
+msgid "Sub-page Buttons"
+msgstr "Tlačítka podstránek"
+
+#: infra/sui_datenames.lua:43
+msgid "Sun"
+msgstr "Ne"
+
+#: infra/sui_datenames.lua:48
+msgid "Sunday"
+msgstr "Neděle"
+
+#: modules/critter/phrases.lua:126
+msgid "Sweet dreams and good books."
+msgstr ""
+
+#: modules/module_tab_grid.lua:587
+#, fuzzy
+msgid "Swipe Bar"
+msgstr "Indikátor přejetí"
+
+#: screens/sui_menu.lua:988
+msgid "Swipe Indicator"
+msgstr "Indikátor přejetí"
+
+#: features/sui_quickactions.lua:1824 features/sui_quickactions.lua:1827
+#: features/sui_quickactions.lua:2511 features/sui_quickactions.lua:2599
+msgid "System Actions"
+msgstr "Systémové akce"
+
+#: features/sui_style.lua:1275 screens/sui_menu.lua:3330
+#: screens/sui_menu.lua:3338
+msgid "System Icons"
+msgstr "Systémové ikony"
+
+#: features/sui_presets.lua:296
+msgid "System Presets"
+msgstr ""
+
+#: features/sui_quickactions.lua:2978
+msgid "System action error: %s"
+msgstr "Chyba systémové akce: %s"
+
+#: screens/sui_stats_windows.lua:2510
+msgid "THIS MONTH"
+msgstr "TENTO MĚSÍC"
+
+#: screens/sui_stats_windows.lua:2509
+msgid "THIS WEEK"
+msgstr "TENTO TÝDEN"
+
+#: screens/sui_heatmap_popup.lua:92
+msgid "TIME OF DAY"
+msgstr "DENNÍ DOBA"
+
+#: screens/sui_stats_windows.lua:2505
+msgid "TODAY'S SUMMARY"
+msgstr "DNEŠNÍ SOUHRN"
+
+#: features/sui_style.lua:1270 modules/module_tab_grid.lua:628
+msgid "Tab Bar"
+msgstr "Lišta karet"
+
+#: screens/sui_menu.lua:1091
+msgid "Tab Style"
+msgstr "Styl karet"
+
+#: features/sui_style.lua:1225
+msgid "Tab bar icons must be PNG or SVG."
+msgstr "Ikony lišty karet musí být ve formátu PNG nebo SVG."
+
+#: features/sui_style.lua:301
+msgid "Tab: Back to File Browser"
+msgstr "Karta: Zpět do správce souborů"
+
+#: features/sui_style.lua:280
+msgid "Tab: File Browser Settings"
+msgstr "Karta: Nastavení správce souborů"
+
+#: features/sui_style.lua:252
+msgid "Tab: Menu"
+msgstr "Karta: Menu"
+
+#: features/sui_style.lua:287
+msgid "Tab: Reader Navigation"
+msgstr "Karta: Navigace čtečky"
+
+#: features/sui_style.lua:294
+msgid "Tab: Reader Typeset"
+msgstr "Karta: Sazba čtečky"
+
+#: features/sui_style.lua:273
+msgid "Tab: Search"
+msgstr "Karta: Hledání"
+
+#: features/sui_style.lua:259
+msgid "Tab: Settings"
+msgstr "Karta: Nastavení"
+
+#: features/sui_style.lua:308
+msgid "Tab: SimpleUI Quick Settings"
+msgstr "Karta: Rychlá nastavení SimpleUI"
+
+#: features/sui_style.lua:266
+msgid "Tab: Tools"
+msgstr "Karta: Nástroje"
+
+#: features/sui_presets.lua:158 modules/module_tab_grid.lua:930
+#: modules/module_tab_grid.lua:1100
+msgid "Tabbed Grid"
+msgstr ""
+
+#: modules/module_tab_grid.lua:635 modules/module_tab_grid.lua:863
+#: modules/module_tab_grid.lua:866 screens/sui_menu.lua:350
+#: screens/sui_menu.lua:1762
+msgid "Tabs"
+msgstr "Karty"
+
+#: screens/sui_menu.lua:358
+msgid "Tabs  (%d/%d — %d left)"
+msgstr "Karty  (%d/%d — zbývá %d)"
+
+#: screens/sui_menu.lua:356
+msgid "Tabs  (%d/%d — at limit)"
+msgstr "Karty  (%d/%d — na limitu)"
+
+#: screens/sui_menu.lua:1586
+msgid "Tabs and Search"
+msgstr "Karty a hledání"
+
+#: features/library/sui_library_browse.lua:69
+#: features/sui_quickactions.lua:1006 infra/sui_config.lua:145
+msgid "Tags"
+msgstr "Štítky"
+
+#: modules/critter/phrases.lua:91
+msgid "Taking a break?"
+msgstr ""
+
+#: screens/sui_settings_window.lua:487
+msgid "Tap \"Create Screen\" below to add one."
+msgstr "Klepněte na „Vytvořit obrazovku“ níže a přidejte ji."
+
+#: modules/module_clock.lua:256
+msgid "Ten"
+msgstr "Deset"
+
+#: engines/sui_book_grid.lua:1991 infra/sui_config.lua:1100
+#: modules/module_quote.lua:1482 modules/module_tab_grid.lua:667
+#: modules/module_tab_grid.lua:932 screens/sui_menu.lua:241
+msgid "Text"
+msgstr "Text"
+
+#: features/library/sui_label_options.lua:116
+msgid "Text Size"
+msgstr "Velikost textu"
+
+#: screens/sui_menu.lua:243
+msgid "Text only"
+msgstr "Pouze text"
+
+#: modules/critter/phrases.lua:269
+msgid "That makes me happy."
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1493
+msgid ""
+"The Quick Settings Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Lišta rychlých nastavení bude po restartu %s.\n"
+"\n"
+"Restartovat nyní?"
+
+#: screens/sui_menu.lua:2507
+msgid ""
+"The cover shown right as a book opens normally comes from the library's "
+"cached thumbnail, which can look soft on higher-resolution screens. When on, "
+"SimpleUI instead reads the cover straight from the book file for that moment "
+"(also covers books never opened before, which otherwise show no cover at "
+"all) — at the cost of a brief extra pause while opening, since the file has "
+"to be read twice. Cover on close is unaffected either way: it already reads "
+"the full-quality cover from the open book."
+msgstr ""
+"Obálka zobrazená hned při otevření knihy obvykle pochází z miniatury uložené "
+"v mezipaměti knihovny, která může na obrazovkách s vyšším rozlišením působit "
+"rozmazaně. Je-li zapnuto, SimpleUI pro tento okamžik načte obálku přímo ze "
+"souboru knihy (pokryje tak i knihy, které ještě nikdy nebyly otevřeny a "
+"jinak by obálku vůbec nezobrazily) — za cenu krátké prodlevy při otevírání, "
+"protože soubor je nutné načíst dvakrát. Obálky při zavření se to netýká: ty "
+"už se načítají v plné kvalitě z otevřené knihy."
+
+#: modules/critter/module_critter.lua:589
+msgid "The critter may use it in what it says."
+msgstr ""
+
+#: main.lua:1395 screens/sui_bottombar.lua:1861
+msgid "The navigation bar is already available on this screen."
+msgstr "Navigační lišta je na této obrazovce již dostupná."
+
+#: modules/critter/phrases.lua:96
+msgid "The perfect time to unwind with a book."
+msgstr ""
+
+#: features/sui_manual_books.lua:62
+msgid "The start date is after the finish date."
+msgstr ""
+
+#: screens/sui_menu.lua:1714
+msgid ""
+"The title bar style will change after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Styl titulní lišty se změní po restartu.\n"
+"\n"
+"Restartovat nyní?"
+
+#: modules/critter/phrases.lua:244
+msgid "The weekend is made for reading."
+msgstr ""
+
+#: infra/sui_patches.lua:1181
+msgid "The «To Be Read» collection cannot be renamed."
+msgstr "Kolekci «K přečtení» nelze přejmenovat."
+
+#: modules/module_clock.lua:257
+msgid "Thirteen"
+msgstr "Třináct"
+
+#: modules/module_clock.lua:262
+msgid "Thirty"
+msgstr "Třicet"
+
+#: features/sui_backup.lua:976
+msgid "This backup contains no settings or files."
+msgstr "Tato záloha neobsahuje žádná nastavení ani soubory."
+
+#: modules/module_tbr.lua:354
+msgid ""
+"This book is marked as Finished, so it can't be added to To Be Read.\n"
+"Change its status to Reading or On Hold first."
+msgstr ""
+"Tato kniha je označena jako Dokončená, proto ji nelze přidat do K přečtení.\n"
+"Nejprve změňte její stav na Čtení nebo Odloženo."
+
+#: features/sui_quickactions.lua:3117 features/sui_quickactions.lua:3196
+msgid ""
+"This group is empty.\n"
+"Add actions to it from Settings → Quick Actions."
+msgstr ""
+"Tato skupina je prázdná.\n"
+"Přidejte do ní akce v Nastavení → Rychlé akce."
+
+#: modules/module_reading_stats.lua:246 modules/module_reading_stats.lua:247
+msgid "This month"
+msgstr ""
+
+#: modules/module_reading_stats.lua:247
+msgid "This month — Pages"
+msgstr "Tento měsíc — Stránky"
+
+#: modules/module_reading_stats.lua:246
+msgid "This month — Time"
+msgstr "Tento měsíc — Čas"
+
+#: features/sui_presets.lua:343
+msgid "This name is reserved by a built-in preset."
+msgstr "Tento název je vyhrazen pro vestavěnou předvolbu."
+
+#: modules/module_reading_stats.lua:242 modules/module_reading_stats.lua:243
+#: modules/module_reading_stats.lua:270
+msgid "This week"
+msgstr ""
+
+#: modules/module_reading_stats.lua:243
+msgid "This week — Pages"
+msgstr "Tento týden — Stránky"
+
+#: modules/module_reading_stats.lua:242
+msgid "This week — Time"
+msgstr "Tento týden — Čas"
+
+#: screens/sui_menu.lua:4057
+msgid ""
+"This will delete all Simple UI settings and restart KOReader.\n"
+"Are you sure?"
+msgstr ""
+"Tímto se smažou všechna nastavení Simple UI a KOReader se restartuje.\n"
+"Opravdu pokračovat?"
+
+#: modules/module_clock.lua:253
+msgid "Three"
+msgstr "Tři"
+
+#: infra/sui_datenames.lua:43
+msgid "Thu"
+msgstr "Čt"
+
+#: infra/sui_datenames.lua:49
+msgid "Thursday"
+msgstr "Čtvrtek"
+
+#: modules/critter/phrases.lua:88
+msgid "Time for a few pages?"
+msgstr ""
+
+#: modules/module_heatmap.lua:224 modules/module_heatmap.lua:341
+msgid "Time of day"
+msgstr "Denní doba"
+
+#: infra/sui_book_stats.lua:178
+msgid "Time read"
+msgstr "Čas čtení"
+
+#: infra/sui_book_stats.lua:179
+msgid "Time remaining"
+msgstr "Zbývající čas"
+
+#: modules/critter/module_critter.lua:349
+msgid "Tiny Critter"
+msgstr ""
+
+#: features/sui_manual_books.lua:108 modules/module_coverdeck.lua:124
+#: modules/module_coverdeck.lua:1611 modules/module_currently.lua:277
+#: modules/module_currently.lua:1373 screens/sui_menu.lua:2759
+#: screens/sui_quicksettings_bar.lua:217 screens/sui_titlebar.lua:117
+msgid "Title"
+msgstr "Název"
+
+#: engines/sui_book_grid.lua:1530 modules/module_library.lua:203
+msgid "Title (A–Z)"
+msgstr "Název (A–Z)"
+
+#: engines/sui_book_grid.lua:1531 modules/module_library.lua:204
+msgid "Title (Z–A)"
+msgstr "Název (Z–A)"
+
+#: features/sui_style.lua:1264 screens/sui_menu.lua:2635
+msgid "Title Bar"
+msgstr "Horní lišta"
+
+#: screens/sui_menu.lua:2288
+msgid "Title Bar Opacity"
+msgstr "Neprůhlednost titulní lišty"
+
+#: screens/sui_menu.lua:1722
+msgid "Title Bar Size"
+msgstr ""
+
+#: screens/sui_menu.lua:1751
+msgid ""
+"Title Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Horní lišta bude po restartu %s.\n"
+"\n"
+"Restartovat nyní?"
+
+#: screens/sui_menu.lua:2760
+msgid "Title and Author"
+msgstr "Název a autor"
+
+#: engines/sui_book_sources.lua:348 modules/module_coverdeck.lua:1494
+#: modules/module_tbr.lua:378
+msgid "To Be Read"
+msgstr "K přečtení"
+
+#: engines/sui_book_sources.lua:360
+msgid "To Be Read Books"
+msgstr "Knihy k přečtení"
+
+#: modules/module_reading_goals.lua:872 modules/module_reading_goals.lua:950
+#: modules/module_reading_goals.lua:952 modules/module_reading_goals.lua:1000
+#: modules/module_reading_goals.lua:1003 modules/module_reading_stats.lua:240
+#: modules/module_reading_stats.lua:241
+msgid "Today"
+msgstr "Dnes"
+
+#: modules/module_reading_stats.lua:241
+msgid "Today — Pages"
+msgstr "Dnes — Stránky"
+
+#: modules/module_reading_stats.lua:240
+msgid "Today — Time"
+msgstr "Dnes — Čas"
+
+#: modules/critter/phrases.lua:45
+msgid "Today's reading"
+msgstr ""
+
+#: engines/sui_window.lua:3715
+msgid "Toggle"
+msgstr "Přepnout"
+
+#: engines/sui_group_cell.lua:297 features/library/sui_label_options.lua:144
+#: features/sui_cover_elements.lua:95 modules/module_tab_grid.lua:597
+msgid "Top"
+msgstr "Nahoře"
+
+#: screens/sui_topbar.lua:636
+msgid "Top Bar"
+msgstr "Horní lišta"
+
+#: infra/sui_config.lua:1760
+msgid "Top Margin"
+msgstr "Horní okraj"
+
+#: modules/critter/module_critter.lua:625
+msgid "Topics"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:887 screens/sui_stats_windows.lua:3378
+msgid "Total"
+msgstr "Celkem"
+
+#: screens/sui_stats_windows.lua:2232 screens/sui_stats_windows.lua:2248
+msgid "Total time"
+msgstr "Celkový čas"
+
+#: features/sui_backup.lua:705
+msgid "Total: %d settings, %d files (%s)"
+msgstr "Celkem: %d nastavení, %d souborů (%s)"
+
+#: infra/sui_backdrop.lua:80
+msgid "Transparent"
+msgstr "Průhledné"
+
+#: infra/sui_datenames.lua:43
+msgid "Tue"
+msgstr "Út"
+
+#: infra/sui_datenames.lua:48
+msgid "Tuesday"
+msgstr "Úterý"
+
+#: modules/module_clock.lua:256
+msgid "Twelve"
+msgstr "Dvanáct"
+
+#: modules/module_clock.lua:262
+msgid "Twenty"
+msgstr "Dvacet"
+
+#: modules/module_clock.lua:253
+msgid "Two"
+msgstr "Dvě"
+
+#: features/sui_cover_elements.lua:64 features/sui_cover_elements.lua:78
+#: modules/module_heatmap.lua:338
+msgid "Type"
+msgstr "Typ"
+
+#: screens/sui_menu.lua:3922
+msgid "UI Font"
+msgstr "Písmo rozhraní"
+
+#: features/library/sui_virtual_path.lua:75
+msgid "Uncategorized"
+msgstr ""
+
+#: screens/sui_menu.lua:3012
+msgid "Uniformize Covers (2:3)"
+msgstr "Sjednotit obálky (2:3)"
+
+#: engines/sui_cover_placeholder.lua:145
+msgid "Unknown"
+msgstr "Neznámé"
+
+#: screens/sui_stats_windows.lua:775
+msgid "Unknown error."
+msgstr "Neznámá chyba."
+
+#: features/sui_style.lua:2713
+msgid "Unsupported format (use a folder or a .zip file)"
+msgstr "Nepodporovaný formát (použijte složku nebo soubor .zip)"
+
+#: features/sui_quickactions.lua:110 features/sui_quickactions.lua:1768
+#: features/sui_style.lua:1103 features/sui_style.lua:1218
+msgid ""
+"Unsupported icon format.\n"
+"Please use a PNG or SVG file."
+msgstr ""
+"Nepodporovaný formát ikony.\n"
+"Použijte prosím soubor PNG nebo SVG."
+
+#: engines/sui_window.lua:2355 engines/sui_window.lua:3709
+msgid "Update"
+msgstr "Aktualizovat"
+
+#: features/sui_stats_menu.lua:146 modules/module_coverdeck.lua:1694
+#: modules/module_currently.lua:1466 modules/module_reading_goals.lua:1292
+#: modules/module_reading_goals.lua:1328 modules/module_reading_stats.lua:1222
+msgid "Update Stats Now"
+msgstr "Aktualizovat statistiky nyní"
+
+#: infra/sui_updater.lua:465
+msgid "Update cancelled."
+msgstr "Aktualizace zrušena."
+
+#: infra/sui_updater.lua:666
+msgid "Update check cancelled."
+msgstr "Kontrola aktualizací zrušena."
+
+#: features/sui_presets.lua:961 screens/sui_menu.lua:3718
+msgid "Update with current settings"
+msgstr "Aktualizovat aktuálním nastavením"
+
+#: screens/sui_menu.lua:4036
+msgid "Updater module not found."
+msgstr "Modul aktualizací nebyl nalezen."
+
+#: modules/critter/module_critter.lua:595
+msgid "Use at most %1 characters."
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2814
+msgid "Use freeze"
+msgstr "Použít zmrazení"
+
+#: features/sui_quickactions.lua:2060
+msgid "Use this Nerd Font icon?"
+msgstr "Použít tuto ikonu Nerd Font?"
+
+#: screens/sui_menu.lua:506
+msgid ""
+"Uses the standard KOReader pagination bar on the homescreen.\n"
+"Not available when Navpager is active."
+msgstr ""
+"Na domovské obrazovce používá standardní stránkovací lištu KOReaderu.\n"
+"Není dostupné, když je aktivní Navpager."
+
+#: modules/module_reading_stats.lua:1130
+msgid "Value"
+msgstr "Hodnota"
+
+#: screens/sui_settings_window.lua:376
+msgid "Version, author and updates"
+msgstr "Verze, autor a aktualizace"
+
+#: screens/sui_menu.lua:4011
+msgid "Version: %s"
+msgstr "Verze: %s"
+
+#: infra/sui_config.lua:1762
+msgid ""
+"Vertical space above this module.\n"
+"100% is the default spacing."
+msgstr ""
+"Svislý prostor nad tímto modulem.\n"
+"100% je výchozí rozestup."
+
+#: modules/module_clock.lua:1133
+msgid ""
+"Vertical space between items.\n"
+"100% is the default spacing."
+msgstr ""
+"Svislý prostor nad tímto modulem.\n"
+"100% je výchozí rozestup."
+
+#: screens/sui_stats_windows.lua:2507 screens/sui_stats_windows.lua:3086
+msgid "WEEK STREAK"
+msgstr "SÉRIE TÝDNŮ"
+
+#: modules/module_clock.lua:270
+msgid "WORD_CLOCK_TENS_SEP"
+msgstr " "
+
+#: features/sui_backup.lua:142 screens/sui_menu.lua:2599
+#: screens/sui_settings_window.lua:431 screens/sui_settings_window.lua:437
+msgid "Wallpaper"
+msgstr "Tapeta"
+
+#: features/sui_backup.lua:143
+msgid "Wallpaper settings and image files"
+msgstr "Nastavení tapety a obrazové soubory"
+
+#: screens/sui_quicksettings_bar.lua:593
+msgid "Warmth"
+msgstr "Teplota barev"
+
+#: screens/sui_quicksettings_bar.lua:1623
+msgid "Warmth Slider"
+msgstr "Posuvník teploty barev"
+
+#: screens/sui_menu.lua:2533
+msgid "Warn when modules on a page exceed the available screen height."
+msgstr "Upozornit, když moduly na stránce přesáhnou dostupnou výšku obrazovky."
+
+#: engines/sui_heatmap_widgets.lua:127 infra/sui_datenames.lua:43
+msgid "Wed"
+msgstr "St"
+
+#: infra/sui_datenames.lua:48
+msgid "Wednesday"
+msgstr "Středa"
+
+#: modules/module_heatmap.lua:305 modules/module_heatmap.lua:309
+msgid "Weeks shown"
+msgstr "Zobrazené týdny"
+
+#: screens/sui_onboarding.lua:395 screens/sui_onboarding.lua:396
+msgid "Welcome to Simple UI"
+msgstr "Vítejte v Simple UI"
+
+#: modules/critter/phrases.lua:220
+msgid "Well done today."
+msgstr ""
+
+#: modules/critter/phrases.lua:225
+msgid "Well done, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:212
+msgid "What a habit!"
+msgstr ""
+
+#: modules/critter/phrases.lua:114
+msgid "What shall we read today?"
+msgstr ""
+
+#: infra/sui_updater.lua:493
+msgid "What's new:"
+msgstr "Co je nového:"
+
+#: features/sui_stats_menu.lua:90
+msgid ""
+"When a finished book is deleted from the device (file or folder), keep it "
+"counted in the Books Read statistics on the Home Screen.\n"
+"\n"
+"Books changed back to Reading or Abandoned are automatically removed from "
+"this list."
+msgstr ""
+"Pokud je dokončená kniha smazána ze zařízení, zůstane započítaná ve "
+"statistice přečtených knih na domovské obrazovce.\n"
+"\n"
+"Knihy změněné zpět na rozečtené nebo opuštěné se z tohoto seznamu "
+"automaticky odeberou."
+
+#: screens/sui_menu.lua:2545
+msgid ""
+"When enabled, long-pressing a module on the home screen opens its settings "
+"menu.\n"
+"Disable this to prevent settings from appearing on long tap."
+msgstr ""
+"Je-li zapnuto, dlouhý stisk modulu na domovské obrazovce otevře jeho nabídku "
+"nastavení.\n"
+"Vypněte tuto volbu, pokud nechcete, aby se při dlouhém stisku zobrazovalo "
+"nastavení."
+
+#: screens/sui_quicksettings_bar.lua:1688
+msgid ""
+"When enabled, long-pressing the Quick Settings Bar opens its settings menu.\n"
+"Disable this to prevent the settings menu from appearing on long tap."
+msgstr ""
+"Je-li zapnuto, dlouhý stisk lišty rychlých nastavení otevře její nabídku "
+"nastavení.\n"
+"Vypněte tuto volbu, pokud nechcete, aby se při dlouhém stisku zobrazovalo "
+"menu nastavení."
+
+#: screens/sui_menu.lua:1177
+msgid ""
+"When enabled, long-pressing the navigation bar opens its settings menu.\n"
+"Disable this to prevent the settings menu from appearing on long tap."
+msgstr ""
+"Je-li zapnuto, dlouhý stisk navigační lišty otevře její nabídku nastavení.\n"
+"Vypněte tuto volbu, pokud nechcete, aby se při dlouhém stisku zobrazovalo "
+"menu nastavení."
+
+#: screens/sui_menu.lua:1008
+msgid ""
+"When enabled, long-pressing the top bar opens its settings menu.\n"
+"Disable this to prevent the settings menu from appearing on long tap."
+msgstr ""
+"Je-li zapnuto, dlouhý stisk horní lišty otevře její nabídku nastavení.\n"
+"Vypněte tuto volbu, pokud nechcete, aby se při dlouhém stisku zobrazovalo "
+"menu nastavení."
+
+#: screens/sui_menu.lua:2347
+msgid ""
+"When waking the device from sleep/suspend, always return to the Home Screen "
+"— even if a book was open when it went to sleep."
+msgstr ""
+"Při probuzení zařízení ze spánku/uspání se vždy vrátí na domovskou obrazovku "
+"— i když byla při uspání otevřená kniha."
+
+#: modules/module_reading_stats.lua:273
+msgid "When you read most"
+msgstr ""
+
+#: infra/sui_config.lua:1481 modules/module_tab_grid.lua:646
+msgid "White"
+msgstr ""
+
+#: features/sui_quickactions.lua:914 infra/sui_config.lua:135
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: features/sui_quickactions.lua:286
+msgid "Wi-Fi off"
+msgstr "Wi‑Fi vypnuta"
+
+#: infra/sui_config.lua:200
+msgid "WiFi"
+msgstr "WiFi"
+
+#: features/sui_quickactions.lua:273
+msgid "WiFi not available on this device."
+msgstr "WiFi není na tomto zařízení k dispozici."
+
+#: features/sui_quickactions.lua:2205
+msgid "Wikipedia Lookup"
+msgstr "Vyhledat na Wikipedii"
+
+#: modules/critter/phrases.lua:99
+msgid "Winding down?"
+msgstr ""
+
+#: modules/module_currently.lua:1421
+msgid "With percentage"
+msgstr "S procenty"
+
+#: modules/module_clock.lua:1094 modules/module_clock.lua:1107
+msgid "Word"
+msgstr "Slovně"
+
+#: features/sui_manual_books.lua:102
+msgid "YYYY-MM-DD or YYYY"
+msgstr ""
+
+#: features/sui_manual_books.lua:146
+msgid "Year:"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:1159
+msgid "Yes"
+msgstr "Ano"
+
+#: screens/sui_stats_windows.lua:2803
+msgid "Yesterday is already covered by a freeze."
+msgstr "Včerejšek už je pokrytý zmrazením."
+
+#: screens/sui_stats_windows.lua:2801
+msgid "You already read yesterday — there's nothing to freeze."
+msgstr "Včera jste už četli — není co zmrazit."
+
+#: screens/sui_stats_windows.lua:2795
+msgid "You don't have any freezes available yet."
+msgstr "Zatím nemáte k dispozici žádná zmrazení."
+
+#: screens/sui_stats_windows.lua:2812
+msgid ""
+"You have %d freeze(s) available.\n"
+"Use one to cover %s?"
+msgstr ""
+"Máte k dispozici %d zmrazení.\n"
+"Použít jedno k pokrytí %s?"
+
+#: modules/critter/phrases.lua:135
+msgid "You're on a roll!"
+msgstr ""
+
+#: modules/critter/phrases.lua:171
+msgid "Your first one this year is waiting."
+msgstr ""
+
+#: modules/module_quote.lua:1016
+msgid "Your highlights"
+msgstr "Vaše zvýraznění"
+
+#: modules/critter/module_critter.lua:583
+#: modules/critter/module_critter.lua:588
+msgid "Your name"
+msgstr ""
+
+#: modules/critter/phrases.lua:154
+msgid "Your streak is on a break."
+msgstr ""
+
+#: modules/module_reading_stats.lua:282
+msgid "abandoned"
+msgstr "opuštěno"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "apr"
+msgstr "dub"
+
+#: screens/sui_stats_windows.lua:1352
+msgid "april"
+msgstr "duben"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "aug"
+msgstr "srp"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "august"
+msgstr "srpen"
+
+#: modules/module_reading_stats.lua:259
+msgid "average session (90 days)"
+msgstr ""
+
+#: modules/module_reading_stats.lua:249 screens/sui_stats_windows.lua:2110
+msgid "books finished"
+msgstr "dokončených knih"
+
+#: modules/module_reading_stats.lua:244
+msgid "daily avg (7 days)"
+msgstr "denní průměr (7 dní)"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "dec"
+msgstr "pro"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "december"
+msgstr "prosinec"
+
+#: features/sui_quickactions.lua:1759 features/sui_quickactions.lua:2791
+msgid "default"
+msgstr "výchozí"
+
+#: screens/sui_menu.lua:808 screens/sui_menu.lua:1085 screens/sui_menu.lua:1752
+#: screens/sui_menu.lua:4153 screens/sui_quicksettings_bar.lua:1494
+msgid "disabled"
+msgstr "vypnuto"
+
+#: features/sui_backup.lua:699
+msgid "empty"
+msgstr "Prázdné"
+
+#: screens/sui_menu.lua:808 screens/sui_menu.lua:1085 screens/sui_menu.lua:1752
+#: screens/sui_menu.lua:4153 screens/sui_quicksettings_bar.lua:1494
+msgid "enabled"
+msgstr "zapnuto"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "feb"
+msgstr "úno"
+
+#: screens/sui_stats_windows.lua:1352
+msgid "february"
+msgstr "únor"
+
+#: features/sui_style.lua:2659
+msgid "ffi/archiver not available in this KOReader version"
+msgstr "ffi/archiver není v této verzi KOReaderu k dispozici"
+
+#: features/sui_quickactions.lua:2053
+msgid "hex code, e.g. E001"
+msgstr "hex kód, např. E001"
+
+#: screens/sui_stats_windows.lua:1817 screens/sui_stats_windows.lua:2108
+msgid "hours read"
+msgstr "přečtených hodin"
+
+#: modules/module_reading_stats.lua:281
+msgid "in progress"
+msgstr "rozečteno"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "jan"
+msgstr "led"
+
+#: screens/sui_stats_windows.lua:1352
+msgid "january"
+msgstr "leden"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "jul"
+msgstr "čvc"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "july"
+msgstr "červenec"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "jun"
+msgstr "čvn"
+
+#: screens/sui_stats_windows.lua:1352
+msgid "june"
+msgstr "červen"
+
+#: modules/module_reading_stats.lua:244 modules/module_reading_stats.lua:245
+msgid "last 7 days"
+msgstr ""
+
+#: modules/module_reading_stats.lua:257 modules/module_reading_stats.lua:260
+#: modules/module_reading_stats.lua:263 modules/module_reading_stats.lua:268
+msgid "last 90 days"
+msgstr ""
+
+#: infra/sui_updater.lua:680
+msgid "latest"
+msgstr "nejnovější"
+
+#: modules/module_reading_stats.lua:256
+msgid "longest session (90 days)"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "mar"
+msgstr "bře"
+
+#: screens/sui_stats_windows.lua:1352
+msgid "march"
+msgstr "březen"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+#: screens/sui_stats_windows.lua:1352
+msgid "may"
+msgstr "kvě"
+
+#: modules/module_reading_stats.lua:252
+msgid "no streak"
+msgstr "žádná série"
+
+#: features/sui_quickactions.lua:1574 features/sui_quickactions.lua:2887
+#: features/sui_quickactions.lua:2906
+msgid "not configured"
+msgstr "nenastaveno"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "nov"
+msgstr "lis"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "november"
+msgstr "listopad"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "oct"
+msgstr "říj"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "october"
+msgstr "říjen"
+
+#: modules/module_reading_stats.lua:240 modules/module_reading_stats.lua:242
+#: modules/module_reading_stats.lua:246 modules/module_reading_stats.lua:248
+#: modules/module_reading_stats.lua:271
+msgid "of reading"
+msgstr ""
+
+#: modules/module_reading_stats.lua:246
+msgid "of reading this month"
+msgstr "čtení tento měsíc"
+
+#: modules/module_reading_stats.lua:242 modules/module_reading_stats.lua:270
+msgid "of reading this week"
+msgstr "čtení tento týden"
+
+#: modules/module_reading_stats.lua:240
+msgid "of reading today"
+msgstr "čtení dnes"
+
+#: modules/module_reading_stats.lua:248
+msgid "of reading, all time"
+msgstr "čtení celkem"
+
+#: features/sui_style.lua:2702
+msgid "pack_path not provided"
+msgstr "pack_path nebyl zadán"
+
+#: modules/module_reading_stats.lua:241 modules/module_reading_stats.lua:243
+#: modules/module_reading_stats.lua:247 screens/sui_stats_windows.lua:2109
+#: screens/sui_stats_windows.lua:2402
+msgid "pages read"
+msgstr "přečtených stránek"
+
+#: modules/module_reading_stats.lua:247
+msgid "pages read this month"
+msgstr "stránek přečtených tento měsíc"
+
+#: modules/module_reading_stats.lua:243
+msgid "pages read this week"
+msgstr "stránek přečtených tento týden"
+
+#: modules/module_reading_stats.lua:241
+msgid "pages read today"
+msgstr "dnes přečtených stránek"
+
+#: modules/module_reading_stats.lua:245
+msgid "pages/day (7 days)"
+msgstr "stran/den (7 dní)"
+
+#: modules/module_reading_stats.lua:262
+msgid "pages/hour (90 days)"
+msgstr ""
+
+#: modules/module_reading_stats.lua:267
+msgid "reading sessions (90 days)"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2400
+msgid "reading time"
+msgstr "čas čtení"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "sep"
+msgstr "zář"
+
+#: screens/sui_stats_windows.lua:1353
+msgid "september"
+msgstr "září"
+
+#: modules/module_reading_stats.lua:280
+msgid "unread"
+msgstr "nepřečteno"
+
+#: modules/module_reading_stats.lua:273
+msgid "when you read most"
+msgstr ""
+
+#: infra/sui_updater.lua:682
+msgid "⬆ Update available: %s"
+msgstr "⬆ Dostupná aktualizace: %s"
+
+#: features/sui_arrange.lua:425 screens/sui_menu.lua:1933
+msgid "  (%d left)"
+msgid_plural "  (%d left)"
+msgstr[0] "  (zbývá %d)"
+msgstr[1] "  (zbývají %d)"
+msgstr[2] "  (zbývá %d)"
+
+#: modules/module_reading_goals.lua:1189
+msgid "  Set Goal  (%d book in %s)"
+msgid_plural "  Set Goal  (%d books in %s)"
+msgstr[0] "  Nastavit cíl  (%d kniha v %s)"
+msgstr[1] "  Nastavit cíl  (%d knihy v %s)"
+msgstr[2] "  Nastavit cíl  (%d knih v %s)"
+
+#: modules/module_reading_goals.lua:721 screens/sui_stats_windows.lua:767
+msgid "%d book"
+msgid_plural "%d books"
+msgstr[0] "%d kniha"
+msgstr[1] "%d knihy"
+msgstr[2] "%d knih"
+
+#: modules/critter/phrases.lua:71
+msgid "%d book finished this year"
+msgid_plural "%d books finished this year"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/module_reading_goals.lua:1138
+msgid "%d book in %s"
+msgid_plural "%d books in %s"
+msgstr[0] "%d kniha v %s"
+msgstr[1] "%d knihy v %s"
+msgstr[2] "%d knih v %s"
+
+#: screens/sui_stats_windows.lua:1217
+msgid "%d book read"
+msgid_plural "%d books read"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/critter/phrases.lua:164
+msgid "%d book to go for your goal."
+msgid_plural "%d books to go for your goal."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: infra/sui_book_stats.lua:190 screens/sui_stats_windows.lua:1975
+#: screens/sui_stats_windows.lua:1977
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "%d den"
+msgstr[1] "%d dny"
+msgstr[2] "%d dní"
+
+#: modules/critter/phrases.lua:137
+msgid "%d day of reading in a row."
+msgid_plural "%d days of reading in a row."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/critter/phrases.lua:67
+msgid "%d day strong!"
+msgid_plural "%d days strong!"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/critter/phrases.lua:205
+msgid "%d day, your longest streak yet."
+msgid_plural "%d days, your longest streak yet."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: screens/sui_stats_windows.lua:3132
+msgid "%d freeze available"
+msgid_plural "%d freezes available"
+msgstr[0] "%d zmrazení k dispozici"
+msgstr[1] "%d zmrazení k dispozici"
+msgstr[2] "%d zmrazení k dispozici"
+
+#: features/sui_quickactions.lua:1566 features/sui_quickactions.lua:2879
+#: features/sui_quickactions.lua:2900
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d položka"
+msgstr[1] "%d položky"
+msgstr[2] "%d položek"
+
+#: modules/critter/phrases.lua:188
+msgid "%d minute read today!"
+msgid_plural "%d minutes read today!"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/critter/phrases.lua:179
+msgid "%d of %d book."
+msgid_plural "%d of %d books."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: modules/critter/phrases.lua:196
+msgid "%d page turned today!"
+msgid_plural "%d pages turned today!"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: screens/sui_stats_windows.lua:1995 screens/sui_stats_windows.lua:1997
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] "%d týden"
+msgstr[1] "%d týdny"
+msgstr[2] "%d týdnů"
+
+#: modules/module_reading_goals.lua:719
+msgid "%d/%d book"
+msgid_plural "%d/%d books"
+msgstr[0] "%d/%d kniha"
+msgstr[1] "%d/%d knihy"
+msgstr[2] "%d/%d knih"
+
+#: modules/module_collections.lua:548
+msgid "(%d collection)"
+msgid_plural "(%d collections)"
+msgstr[0] "(%d kolekce)"
+msgstr[1] "(%d kolekce)"
+msgstr[2] "(%d kolekcí)"
+
+#: modules/module_quick_actions.lua:368
+msgid "(%d/%d — %d left)"
+msgid_plural "(%d/%d — %d left)"
+msgstr[0] "(%d/%d — zbývá %d)"
+msgstr[1] "(%d/%d — zbývají %d)"
+msgstr[2] "(%d/%d — zbývá %d)"
+
+#: features/sui_quickactions.lua:2402
+msgid "Group (%d item)"
+msgid_plural "Group (%d items)"
+msgstr[0] "Skupina (%d položka)"
+msgstr[1] "Skupina (%d položky)"
+msgstr[2] "Skupina (%d položek)"
+
+#: screens/sui_quicksettings_bar.lua:1512
+msgid "Maximum of %d slot reached. Remove one first."
+msgid_plural "Maximum of %d slots reached. Remove one first."
+msgstr[0] "Bylo dosaženo maxima %d slotu. Nejprve jeden odeberte."
+msgstr[1] "Bylo dosaženo maxima %d slotů. Nejprve jeden odeberte."
+msgstr[2] "Bylo dosaženo maxima %d slotů. Nejprve jeden odeberte."
+
+#: modules/critter/phrases.lua:210
+msgid "Milestone: %d day!"
+msgid_plural "Milestone: %d days!"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: screens/sui_menu.lua:36
+msgid ""
+"Text shown in the top bar.\n"
+"Maximum %d character."
+msgid_plural ""
+"Text shown in the top bar.\n"
+"Maximum %d characters."
+msgstr[0] ""
+"Text zobrazený v horní liště.\n"
+"Maximum %d znak."
+msgstr[1] ""
+"Text zobrazený v horní liště.\n"
+"Maximum %d znaky."
+msgstr[2] ""
+"Text zobrazený v horní liště.\n"
+"Maximum %d znaků."
+
+#: modules/module_action_list.lua:289 modules/module_quick_actions.lua:351
+#: screens/sui_menu.lua:1898 screens/sui_menu.lua:2012
+msgid "The maximum of %d action per module has been reached. Remove one first."
+msgid_plural ""
+"The maximum of %d actions per module has been reached. Remove one first."
+msgstr[0] "Bylo dosaženo maxima %d akce na modul. Nejprve jednu odeberte."
+msgstr[1] "Bylo dosaženo maxima %d akcí na modul. Nejprve jednu odeberte."
+msgstr[2] "Bylo dosaženo maxima %d akcí na modul. Nejprve jednu odeberte."
+
+#: modules/critter/module_critter.lua:561
+msgid ""
+"The maximum of %d decoration per side has been reached. Remove one first."
+msgid_plural ""
+"The maximum of %d decorations per side has been reached. Remove one first."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: features/sui_quickactions.lua:1636 features/sui_quickactions.lua:2844
+msgid "The maximum of %d quick action has been reached. Delete one first."
+msgid_plural ""
+"The maximum of %d quick actions has been reached. Delete one first."
+msgstr[0] "Bylo dosaženo maxima %d rychlé akce. Nejprve jednu smažte."
+msgstr[1] "Bylo dosaženo maxima %d rychlých akcí. Nejprve jednu smažte."
+msgstr[2] "Bylo dosaženo maxima %d rychlých akcí. Nejprve jednu smažte."
+
+#: screens/sui_menu.lua:365
+msgid "The maximum of %d tab has been reached. Remove one first."
+msgid_plural "The maximum of %d tabs has been reached. Remove one first."
+msgstr[0] "Bylo dosaženo maxima %d karty. Nejprve jednu odeberte."
+msgstr[1] "Bylo dosaženo maxima %d karet. Nejprve jednu odeberte."
+msgstr[2] "Bylo dosaženo maxima %d karet. Nejprve jednu odeberte."
+
+#: modules/module_reading_stats.lua:255
+msgid "day"
+msgid_plural "days"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: screens/sui_stats_windows.lua:1820
+msgid "day read"
+msgid_plural "days read"
+msgstr[0] "přečtený den"
+msgstr[1] "přečtené dny"
+msgstr[2] "přečtených dní"
+
+#: modules/module_reading_stats.lua:253
+msgid "day streak"
+msgid_plural "days streak"
+msgstr[0] "den série"
+msgstr[1] "dny série"
+msgstr[2] "dní série"
+
+#: screens/sui_stats_windows.lua:1835
+msgid "page read"
+msgid_plural "pages read"
+msgstr[0] "přečtená stránka"
+msgstr[1] "přečtené stránky"
+msgstr[2] "přečtených stránek"
+
+#~ msgid "Badges"
+#~ msgstr "Štítky"
+
+#~ msgid "Bar Style"
+#~ msgstr "Styl lišty"
+
+#~ msgid "Folder Book Stack"
+#~ msgstr "Stoh knih ve složce"
+
+#~ msgid "Folder Cover Type"
+#~ msgstr "Typ obálky složky"
+
+#~ msgid "Follow Library"
+#~ msgstr "Podle knihovny"
+
+#~ msgid "Number of Books in Folder"
+#~ msgstr "Počet knih ve složce"
+
+#~ msgid "Number of Pages"
+#~ msgstr "Počet stránek"
+
+#~ msgid "Overlays"
+#~ msgstr "Překryvy"
+
+#~ msgid ""
+#~ "Scale for the library badges (progress, pages, etc.).\n"
+#~ "100% is the default size."
+#~ msgstr ""
+#~ "Měřítko štítků knihovny (průběh, stránky atd.).\n"
+#~ "100 % je výchozí velikost."
+
+#~ msgid ""
+#~ "Scales the section label text above each module.\n"
+#~ "100% is the default size."
+#~ msgstr ""
+#~ "Mění měřítko textu popisku sekce nad každým modulem.\n"
+#~ "100% je výchozí velikost."
+
+#~ msgid "Title and Author Below Covers"
+#~ msgstr "Název a autor pod obálkami"
+
+#~ msgid ""
+#~ "Title and author strip enabled.\n"
+#~ "\n"
+#~ "Restart now?"
+#~ msgstr ""
+#~ "Pruh s názvem a autorem je zapnutý.\n"
+#~ "\n"
+#~ "Restartovat nyní?"
+
+#~ msgid "Title only"
+#~ msgstr "Pouze název"
+
+#~ msgid ""
+#~ "Title strip disabled.\n"
+#~ "\n"
+#~ "Restart now?"
+#~ msgstr ""
+#~ "Pruh s názvem je vypnutý.\n"
+#~ "\n"
+#~ "Restartovat nyní?"
+
+#~ msgid ""
+#~ "Title strip enabled.\n"
+#~ "\n"
+#~ "Restart now?"
+#~ msgstr ""
+#~ "Pruh s názvem je zapnutý.\n"
+#~ "\n"
+#~ "Restartovat nyní?"
+
+#~ msgid "UI Font  (default)"
+#~ msgstr "Písmo rozhraní  (výchozí)"
+
+#~ msgid "UI Font  [%s]"
+#~ msgstr "Písmo rozhraní  [%s]"
+
+#~ msgid "Visibility"
+#~ msgstr "Viditelnost"
+
+#~ msgid "Visible"
+#~ msgstr "Viditelné"
+
+#~ msgid "The maximum of %d stat per row has been reached. Remove one first."
+#~ msgid_plural ""
+#~ "The maximum of %d stats per row has been reached. Remove one first."
+#~ msgstr[0] ""
+#~ "Bylo dosaženo maxima %d statistiky na řádek. Nejprve jednu odeberte."
+#~ msgstr[1] ""
+#~ "Bylo dosaženo maxima %d statistik na řádek. Nejprve jednu odeberte."
+#~ msgstr[2] ""
+#~ "Bylo dosaženo maxima %d statistik na řádek. Nejprve jednu odeberte."
+
+#~ msgid "Button Background"
+#~ msgstr "Pozadí tlačítka"
+
+#~ msgid "Button Opacity"
+#~ msgstr "Velikost tlačítka"
+
+#~ msgid "Button Style"
+#~ msgstr "Velikost tlačítka"
+
+#~ msgid "Card Opacity"
+#~ msgstr "Neprůhlednost karty"

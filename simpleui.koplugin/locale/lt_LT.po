@@ -1,0 +1,6325 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: simpleui\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-22 11:13+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: lt_LT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: modules/module_reading_goals.lua:1202
+msgid "  Set Goal  (%d hr/month)"
+msgstr "  Nustatyti tikslą  (%d val./mėn.)"
+
+#: modules/module_reading_goals.lua:1214
+msgid "  Set Goal  (%d min/day)"
+msgstr "  Nustatyti tikslą  (%d min./d.)"
+
+#: modules/module_reading_goals.lua:1190
+msgid "  Set Goal  (%s)"
+msgstr "  Nustatyti tikslą  (%s)"
+
+#: modules/module_reading_goals.lua:1201 modules/module_reading_goals.lua:1213
+msgid "  Set Goal  (disabled)"
+msgstr "  Nustatyti tikslą  (išjungta)"
+
+#: infra/sui_text.lua:97
+msgid " et al."
+msgstr " ir kt."
+
+#: engines/sui_book_grid.lua:463 features/library/sui_foldercovers.lua:1236
+msgid " p."
+msgstr " p."
+
+#: engines/sui_book_grid.lua:1533
+msgid "% Read (ascending)"
+msgstr "% perskaityta (didėjančiai)"
+
+#: engines/sui_book_grid.lua:1534
+msgid "% Read (descending)"
+msgstr "% perskaityta (mažėjančiai)"
+
+#: modules/critter/phrases.lua:190
+msgid "%.1f hours read today!"
+msgstr ""
+
+#: modules/module_heatmap.lua:226
+msgid "%1 weeks"
+msgstr "%1 sav."
+
+#: engines/sui_book_grid.lua:1900 engines/sui_book_grid.lua:1905
+#: modules/module_reading_stats.lua:1153 screens/sui_menu.lua:3118
+#: screens/sui_menu.lua:3122
+msgid "%1 × %2"
+msgstr "%1 × %2"
+
+#: features/sui_backup.lua:697
+#, fuzzy
+msgid "%d files (%s)"
+msgstr "Moduliai  (%d)"
+
+#: modules/module_reading_goals.lua:1140
+msgid "%d hr/month"
+msgstr "%d val./mėn."
+
+#: modules/module_reading_goals.lua:1142
+msgid "%d min/day"
+msgstr "%d min./d."
+
+#: features/sui_backup.lua:695
+#, fuzzy
+msgid "%d settings"
+msgstr "Nustatymai"
+
+#: engines/sui_book_grid.lua:842
+msgid "%d%%"
+msgstr "%d%%"
+
+#: engines/sui_book_grid.lua:902 engines/sui_book_grid.lua:914
+msgid "%d%% Read"
+msgstr "%d%% perskaityta"
+
+#: screens/sui_stats_windows.lua:3141
+msgid "%d/%d days · %d/%d min to next freeze"
+msgstr "%d/%d d. · %d/%d min iki kito užšaldymo"
+
+#: infra/sui_book_stats.lua:192
+msgid "%s left"
+msgstr "%s liko"
+
+#: infra/sui_book_stats.lua:191 modules/module_reading_goals.lua:737
+#: modules/module_reading_goals.lua:757
+msgid "%s read"
+msgstr "%s perskaityta"
+
+#: modules/module_quick_actions.lua:367
+msgid "(%d/%d — at limit)"
+msgstr "(%d/%d — pasiektas limitas)"
+
+#: engines/sui_book_sources.lua:383
+msgid "(collection not found)"
+msgstr "(kolekcija nerasta)"
+
+#: screens/sui_menu.lua:198
+msgid ""
+"0% transparent, 100% solid. Applies across the full width of the title bar."
+msgstr ""
+
+#: screens/sui_menu.lua:202
+msgid ""
+"0% transparent, 100% solid. Applies to the native page bar in Library, "
+"History, Collections and similar screens."
+msgstr ""
+
+#: features/library/sui_label_options.lua:151
+msgid ""
+"0% transparent, 100% solid. Only the background changes; the text stays "
+"solid."
+msgstr ""
+
+#: infra/sui_config.lua:1445
+msgid ""
+"0% transparent, 100% solid. Values in between add a scrim over the wallpaper."
+msgstr ""
+
+#: engines/sui_group_cell.lua:262
+msgid "4-Cover Grid"
+msgstr "4 viršelių tinklelis"
+
+#: features/sui_cover_elements.lua:318
+msgid "4-Cover Grid (Mosaic View Only)"
+msgstr "4 viršelių tinklelis (tik mozaikinis vaizdas)"
+
+#: modules/critter/phrases.lua:92
+msgid "A chapter pairs well with a coffee."
+msgstr ""
+
+#: screens/sui_onboarding.lua:188
+msgid "A folder named \"Books\" will be created and set as the library home."
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2805
+msgid ""
+"A freeze can only bridge a single missed day right after an active one — "
+"yesterday doesn't qualify."
+msgstr ""
+"Užšaldymas gali padengti tik vieną praleistą dieną iškart po aktyvios dienos "
+"— vakar dienai tai netaikoma."
+
+#: modules/critter/phrases.lua:84
+msgid "A fresh day, a fresh page."
+msgstr ""
+
+#: modules/critter/phrases.lua:240
+msgid "A good book helps."
+msgstr ""
+
+#: modules/critter/phrases.lua:170
+msgid "A new book awaits!"
+msgstr ""
+
+#: modules/critter/phrases.lua:203
+msgid "A new personal best!"
+msgstr ""
+
+#: modules/critter/phrases.lua:236
+msgid "A new week of stories."
+msgstr ""
+
+#: features/sui_presets.lua:346
+msgid "A preset named \"%s\" already exists."
+msgstr "Išankstinė nuostata pavadinimu „%s“ jau egzistuoja."
+
+#: features/sui_presets.lua:355
+msgid ""
+"A preset named \"%s\" already exists.\n"
+"Overwrite it?"
+msgstr ""
+"Išankstinė nuostata pavadinimu „%s“ jau egzistuoja.\n"
+"Perrašyti?"
+
+#: screens/sui_menu.lua:984 screens/sui_menu.lua:1123 screens/sui_menu.lua:1729
+msgid ""
+"A restart is required to apply the new bar size across all layouts.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Norint pritaikyti naują juostos dydį visuose išdėstymuose, reikia "
+"perkrauti.\n"
+"\n"
+"Perkrauti dabar?"
+
+#: screens/sui_menu.lua:3962
+msgid ""
+"A restart is required to apply the new text size everywhere.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Kad naujas teksto dydis būtų pritaikytas visur, reikia paleisti iš naujo.\n"
+"\n"
+"Paleisti dabar?"
+
+#: _meta.lua:6
+msgid "A simple UI for KOReader"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2475
+msgid "ALL TIME"
+msgstr "VISAS LAIKAS"
+
+#: screens/sui_menu.lua:4198 screens/sui_settings_window.lua:374
+#: screens/sui_settings_window.lua:1040
+msgid "About"
+msgstr "Apie"
+
+#: features/library/sui_label_options.lua:134 features/sui_style.lua:1426
+msgid "Accent"
+msgstr ""
+
+#: screens/sui_menu.lua:3218
+msgid "Accent Color"
+msgstr ""
+
+#: features/sui_quickactions.lua:2387 features/sui_quickactions.lua:2620
+msgid "Action"
+msgstr "Veiksmas"
+
+#: modules/module_action_list.lua:219
+msgid "Action List"
+msgstr "Veiksmų sąrašas"
+
+#: features/sui_quickactions.lua:2593
+msgid "Action Type"
+msgstr "Veiksmo tipas"
+
+#: features/sui_quickactions.lua:1167
+msgid "Action error: %s"
+msgstr "Veiksmo klaida: %s"
+
+#: features/sui_quickactions.lua:2612
+msgid "Action name…"
+msgstr "Veiksmo pavadinimas…"
+
+#: features/sui_quickactions.lua:1160
+msgid "Action not available: %s"
+msgstr "Veiksmas nepasiekiamas: %s"
+
+#: modules/module_tab_grid.lua:642
+msgid "Active Tab Color"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1510
+msgid "Add Action"
+msgstr "Pridėti veiksmą"
+
+#: features/sui_manual_books.lua:105
+msgid "Add Book"
+msgstr ""
+
+#: screens/sui_menu.lua:1417 screens/sui_menu.lua:1455
+msgid "Add Button"
+msgstr "Pridėti mygtuką"
+
+#: engines/sui_screen_engine.lua:2075 engines/sui_window.lua:1143
+#: features/sui_arrange.lua:385 screens/sui_menu.lua:916
+#: screens/sui_menu.lua:953 screens/sui_menu.lua:1996 screens/sui_menu.lua:2026
+#: screens/sui_quicksettings_bar.lua:1426 screens/sui_settings_window.lua:1048
+msgid "Add Item"
+msgstr "Pridėti elementą"
+
+#: features/sui_manual_books.lua:159
+msgid "Add Manual Books"
+msgstr ""
+
+#: features/sui_manual_books.lua:172
+msgid "Add Manual Count"
+msgstr ""
+
+#: screens/sui_settings_window.lua:1045 screens/sui_settings_window.lua:1171
+msgid "Add Module"
+msgstr "Pridėti modulį"
+
+#: screens/sui_settings_window.lua:1140
+msgid "Add Page"
+msgstr "Pridėti puslapį"
+
+#: features/sui_manual_books.lua:167
+msgid "Add Single Book"
+msgstr ""
+
+#: modules/module_tab_grid.lua:869
+#, fuzzy
+msgid "Add Tab"
+msgstr "Pridėti puslapį"
+
+#: modules/module_action_list.lua:287 modules/module_quick_actions.lua:349
+#: screens/sui_menu.lua:1916 screens/sui_quicksettings_bar.lua:1509
+msgid "Add at least 2 actions to arrange."
+msgstr "Pridėkite bent 2 veiksmus, kad galėtumėte išdėstyti."
+
+#: features/sui_collection_arrange.lua:35
+msgid "Add at least 2 books to arrange."
+msgstr "Pridėkite bent 2 knygas, kad galėtumėte išdėstyti."
+
+#: modules/critter/module_critter.lua:559
+msgid "Add at least 2 decorations to arrange."
+msgstr ""
+
+#: modules/module_reading_stats.lua:1143
+msgid "Add at least 2 stats to arrange."
+msgstr "Pridėkite bent 2 statistikas, kad galėtumėte išdėstyti."
+
+#: modules/module_tab_grid.lua:868 screens/sui_menu.lua:363
+#, fuzzy
+msgid "Add at least 2 tabs to arrange."
+msgstr "Pridėkite bent 2 statistikas, kad galėtumėte išdėstyti."
+
+#: modules/module_tbr.lua:342
+msgid "Add to To Be Read"
+msgstr "Pridėti į „Skaitytini“"
+
+#: modules/critter/module_critter.lua:541
+msgid "Add your own critters in %1"
+msgstr ""
+
+#: modules/critter/module_critter.lua:685
+msgid "Add your own decorations in %1"
+msgstr ""
+
+#: screens/sui_menu.lua:2328
+msgid "After closing a book"
+msgstr ""
+
+#: infra/sui_config.lua:2035 modules/critter/module_critter.lua:678
+#: modules/module_action_list.lua:342 modules/module_quick_actions.lua:472
+#: modules/module_quote.lua:1484
+msgid "Alignment"
+msgstr "Lygiavimas"
+
+#: screens/sui_menu.lua:3278 screens/sui_menu.lua:3937
+msgid "All caps"
+msgstr ""
+
+#: engines/sui_window.lua:4294 screens/sui_settings_window.lua:813
+msgid "All items have already been added."
+msgstr "Visi elementai jau pridėti."
+
+#: screens/sui_settings_window.lua:791
+msgid "All modules have already been added."
+msgstr "Visi moduliai jau pridėti."
+
+#: features/sui_quickactions.lua:3312
+msgid "All recent books are finished."
+msgstr "Visos naujausios knygos jau baigtos."
+
+#: modules/module_reading_stats.lua:248
+msgid "All time"
+msgstr ""
+
+#: modules/module_reading_stats.lua:249
+msgid "All time — Books"
+msgstr "Visas laikas — Knygos"
+
+#: modules/module_reading_stats.lua:248
+msgid "All time — Time"
+msgstr "Visas laikas — Laikas"
+
+#: screens/sui_menu.lua:2436
+msgid "Always"
+msgstr "Visada"
+
+#: modules/module_clock.lua:1095 modules/module_clock.lua:1114
+msgid "Analogue"
+msgstr "Analoginis"
+
+#: infra/sui_goals.lua:44
+msgid "Annual Goal"
+msgstr "Metinis tikslas"
+
+#: infra/sui_goals.lua:45
+msgid "Annual Reading Goal"
+msgstr "Metinis skaitymo tikslas"
+
+#: modules/critter/phrases.lua:215
+msgid "Annual goal reached!"
+msgstr ""
+
+#: features/sui_module_chrome.lua:251 features/sui_module_chrome.lua:272
+#: infra/sui_config.lua:1201 modules/module_heatmap.lua:354
+#: modules/module_reading_goals.lua:1256 modules/module_reading_goals.lua:1322
+msgid "Appearance"
+msgstr "Išvaizda"
+
+#: features/sui_backup.lua:112
+#, fuzzy
+msgid "Appearance & Style"
+msgstr "Išvaizda"
+
+#: features/dialogs/sui_dialogs.lua:285 features/sui_accent_picker.lua:104
+msgid "Apply"
+msgstr "Pritaikyti"
+
+#: infra/sui_core.lua:1462
+#, fuzzy
+msgid "Applying preset…"
+msgstr "Pritaikyti paletę…"
+
+#: infra/sui_datenames.lua:29
+msgid "Apr"
+msgstr "bal."
+
+#: infra/sui_datenames.lua:36
+msgid "April"
+msgstr "Balandis"
+
+#: features/dialogs/sui_dialogs.lua:221
+msgid "Are you sure you want to reboot the device?"
+msgstr ""
+
+#: features/sui_arrange.lua:384 infra/sui_config.lua:2208
+msgid "Arrange"
+msgstr "Išdėstyti"
+
+#: modules/critter/module_critter.lua:557 modules/module_action_list.lua:285
+#: modules/module_quick_actions.lua:347 screens/sui_menu.lua:1920
+msgid "Arrange %s"
+msgstr "Išdėstyti %s"
+
+#: screens/sui_quicksettings_bar.lua:1581
+msgid "Arrange Book Details"
+msgstr ""
+
+#: screens/sui_menu.lua:1373 screens/sui_menu.lua:1380
+#: screens/sui_menu.lua:1557 screens/sui_menu.lua:1572
+msgid "Arrange Buttons"
+msgstr "Išdėstyti mygtukus"
+
+#: engines/sui_book_sources.lua:399
+msgid "Arrange Collection"
+msgstr "Tvarkyti kolekciją"
+
+#: engines/sui_screen_engine.lua:2074 modules/module_coverdeck.lua:1594
+#: modules/module_currently.lua:1349 screens/sui_bottombar.lua:787
+#: screens/sui_menu.lua:656 screens/sui_menu.lua:723 screens/sui_menu.lua:730
+#: screens/sui_menu.lua:1910 screens/sui_quicksettings_bar.lua:1425
+#: screens/sui_settings_window.lua:1069 screens/sui_topbar.lua:635
+msgid "Arrange Items"
+msgstr "Išdėstyti elementus"
+
+#: screens/sui_quicksettings_bar.lua:1507
+msgid "Arrange Quick Settings"
+msgstr "Išdėstyti greituosius nustatymus"
+
+#: modules/module_reading_stats.lua:1141
+msgid "Arrange Reading Stats"
+msgstr "Išdėstyti skaitymo statistiką"
+
+#: modules/module_coverdeck.lua:1585 modules/module_currently.lua:1341
+#: screens/sui_quicksettings_bar.lua:1568
+msgid "Arrange Statistics"
+msgstr "Išdėstyti statistiką"
+
+#: modules/module_tab_grid.lua:865 screens/sui_menu.lua:361
+msgid "Arrange Tabs"
+msgstr "Išdėstyti skirtukus"
+
+#: engines/sui_book_sources.lua:359
+msgid "Arrange To Be Read List"
+msgstr "Išdėstyti „Skaitytinių“ sąrašą"
+
+#: features/sui_presets.lua:157
+msgid "At a Glance"
+msgstr "Trumpai"
+
+#: screens/sui_menu.lua:1599
+msgid "At least one item must stay visible."
+msgstr ""
+
+#: infra/sui_datenames.lua:30
+msgid "Aug"
+msgstr "rugp."
+
+#: infra/sui_datenames.lua:37
+msgid "August"
+msgstr "Rugpjūtis"
+
+#: features/sui_manual_books.lua:109 modules/module_coverdeck.lua:125
+#: modules/module_coverdeck.lua:1611 modules/module_currently.lua:278
+#: modules/module_currently.lua:1374 modules/module_quote.lua:1446
+#: modules/module_quote.lua:1467 screens/sui_quicksettings_bar.lua:218
+msgid "Author"
+msgstr "Autorius"
+
+#: engines/sui_book_grid.lua:1532 modules/module_library.lua:205
+msgid "Author (A–Z)"
+msgstr "Autorius (A–Z)"
+
+#: screens/sui_menu.lua:4016
+msgid "Author: %s"
+msgstr "Autorius: %s"
+
+#: features/library/sui_library_browse.lua:67
+#: features/sui_quickactions.lua:1004 infra/sui_config.lua:141
+msgid "Authors"
+msgstr "Autoriai"
+
+#: engines/sui_group_cell.lua:263 features/sui_cover_elements.lua:319
+msgid "Auto (Single ↔ 4-Cover Grid)"
+msgstr "Automatinis (vienas ↔ 4 viršelių tinklelis)"
+
+#: features/library/sui_group_actions.lua:63
+msgid "Auto (first book)"
+msgstr "Automatinis (pirmoji knyga)"
+
+#: screens/sui_menu.lua:2271
+msgid "Auto-rotate"
+msgstr "Automatinis pasukimas"
+
+#: screens/sui_menu.lua:4021
+msgid "Automatic Update Check"
+msgstr "Automatinis atnaujinimų tikrinimas"
+
+#: screens/sui_stats_windows.lua:1147 screens/sui_stats_windows.lua:2215
+#: screens/sui_stats_windows.lua:3611
+msgid "Average per day"
+msgstr "Vidutiniškai per dieną"
+
+#: screens/sui_stats_windows.lua:1149 screens/sui_stats_windows.lua:3613
+msgid "Average per page"
+msgstr "Vidutiniškai per puslapį"
+
+#: modules/module_reading_stats.lua:260
+msgid "Average session"
+msgstr ""
+
+#: modules/critter/phrases.lua:268
+msgid "Aww, you're here!"
+msgstr ""
+
+#: screens/sui_titlebar.lua:114 screens/sui_titlebar.lua:120
+msgid "Back"
+msgstr "Atgal"
+
+#: features/sui_style.lua:100
+msgid "Back Button"
+msgstr "Atgal mygtukas"
+
+#: features/library/sui_label_options.lua:150 infra/sui_config.lua:1509
+#: screens/sui_menu.lua:217
+#, fuzzy
+msgid "Background Opacity"
+msgstr "Fono paveikslėlis"
+
+#: features/sui_quickactions.lua:994
+#, fuzzy
+msgid "Backup"
+msgstr "Atgal"
+
+#: screens/sui_menu.lua:4043
+msgid "Backup & Restore"
+msgstr ""
+
+#: features/sui_backup.lua:673
+msgid "Backup created"
+msgstr ""
+
+#: features/sui_backup.lua:925 features/sui_backup.lua:1127
+msgid "Backup created:"
+msgstr ""
+
+#: features/sui_backup.lua:922 features/sui_backup.lua:1130
+msgid "Backup failed."
+msgstr ""
+
+#: features/sui_backup.lua:984
+msgid "Backup loaded. Choose what to import, then tap \"Restore Selected…\"."
+msgstr ""
+
+#: features/sui_backup.lua:1041
+msgid ""
+"Backup restored.\n"
+"Restart KOReader now to finish applying all changes?"
+msgstr ""
+
+#: features/sui_backup.lua:615
+msgid ""
+"Backup was made by a newer SimpleUI version. Please update this plugin first."
+msgstr ""
+
+#: engines/sui_book_grid.lua:2095 engines/sui_group_cell.lua:319
+#: features/sui_cover_elements.lua:81
+msgid "Badge"
+msgstr "Ženklelis"
+
+#: infra/sui_config.lua:1403 infra/sui_config.lua:1405
+msgid "Badge Size"
+msgstr "Ženklelio dydis"
+
+#: features/sui_cover_elements.lua:67
+msgid "Banner"
+msgstr "Baneris"
+
+#: engines/sui_book_grid.lua:1990
+msgid "Bar"
+msgstr "Juosta"
+
+#: engines/sui_book_grid.lua:1992
+msgid "Bar + Text"
+msgstr "Juosta + tekstas"
+
+#: screens/sui_menu.lua:540 screens/sui_menu.lua:1021 screens/sui_menu.lua:1102
+#: screens/sui_menu.lua:1194
+msgid "Bar Size"
+msgstr "Juostos dydis"
+
+#: modules/module_quick_actions.lua:459 screens/sui_quicksettings_bar.lua:1659
+msgid "Bare"
+msgstr "Paprastas"
+
+#: features/sui_backup.lua:122 screens/sui_menu.lua:4160
+#: screens/sui_settings_window.lua:335 screens/sui_settings_window.lua:1037
+msgid "Bars"
+msgstr "Juostos"
+
+#: infra/sui_config.lua:203 modules/module_clock.lua:196
+#: modules/module_clock.lua:1083
+msgid "Battery"
+msgstr "Akumuliatorius"
+
+#: infra/sui_config.lua:1207 screens/sui_menu.lua:2625
+#: screens/sui_settings_window.lua:459 screens/sui_settings_window.lua:1050
+msgid "Behaviour"
+msgstr "Elgsena"
+
+#: engines/sui_group_cell.lua:231
+#, fuzzy
+msgid "Below Cover"
+msgstr "Vienas viršelis"
+
+#: screens/sui_stats_windows.lua:1990 screens/sui_stats_windows.lua:2010
+msgid "Best streak"
+msgstr "Geriausia serija"
+
+#: infra/sui_config.lua:201
+msgid "Bluetooth"
+msgstr ""
+
+#: features/sui_style.lua:2486
+msgid "Bold"
+msgstr ""
+
+#: features/sui_style.lua:2488
+msgid "Bold italic"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1603
+msgid "Book"
+msgstr ""
+
+#: screens/sui_menu.lua:2479
+msgid "Book Cover Transition"
+msgstr "Knygos viršelio perėjimas"
+
+#: screens/sui_quicksettings_bar.lua:1580
+msgid "Book Details"
+msgstr ""
+
+#: screens/sui_menu.lua:2333
+#, fuzzy
+msgid "Book Folder"
+msgstr "Aplankas"
+
+#: features/sui_quickactions.lua:2199
+msgid "Book Info"
+msgstr "Knygos informacija"
+
+#: infra/sui_config.lua:1842
+msgid "Book Menu"
+msgstr "Knygos meniu"
+
+#: features/sui_cover_elements.lua:107
+msgid "Book Stack"
+msgstr ""
+
+#: screens/sui_menu.lua:2891
+msgid "Book Stack Style"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:3666
+msgid "Book Statistics"
+msgstr "Knygos statistika"
+
+#: main.lua:1235
+msgid "Book statistics"
+msgstr "Knygos statistika"
+
+#: screens/sui_settings_window.lua:345
+msgid "Book-browser settings"
+msgstr "Knygų naršyklės nustatymai"
+
+#: features/sui_quickactions.lua:500
+msgid "Bookmark browser"
+msgstr "Žymeklių naršyklė"
+
+#: features/sui_quickactions.lua:441
+msgid "Bookmark browser requires a newer KOReader. Please update."
+msgstr ""
+
+#: features/sui_quickactions.lua:864 infra/sui_config.lua:133
+msgid "Bookmarks"
+msgstr "Žymekliai"
+
+#: engines/sui_book_sources.lua:400 modules/module_library.lua:266
+#: modules/module_reading_stats.lua:249
+msgid "Books"
+msgstr "Knygos"
+
+#: modules/critter/phrases.lua:261
+msgid "Books are tiny adventures."
+msgstr ""
+
+#: modules/critter/phrases.lua:44
+msgid "Books this year"
+msgstr ""
+
+#: infra/sui_goals.lua:46
+msgid "Books to read in %s:"
+msgstr "Knygos, kurias skaityti %s:"
+
+#: engines/sui_group_cell.lua:298 features/library/sui_label_options.lua:146
+#: features/sui_cover_elements.lua:96 modules/module_tab_grid.lua:598
+msgid "Bottom"
+msgstr "Apačioje"
+
+#: screens/sui_menu.lua:1158 screens/sui_menu.lua:1159
+#: screens/sui_menu.lua:1197
+msgid "Bottom Margin"
+msgstr "Apatinis tarpas"
+
+#: screens/sui_menu.lua:2480
+msgid ""
+"Briefly show the book cover full-screen when opening or closing a book, "
+"masking the page-layout flash. Normally requires the book to already be "
+"indexed by the cover browser (its cover must have been seen at least once in "
+"a grid/list view) — see \"High-Quality Cover\" below to also cover un-"
+"indexed books."
+msgstr ""
+"Trumpam per visą ekraną parodomas knygos viršelis atidarant ar uždarant "
+"knygą — taip paslepiamas puslapio išdėstymo blyksnis. Paprastai "
+"reikalaujama, kad knyga jau būtų indeksuota viršelių naršyklėje (jos "
+"viršelis turi būti bent kartą matytas tinklelio arba sąrašo rodinyje) — žr. "
+"„Aukštos kokybės viršelis“ žemiau, kad būtų apimtos ir neindeksuotos knygos."
+
+#: features/sui_accent_picker.lua:92 features/sui_quickactions.lua:930
+#: infra/sui_config.lua:136 infra/sui_config.lua:202
+msgid "Brightness"
+msgstr "Ryškumas"
+
+#: screens/sui_titlebar.lua:116
+msgid "Browse"
+msgstr "Naršyti"
+
+#: features/sui_style.lua:117
+msgid "Browse Button (author)"
+msgstr "Naršymo mygtukas (autorius)"
+
+#: features/sui_style.lua:111
+msgid "Browse Button (default)"
+msgstr "Naršymo mygtukas (numatytasis)"
+
+#: features/sui_style.lua:123
+msgid "Browse Button (series)"
+msgstr "Naršymo mygtukas (serija)"
+
+#: features/sui_style.lua:129
+msgid "Browse Button (tags)"
+msgstr "Naršymo mygtukas (žymos)"
+
+#: features/sui_style.lua:1265
+msgid "Browse Icons"
+msgstr "Naršymo piktogramos"
+
+#: engines/sui_book_sources.lua:433 features/library/sui_library_browse.lua:571
+msgid "Browse by"
+msgstr "Naršyti pagal"
+
+#: features/sui_quickactions.lua:666
+msgid "Browse by Authors/Series/Tags not available."
+msgstr "Naršymas pagal autorius/serijas/žymas nepasiekiamas."
+
+#: screens/sui_titlebar.lua:1146
+msgid "Browse library"
+msgstr "Naršyti biblioteką"
+
+#: features/sui_quickactions.lua:2142 screens/sui_menu.lua:2202
+#: screens/sui_menu.lua:3469
+#, fuzzy
+msgid "Browse…"
+msgstr "Naršyti"
+
+#: modules/module_quick_actions.lua:455 screens/sui_quicksettings_bar.lua:1655
+msgid "Button Type"
+msgstr "Mygtuko tipas"
+
+#: screens/sui_titlebar.lua:1152
+msgid "By author"
+msgstr "Pagal autorių"
+
+#: screens/sui_menu.lua:2519
+msgid ""
+"By default the cover is stretched to fill the whole screen, which can "
+"distort it if its proportions don't match your screen's. When on, the cover "
+"keeps its original proportions instead, centered over a black background."
+msgstr ""
+"Pagal numatytuosius nustatymus viršelis ištempiamas per visą ekraną, todėl "
+"gali iškreipti proporcijas, jei jos nesutampa su ekrano proporcijomis. Kai "
+"įjungta, viršelis išlaiko originalias proporcijas ir yra centruojamas "
+"juodame fone."
+
+#: screens/sui_titlebar.lua:1153
+msgid "By series"
+msgstr "Pagal seriją"
+
+#: screens/sui_titlebar.lua:1154
+msgid "By tags"
+msgstr "Pagal žymas"
+
+#: screens/sui_heatmap_popup.lua:67 screens/sui_stats_windows.lua:2826
+msgid "CALENDAR"
+msgstr "KALENDORIUS"
+
+#: modules/module_heatmap.lua:340
+msgid "Calendar"
+msgstr "Kalendorius"
+
+#: features/dialogs/sui_dialogs.lua:170 features/dialogs/sui_dialogs.lua:278
+#: features/dialogs/sui_dialogs.lua:388
+#: features/library/sui_library_search.lua:57
+#: features/sui_accent_picker.lua:103 features/sui_backup.lua:1029
+#: features/sui_manual_books.lua:91 features/sui_presets.lua:965
+#: features/sui_presets.lua:981 features/sui_presets.lua:1019
+#: features/sui_presets.lua:1039 features/sui_quickactions.lua:1596
+#: features/sui_quickactions.lua:1865 features/sui_quickactions.lua:2067
+#: features/sui_quickactions.lua:2581 features/sui_quickactions.lua:2933
+#: features/sui_quickactions.lua:3250 features/sui_style.lua:1284
+#: infra/sui_updater.lua:500 infra/sui_updater.lua:517
+#: modules/module_quote.lua:1303 screens/sui_menu.lua:3722
+#: screens/sui_menu.lua:3742 screens/sui_menu.lua:3783
+#: screens/sui_menu.lua:3805 screens/sui_menu.lua:4059
+#: screens/sui_stats_windows.lua:621
+msgid "Cancel"
+msgstr "Atšaukti"
+
+#: modules/module_reading_stats.lua:1185
+msgid "Cards"
+msgstr "Kortelės"
+
+#: features/library/sui_label_options.lua:145 infra/sui_config.lua:2026
+#: screens/sui_menu.lua:672 screens/sui_menu.lua:879
+msgid "Center"
+msgstr "Centras"
+
+#: modules/module_reading_stats.lua:270
+msgid "Charts — This week"
+msgstr ""
+
+#: modules/module_reading_stats.lua:273
+msgid "Charts — When you read (%d-week average)"
+msgstr ""
+
+#: screens/sui_menu.lua:4032
+msgid "Check for Updates"
+msgstr "Tikrinti atnaujinimus"
+
+#: infra/sui_updater.lua:633
+msgid "Checking for updates…"
+msgstr "Tikrinami atnaujinimai…"
+
+#: features/sui_accent_picker.lua:80
+msgid "Choose a color"
+msgstr ""
+
+#: screens/sui_onboarding.lua:192
+msgid "Choose a different folder"
+msgstr ""
+
+#: features/sui_backup.lua:999
+msgid "Choose backup file"
+msgstr ""
+
+#: features/sui_backup.lua:1153
+msgid "Choose backup file…"
+msgstr ""
+
+#: engines/sui_asset_browser.lua:91
+msgid "Choose file"
+msgstr ""
+
+#: features/sui_quickactions.lua:2155 features/sui_quickactions.lua:2177
+msgid "Choose icon"
+msgstr ""
+
+#: screens/sui_menu.lua:3479
+msgid "Choose icon pack"
+msgstr ""
+
+#: screens/sui_onboarding.lua:211
+msgid ""
+"Choose the folder where you will place all your books. Simple UI uses it to "
+"show your books in the Library."
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1691
+msgid ""
+"Choose the menus that open directly on the Quick Settings tab instead of the "
+"last used tab."
+msgstr ""
+
+#: screens/sui_menu.lua:2210
+#, fuzzy
+msgid "Choose wallpaper"
+msgstr "Pašviesinti foną"
+
+#: screens/sui_onboarding.lua:124
+msgid "Choose your initial layout"
+msgstr "Pasirinkite pradinį išdėstymą"
+
+#: features/sui_cover_elements.lua:114 modules/module_coverdeck.lua:1484
+#: screens/sui_menu.lua:1761 screens/sui_menu.lua:2894
+#: screens/sui_menu.lua:3277 screens/sui_menu.lua:3937
+#: screens/sui_quicksettings_bar.lua:1602
+#: screens/sui_quicksettings_bar.lua:1614
+msgid "Classic"
+msgstr ""
+
+#: features/sui_accent_picker.lua:101 screens/sui_menu.lua:3220
+msgid "Clear"
+msgstr ""
+
+#: features/sui_presets.lua:172 features/sui_presets.lua:236
+#: infra/sui_config.lua:199 modules/module_clock.lua:194
+#: modules/module_clock.lua:744 modules/module_clock.lua:1083
+msgid "Clock"
+msgstr "Laikrodis"
+
+#: modules/module_clock.lua:1091
+msgid "Clock Style"
+msgstr "Laikrodžio stilius"
+
+#: modules/module_currently.lua:1439
+msgid "Clock icon"
+msgstr ""
+
+#: screens/sui_titlebar.lua:119
+msgid "Close"
+msgstr "Uždaryti"
+
+#: screens/sui_menu.lua:2432
+msgid "Closing Book Notice"
+msgstr "Pranešimas apie knygos uždarymą"
+
+#: main.lua:1859
+msgid "Closing book…"
+msgstr "Uždaroma knyga…"
+
+#: features/sui_quickactions.lua:2046
+msgid "Codepoint out of valid Unicode range (0–10FFFF)."
+msgstr "Kodų taškas nepatenka į galiojantį Unicode diapazoną (0–10FFFF)."
+
+#: engines/sui_book_sources.lua:381 features/sui_quickactions.lua:2477
+#: features/sui_quickactions.lua:2596 modules/module_feat_coll.lua:79
+msgid "Collection"
+msgstr "Kolekcija"
+
+#: modules/module_collections.lua:490
+msgid "Collection Menu"
+msgstr "Kolekcijos meniu"
+
+#: features/library/sui_group_actions.lua:137
+msgid "Collection \"%1\" created with %2 books."
+msgstr "Kolekcija „%1“ sukurta su %2 knygomis."
+
+#: features/library/sui_group_actions.lua:110
+msgid "Collection already exists: %1"
+msgstr "Kolekcija jau egzistuoja: %1"
+
+#: modules/module_collections.lua:319
+msgid "Collection is empty."
+msgstr "Kolekcija tuščia."
+
+#: features/sui_quickactions.lua:3022
+msgid "Collection not available: %s"
+msgstr "Kolekcija nepasiekiama: %s"
+
+#: features/sui_quickactions.lua:517 features/sui_quickactions.lua:753
+#: features/sui_quickactions.lua:2201 infra/sui_config.lua:127
+#: modules/module_collections.lua:354 modules/module_collections.lua:366
+#: modules/module_collections.lua:380 modules/module_collections.lua:414
+#: modules/module_collections.lua:483 modules/module_collections.lua:484
+#: modules/module_coverdeck.lua:1538
+msgid "Collections"
+msgstr "Kolekcijos"
+
+#: infra/sui_patches.lua:1283
+msgid "Collections (%1)"
+msgstr "Kolekcijos (%1)"
+
+#: features/sui_quickactions.lua:760
+msgid "Collections not available."
+msgstr "Kolekcijos nepasiekiamos."
+
+#: features/sui_style.lua:191
+msgid "Collections: Back Button"
+msgstr "Kolekcijos: Atgal mygtukas"
+
+#: features/library/sui_label_options.lua:148
+#: features/sui_cover_elements.lua:257 infra/sui_config.lua:1059
+#: infra/sui_config.lua:1491
+msgid "Color"
+msgstr "Spalva"
+
+#: screens/sui_menu.lua:3995
+msgid "Colors"
+msgstr ""
+
+#: infra/sui_config.lua:1711 infra/sui_config.lua:1713
+msgid "Column Width (Bento Grid)"
+msgstr ""
+
+#: engines/sui_book_grid.lua:1911 modules/module_reading_stats.lua:1163
+msgid "Columns"
+msgstr "Stulpeliai"
+
+#: modules/module_currently.lua:1431 modules/module_reading_goals.lua:1262
+msgid "Compact"
+msgstr "Kompaktiškas"
+
+#: features/sui_quickactions.lua:2068
+msgid "Confirm"
+msgstr "Patvirtinti"
+
+#: infra/sui_config.lua:1182 screens/sui_menu.lua:2756
+#, fuzzy
+msgid "Content"
+msgstr "Tęsti"
+
+#: features/sui_quickactions.lua:786 infra/sui_config.lua:130
+#: screens/sui_onboarding.lua:417 screens/sui_onboarding.lua:423
+#: screens/sui_onboarding.lua:435 screens/sui_onboarding.lua:441
+msgid "Continue"
+msgstr "Tęsti"
+
+#: features/sui_backup.lua:1128
+msgid "Copy this file somewhere safe (e.g. over USB)."
+msgstr ""
+
+#: engines/sui_book_grid.lua:1994
+msgid "Corner Badge"
+msgstr "Kampinis ženklelis"
+
+#: features/sui_backup.lua:916 features/sui_backup.lua:991
+#: features/sui_backup.lua:1110
+#, fuzzy
+msgid "Could not determine backup folder."
+msgstr "Nepavyko nustatyti paketų aplanko"
+
+#: features/sui_style.lua:2661
+msgid "Could not determine packs folder"
+msgstr "Nepavyko nustatyti paketų aplanko"
+
+#: features/sui_backup.lua:560
+#, fuzzy
+msgid "Could not open backup file for writing"
+msgstr "Nepavyko atidaryti zip (neteisingas formatas arba sugadintas)"
+
+#: screens/sui_stats_windows.lua:67
+msgid "Could not open statistics database."
+msgstr "Nepavyko atidaryti statistikos duomenų bazės."
+
+#: features/sui_style.lua:2663
+msgid "Could not open zip (invalid format or corrupted)"
+msgstr "Nepavyko atidaryti zip (neteisingas formatas arba sugadintas)"
+
+#: features/sui_backup.lua:572
+#, fuzzy
+msgid "Could not write backup file"
+msgstr "Nepavyko nustatyti paketų aplanko"
+
+#: features/sui_stats_menu.lua:103
+msgid ""
+"Count manually tracked books in the all-time total of books finished. They "
+"always count towards the year they belong to."
+msgstr ""
+
+#: features/sui_presets.lua:192 features/sui_presets.lua:210
+#: modules/module_coverdeck.lua:837
+msgid "Cover Deck"
+msgstr "Viršelių denis"
+
+#: screens/sui_menu.lua:3007
+msgid "Cover Settings"
+msgstr "Viršelių nustatymai"
+
+#: screens/sui_menu.lua:2787
+msgid "Cover Shadow"
+msgstr ""
+
+#: engines/sui_book_grid.lua:1865 engines/sui_book_grid.lua:1867
+#: modules/module_coverdeck.lua:1472 modules/module_coverdeck.lua:1473
+#: modules/module_currently.lua:1264 modules/module_currently.lua:1265
+msgid "Cover Size"
+msgstr "Viršelio dydis"
+
+#: modules/module_currently.lua:1279 modules/module_currently.lua:1280
+msgid "Cover Spacing"
+msgstr "Viršelių tarpai"
+
+#: engines/sui_group_cell.lua:259
+msgid "Cover Style"
+msgstr "Viršelio stilius"
+
+#: features/sui_cover_elements.lua:331
+msgid "Cover Type"
+msgstr ""
+
+#: engines/sui_group_cell.lua:587 modules/module_collections.lua:315
+msgid "Cover for \"%s\""
+msgstr "Viršelis „%s“"
+
+#: infra/sui_compat_check.lua:131
+msgid ""
+"CoverBrowser plugin is not enabled, some features will not work correctly."
+msgstr ""
+
+#: modules/module_coverdeck.lua:123 screens/sui_menu.lua:3917
+msgid "Covers"
+msgstr "Viršeliai"
+
+#: features/library/sui_group_actions.lua:105
+#: screens/sui_settings_window.lua:1128
+msgid "Create"
+msgstr "Kurti"
+
+#: features/sui_quickactions.lua:1632 features/sui_quickactions.lua:2840
+msgid "Create Quick Action"
+msgstr "Kurti greitąjį veiksmą"
+
+#: screens/sui_settings_window.lua:1121
+msgid "Create Screen"
+msgstr "Kurti ekraną"
+
+#: screens/sui_onboarding.lua:187
+msgid "Create a \"Books\" folder"
+msgstr ""
+
+#: features/library/sui_facet_groups.lua:139
+#: features/library/sui_foldercovers.lua:607
+#: features/library/sui_foldercovers.lua:622
+#: features/library/sui_library_browse.lua:887
+#: features/library/sui_series_grouping.lua:401
+msgid "Create collection"
+msgstr "Kurti kolekciją"
+
+#: screens/sui_settings_window.lua:1126
+msgid "Create screen"
+msgstr "Kurti ekraną"
+
+#: features/sui_backup.lua:913 features/sui_backup.lua:1124
+#, fuzzy
+msgid "Creating backup…"
+msgstr "Gaunami žymekliai…"
+
+#: modules/critter/module_critter.lua:522
+msgid "Critter"
+msgstr ""
+
+#: features/sui_backup.lua:161
+msgid "Critter images and phrases from sui_critters/"
+msgstr ""
+
+#: modules/critter/module_critter.lua:670
+msgid "Critter position"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:1988 screens/sui_stats_windows.lua:2008
+msgid "Current streak"
+msgstr "Dabartinė serija"
+
+#: features/sui_presets.lua:158 features/sui_presets.lua:172
+#: features/sui_presets.lua:236 modules/module_currently.lua:334
+#: modules/module_currently.lua:335
+msgid "Currently Reading"
+msgstr "Šiuo metu skaitoma"
+
+#: infra/sui_config.lua:3045
+msgid "Custom"
+msgstr "Pasirinktinis"
+
+#: features/sui_quickactions.lua:1834 features/sui_quickactions.lua:1837
+msgid "Custom Actions"
+msgstr "Pasirinktiniai veiksmai"
+
+#: modules/module_quote.lua:1422
+msgid "Custom File"
+msgstr "Pasirinktinis failas"
+
+#: modules/module_quote.lua:1427
+msgid "Custom File + My Highlights"
+msgstr "Pasirinktinis failas + Mano paryškinimai"
+
+#: features/sui_quickactions.lua:1525 features/sui_quickactions.lua:1629
+msgid "Custom Quick Actions"
+msgstr "Pasirinktiniai greitieji veiksmai"
+
+#: infra/sui_custom_screens.lua:158
+msgid "Custom Screen"
+msgstr "Pasirinktinis ekranas"
+
+#: features/sui_quickactions.lua:1844 features/sui_quickactions.lua:1847
+msgid "Custom Screens"
+msgstr "Pasirinktiniai ekranai"
+
+#: screens/sui_settings_window.lua:479
+msgid "Custom Screens unavailable."
+msgstr "Pasirinktiniai ekranai nepasiekiami."
+
+#: infra/sui_config.lua:206 screens/sui_menu.lua:35
+msgid "Custom Text"
+msgstr "Pasirinktinis tekstas"
+
+#: features/sui_backup.lua:133
+msgid "Custom actions, rows and dispatcher bindings"
+msgstr ""
+
+#: features/sui_backup.lua:160
+msgid "Custom critters"
+msgstr ""
+
+#: features/sui_backup.lua:154
+#, fuzzy
+msgid "Custom icons"
+msgstr "Pasirinktiniai veiksmai"
+
+#: features/sui_backup.lua:148
+#, fuzzy
+msgid "Custom quotes"
+msgstr "Pasirinktiniai veiksmai"
+
+#: screens/sui_onboarding.lua:333
+msgid "Custom wallpapers and icons"
+msgstr "Pasirinktiniai fonai ir piktogramos"
+
+#: screens/sui_onboarding.lua:325
+msgid "Customize even more"
+msgstr "Tinkinkite dar daugiau"
+
+#: features/library/sui_hold_rows.lua:254
+msgid "Cut"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2506 screens/sui_stats_windows.lua:3080
+msgid "DAY STREAK"
+msgstr "DIENŲ SERIJA"
+
+#: infra/sui_goals.lua:65
+msgid "Daily Goal"
+msgstr "Dienos tikslas"
+
+#: infra/sui_goals.lua:66
+msgid "Daily Reading Goal"
+msgstr "Dienos skaitymo tikslas"
+
+#: modules/module_reading_stats.lua:244 modules/module_reading_stats.lua:245
+msgid "Daily average"
+msgstr ""
+
+#: modules/module_reading_stats.lua:245
+msgid "Daily avg — Pages"
+msgstr "Vid. per dieną — Puslapiai"
+
+#: modules/module_reading_stats.lua:244
+msgid "Daily avg — Time"
+msgstr "Vid. per dieną — Laikas"
+
+#: modules/critter/phrases.lua:219 modules/critter/phrases.lua:226
+msgid "Daily goal reached!"
+msgstr ""
+
+#: features/library/sui_label_options.lua:131 features/sui_style.lua:1482
+msgid "Dark"
+msgstr "Tamsi"
+
+#: screens/sui_menu.lua:2282
+#, fuzzy
+msgid "Darken"
+msgstr "Tamsi"
+
+#: features/sui_presets.lua:235
+msgid "Dashboard"
+msgstr ""
+
+#: modules/module_clock.lua:195 modules/module_clock.lua:1083
+#, fuzzy
+msgid "Date"
+msgstr "Rodyti datą"
+
+#: modules/module_library.lua:206
+msgid "Date added (newest)"
+msgstr "Pridėjimo data (naujausios)"
+
+#: modules/module_library.lua:207
+msgid "Date added (oldest)"
+msgstr "Pridėjimo data (seniausios)"
+
+#: screens/sui_stats_windows.lua:580
+msgid "Date finished"
+msgstr "Baigimo data"
+
+#: screens/sui_stats_windows.lua:573
+msgid "Date started"
+msgstr "Pradžios data"
+
+#: screens/sui_stats_windows.lua:889 screens/sui_stats_windows.lua:3380
+msgid "Days"
+msgstr "Dienos"
+
+#: modules/critter/phrases.lua:47
+msgid "Days and months"
+msgstr ""
+
+#: infra/sui_book_stats.lua:177
+msgid "Days of reading"
+msgstr "Skaitymo dienos"
+
+#: infra/sui_datenames.lua:30
+msgid "Dec"
+msgstr "gruod."
+
+#: infra/sui_datenames.lua:38
+msgid "December"
+msgstr "Gruodis"
+
+#: features/dialogs/sui_dialogs.lua:265 features/sui_cover_elements.lua:113
+#: features/sui_quickactions.lua:2126 features/sui_quickactions.lua:2388
+#: features/sui_style.lua:2463 features/sui_style.lua:2510
+#: infra/sui_config.lua:997 infra/sui_config.lua:1054
+#: modules/module_currently.lua:1303 modules/module_reading_goals.lua:1261
+#: modules/module_tab_grid.lua:645 screens/sui_menu.lua:439
+#: screens/sui_menu.lua:568 screens/sui_menu.lua:2893 screens/sui_menu.lua:3255
+#: screens/sui_titlebar.lua:1151
+msgid "Default"
+msgstr "Numatytasis"
+
+#: features/sui_quickactions.lua:2392
+msgid "Default (Folder)"
+msgstr "Numatytasis (Aplankas)"
+
+#: features/sui_quickactions.lua:2395
+msgid "Default (Plugin)"
+msgstr "Numatytasis (Įskiepis)"
+
+#: features/sui_quickactions.lua:2399
+msgid "Default (System)"
+msgstr "Numatytasis (Sistema)"
+
+#: modules/module_quote.lua:1417
+msgid "Default Quotes"
+msgstr "Numatytieji citatos"
+
+#: infra/sui_config.lua:1446
+#, fuzzy
+msgid "Default: %1"
+msgstr "Numatytasis"
+
+#: features/sui_style.lua:210
+msgid "Default: Folder"
+msgstr "Numatytasis: Aplankas"
+
+#: features/sui_style.lua:231
+msgid "Default: Group"
+msgstr "Numatytasis: Grupė"
+
+#: features/sui_style.lua:217
+msgid "Default: Plugin"
+msgstr "Numatytasis: Įskiepis"
+
+#: features/sui_style.lua:224
+msgid "Default: System"
+msgstr "Numatytasis: Sistema"
+
+#: engines/sui_window.lua:2361 engines/sui_window.lua:3723
+#: features/library/sui_hold_rows.lua:138 features/sui_manual_books.lua:85
+#: features/sui_manual_books.lua:90 features/sui_presets.lua:977
+#: features/sui_presets.lua:980 features/sui_presets.lua:1018
+#: features/sui_quickactions.lua:1595 features/sui_quickactions.lua:2927
+#: features/sui_quickactions.lua:2932 screens/sui_menu.lua:3738
+#: screens/sui_menu.lua:3741 screens/sui_menu.lua:3782
+#: screens/sui_settings_window.lua:537 screens/sui_settings_window.lua:585
+#: screens/sui_settings_window.lua:663
+msgid "Delete"
+msgstr "Ištrinti"
+
+#: screens/sui_menu.lua:4058
+msgid "Delete Settings"
+msgstr "Ištrinti nustatymus"
+
+#: screens/sui_settings_window.lua:535
+msgid "Delete \"%s\"? This removes its layout, modules and Quick Action."
+msgstr ""
+"Ištrinti „%s“? Tai pašalins jos išdėstymą, modulius ir greitąjį veiksmą."
+
+#: features/sui_presets.lua:979 features/sui_presets.lua:1017
+#: screens/sui_menu.lua:3740 screens/sui_menu.lua:3781
+msgid "Delete preset \"%s\"?"
+msgstr "Ištrinti išankstinę nuostatą „%s“?"
+
+#: features/sui_quickactions.lua:1594 features/sui_quickactions.lua:2931
+msgid "Delete quick action \"%s\"?"
+msgstr "Ištrinti greitąjį veiksmą „%s“?"
+
+#: features/sui_manual_books.lua:89
+msgid "Delete this book?"
+msgstr ""
+
+#: modules/module_currently.lua:280 modules/module_currently.lua:1376
+msgid "Description"
+msgstr "Aprašymas"
+
+#: modules/module_currently.lua:1493
+msgid "Description Alignment"
+msgstr ""
+
+#: modules/module_reading_goals.lua:1127
+msgid "Detail"
+msgstr ""
+
+#: modules/module_reading_goals.lua:1274
+msgid "Detail Below Ring"
+msgstr ""
+
+#: modules/module_reading_goals.lua:1273
+msgid "Detail Inside Ring"
+msgstr ""
+
+#: modules/module_currently.lua:1430
+msgid "Detailed"
+msgstr ""
+
+#: modules/module_reading_stats.lua:1186
+msgid "Detailed Cards"
+msgstr ""
+
+#: modules/critter/module_critter.lua:697
+msgid "Details"
+msgstr ""
+
+#: features/sui_quickactions.lua:2204
+msgid "Dictionary Lookup"
+msgstr "Žodyno paieška"
+
+#: modules/module_clock.lua:1096 modules/module_clock.lua:1100
+msgid "Digital"
+msgstr "Skaitmeninis"
+
+#: screens/sui_menu.lua:2395
+msgid "Disable \"Lock Scale\" first to set a custom label scale."
+msgstr ""
+"Pirmiausia išjunkite „Užrakinti mastelį“, kad nustatytumėte pasirinktinį "
+"etikečių mastelį."
+
+#: infra/sui_config.lua:1382
+msgid "Disable \"Lock Scale\" first to set a per-module scale."
+msgstr ""
+"Pirmiausia išjunkite „Užrakinti mastelį“, kad nustatytumėte modulio mastelį."
+
+#: infra/sui_config.lua:204
+msgid "Disk Usage"
+msgstr "Disko naudojimas"
+
+#: features/sui_quickactions.lua:2981
+msgid "Dispatcher not available."
+msgstr "Siuntėjas nepasiekiamas."
+
+#: screens/sui_menu.lua:3060
+msgid "Display"
+msgstr "Rodymas"
+
+#: screens/sui_menu.lua:3903
+#, fuzzy
+msgid "Don't Invert Colored Icons in Night Mode"
+msgstr "Apversti naktiniame režime"
+
+#: modules/critter/phrases.lua:108
+msgid "Don't forget to rest."
+msgstr ""
+
+#: features/sui_quickactions.lua:2582
+msgid "Done"
+msgstr "Atlikta"
+
+#: screens/sui_menu.lua:476
+msgid "Dot Pager"
+msgstr "Taškų puslapiavimas"
+
+#: infra/sui_updater.lua:516
+msgid "Download and install"
+msgstr "Atsisiųsti ir įdiegti"
+
+#: infra/sui_updater.lua:515
+msgid "Download and install now?"
+msgstr "Atsisiųsti ir įdiegti dabar?"
+
+#: infra/sui_updater.lua:441
+msgid "Download error: "
+msgstr "Atsisiuntimo klaida: "
+
+#: infra/sui_updater.lua:417
+msgid "Downloading Simple UI %s…"
+msgstr "Atsisiunčiama Simple UI %s…"
+
+#: modules/module_currently.lua:1306
+msgid "Dynamic"
+msgstr "Dinamiškas"
+
+#: features/sui_quickactions.lua:2914
+msgid "Edit"
+msgstr "Redaguoti"
+
+#: features/sui_manual_books.lua:105
+msgid "Edit Book"
+msgstr ""
+
+#: screens/sui_menu.lua:623 screens/sui_menu.lua:625 screens/sui_menu.lua:854
+msgid "Edit Custom Text"
+msgstr "Redaguoti pasirinktinį tekstą"
+
+#: screens/sui_menu.lua:2153 screens/sui_settings_window.lua:414
+msgid "Edit Home Screen Layout"
+msgstr "Redaguoti pradžios ekrano išdėstymą"
+
+#: features/sui_quickactions.lua:2320
+msgid "Edit Quick Action"
+msgstr "Redaguoti greitąjį veiksmą"
+
+#: modules/module_clock.lua:255
+msgid "Eight"
+msgstr "Aštuoni"
+
+#: modules/module_clock.lua:258
+msgid "Eighteen"
+msgstr "Aštuoniolika"
+
+#: modules/module_clock.lua:256
+msgid "Eleven"
+msgstr "Vienuolika"
+
+#: screens/sui_menu.lua:847
+msgid "Empty"
+msgstr "Tuščias"
+
+#: features/library/sui_foldercovers.lua:1431
+msgid "Empty folder"
+msgstr ""
+
+#: infra/sui_compat_check.lua:132
+#, fuzzy
+msgid "Enable"
+msgstr "įjungta"
+
+#: features/sui_quickactions.lua:667
+msgid "Enable 'Browse by Author / Series / Tags' in the library menu first."
+msgstr ""
+"Pirmiausia įjunkite „Naršyti pagal autorių / seriją / žymas“ bibliotekos "
+"meniu."
+
+#: screens/sui_menu.lua:2945
+msgid "Enable Browse by Author / Series / Tags"
+msgstr "Įjungti naršymą pagal autorių / seriją / žymas"
+
+#: screens/sui_menu.lua:2929
+msgid "Enable Library Custom Covers"
+msgstr "Įjungti pasirinktinius bibliotekos viršelius"
+
+#: screens/sui_menu.lua:1078
+msgid "Enable Navigation Bar"
+msgstr "Įjungti naršymo juostą"
+
+#: screens/sui_quicksettings_bar.lua:1484
+msgid "Enable Quick Settings Bar"
+msgstr "Įjungti greitųjų nustatymų juostą"
+
+#: screens/sui_menu.lua:801
+msgid "Enable Status Bar"
+msgstr "Įjungti būsenos juostą"
+
+#: screens/sui_menu.lua:1742
+msgid "Enable Title Bar"
+msgstr "Įjungti antraštės juostą"
+
+#: screens/sui_menu.lua:2244
+msgid "Enable Wallpaper"
+msgstr "Įjungti foną"
+
+#: features/sui_style.lua:2301
+msgid "Enable custom UI font"
+msgstr "Įjungti pasirinktinį sąsajos šriftą"
+
+#: features/sui_accent_picker.lua:54
+msgid "Enter a color like #2F6FDB."
+msgstr ""
+
+#: features/sui_quickactions.lua:2096
+msgid ""
+"Enter the Unicode codepoint (hex) of a Nerd Fonts symbol.\n"
+"You can look up codes with wakamaifondue.com using the file:\n"
+"  /koreader/fonts/nerdfonts/symbols.ttf\n"
+"Leave blank and press OK to remove a Nerd Font icon."
+msgstr ""
+"Įveskite Nerd Fonts simbolio Unicode kodų tašką (šešioliktainį).\n"
+"Galite ieškoti kodų wakamaifondue.com naudodami failą:\n"
+"  /koreader/fonts/nerdfonts/symbols.ttf\n"
+"Palikite tuščią ir spauskite Gerai, kad pašalintumėte Nerd Font piktogramą."
+
+#: screens/sui_menu.lua:3540
+msgid "Error applying pack:"
+msgstr "Klaida taikant paketą:"
+
+#: infra/sui_updater.lua:638
+msgid "Error checking for updates."
+msgstr "Klaida tikrinant atnaujinimus."
+
+#: infra/sui_updater.lua:643
+msgid "Error checking for updates: "
+msgstr "Klaida tikrinant atnaujinimus: "
+
+#: features/sui_presets.lua:1117 screens/sui_menu.lua:3887
+msgid "Error exporting preset: "
+msgstr "Klaida eksportuojant išankstinę nuostatą: "
+
+#: features/sui_style.lua:2710
+msgid "Error extracting zip: "
+msgstr "Klaida išskleidžiant zip: "
+
+#: features/sui_presets.lua:1091 screens/sui_menu.lua:3860
+msgid "Error importing preset: "
+msgstr "Klaida importuojant išankstinę nuostatą: "
+
+#: modules/module_reading_goals.lua:1026
+msgid "Error in Reading Goals: check crash.log"
+msgstr "Klaida skaitymo tiksluose: patikrinkite crash.log"
+
+#: screens/sui_menu.lua:3458
+msgid "Error installing pack:"
+msgstr "Klaida diegiant paketą:"
+
+#: modules/critter/phrases.lua:265
+msgid "Every page counts."
+msgstr ""
+
+#: screens/sui_stats_windows.lua:1158
+msgid "Exclude from goals"
+msgstr "Neįtraukti į tikslus"
+
+#: screens/sui_stats_windows.lua:745 screens/sui_stats_windows.lua:751
+msgid "Excluded"
+msgstr "Neįtraukta"
+
+#: screens/sui_quicksettings_bar.lua:1008
+msgid "Exit"
+msgstr ""
+
+#: features/sui_style.lua:202
+msgid "Exit Book Button"
+msgstr ""
+
+#: features/sui_backup.lua:1118
+#, fuzzy
+msgid "Export"
+msgstr "Eksportuoti išankstinę nuostatą"
+
+#: features/sui_backup.lua:1138
+msgid "Export Full Backup…"
+msgstr ""
+
+#: features/sui_backup.lua:1105
+msgid "Export now…"
+msgstr ""
+
+#: features/sui_presets.lua:1105 screens/sui_menu.lua:3874
+msgid "Export preset"
+msgstr "Eksportuoti išankstinę nuostatą"
+
+#: screens/sui_settings_window.lua:425 screens/sui_settings_window.lua:1036
+msgid "Extra Custom Screens"
+msgstr "Papildomi pasirinktiniai ekranai"
+
+#: screens/sui_menu.lua:544
+msgid "Extra Small"
+msgstr "Labai mažas"
+
+#: features/sui_manual_books.lua:129
+msgid "Extra books read in %d, on top of the automatic count:"
+msgstr ""
+
+#: infra/sui_updater.lua:442
+msgid "Extraction error: "
+msgstr "Išskleidimo klaida: "
+
+#: screens/sui_stats_windows.lua:3191
+msgid "FREEZES"
+msgstr "UŽŠALDYMAI"
+
+#: screens/sui_menu.lua:4052
+msgid "Factory Reset"
+msgstr "Gamyklinis atkūrimas"
+
+#: features/library/sui_finished_books.lua:62
+msgid "Fade"
+msgstr ""
+
+#: screens/sui_menu.lua:2676
+msgid "Fade Intensity"
+msgstr "Blukinimo intensyvumas"
+
+#: features/library/sui_finished_books.lua:63
+msgid ""
+"Fades finished book covers in the file browser. Other lists show them as "
+"usual."
+msgstr ""
+
+#: screens/sui_menu.lua:2677
+msgid ""
+"Fades finished book covers towards white.\n"
+"50% is the default."
+msgstr ""
+"Baigtų knygų viršeliai blunka baltos spalvos link.\n"
+"50% yra numatytoji reikšmė."
+
+#: screens/sui_menu.lua:2283
+msgid "Fades the wallpaper towards black."
+msgstr ""
+
+#: screens/sui_menu.lua:2277
+#, fuzzy
+msgid "Fades the wallpaper towards white to improve text readability."
+msgstr ""
+"Išblukina foną link baltos, kad pagerintų teksto įskaitomumą.\n"
+"0% yra numatytasis (be pašviesinimo)."
+
+#: modules/critter/phrases.lua:118
+msgid "Fancy a chapter or two?"
+msgstr ""
+
+#: features/sui_quickactions.lua:851 features/sui_quickactions.lua:2200
+#: infra/sui_config.lua:132 modules/module_coverdeck.lua:1495
+msgid "Favorites"
+msgstr "Mėgstamiausi"
+
+#: features/sui_quickactions.lua:858
+msgid "Favorites not available."
+msgstr "Mėgstamiausi nepasiekiami."
+
+#: modules/module_feat_coll.lua:108 modules/module_feat_coll.lua:165
+msgid "Featured Collection"
+msgstr "Rekomenduojama kolekcija"
+
+#: modules/module_feat_coll.lua:56
+msgid "Featured Collection — tap to configure"
+msgstr "Rekomenduojama kolekcija — bakstelėkite, kad sukonfigūruotumėte"
+
+#: infra/sui_datenames.lua:29
+msgid "Feb"
+msgstr "vas."
+
+#: infra/sui_datenames.lua:36
+msgid "February"
+msgstr "Vasaris"
+
+#: features/sui_quickactions.lua:460
+msgid "Fetching bookmarks…"
+msgstr "Gaunami žymekliai…"
+
+#: modules/module_clock.lua:257
+msgid "Fifteen"
+msgstr "Penkiolika"
+
+#: modules/module_clock.lua:263
+msgid "Fifty"
+msgstr "Penkiasdešimt"
+
+#: screens/sui_quicksettings_bar.lua:1678
+msgid "File Browser"
+msgstr ""
+
+#: features/sui_quickactions.lua:839
+msgid "File Manager not available."
+msgstr "Failų tvarkytuvė nepasiekiama."
+
+#: features/sui_quickactions.lua:2202
+msgid "File Search"
+msgstr "Failų paieška"
+
+#: features/sui_backup.lua:598
+#, fuzzy
+msgid "File not found."
+msgstr "Failas nerastas: "
+
+#: features/sui_style.lua:2657
+msgid "File not found: "
+msgstr "Failas nerastas: "
+
+#: modules/module_library.lua:208
+msgid "File size (largest)"
+msgstr "Failo dydis (didžiausi)"
+
+#: modules/module_library.lua:209
+msgid "File size (smallest)"
+msgstr "Failo dydis (mažiausi)"
+
+#: engines/sui_asset_browser.lua:274
+msgid "Filter by name…"
+msgstr ""
+
+#: features/sui_manual_books.lua:111
+msgid "Finished"
+msgstr ""
+
+#: features/library/sui_finished_books.lua:84 features/sui_stats_menu.lua:133
+msgid "Finished Books"
+msgstr "Baigtos knygos"
+
+#: modules/module_clock.lua:254
+msgid "Five"
+msgstr "Penki"
+
+#: modules/module_quote.lua:1453 modules/module_quote.lua:1484
+msgid "Fixed Height"
+msgstr "Fiksuotas aukštis"
+
+#: screens/sui_menu.lua:3969
+msgid "Flat"
+msgstr "Plokščias"
+
+#: modules/module_library.lua:265
+msgid "Flat Library"
+msgstr "Plokščia biblioteka"
+
+#: features/library/sui_label_options.lua:140 screens/sui_menu.lua:1098
+msgid "Floating"
+msgstr ""
+
+#: modules/module_coverdeck.lua:1485
+msgid "Flow"
+msgstr ""
+
+#: features/sui_quickactions.lua:2595
+msgid "Folder"
+msgstr "Aplankas"
+
+#: features/sui_cover_elements.lua:89
+msgid "Folder Count"
+msgstr ""
+
+#: features/sui_style.lua:1268
+msgid "Folder Covers"
+msgstr "Aplankų viršeliai"
+
+#: features/sui_style.lua:239
+msgid "Folder Covers: Empty Folder"
+msgstr "Aplankų viršeliai: Tuščias aplankas"
+
+#: features/sui_cover_elements.lua:121
+msgid "Folder Name"
+msgstr "Aplanko pavadinimas"
+
+#: features/sui_cover_elements.lua:128
+msgid "Folder Name Text Size"
+msgstr "Aplanko pavadinimo teksto dydis"
+
+#: features/sui_quickactions.lua:2203
+msgid "Folder Shortcuts"
+msgstr "Aplankų nuorodos"
+
+#: features/library/sui_foldercovers.lua:524
+#: features/library/sui_group_actions.lua:80
+#: features/library/sui_library_browse.lua:443
+#: features/library/sui_series_grouping.lua:103
+msgid "Folder cover"
+msgstr "Aplanko viršelis"
+
+#: features/sui_backup.lua:128
+msgid "Folder covers, browse modes, series grouping"
+msgstr ""
+
+#: screens/sui_menu.lua:2843
+msgid "Folders"
+msgstr ""
+
+#: engines/sui_book_grid.lua:1973 modules/module_coverdeck.lua:1650
+#: modules/module_currently.lua:1407
+msgid "Follow Style"
+msgstr ""
+
+#: screens/sui_menu.lua:3237
+msgid "Follow accent"
+msgstr ""
+
+#: screens/sui_menu.lua:3240
+msgid "Follows accent"
+msgstr ""
+
+#: infra/sui_config.lua:1021 screens/sui_quicksettings_bar.lua:1646
+#, fuzzy
+msgid "Font"
+msgstr "Sąsajos šriftas"
+
+#: modules/module_quote.lua:1482
+#, fuzzy
+msgid "Fonts"
+msgstr "Sąsajos šriftas"
+
+#: features/sui_backup.lua:113
+msgid "Fonts, icon assignments, icon presets"
+msgstr ""
+
+#: modules/module_clock.lua:263
+msgid "Forty"
+msgstr "Keturiasdešimt"
+
+#: modules/module_clock.lua:254
+msgid "Four"
+msgstr "Keturi"
+
+#: modules/module_clock.lua:257
+msgid "Fourteen"
+msgstr "Keturiolika"
+
+#: infra/sui_config.lua:1499
+msgid "Frame"
+msgstr "Rėmelis"
+
+#: screens/sui_menu.lua:3980
+msgid "Framed"
+msgstr "Su rėmeliu"
+
+#: features/sui_stats_menu.lua:64
+msgid "Freezes"
+msgstr "Užšaldymai"
+
+#: screens/sui_stats_windows.lua:2786
+msgid ""
+"Freezes can only cover a single missed day, and only right after an active "
+"one. Tap yesterday's cell to use one, when eligible."
+msgstr ""
+"Užšaldymai gali padengti tik vieną praleistą dieną, ir tik iškart po "
+"aktyvios dienos. Bakstelėkite vakarykštės dienos langelį, kad panaudotumėte, "
+"kai tinka."
+
+#: engines/sui_heatmap_widgets.lua:127 infra/sui_datenames.lua:43
+msgid "Fri"
+msgstr "Penktadienis"
+
+#: infra/sui_datenames.lua:49
+msgid "Friday"
+msgstr "Penktadienis"
+
+#: screens/sui_quicksettings_bar.lua:581
+msgid "Frontlight"
+msgstr "Priekinis apšvietimas"
+
+#: screens/sui_quicksettings_bar.lua:1621
+msgid "Frontlight Slider"
+msgstr "Priekinio apšvietimo slankiklis"
+
+#: features/sui_quickactions.lua:414
+msgid "Frontlight not available on this device."
+msgstr "Priekinis apšvietimas nepasiekiamas šiame įrenginyje."
+
+#: features/library/sui_label_options.lua:141
+msgid "Full Width"
+msgstr ""
+
+#: screens/sui_menu.lua:1097
+msgid "Full-width"
+msgstr ""
+
+#: modules/critter/phrases.lua:48
+msgid "General"
+msgstr ""
+
+#: features/sui_backup.lua:681
+#, fuzzy
+msgid "General — %d settings"
+msgstr "Modulio nustatymai"
+
+#: screens/sui_menu.lua:2451
+msgid "Gesture Only"
+msgstr "Tik gestas"
+
+#: screens/sui_menu.lua:3951 screens/sui_menu.lua:3952
+msgid "Global Text Size"
+msgstr "Bendras teksto dydis"
+
+#: screens/sui_settings_window.lua:361
+msgid "Global custom actions & icons"
+msgstr "Visuotiniai pasirinktiniai veiksmai ir piktogramos"
+
+#: screens/sui_menu.lua:3953
+msgid ""
+"Global scale applied to all of KOReader's interface text — menus, dialogs, "
+"titles, and Simple UI. It does not change the book's reading font size, "
+"which has its own setting.\n"
+"100% is the default size. Useful when a chosen UI font (see UI Font above) "
+"renders smaller or larger than usual."
+msgstr ""
+"Bendras mastelis, taikomas visam KOReader sąsajos tekstui — meniu, "
+"dialogams, antraštėms ir Simple UI. Tai nekeičia knygos skaitymo šrifto "
+"dydžio, kuris turi savo atskirą nustatymą.\n"
+"100% yra numatytasis dydis. Naudinga, kai pasirinktas sąsajos šriftas (žr. "
+"„Sąsajos šriftas“ aukščiau) atvaizduojamas mažesnis arba didesnis nei "
+"įprastai."
+
+#: screens/sui_menu.lua:2377
+msgid ""
+"Global scale for all modules.\n"
+"Individual overrides in Module Settings take precedence.\n"
+"100% is the default size."
+msgstr ""
+"Visuotinis mastelis visiems moduliams.\n"
+"Individualūs pakeitimai Modulio nustatymuose turi pirmenybę.\n"
+"100% yra numatytasis dydis."
+
+#: screens/sui_onboarding.lua:326
+msgid "Go to Settings > Home Screen to edit your layout whenever you want."
+msgstr ""
+"Eikite į Nustatymai > Pradžios ekranas, kad bet kada redaguotumėte išdėstymą."
+
+#: modules/module_reading_goals.lua:1182 modules/module_reading_goals.lua:1223
+#: modules/module_reading_goals.lua:1235
+msgid "Goals"
+msgstr "Tikslai"
+
+#: features/sui_backup.lua:137
+msgid "Goals & Streaks"
+msgstr ""
+
+#: modules/critter/phrases.lua:87
+msgid "Good afternoon!"
+msgstr ""
+
+#: modules/critter/phrases.lua:117
+msgid "Good afternoon, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:95
+msgid "Good evening!"
+msgstr ""
+
+#: modules/critter/phrases.lua:121
+msgid "Good evening, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:79
+msgid "Good morning!"
+msgstr ""
+
+#: modules/critter/phrases.lua:113
+msgid "Good morning, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:103
+msgid "Good night!"
+msgstr ""
+
+#: modules/critter/phrases.lua:125
+msgid "Good night, %s!"
+msgstr ""
+
+#: features/library/sui_label_options.lua:130 infra/sui_config.lua:1482
+#: modules/module_tab_grid.lua:647
+msgid "Gray"
+msgstr ""
+
+#: modules/critter/phrases.lua:145
+msgid "Great going, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:42
+msgid "Greetings"
+msgstr ""
+
+#: engines/sui_book_grid.lua:1898 engines/sui_book_grid.lua:1909
+#: modules/module_reading_stats.lua:1158 modules/module_reading_stats.lua:1161
+msgid "Grid size"
+msgstr "Tinklelio dydis"
+
+#: features/sui_quickactions.lua:2330 features/sui_quickactions.lua:2585
+msgid "Group"
+msgstr "Grupė"
+
+#: modules/module_tab_grid.lua:923
+#, fuzzy
+msgid "Group Covers"
+msgstr "Viršeliai"
+
+#: screens/sui_menu.lua:2725
+msgid "Group by Book Series"
+msgstr "Grupuoti pagal knygų serijas"
+
+#: features/sui_quickactions.lua:2601
+msgid "Group of Quick Actions"
+msgstr "Greitųjų veiksmų grupė"
+
+#: features/sui_quickactions.lua:2577
+msgid "Group: select actions"
+msgstr "Grupė: pasirinkite veiksmus"
+
+#: modules/module_currently.lua:1307
+msgid ""
+"Grows or shrinks the cover so its height always matches the text column, "
+"keeping the cover's proportions.\n"
+"The spacing between cover and text stays as set above.\n"
+"The Cover size setting still applies on top of this, and the cover never "
+"shrinks below its 100% size."
+msgstr ""
+"Padidina arba sumažina viršelį, kad jo aukštis visada atitiktų teksto "
+"stulpelį, išlaikant viršelio proporcijas.\n"
+"Tarpas tarp viršelio ir teksto lieka toks, koks nustatytas aukščiau.\n"
+"Nustatymas „Viršelio dydis“ vis tiek taikomas papildomai, o viršelis niekada "
+"nesumažėja žemiau 100% savo dydžio."
+
+#: modules/critter/phrases.lua:235
+msgid "Happy Monday!"
+msgstr ""
+
+#: modules/critter/phrases.lua:229
+msgid "Happy New Year!"
+msgstr ""
+
+#: modules/critter/phrases.lua:247
+msgid "Happy weekend!"
+msgstr ""
+
+#: modules/critter/phrases.lua:80
+msgid "Have a great %s."
+msgstr ""
+
+#: screens/sui_menu.lua:1104
+msgid ""
+"Height of the bottom navigation bar.\n"
+"100% is the default size."
+msgstr ""
+"Apatinės naršymo juostos aukštis.\n"
+"100% yra numatytasis dydis."
+
+#: modules/module_spacer.lua:91
+#, fuzzy
+msgid ""
+"Height of the spacer.\n"
+"100% is the default size.\n"
+"Tap the arrows for fine steps, hold for larger ones."
+msgstr ""
+"Tarpiklio aukštis.\n"
+"100% yra numatytasis dydis."
+
+#: screens/sui_menu.lua:965
+msgid ""
+"Height of the top status bar.\n"
+"100% is the default size."
+msgstr ""
+"Viršutinės būsenos juostos aukštis.\n"
+"100% yra numatytasis dydis."
+
+#: modules/critter/phrases.lua:276
+msgid "Hello, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:257
+msgid "Hello, reader!"
+msgstr ""
+
+#: features/sui_accent_picker.lua:56
+msgid "Hex Color"
+msgstr ""
+
+#: engines/sui_group_cell.lua:285 modules/module_tab_grid.lua:588
+#: screens/sui_menu.lua:460 screens/sui_menu.lua:519
+msgid "Hidden"
+msgstr "Paslėpta"
+
+#: features/library/sui_finished_books.lua:65
+msgid "Hide"
+msgstr ""
+
+#: engines/sui_group_cell.lua:271
+msgid "Hide Book Stack"
+msgstr ""
+
+#: features/sui_source_menu.lua:110
+#, fuzzy
+msgid "Hide Currently Reading book"
+msgstr "Šiuo metu skaitoma"
+
+#: modules/module_quick_actions.lua:334 modules/module_quick_actions.lua:420
+#: screens/sui_menu.lua:1943 screens/sui_quicksettings_bar.lua:1650
+msgid "Hide Label"
+msgstr "Slėpti etiketę"
+
+#: screens/sui_menu.lua:3021
+msgid "Hide Selection Underline"
+msgstr "Slėpti pasirinkimo pabraukimą"
+
+#: screens/sui_menu.lua:998
+msgid "Hide Wi-Fi Icon When Off"
+msgstr "Slėpti Wi-Fi piktogramą, kai išjungta"
+
+#: screens/sui_menu.lua:527
+msgid ""
+"Hides the pagination bar on the homescreen.\n"
+"Not available when Navpager is active."
+msgstr ""
+"Slepia puslapiavimo juostą pradžios ekrane.\n"
+"Nepasiekiama, kai Navpager aktyvus."
+
+#: screens/sui_menu.lua:2506
+msgid "High-Quality Cover"
+msgstr "Aukštos kokybės viršelis"
+
+#: screens/sui_stats_windows.lua:1152 screens/sui_stats_windows.lua:3616
+msgid "Highlights"
+msgstr "Paryškinimai"
+
+#: features/sui_quickactions.lua:510 features/sui_quickactions.lua:765
+#: features/sui_quickactions.lua:2198 infra/sui_config.lua:128
+msgid "History"
+msgstr "Istorija"
+
+#: features/sui_quickactions.lua:772
+msgid "History not available."
+msgstr "Istorija nepasiekiama."
+
+#: features/sui_quickactions.lua:706 infra/sui_config.lua:126
+msgid "Home"
+msgstr "Pradžia"
+
+#: engines/sui_screen_engine.lua:927 features/sui_backup.lua:117
+#: infra/sui_patches.lua:1029 infra/sui_patches.lua:1039
+#: screens/sui_menu.lua:2331 screens/sui_menu.lua:4165
+#: screens/sui_settings_window.lua:327 screens/sui_settings_window.lua:1035
+msgid "Home Screen"
+msgstr "Pradžios ekranas"
+
+#: screens/sui_settings_window.lua:1051
+msgid "Home Screen Presets"
+msgstr "Pradžios ekrano išankstinės nuostatos"
+
+#: screens/sui_menu.lua:473
+msgid "Home Screen Style"
+msgstr "Pradžios ekrano stilius"
+
+#: features/sui_quickactions.lua:527
+msgid "Home folder"
+msgstr "Pagrindinis aplankas"
+
+#: features/sui_quickactions.lua:529
+msgid "Home folder + subfolders"
+msgstr "Pagrindinis aplankas + subaplankai"
+
+#: screens/sui_menu.lua:2566
+#, fuzzy
+msgid "Home key opens Home Screen"
+msgstr "PocketBook Home mygtukas atveria pradžios ekraną"
+
+#: features/sui_quickactions.lua:747
+msgid "Homescreen not available."
+msgstr "Pradžios ekranas nepasiekiamas."
+
+#: modules/module_currently.lua:1281
+msgid ""
+"Horizontal space between the cover and the text.\n"
+"100% is the default spacing."
+msgstr ""
+"Horizontalus tarpas tarp viršelio ir teksto.\n"
+"100% yra numatytasis tarpas."
+
+#: modules/module_heatmap.lua:225 modules/module_heatmap.lua:342
+msgid "Hours of day"
+msgstr ""
+
+#: infra/sui_goals.lua:56
+msgid "Hours per month:"
+msgstr "Valandos per mėnesį:"
+
+#: modules/module_heatmap.lua:310
+msgid ""
+"How many weeks of history to include, and (in Calendar view) how many weeks "
+"the grid shows — this count is unaffected by Scale, which only resizes the "
+"cells. In Time of day view, this only changes how much history feeds the "
+"shading — the grid itself always has one column per hour."
+msgstr ""
+"Kiek savaičių istorijos įtraukti ir (Kalendoriaus rodinyje) kiek savaičių "
+"rodo tinklelis — šio skaičiaus neveikia Mastelis, kuris keičia tik langelių "
+"dydį. Paros meto rodinyje tai keičia tik tai, kiek istorijos naudojama "
+"šešėliavimui — pats tinklelis visada turi po vieną stulpelį kiekvienai "
+"valandai."
+
+#: features/sui_accent_picker.lua:84
+msgid "Hue"
+msgstr ""
+
+#: modules/critter/phrases.lua:280
+msgid "I missed you, %s!"
+msgstr ""
+
+#: features/sui_quickactions.lua:2355 features/sui_quickactions.lua:2359
+msgid "Icon"
+msgstr "Piktograma"
+
+#: screens/sui_menu.lua:3378
+msgid "Icon Packs"
+msgstr "Piktogramų paketai"
+
+#: screens/sui_menu.lua:3555
+msgid "Icon Presets"
+msgstr "Piktogramų išankstinės nuostatos"
+
+#: screens/sui_menu.lua:1021 screens/sui_menu.lua:1127
+#: screens/sui_menu.lua:1128 screens/sui_menu.lua:1195
+msgid "Icon Size"
+msgstr "Piktogramos dydis"
+
+#: features/sui_backup.lua:155
+msgid "Icon files and installed packs from sui_icons/"
+msgstr ""
+
+#: features/sui_quickactions.lua:2351
+msgid "Icon: Default"
+msgstr "Piktograma: Numatytasis"
+
+#: screens/sui_menu.lua:241 screens/sui_menu.lua:3324
+msgid "Icons"
+msgstr "Piktogramos"
+
+#: screens/sui_menu.lua:242
+msgid "Icons only"
+msgstr "Tik piktogramos"
+
+#: screens/sui_menu.lua:3904
+msgid ""
+"Icons that contain color keep their original colors in night mode instead of "
+"being inverted.\n"
+"Monochrome icons are not affected and keep following the interface colors.\n"
+"Requires a color screen."
+msgstr ""
+
+#: screens/sui_settings_window.lua:353
+msgid "Icons, fonts and appearance"
+msgstr "Piktogramos, šriftai ir išvaizda"
+
+#: screens/sui_onboarding.lua:330
+msgid ""
+"If you selected the Momentum Preset, long press the Reading Goal module to "
+"choose and set your reading goals."
+msgstr ""
+"Jei pasirinkote Momentum išankstinę nuostatą, ilgai paspauskite Skaitymo "
+"tikslų modulį, kad pasirinktumėte ir nustatytumėte savo skaitymo tikslus."
+
+#: features/sui_backup.lua:1148
+msgid "Import Backup…"
+msgstr ""
+
+#: features/sui_presets.lua:1068 screens/sui_menu.lua:3836
+msgid "Import preset"
+msgstr "Importuoti išankstinę nuostatą"
+
+#: features/sui_stats_menu.lua:102
+msgid "Include Manual Books in All Time Total"
+msgstr ""
+
+#: modules/critter/module_critter.lua:612
+msgid "Included"
+msgstr ""
+
+#: modules/critter/module_critter.lua:613
+msgid "Included and mine"
+msgstr ""
+
+#: infra/sui_compat_check.lua:219
+msgid "Incompatible items have been disabled:"
+msgstr ""
+
+#: engines/sui_group_cell.lua:232
+#, fuzzy
+msgid "Inside Cover"
+msgstr "Vienas viršelis"
+
+#: screens/sui_menu.lua:3463
+msgid "Install pack from ZIP"
+msgstr "Įdiegti paketą iš ZIP"
+
+#: screens/sui_menu.lua:2674
+msgid "Intensity"
+msgstr "Intensyvumas"
+
+#: screens/sui_menu.lua:1327
+msgid ""
+"Invalid arrangement.\n"
+"Keep items between the Left and Right separators."
+msgstr ""
+"Neteisingas išdėstymas.\n"
+"Laikykite elementus tarp Kairiojo ir Dešiniojo skyriklių."
+
+#: screens/sui_menu.lua:695
+msgid ""
+"Invalid arrangement.\n"
+"Keep the Left, Center and Right separators in order."
+msgstr ""
+"Neteisingas išdėstymas.\n"
+"Laikykite Kairįjį, Centrinį ir Dešinįjį skyriklius tvarka."
+
+#: features/sui_presets.lua:565 features/sui_presets.lua:748
+msgid "Invalid data"
+msgstr "Neteisingi duomenys"
+
+#: features/sui_quickactions.lua:2042
+msgid "Invalid input. Please enter 1–6 hexadecimal digits (0–9, A–F)."
+msgstr ""
+"Neteisinga įvestis. Įveskite 1–6 šešioliktainius skaitmenis (0–9, A–F)."
+
+#: features/sui_presets.lua:561 features/sui_presets.lua:744
+msgid "Invalid preset file"
+msgstr "Neteisingas išankstinės nuostatos failas"
+
+#: screens/sui_menu.lua:2273
+msgid "Invert in Night Mode"
+msgstr "Apversti naktiniame režime"
+
+#: modules/critter/phrases.lua:243
+msgid "It's Friday!"
+msgstr ""
+
+#: features/sui_style.lua:2487
+msgid "Italic"
+msgstr ""
+
+#: infra/sui_config.lua:1177 infra/sui_config.lua:2123
+#: modules/module_coverdeck.lua:1593 modules/module_coverdeck.lua:1605
+#: modules/module_currently.lua:1348 modules/module_currently.lua:1360
+#: modules/module_reading_stats.lua:1139 screens/sui_menu.lua:813
+#: screens/sui_menu.lua:818 screens/sui_menu.lua:889 screens/sui_menu.lua:1030
+#: screens/sui_menu.lua:1953 screens/sui_menu.lua:1958
+#: screens/sui_menu.lua:1984
+msgid "Items"
+msgstr "Elementai"
+
+#: infra/sui_datenames.lua:29
+msgid "Jan"
+msgstr "saus."
+
+#: infra/sui_datenames.lua:36
+msgid "January"
+msgstr "Sausis"
+
+#: infra/sui_datenames.lua:30
+msgid "Jul"
+msgstr "liep."
+
+#: infra/sui_datenames.lua:37
+msgid "July"
+msgstr "Liepa"
+
+#: infra/sui_datenames.lua:29
+msgid "Jun"
+msgstr "birž."
+
+#: infra/sui_datenames.lua:37
+msgid "June"
+msgstr "Birželis"
+
+#: infra/sui_config.lua:2028 modules/module_quick_actions.lua:474
+msgid "Justified"
+msgstr "Lygiuota abipus"
+
+#: screens/sui_menu.lua:497
+msgid "KOReader"
+msgstr "KOReader"
+
+#: modules/critter/phrases.lua:132
+msgid "Keep it going."
+msgstr ""
+
+#: modules/critter/phrases.lua:166
+msgid "Keep turning pages."
+msgstr ""
+
+#: modules/critter/phrases.lua:149
+msgid "Keep your streak alive!"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:3067
+msgid "LAST %d DAYS"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2508
+msgid "LAST 7 DAYS"
+msgstr "PASKUTINĖS 7 DIENOS"
+
+#: engines/sui_group_cell.lua:321 infra/sui_config.lua:1116
+#: modules/module_action_list.lua:340 modules/module_action_list.lua:355
+#: modules/module_collections.lua:485 modules/module_quick_actions.lua:441
+#: modules/module_reading_goals.lua:1127 modules/module_reading_stats.lua:1130
+#: screens/sui_quicksettings_bar.lua:1634
+msgid "Label"
+msgstr "Etiketė"
+
+#: screens/sui_menu.lua:1150
+#, fuzzy
+msgid "Label Font"
+msgstr "Etiketė"
+
+#: screens/sui_menu.lua:2397
+msgid "Label Scale"
+msgstr "Etikečių mastelis"
+
+#: screens/sui_menu.lua:1138 screens/sui_menu.lua:1139
+#: screens/sui_menu.lua:1196
+msgid "Label Size"
+msgstr "Etiketės dydis"
+
+#: infra/sui_config.lua:2060
+msgid "Label inside background"
+msgstr ""
+
+#: screens/sui_menu.lua:2392
+msgid "Labels"
+msgstr "Etiketės"
+
+#: screens/sui_menu.lua:3120
+msgid "Landscape mosaic mode"
+msgstr ""
+
+#: features/sui_backup.lua:1061
+msgid "Last backup: %s%s"
+msgstr ""
+
+#: features/sui_backup.lua:1058
+msgid "Last backup: never"
+msgstr ""
+
+#: features/dialogs/sui_dialogs.lua:212
+msgid "Later"
+msgstr "Vėliau"
+
+#: features/library/sui_label_options.lua:139 modules/module_currently.lua:1300
+#: modules/module_reading_goals.lua:1259 screens/sui_menu.lua:1095
+msgid "Layout"
+msgstr "Išdėstymas"
+
+#: screens/sui_settings_window.lua:1042 screens/sui_settings_window.lua:1043
+msgid "Layout Editor"
+msgstr "Išdėstymo redaktorius"
+
+#: screens/sui_quicksettings_bar.lua:1600
+msgid ""
+"Layout of the Quick Settings panel in the reader. The file browser always "
+"uses the classic layout."
+msgstr ""
+
+#: features/sui_backup.lua:118
+#, fuzzy
+msgid "Layout, modules, custom screens, presets"
+msgstr "Kol kas nėra pasirinktinių ekranų."
+
+#: screens/sui_settings_window.lua:329
+msgid "Layout, wallpaper, presets and behaviour"
+msgstr "Išdėstymas, fonas, išankstinės nuostatos ir elgsena"
+
+#: infra/sui_config.lua:2025 modules/module_quick_actions.lua:475
+#: screens/sui_menu.lua:666 screens/sui_menu.lua:875 screens/sui_menu.lua:1294
+#: screens/sui_menu.lua:1501
+msgid "Left"
+msgstr "Kairėje"
+
+#: modules/critter/module_critter.lua:682
+msgid "Left decorations"
+msgstr ""
+
+#: engines/sui_heatmap_widgets.lua:410 modules/module_heatmap.lua:180
+msgid "Less"
+msgstr "Mažiau"
+
+#: modules/critter/phrases.lua:273 modules/critter/phrases.lua:281
+msgid "Let's read something."
+msgstr ""
+
+#: screens/sui_menu.lua:3305 screens/sui_menu.lua:3307
+msgid "Letter Spacing"
+msgstr ""
+
+#: features/library/sui_library_browse.lua:76 features/sui_backup.lua:127
+#: features/sui_quickactions.lua:677 infra/sui_config.lua:125
+#: infra/sui_config.lua:443 modules/module_reading_stats.lua:280
+#: modules/module_reading_stats.lua:281 modules/module_reading_stats.lua:282
+#: screens/sui_menu.lua:2332 screens/sui_menu.lua:2803
+#: screens/sui_menu.lua:2876 screens/sui_menu.lua:4169
+#: screens/sui_settings_window.lua:343 screens/sui_settings_window.lua:1038
+#: screens/sui_titlebar.lua:1208 screens/sui_titlebar.lua:1253
+msgid "Library"
+msgstr "Biblioteka"
+
+#: screens/sui_menu.lua:2912
+msgid "Library Badges"
+msgstr ""
+
+#: screens/sui_menu.lua:1775 screens/sui_menu.lua:1778
+msgid "Library Buttons"
+msgstr "Bibliotekos mygtukai"
+
+#: screens/sui_menu.lua:2743
+msgid "Library Captions"
+msgstr ""
+
+#: features/sui_presets.lua:209
+msgid "Library View"
+msgstr "Bibliotekos vaizdas"
+
+#: screens/sui_menu.lua:2866
+msgid ""
+"Library captions are enabled. Folder names are shown in the caption strip "
+"under each cover instead of on the cover."
+msgstr ""
+
+#: screens/sui_menu.lua:2739
+msgid ""
+"Library captions changed.\n"
+"\n"
+"Restart now?"
+msgstr ""
+
+#: features/library/sui_label_options.lua:129 features/sui_style.lua:1483
+msgid "Light"
+msgstr "Šviesi"
+
+#: screens/sui_menu.lua:2276
+msgid "Lighten"
+msgstr "Pašviesinti"
+
+#: modules/module_reading_stats.lua:1187
+msgid "List"
+msgstr "Sąrašas"
+
+#: screens/sui_menu.lua:2982
+msgid ""
+"Lists books without an author, series or tag as a separate group in the "
+"Authors, Series and Tags views."
+msgstr ""
+
+#: screens/sui_stats_launcher.lua:47
+msgid "Loading statistics…"
+msgstr "Įkeliama statistika…"
+
+#: screens/sui_menu.lua:2362
+msgid "Lock Scale"
+msgstr "Užrakinti mastelį"
+
+#: infra/sui_config.lua:1844
+msgid "Long Press"
+msgstr "Ilgas paspaudimas"
+
+#: screens/sui_onboarding.lua:321
+msgid "Long press to customize"
+msgstr "Ilgai paspauskite, kad tinkintumėte"
+
+#: modules/module_reading_stats.lua:257
+msgid "Longest session"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1611
+msgid "Look of the frontlight and warmth sliders."
+msgstr ""
+
+#: features/sui_backup.lua:553 features/sui_backup.lua:602
+#: features/sui_presets.lua:544 features/sui_presets.lua:556
+#: features/sui_presets.lua:727 features/sui_presets.lua:739
+msgid "LuaSettings module unavailable"
+msgstr "LuaSettings modulis nepasiekiamas"
+
+#: screens/sui_onboarding.lua:287
+msgid "Make it yours"
+msgstr "Padarykite savo"
+
+#: screens/sui_menu.lua:2567
+#, fuzzy
+msgid ""
+"Makes the device's physical Home key open the SimpleUI Home Screen — while "
+"reading and while browsing files — instead of KOReader's native Home "
+"behaviour. The file browser title-bar home icon still goes to the home "
+"folder."
+msgstr ""
+"Priverčia įrenginio fizinį Home mygtuką visada atverti SimpleUI pradžios "
+"ekraną — tiek skaitant, tiek naršant failus — vietoj įprasto KOReader Home "
+"elgesio."
+
+#: features/sui_presets.lua:953 features/sui_presets.lua:998
+#: features/sui_presets.lua:1003 screens/sui_menu.lua:3710
+#: screens/sui_menu.lua:3761 screens/sui_menu.lua:3766
+msgid "Manage presets"
+msgstr "Tvarkyti išankstines nuostatas"
+
+#: features/sui_manual_books.lua:145 screens/sui_stats_windows.lua:766
+msgid "Manual Yearly Count"
+msgstr ""
+
+#: features/sui_manual_books.lua:128
+msgid "Manual Yearly Count — %d"
+msgstr ""
+
+#: modules/module_collections.lua:215
+msgid "Manual order"
+msgstr "Rankinė tvarka"
+
+#: infra/sui_datenames.lua:29
+msgid "Mar"
+msgstr "kov."
+
+#: infra/sui_datenames.lua:36
+msgid "March"
+msgstr "Kovas"
+
+#: screens/sui_quicksettings_bar.lua:625
+msgid "Max"
+msgstr "Maks."
+
+#: infra/sui_datenames.lua:29 infra/sui_datenames.lua:37
+msgid "May"
+msgstr "Gegužė"
+
+#: modules/critter/phrases.lua:230
+msgid "May your year be full of good books."
+msgstr ""
+
+#: screens/sui_titlebar.lua:113 screens/sui_titlebar.lua:118
+msgid "Menu"
+msgstr "Meniu"
+
+#: features/sui_style.lua:86
+msgid "Menu Button"
+msgstr "Meniu mygtukas"
+
+#: modules/critter/module_critter.lua:697
+msgid "Message"
+msgstr ""
+
+#: modules/module_clock.lua:324
+msgid "Midnight"
+msgstr "Vidurnaktis"
+
+#: modules/critter/phrases.lua:46
+msgid "Milestones and goals"
+msgstr ""
+
+#: features/sui_presets.lua:171
+msgid "Mindful Reading"
+msgstr "Sąmoningas skaitymas"
+
+#: modules/critter/module_critter.lua:614
+msgid "Mine only"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1615
+msgid "Minimal"
+msgstr ""
+
+#: screens/sui_menu.lua:370
+msgid "Minimum 1 tab required in navpager mode."
+msgstr "Navpager režime reikalingas mažiausiai 1 skirtukas."
+
+#: screens/sui_menu.lua:371
+msgid "Minimum 2 tabs required. Select another tab first."
+msgstr ""
+"Reikalingi mažiausiai 2 skirtukai. Pirmiausia pasirinkite kitą skirtuką."
+
+#: infra/sui_goals.lua:67
+msgid "Minutes per day:"
+msgstr "Minutės per dieną:"
+
+#: modules/critter/phrases.lua:272
+msgid "Missed me?"
+msgstr ""
+
+#: screens/sui_menu.lua:436
+msgid "Mode"
+msgstr "Režimas"
+
+#: screens/sui_menu.lua:3292 screens/sui_menu.lua:3935
+msgid "Module Labels"
+msgstr ""
+
+#: screens/sui_menu.lua:2373
+msgid "Module Scale"
+msgstr "Modulio mastelis"
+
+#: infra/sui_config.lua:1841 screens/sui_menu.lua:2160
+msgid "Module Settings"
+msgstr "Modulio nustatymai"
+
+#: screens/sui_menu.lua:3382
+msgid "Module unavailable"
+msgstr "Modulis nepasiekiamas"
+
+#: screens/sui_menu.lua:2372 screens/sui_menu.lua:2593
+#: screens/sui_menu.lua:2808 screens/sui_menu.lua:2882
+msgid "Modules"
+msgstr "Moduliai"
+
+#: screens/sui_menu.lua:2148
+msgid "Modules  (%d)"
+msgstr "Moduliai  (%d)"
+
+#: engines/sui_screen_engine.lua:2741
+msgid ""
+"Modules exceed the visible area.\n"
+"Move some to another page or adjust the scale."
+msgstr ""
+"Moduliai viršija matomą plotą.\n"
+"Perkelkite kai kuriuos į kitą puslapį arba sureguliuokite mastelį."
+
+#: features/sui_presets.lua:191
+msgid "Momentum"
+msgstr "Momentas"
+
+#: engines/sui_heatmap_widgets.lua:127 infra/sui_datenames.lua:43
+msgid "Mon"
+msgstr "Pirmadienis"
+
+#: infra/sui_datenames.lua:48
+msgid "Monday"
+msgstr "Pirmadienis"
+
+#: modules/critter/phrases.lua:239
+msgid "Mondays, right?"
+msgstr ""
+
+#: infra/sui_goals.lua:54
+msgid "Monthly Goal"
+msgstr "Mėnesio tikslas"
+
+#: infra/sui_goals.lua:55
+msgid "Monthly Reading Goal"
+msgstr "Mėnesio skaitymo tikslas"
+
+#: engines/sui_heatmap_widgets.lua:416
+msgid "More"
+msgstr "Daugiau"
+
+#: main.lua:1183
+msgid "More by %s (%d)"
+msgstr "Daugiau nuo %s (%d)"
+
+#: modules/critter/phrases.lua:177
+msgid "More than halfway there!"
+msgstr ""
+
+#: engines/sui_window.lua:3706
+msgid "Move down"
+msgstr "Perkelti žemyn"
+
+#: engines/sui_window.lua:3700 screens/sui_settings_window.lua:682
+#: screens/sui_settings_window.lua:717
+msgid "Move to page"
+msgstr "Perkelti į puslapį"
+
+#: engines/sui_window.lua:3703
+msgid "Move up"
+msgstr "Perkelti aukštyn"
+
+#: modules/module_quote.lua:1418
+msgid "My Highlights"
+msgstr "Mano paryškinimai"
+
+#: features/sui_presets.lua:308
+msgid "My Presets"
+msgstr "Mano išankstinės nuostatos"
+
+#: features/sui_quickactions.lua:2612 modules/critter/module_critter.lua:591
+msgid "Name"
+msgstr "Pavadinimas"
+
+#: modules/module_collections.lua:216
+msgid "Name (A–Z)"
+msgstr "Pavadinimas (A–Z)"
+
+#: modules/module_collections.lua:217
+msgid "Name (Z–A)"
+msgstr "Pavadinimas (Z–A)"
+
+#: features/sui_cover_elements.lua:68
+msgid "Native"
+msgstr "Gimtasis"
+
+#: screens/sui_bottombar.lua:788 screens/sui_menu.lua:2634
+msgid "Navigation Bar"
+msgstr "Naršymo juosta"
+
+#: screens/sui_menu.lua:2290
+#, fuzzy
+msgid "Navigation Bar Opacity"
+msgstr "Naršymo juostos dydis"
+
+#: screens/sui_menu.lua:1103
+msgid "Navigation Bar Size"
+msgstr "Naršymo juostos dydis"
+
+#: screens/sui_menu.lua:1085
+msgid ""
+"Navigation Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Naršymo juosta bus %s po perkrovimo.\n"
+"\n"
+"Perkrauti dabar?"
+
+#: features/sui_backup.lua:123
+msgid "Navigation, status, title and quick settings bars"
+msgstr ""
+
+#: features/sui_style.lua:1267 screens/sui_menu.lua:449
+msgid "Navpager"
+msgstr "Navpager"
+
+#: screens/sui_menu.lua:456
+msgid ""
+"Navpager enabled.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Navpager įjungtas.\n"
+"\n"
+"Perkrauti dabar?"
+
+#: features/sui_style.lua:180
+msgid "Navpager: Next"
+msgstr "Navpager: Kitas"
+
+#: features/sui_style.lua:172
+msgid "Navpager: Previous"
+msgstr "Navpager: Ankstesnis"
+
+#: features/sui_quickactions.lua:2095
+msgid "Nerd Font Icon"
+msgstr "Nerd Font piktograma"
+
+#: features/sui_quickactions.lua:2132
+msgid "Nerd Font symbol…"
+msgstr "Nerd Font simbolis…"
+
+#: features/sui_quickactions.lua:278
+msgid "Network manager unavailable."
+msgstr "Tinklo tvarkyklė nepasiekiama."
+
+#: screens/sui_menu.lua:2462
+msgid "Never"
+msgstr "Niekada"
+
+#: engines/sui_book_grid.lua:519 engines/sui_book_sources.lua:336
+#: features/library/sui_cover_widgets.lua:509
+#: features/library/sui_foldercovers.lua:1278
+#: features/library/sui_foldercovers.lua:1649
+msgid "New"
+msgstr "Nauja"
+
+#: engines/sui_book_grid.lua:2108
+msgid "New Badge Color"
+msgstr "Naujos knygos ženklelio spalva"
+
+#: features/sui_cover_elements.lua:75
+msgid "New Book"
+msgstr "Nauja knyga"
+
+#: engines/sui_book_grid.lua:2100 engines/sui_book_grid.lua:2113
+msgid "New Book Badge"
+msgstr "Naujos knygos ženklelis"
+
+#: engines/sui_book_sources.lua:321 modules/module_new_books.lua:17
+msgid "New Books"
+msgstr "Naujos knygos"
+
+#: features/sui_quickactions.lua:2320
+msgid "New Quick Action"
+msgstr "Naujas greitasis veiksmas"
+
+#: features/library/sui_group_actions.lua:103
+msgid "New collection name"
+msgstr "Naujos kolekcijos pavadinimas"
+
+#: modules/critter/phrases.lua:251
+msgid "New month, new chapters!"
+msgstr ""
+
+#: features/sui_manual_books.lua:151 screens/sui_bottombar.lua:457
+msgid "Next"
+msgstr "Kitas"
+
+#: modules/critter/phrases.lua:192
+msgid "Nice work."
+msgstr ""
+
+#: features/sui_quickactions.lua:939 infra/sui_config.lua:137
+msgid "Night Mode"
+msgstr "Naktinis režimas"
+
+#: modules/module_clock.lua:255
+msgid "Nine"
+msgstr "Devyni"
+
+#: modules/module_clock.lua:259
+msgid "Nineteen"
+msgstr "Devyniolika"
+
+#: screens/sui_stats_windows.lua:1159
+msgid "No"
+msgstr "Ne"
+
+#: modules/module_quote.lua:1399
+msgid "No .lua files found in sui_quotes/"
+msgstr "Nerasta .lua failų aplanke sui_quotes/"
+
+#: screens/sui_menu.lua:3501
+msgid ""
+"No .zip files found.\n"
+"Place .zip files in:\n"
+"%1"
+msgstr ""
+"Nerasta .zip failų.\n"
+"Įdėkite .zip failus į:\n"
+"%1"
+
+#: screens/sui_quicksettings_bar.lua:1508
+msgid "No actions active yet."
+msgstr "Dar nėra aktyvių veiksmų."
+
+#: features/sui_quickactions.lua:1631 modules/module_action_list.lua:85
+#: modules/module_action_list.lua:104 modules/module_quick_actions.lua:145
+#: modules/module_quick_actions.lua:515
+msgid "No actions configured"
+msgstr "Veiksmų nesukonfigūruota"
+
+#: modules/module_action_list.lua:84 modules/module_action_list.lua:103
+#: modules/module_quick_actions.lua:144
+msgid "No actions configured  —  long press to configure"
+msgstr "Veiksmų nesukonfigūruota  — ilgai paspauskite, kad sukonfigūruotumėte"
+
+#: screens/sui_quicksettings_bar.lua:759
+msgid ""
+"No actions configured.\n"
+"Go to Bars → Quick Settings Bar."
+msgstr ""
+"Veiksmų nesukonfigūruota.\n"
+"Eikite į Juostos → Greitųjų nustatymų juosta."
+
+#: features/sui_backup.lua:1183
+#, fuzzy
+msgid "No backup loaded yet."
+msgstr "Dar neatidaryta nė viena knyga"
+
+#: features/sui_quickactions.lua:798
+msgid "No book in history."
+msgstr "Nėra knygos istorijoje."
+
+#: screens/sui_stats_windows.lua:673
+msgid "No books finished"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:786
+msgid "No books finished in %s"
+msgstr "Nėra baigtų knygų %s"
+
+#: features/library/sui_foldercovers.lua:528
+#: features/library/sui_foldercovers.lua:631
+msgid "No books found in this folder."
+msgstr "Šiame aplanke knygų nerasta."
+
+#: features/library/sui_series_grouping.lua:107
+#: features/library/sui_series_grouping.lua:122
+msgid "No books found in this series."
+msgstr "Šioje serijoje knygų nerasta."
+
+#: engines/sui_group_cell.lua:591 features/library/sui_facet_groups.lua:146
+#: features/library/sui_group_actions.lua:45
+#: features/library/sui_group_actions.lua:97
+#: features/library/sui_library_browse.lua:447
+#: features/library/sui_library_browse.lua:471
+msgid "No books found."
+msgstr "Knygų nerasta."
+
+#: engines/sui_book_sources.lua:361
+msgid "No books in To Be Read list."
+msgstr "Nėra knygų „Skaitytinių“ sąraše."
+
+#: engines/sui_book_sources.lua:401
+msgid "No books in this collection."
+msgstr "Šioje kolekcijoje knygų nėra."
+
+#: modules/module_tab_grid.lua:506
+#, fuzzy
+msgid "No books in this tab"
+msgstr "Nėra knygos istorijoje."
+
+#: engines/sui_screen_engine.lua:271
+msgid "No books opened yet"
+msgstr "Dar neatidaryta nė viena knyga"
+
+#: modules/module_coverdeck.lua:896 modules/module_currently.lua:460
+msgid "No books to show yet — open a book to see it here."
+msgstr ""
+
+#: modules/module_feat_coll.lua:145 modules/module_feat_coll.lua:174
+msgid "No collection selected"
+msgstr "Kolekcija nepasirinkta"
+
+#: modules/module_feat_coll.lua:144
+msgid "No collection selected  —  long press to configure"
+msgstr "Kolekcija nepasirinkta — ilgai paspauskite, kad sukonfigūruotumėte"
+
+#: modules/module_coverdeck.lua:1543
+msgid "No collections found"
+msgstr "Kolekcijų nerasta"
+
+#: modules/module_collections.lua:416 modules/module_collections.lua:457
+#: modules/module_feat_coll.lua:88
+msgid "No collections found."
+msgstr "Kolekcijų nerasta."
+
+#: modules/module_collections.lua:523
+msgid "No collections selected"
+msgstr "Kolekcijos nepasirinktos"
+
+#: modules/module_collections.lua:522
+msgid "No collections selected  —  long press to configure"
+msgstr "Kolekcijos nepasirinktos  — ilgai paspauskite, kad sukonfigūruotumėte"
+
+#: modules/module_quote.lua:948
+msgid ""
+"No custom quotes found. Add a .lua file to the plugin's sui_quotes/ folder "
+"and select it in Settings."
+msgstr ""
+"Pasirinktinių citatų nerasta. Pridėkite .lua failą į įskiepio sui_quotes/ "
+"aplanką ir pasirinkite jį Nustatymuose."
+
+#: screens/sui_settings_window.lua:486
+msgid "No custom screens yet."
+msgstr "Kol kas nėra pasirinktinių ekranų."
+
+#: modules/critter/module_critter.lua:558
+msgid "No decorations selected."
+msgstr ""
+
+#: infra/sui_updater.lua:498
+msgid ""
+"No download file found.\n"
+"\n"
+"Open the releases page?"
+msgstr ""
+"Atsisiuntimo failo nerasta.\n"
+"\n"
+"Atidaryti leidimų puslapį?"
+
+#: features/sui_presets.lua:536 features/sui_presets.lua:719
+msgid "No export directory"
+msgstr "Nėra eksporto katalogo"
+
+#: screens/sui_stats_windows.lua:54
+msgid "No filepath."
+msgstr "Nėra failo kelio."
+
+#: features/sui_quickactions.lua:3059
+msgid ""
+"No folder, collection or plugin configured.\n"
+"Go to Simple UI → Settings → Quick Actions to set one."
+msgstr ""
+"Nesukonfigūruotas joks aplankas, kolekcija ar įskiepis.\n"
+"Eikite į Simple UI → Nustatymai → Greitieji veiksmai, kad nustatytumėte."
+
+#: features/sui_style.lua:2314
+msgid "No fonts found."
+msgstr "Šriftų nerasta."
+
+#: modules/module_tab_grid.lua:506
+#, fuzzy
+msgid "No groups in this tab"
+msgstr "Šioje kolekcijoje knygų nėra."
+
+#: modules/module_quote.lua:1014
+msgid "No highlights found. Open a book and highlight some passages."
+msgstr ""
+"Paryškinimų nerasta. Atidarykite knygą ir paryškinkite keletą ištraukų."
+
+#: features/library/sui_library_search.lua:175
+#, fuzzy
+msgid "No home folder set."
+msgstr "Pagrindinis aplankas"
+
+#: features/sui_quickactions.lua:2162
+msgid "No icons found in:"
+msgstr "Piktogramų nerasta:"
+
+#: engines/sui_window.lua:3406 engines/sui_window.lua:4025
+msgid "No items available."
+msgstr "Nėra galimų elementų."
+
+#: engines/sui_window.lua:3934 infra/sui_config.lua:2124
+#: modules/module_action_list.lua:286 modules/module_collections.lua:383
+#: modules/module_quick_actions.lua:348 modules/module_reading_goals.lua:1229
+#: modules/module_reading_stats.lua:1142 screens/sui_menu.lua:362
+#: screens/sui_menu.lua:831 screens/sui_menu.lua:891 screens/sui_menu.lua:1410
+#: screens/sui_menu.lua:1517 screens/sui_menu.lua:1620
+#: screens/sui_menu.lua:1961 screens/sui_menu.lua:1986
+msgid "No items selected."
+msgstr "Nepasirinkta elementų."
+
+#: screens/sui_settings_window.lua:605 screens/sui_settings_window.lua:728
+msgid "No modules"
+msgstr "Nėra modulių"
+
+#: screens/sui_settings_window.lua:714
+msgid "No other pages available."
+msgstr "Nėra kitų puslapių."
+
+#: screens/sui_menu.lua:3522
+msgid "No packs found."
+msgstr "Paketų nerasta."
+
+#: features/sui_quickactions.lua:2483
+msgid "No plugins found."
+msgstr "Įskiepių nerasta."
+
+#: features/sui_presets.lua:1075 screens/sui_menu.lua:3844
+msgid ""
+"No preset files found.\n"
+"Place .lua files in:\n"
+"%1"
+msgstr ""
+"Išankstinių nuostatų failų nerasta.\n"
+"Įdėkite .lua failus į:\n"
+"%1"
+
+#: features/sui_presets.lua:1052 screens/sui_menu.lua:3820
+msgid "No presets found."
+msgstr "Išankstinių nuostatų nerasta."
+
+#: modules/module_quote.lua:979
+msgid "No quotes found."
+msgstr "Citatos nerastos."
+
+#: features/sui_quickactions.lua:3294
+msgid "No recent books."
+msgstr "Nėra naujausių knygų."
+
+#: features/library/sui_library_search.lua:185
+#, fuzzy
+msgid "No results for: %1"
+msgstr "Išankstinių nuostatų nerasta."
+
+#: screens/sui_stats_windows.lua:63 screens/sui_stats_windows.lua:97
+#: screens/sui_stats_windows.lua:3297
+msgid "No statistics found for this book."
+msgstr "Šiai knygai statistikos nerasta."
+
+#: modules/module_coverdeck.lua:1586 modules/module_currently.lua:1342
+#: screens/sui_quicksettings_bar.lua:1569
+msgid "No statistics selected."
+msgstr "Nepasirinkta jokia statistika."
+
+#: modules/module_reading_stats.lua:912
+msgid "No stats selected"
+msgstr "Statistikos nepasirinktos"
+
+#: modules/module_reading_stats.lua:911
+msgid "No stats selected  —  long press to configure"
+msgstr "Statistikos nepasirinktos  — ilgai paspauskite, kad sukonfigūruotumėte"
+
+#: features/sui_quickactions.lua:2500
+msgid "No system actions found."
+msgstr "Sistemos veiksmų nerasta."
+
+#: modules/module_tab_grid.lua:1037 modules/module_tab_grid.lua:1118
+msgid "No tabs"
+msgstr ""
+
+#: modules/module_tab_grid.lua:1037
+#, fuzzy
+msgid "No tabs  —  long press to configure"
+msgstr "Statistikos nepasirinktos  — ilgai paspauskite, kad sukonfigūruotumėte"
+
+#: modules/module_tab_grid.lua:867
+msgid "No tabs."
+msgstr ""
+
+#: screens/sui_menu.lua:2233
+msgid "No wallpapers found."
+msgstr "Fonų nerasta."
+
+#: engines/sui_book_grid.lua:1989 engines/sui_book_grid.lua:2094
+#: features/sui_quickactions.lua:2405 infra/sui_config.lua:1054
+msgid "None"
+msgstr "Nėra"
+
+#: modules/module_clock.lua:327
+msgid "Noon"
+msgstr "Vidurdienis"
+
+#: features/sui_backup.lua:607 features/sui_backup.lua:611
+#: features/sui_backup.lua:621 features/sui_backup.lua:809
+#: features/sui_backup.lua:966
+msgid "Not a valid backup file."
+msgstr ""
+
+#: modules/critter/module_critter.lua:585 modules/module_reading_goals.lua:1136
+#: screens/sui_menu.lua:3222 screens/sui_menu.lua:3240
+msgid "Not set"
+msgstr "Nenustatyta"
+
+#: screens/sui_stats_windows.lua:1153 screens/sui_stats_windows.lua:3617
+msgid "Notes"
+msgstr "Pastabos"
+
+#: features/sui_backup.lua:1020
+msgid "Nothing selected to import."
+msgstr ""
+
+#: infra/sui_datenames.lua:30
+msgid "Nov"
+msgstr "lapkr."
+
+#: infra/sui_datenames.lua:38
+msgid "November"
+msgstr "Lapkritis"
+
+#: engines/sui_book_grid.lua:1883 engines/sui_book_grid.lua:1884
+msgid "Number of Books"
+msgstr "Knygų skaičius"
+
+#: modules/module_tab_grid.lua:586
+#, fuzzy
+msgid "Numbers"
+msgstr "Lapkritis"
+
+#: modules/module_clock.lua:345
+msgid "O'Clock"
+msgstr "Valanda"
+
+#: features/dialogs/sui_dialogs.lua:172 features/dialogs/sui_dialogs.lua:400
+#: features/sui_quickactions.lua:2068 infra/sui_compat_check.lua:133
+msgid "OK"
+msgstr "Gerai"
+
+#: infra/sui_datenames.lua:30
+msgid "Oct"
+msgstr "spal."
+
+#: infra/sui_datenames.lua:38
+msgid "October"
+msgstr "Spalis"
+
+#: engines/sui_book_grid.lua:2061 engines/sui_book_grid.lua:2087
+#: features/sui_cover_elements.lua:275 modules/module_coverdeck.lua:1687
+#: modules/module_currently.lua:1451 screens/sui_menu.lua:1258
+#: screens/sui_menu.lua:1468 screens/sui_menu.lua:2703
+#: screens/sui_menu.lua:2852 screens/sui_menu.lua:4143
+msgid "Off"
+msgstr "Išjungta"
+
+#: modules/module_clock.lua:290
+msgid "Oh"
+msgstr "O"
+
+#: engines/sui_book_grid.lua:2061 engines/sui_book_grid.lua:2087
+#: features/sui_cover_elements.lua:277 features/sui_cover_elements.lua:282
+#: modules/module_coverdeck.lua:1687 modules/module_currently.lua:1451
+#: screens/sui_menu.lua:1258 screens/sui_menu.lua:1468
+#: screens/sui_menu.lua:2852 screens/sui_menu.lua:4143
+msgid "On"
+msgstr "Įjungta"
+
+#: modules/module_coverdeck.lua:1637
+msgid "On side covers too"
+msgstr ""
+
+#: modules/module_clock.lua:253
+msgid "One"
+msgstr "Vienas"
+
+#: modules/critter/phrases.lua:100
+msgid "One more chapter before bed."
+msgstr ""
+
+#: modules/critter/phrases.lua:198
+msgid "One page at a time."
+msgstr ""
+
+#: engines/sui_screen_engine.lua:590 features/library/sui_library_search.lua:56
+#: features/library/sui_library_search.lua:129
+#: features/sui_quickactions.lua:3249 modules/module_quote.lua:1302
+#: screens/sui_stats_windows.lua:620
+msgid "Open"
+msgstr "Atidaryti"
+
+#: screens/sui_quicksettings_bar.lua:1690
+msgid "Open Menu on Quick Settings"
+msgstr ""
+
+#: engines/sui_group_cell.lua:606
+msgid "Open Module Settings"
+msgstr "Modulio nustatymai"
+
+#: engines/sui_screen_engine.lua:280
+msgid "Open a book to get started"
+msgstr "Atidarykite knygą, kad pradėtumėte"
+
+#: infra/sui_updater.lua:499
+msgid "Open in browser"
+msgstr "Atidaryti naršyklėje"
+
+#: features/library/sui_book_hold_dialog.lua:257
+msgid "Open module settings"
+msgstr "Modulio nustatymai"
+
+#: engines/sui_screen_engine.lua:589 features/library/sui_library_search.lua:55
+#: features/sui_quickactions.lua:3248 modules/module_quote.lua:1301
+#: screens/sui_stats_windows.lua:618
+msgid "Open this file?"
+msgstr "Atidaryti šį failą?"
+
+#: features/library/sui_book_hold_dialog.lua:197
+msgid "Open with…"
+msgstr "Atverti su…"
+
+#: screens/sui_menu.lua:2532
+msgid "Overflow Warning"
+msgstr "Perpildymo įspėjimas"
+
+#: features/sui_presets.lua:356 features/sui_presets.lua:964
+#: features/sui_presets.lua:1038 screens/sui_menu.lua:3721
+#: screens/sui_menu.lua:3804
+msgid "Overwrite"
+msgstr "Perrašyti"
+
+#: features/sui_presets.lua:353
+msgid "Overwrite preset"
+msgstr ""
+
+#: features/sui_presets.lua:963 features/sui_presets.lua:1037
+msgid "Overwrite preset \"%s\" with the current homescreen settings?"
+msgstr ""
+"Perrašyti išankstinę nuostatą „%s“ dabartiniais pradžios ekrano nustatymais?"
+
+#: screens/sui_menu.lua:3720 screens/sui_menu.lua:3803
+msgid "Overwrite preset \"%s\" with the current icon settings?"
+msgstr ""
+"Perrašyti išankstinę nuostatą „%s“ dabartiniais piktogramų nustatymais?"
+
+#: screens/sui_menu.lua:3537
+msgid ""
+"Pack \"%s\" applied.\n"
+"%d icons replaced."
+msgstr ""
+"Paketas „%s“ pritaikytas.\n"
+"%d piktogramos pakeistos."
+
+#: screens/sui_menu.lua:3455
+msgid ""
+"Pack \"%s\" installed.\n"
+"You can now apply it from the list."
+msgstr ""
+"Paketas „%s“ įdiegtas.\n"
+"Dabar galite jį pritaikyti iš sąrašo."
+
+#: features/sui_style.lua:2715
+msgid "Pack folder not accessible: "
+msgstr "Paketų aplankas nepasiekiamas: "
+
+#: infra/sui_book_stats.lua:175
+msgid "Page"
+msgstr ""
+
+#: engines/sui_screen_engine.lua:1952 engines/sui_window.lua:1742
+#: infra/sui_patches.lua:2038 infra/sui_patches.lua:2809
+msgid "Page %1 of %2"
+msgstr "Puslapis %1 iš %2"
+
+#: screens/sui_settings_window.lua:579 screens/sui_settings_window.lua:691
+#: screens/sui_settings_window.lua:1057
+msgid "Page %d"
+msgstr "Puslapis %d"
+
+#: infra/sui_book_stats.lua:188
+msgid "Page %s/%s"
+msgstr ""
+
+#: screens/sui_settings_window.lua:578 screens/sui_settings_window.lua:690
+#: screens/sui_settings_window.lua:1056
+msgid "Page 1 (Home)"
+msgstr "Puslapis 1 (Pradžia)"
+
+#: modules/critter/phrases.lua:264
+msgid "Page by page!"
+msgstr ""
+
+#: features/sui_cover_elements.lua:53 screens/sui_stats_windows.lua:891
+#: screens/sui_stats_windows.lua:3382
+msgid "Pages"
+msgstr "Puslapiai"
+
+#: engines/sui_book_grid.lua:2043 engines/sui_book_grid.lua:2059
+msgid "Pages Badge"
+msgstr "Puslapių ženklelis"
+
+#: engines/sui_book_grid.lua:2054
+msgid "Pages Badge Color"
+msgstr "Puslapių ženklelio spalva"
+
+#: modules/module_reading_stats.lua:245 screens/sui_stats_windows.lua:2217
+msgid "Pages per day"
+msgstr "Puslapiai per dieną"
+
+#: modules/module_reading_stats.lua:263
+msgid "Pages per hour"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2234 screens/sui_stats_windows.lua:2250
+msgid "Pages read"
+msgstr "Perskaityti puslapiai"
+
+#: modules/module_tab_grid.lua:581
+#, fuzzy
+msgid "Pagination"
+msgstr "Puslapiavimo juosta"
+
+#: features/sui_style.lua:1266 screens/sui_menu.lua:2636
+msgid "Pagination Bar"
+msgstr "Puslapiavimo juosta"
+
+#: screens/sui_menu.lua:2289
+#, fuzzy
+msgid "Pagination Bar Opacity"
+msgstr "Puslapiavimo juosta"
+
+#: screens/sui_menu.lua:466
+msgid ""
+"Pagination bar hidden.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Puslapiavimo juosta paslėpta.\n"
+"\n"
+"Perkrauti dabar?"
+
+#: screens/sui_menu.lua:445
+msgid ""
+"Pagination bar set to Default.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Puslapiavimo juosta nustatyta į numatytąją.\n"
+"\n"
+"Perkrauti dabar?"
+
+#: screens/sui_menu.lua:552 screens/sui_menu.lua:564 screens/sui_menu.lua:576
+msgid ""
+"Pagination bar size will change after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Puslapiavimo juostos dydis pasikeis po perkrovimo.\n"
+"\n"
+"Perkrauti dabar?"
+
+#: features/sui_style.lua:155
+msgid "Pagination: First Page"
+msgstr "Puslapiavimas: Pirmas puslapis"
+
+#: features/sui_style.lua:163
+msgid "Pagination: Last Page"
+msgstr "Puslapiavimas: Paskutinis puslapis"
+
+#: features/sui_style.lua:147
+msgid "Pagination: Next Page"
+msgstr "Puslapiavimas: Kitas puslapis"
+
+#: features/sui_style.lua:139
+msgid "Pagination: Previous Page"
+msgstr "Puslapiavimas: Ankstesnis puslapis"
+
+#: features/sui_quickactions.lua:2453
+msgid "Path chooser not available."
+msgstr "Kelio parinkiklis nepasiekiamas."
+
+#: features/sui_style.lua:2704
+msgid "Path does not exist: "
+msgstr "Kelias neegzistuoja: "
+
+#: modules/module_reading_goals.lua:1127
+#, fuzzy
+msgid "Percentage"
+msgstr "Perskaityta procentais"
+
+#: infra/sui_book_stats.lua:176
+msgid "Percentage read"
+msgstr "Perskaityta procentais"
+
+#: modules/critter/module_critter.lua:610
+msgid "Phrases"
+msgstr ""
+
+#: screens/sui_onboarding.lua:193
+msgid "Pick any existing folder to use as the library home."
+msgstr ""
+
+#: modules/critter/phrases.lua:252
+msgid "Pick your next read."
+msgstr ""
+
+#: modules/module_quote.lua:1407
+msgid "Place .lua files in the plugin's sui_quotes/ folder"
+msgstr "Įdėkite .lua failus į įskiepio sui_quotes/ aplanką"
+
+#: screens/sui_menu.lua:3523
+msgid "Place a folder or .zip in:"
+msgstr "Įdėkite aplanką arba .zip į:"
+
+#: screens/sui_menu.lua:2235
+msgid "Place images in:"
+msgstr "Įdėkite paveikslėlius į:"
+
+#: screens/sui_onboarding.lua:334
+msgid ""
+"Place your files in koreader/settings/simpleui/sui_wallpapers or sui_icons."
+msgstr ""
+"Įdėkite savo failus į koreader/settings/simpleui/sui_wallpapers arba "
+"sui_icons."
+
+#: screens/sui_menu.lua:3027
+msgid "Placeholder Cover for Bookless Folders"
+msgstr "Vietos užpildymo viršelis aplankams be knygų"
+
+#: engines/sui_group_cell.lua:228
+#, fuzzy
+msgid "Placement"
+msgstr "Įdėkite paveikslėlius į:"
+
+#: infra/sui_compat_check.lua:155
+msgid ""
+"Please delete the Project: Title plugin from your plugins folder and restart "
+"KOReader."
+msgstr ""
+
+#: screens/sui_stats_windows.lua:509
+msgid "Please enter a date in YYYY-MM-DD format."
+msgstr "Įveskite datą YYYY-MM-DD formatu."
+
+#: features/sui_presets.lua:339
+msgid "Please enter a name for the preset."
+msgstr "Įveskite išankstinės nuostatos pavadinimą."
+
+#: features/sui_manual_books.lua:56
+msgid "Please enter a start or finish date."
+msgstr ""
+
+#: features/sui_manual_books.lua:50
+msgid "Please enter a title."
+msgstr ""
+
+#: features/sui_manual_books.lua:53
+msgid "Please enter dates as YYYY-MM-DD or YYYY."
+msgstr ""
+
+#: infra/sui_compat_check.lua:122
+msgid "Please restart KOReader for the change to take effect."
+msgstr ""
+
+#: features/sui_quickactions.lua:2616
+msgid "Please select an action."
+msgstr "Pasirinkite veiksmą."
+
+#: modules/critter/phrases.lua:248
+msgid "Plenty of time for reading."
+msgstr ""
+
+#: features/sui_quickactions.lua:2494 features/sui_quickactions.lua:2598
+msgid "Plugin"
+msgstr "Įskiepis"
+
+#: features/sui_quickactions.lua:3005
+msgid "Plugin error: %s"
+msgstr "Įskiepio klaida: %s"
+
+#: features/sui_quickactions.lua:3007
+msgid "Plugin not available: %s"
+msgstr "Įskiepis nepasiekiamas: %s"
+
+#: screens/sui_menu.lua:3124
+msgid "Portrait list mode"
+msgstr ""
+
+#: screens/sui_menu.lua:3116
+msgid "Portrait mosaic mode"
+msgstr ""
+
+#: features/library/sui_label_options.lua:143
+#: features/sui_cover_elements.lua:92 modules/module_tab_grid.lua:595
+msgid "Position"
+msgstr "Padėtis"
+
+#: features/sui_quickactions.lua:972 infra/sui_config.lua:139
+msgid "Power"
+msgstr "Maitinimas"
+
+#: screens/sui_menu.lua:2518
+msgid "Preserve Cover Proportions"
+msgstr "Išlaikyti viršelio proporcijas"
+
+#: features/sui_stats_menu.lua:89
+msgid "Preserve Deleted Books in Statistics"
+msgstr "Išsaugoti ištrintas knygas statistikoje"
+
+#: features/sui_presets.lua:1088 screens/sui_menu.lua:3855
+msgid "Preset \"%s\" imported."
+msgstr "Išankstinė nuostata „%s“ importuota."
+
+#: features/sui_presets.lua:868 features/sui_presets.lua:914
+#: screens/sui_menu.lua:3670
+msgid "Preset \"%s\" not found."
+msgstr "Išankstinė nuostata „%s“ nerasta."
+
+#: features/sui_presets.lua:943 screens/sui_menu.lua:3698
+msgid "Preset \"%s\" saved."
+msgstr "Išankstinė nuostata „%s“ išsaugota."
+
+#: features/sui_presets.lua:969 features/sui_presets.lua:1043
+#: screens/sui_menu.lua:3727 screens/sui_menu.lua:3810
+msgid "Preset \"%s\" updated."
+msgstr "Išankstinė nuostata „%s“ atnaujinta."
+
+#: features/sui_presets.lua:1115 screens/sui_menu.lua:3885
+msgid ""
+"Preset exported to:\n"
+"%s"
+msgstr ""
+"Išankstinė nuostata eksportuota į:\n"
+"%s"
+
+#: features/sui_presets.lua:936 screens/sui_menu.lua:3692
+msgid "Preset name"
+msgstr "Išankstinės nuostatos pavadinimas"
+
+#: features/sui_presets.lua:538 features/sui_presets.lua:721
+msgid "Preset not found"
+msgstr "Išankstinė nuostata nerasta"
+
+#: screens/sui_menu.lua:2605 screens/sui_settings_window.lua:447
+msgid "Presets"
+msgstr "Išankstinės nuostatos"
+
+#: screens/sui_settings_window.lua:870
+msgid "Presets module unavailable."
+msgstr "Išankstinių nuostatų modulis nepasiekiamas."
+
+#: screens/sui_onboarding.lua:322
+msgid ""
+"Press and hold any element on the screen (like modules or bars) to quickly "
+"customize its settings."
+msgstr ""
+"Paspauskite ir laikykite bet kurį ekrano elementą (pvz., modulius ar "
+"juostas), kad greitai tinkintumėte jo nustatymus."
+
+#: screens/sui_bottombar.lua:457
+msgid "Prev"
+msgstr "Ankstesnis"
+
+#: features/sui_cover_elements.lua:61
+msgid "Progress"
+msgstr "Progresas"
+
+#: modules/module_coverdeck.lua:1628 modules/module_coverdeck.lua:1685
+#: modules/module_currently.lua:1396 modules/module_currently.lua:1449
+msgid "Progress Badge"
+msgstr "Pažangos ženklelis"
+
+#: engines/sui_book_grid.lua:2015 modules/module_coverdeck.lua:1648
+#: modules/module_currently.lua:1405
+msgid "Progress Badge Color"
+msgstr "Pažangos ženklelio spalva"
+
+#: screens/sui_menu.lua:3966
+msgid "Progress Bar Type"
+msgstr "Progreso juostos tipas"
+
+#: engines/sui_book_grid.lua:2020
+msgid "Progress Indicator"
+msgstr "Pažangos indikatorius"
+
+#: engines/sui_book_grid.lua:2007
+msgid "Progress Style"
+msgstr "Pažangos juostos stilius"
+
+#: engines/sui_book_grid.lua:2163 modules/module_currently.lua:1377
+#, fuzzy
+msgid "Progress Text"
+msgstr "Progresas"
+
+#: infra/sui_config.lua:1206
+msgid "Progress and Badges"
+msgstr "Pažanga ir ženkleliai"
+
+#: modules/module_currently.lua:1415
+msgid "Progress and Stats"
+msgstr "Pažanga ir statistika"
+
+#: modules/module_coverdeck.lua:126 modules/module_currently.lua:281
+#: screens/sui_quicksettings_bar.lua:220
+msgid "Progress bar"
+msgstr "Progreso juosta"
+
+#: modules/module_currently.lua:1418
+msgid "Progress bar style"
+msgstr "Progreso juostos stilius"
+
+#: infra/sui_compat_check.lua:154
+msgid "Project: Title is not compatible with Simple UI."
+msgstr ""
+
+#: infra/sui_config.lua:1189
+#, fuzzy
+msgid "Proportions"
+msgstr "Padėtis"
+
+#: features/sui_backup.lua:132 features/sui_quickactions.lua:1536
+#: features/sui_quickactions.lua:3213 modules/module_action_list.lua:283
+#: modules/module_quick_actions.lua:345 modules/module_quick_actions.lua:419
+#: screens/sui_menu.lua:2137 screens/sui_menu.lua:4186
+#: screens/sui_quicksettings_bar.lua:1505 screens/sui_settings_window.lua:359
+msgid "Quick Actions"
+msgstr "Greitieji veiksmai"
+
+#: screens/sui_menu.lua:4190
+msgid "Quick Actions  (%d/%d — %d left)"
+msgstr "Greitieji veiksmai  (%d/%d — %d liko)"
+
+#: screens/sui_menu.lua:4188
+msgid "Quick Actions  (%d/%d — at limit)"
+msgstr "Greitieji veiksmai  (%d/%d — pasiektas limitas)"
+
+#: features/sui_quickactions.lua:1518 features/sui_quickactions.lua:1856
+#: screens/sui_menu.lua:3361
+msgid "Quick Actions Icons"
+msgstr "Greitųjų veiksmų piktogramos"
+
+#: modules/module_quick_actions.lua:274 modules/module_quick_actions.lua:331
+#: modules/module_quick_actions.lua:501 screens/sui_menu.lua:1887
+msgid "Quick Actions Row"
+msgstr "Greitųjų veiksmų eilutė"
+
+#: features/sui_style.lua:1269
+msgid "Quick Settings"
+msgstr ""
+
+#: screens/sui_menu.lua:2638 screens/sui_quicksettings_bar.lua:1427
+msgid "Quick Settings Bar"
+msgstr "Greitųjų nustatymų juosta"
+
+#: screens/sui_onboarding.lua:398 screens/sui_onboarding.lua:399
+msgid "Quick Tips"
+msgstr "Greiti patarimai"
+
+#: features/sui_quickactions.lua:604
+msgid "Quit"
+msgstr "Išeiti"
+
+#: features/sui_quickactions.lua:607
+msgid "Quitting…"
+msgstr ""
+
+#: modules/module_quote.lua:1446 modules/module_quote.lua:1467
+msgid "Quote"
+msgstr ""
+
+#: features/sui_presets.lua:172 features/sui_presets.lua:236
+#: modules/module_quote.lua:1131
+msgid "Quote of the Day"
+msgstr "Dienos citata"
+
+#: features/sui_backup.lua:149
+#, fuzzy
+msgid "Quote pool files from sui_quotes/"
+msgstr "Nerasta .lua failų aplanke sui_quotes/"
+
+#: modules/module_quote.lua:1419
+msgid "Quotes + My Highlights"
+msgstr "Citatos + Mano paryškinimai"
+
+#: infra/sui_config.lua:205
+msgid "RAM Usage"
+msgstr "RAM naudojimas"
+
+#: features/sui_quickactions.lua:804 infra/sui_config.lua:131
+#: modules/module_library.lua:210
+msgid "Random"
+msgstr "Atsitiktinai"
+
+#: modules/critter/phrases.lua:150
+msgid "Read a little today to reach day %d."
+msgstr ""
+
+#: modules/critter/phrases.lua:155
+msgid "Read a little today to start a new one."
+msgstr ""
+
+#: modules/critter/phrases.lua:142
+msgid "Read again tomorrow to keep it going."
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1677
+msgid "Reader"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1599
+msgid "Reader Layout"
+msgstr ""
+
+#: features/sui_presets.lua:192 features/sui_presets.lua:237
+#: features/sui_stats_menu.lua:138 modules/module_reading_goals.lua:794
+#: modules/module_reading_goals.lua:795
+msgid "Reading Goals"
+msgstr "Skaitymo tikslai"
+
+#: features/sui_stats_menu.lua:135 modules/module_heatmap.lua:210
+#: modules/module_heatmap.lua:211 screens/sui_heatmap_popup.lua:123
+msgid "Reading Heatmap"
+msgstr "Skaitymo šilumos žemėlapis"
+
+#: features/sui_stats_menu.lua:132 screens/sui_stats_windows.lua:2517
+msgid "Reading Insights"
+msgstr "Skaitymo įžvalgos"
+
+#: features/sui_presets.lua:192 features/sui_presets.lua:237
+#: modules/module_reading_stats.lua:772
+msgid "Reading Stats"
+msgstr "Skaitymo statistika"
+
+#: features/sui_backup.lua:138
+msgid "Reading goals, streak mode and freeze bank"
+msgstr ""
+
+#: modules/module_reading_stats.lua:268
+msgid "Reading sessions"
+msgstr ""
+
+#: modules/critter/phrases.lua:43
+msgid "Reading streak"
+msgstr ""
+
+#: modules/critter/phrases.lua:258 modules/critter/phrases.lua:277
+msgid "Ready for a good story?"
+msgstr ""
+
+#: features/sui_stats_menu.lua:65
+msgid "Real streak only"
+msgstr "Tik tikra serija"
+
+#: features/dialogs/sui_dialogs.lua:222 features/sui_quickactions.lua:590
+msgid "Reboot"
+msgstr "Perkrauti"
+
+#: engines/sui_book_sources.lua:272 features/sui_quickactions.lua:777
+#: features/sui_quickactions.lua:3356 infra/sui_config.lua:129
+msgid "Recent"
+msgstr "Naujausios"
+
+#: engines/sui_book_sources.lua:271 features/sui_presets.lua:210
+#: modules/module_coverdeck.lua:1493 modules/module_recent.lua:23
+msgid "Recent Books"
+msgstr "Naujausios knygos"
+
+#: modules/module_reading_stats.lua:256 modules/module_reading_stats.lua:259
+#: modules/module_reading_stats.lua:262 modules/module_reading_stats.lua:267
+msgid "Records"
+msgstr ""
+
+#: modules/module_reading_stats.lua:259
+msgid "Records — Average session"
+msgstr ""
+
+#: modules/module_reading_stats.lua:256
+msgid "Records — Longest session"
+msgstr ""
+
+#: modules/module_reading_stats.lua:262
+msgid "Records — Pages/hour"
+msgstr ""
+
+#: modules/module_reading_stats.lua:267
+msgid "Records — Sessions"
+msgstr ""
+
+#: features/sui_style.lua:2485
+msgid "Regular"
+msgstr ""
+
+#: modules/module_tbr.lua:342
+msgid "Remove from To Be Read"
+msgstr "Pašalinti iš „Skaitytinių“"
+
+#: modules/module_tbr.lua:278
+msgid "Remove from list when finished"
+msgstr "Pašalinti iš sąrašo, kai baigta"
+
+#: engines/sui_window.lua:2358 engines/sui_window.lua:3712
+#: features/library/sui_hold_rows.lua:271 features/sui_presets.lua:373
+#: features/sui_presets.lua:974 screens/sui_menu.lua:3571
+#: screens/sui_menu.lua:3733
+msgid "Rename"
+msgstr "Pervadinti"
+
+#: features/sui_presets.lua:371 screens/sui_menu.lua:3569
+msgid "Rename \"%s\""
+msgstr "Pervadinti „%s“"
+
+#: screens/sui_settings_window.lua:521
+msgid "Rename screen"
+msgstr "Pervadinti ekraną"
+
+#: screens/sui_menu.lua:2495
+msgid ""
+"Replaces the \"Closing book…\" notice above with the cover for that close, "
+"when a cover is available."
+msgstr ""
+"Kai turimas viršelis, aukščiau esantį pranešimą „Uždaroma knyga…“ pakeičia "
+"to uždarymo knygos viršeliu."
+
+#: screens/sui_menu.lua:452
+msgid ""
+"Replaces the pagination bar with Prev/Next arrows at the edges of the "
+"navigation bar.\n"
+"The arrows dim when there is no previous or next page.\n"
+"With navpager active, as few as 1 tab and at most 4 tabs can be configured."
+msgstr ""
+"Pakeičia puslapiavimo juostą ankstesnio/kito rodyklėmis naršymo juostos "
+"kraštuose.\n"
+"Rodyklės pritemdomos, kai nėra ankstesnio ar kito puslapio.\n"
+"Kai navpager aktyvus, galima konfigūruoti nuo 1 iki 4 skirtukų."
+
+#: features/sui_quickactions.lua:1864 features/sui_style.lua:1283
+#: screens/sui_menu.lua:2418 screens/sui_stats_windows.lua:526
+msgid "Reset"
+msgstr "Atstatyti"
+
+#: features/sui_quickactions.lua:1858 features/sui_style.lua:1277
+msgid "Reset All"
+msgstr "Atstatyti viską"
+
+#: features/sui_quickactions.lua:2682
+msgid "Reset All Quick Action Icons"
+msgstr "Atstatyti visas greitųjų veiksmų piktogramas"
+
+#: features/sui_style.lua:1116
+msgid "Reset All System Icons"
+msgstr "Atstatyti visas sistemos piktogramas"
+
+#: features/sui_quickactions.lua:1863
+msgid "Reset all Quick Actions icons to default?"
+msgstr "Atstatyti visas greitųjų veiksmų piktogramas į numatytąsias?"
+
+#: screens/sui_menu.lua:2417
+msgid "Reset all scales to default (100%)? This cannot be undone."
+msgstr ""
+"Atstatyti visus mastelius į numatytuosius (100%)? To negalima atšaukti."
+
+#: features/sui_style.lua:1282
+msgid "Reset all system icons to default?"
+msgstr "Atstatyti visas sistemos piktogramas į numatytąsias?"
+
+#: screens/sui_menu.lua:2412
+msgid "Reset to Default Scale"
+msgstr "Atstatyti į numatytąjį mastelį"
+
+#: features/dialogs/sui_dialogs.lua:211 features/sui_quickactions.lua:584
+msgid "Restart"
+msgstr "Perkrauti"
+
+#: features/sui_backup.lua:1042 infra/sui_compat_check.lua:123
+#: infra/sui_compat_check.lua:223
+#, fuzzy
+msgid "Restart now"
+msgstr "Perkrauti"
+
+#: features/sui_style.lua:2267
+msgid "Restart to fully apply the UI font change."
+msgstr "Perkraukite, kad visiškai pritaikytumėte sąsajos šrifto pakeitimą."
+
+#: features/sui_quickactions.lua:586
+#, fuzzy
+msgid "Restarting…"
+msgstr "Perkrauti"
+
+#: features/sui_backup.lua:1028
+#, fuzzy
+msgid "Restore"
+msgstr "Perkrauti"
+
+#: features/sui_backup.lua:1175
+msgid "Restore Selected…"
+msgstr ""
+
+#: features/sui_backup.lua:1033
+msgid "Restore failed."
+msgstr ""
+
+#: features/sui_backup.lua:892
+msgid "Restore failed. Your previous configuration was kept unchanged."
+msgstr ""
+
+#: features/sui_backup.lua:1027
+msgid ""
+"Restore this backup? Existing settings for these categories will be "
+"replaced. Saved presets are merged — yours are kept."
+msgstr ""
+
+#: screens/sui_menu.lua:2346
+msgid "Return to Home Screen on Wakeup"
+msgstr "Grįžti į pradžios ekraną pabudus"
+
+#: engines/sui_book_grid.lua:2096 features/sui_cover_elements.lua:82
+msgid "Ribbon"
+msgstr "Juostelė"
+
+#: infra/sui_config.lua:2027 modules/module_quick_actions.lua:476
+#: screens/sui_menu.lua:678 screens/sui_menu.lua:883 screens/sui_menu.lua:1309
+#: screens/sui_menu.lua:1507
+msgid "Right"
+msgstr "Dešinėje"
+
+#: modules/critter/module_critter.lua:683
+msgid "Right decorations"
+msgstr ""
+
+#: modules/module_reading_goals.lua:1282
+#, fuzzy
+msgid "Ring Alignment"
+msgstr "Lygiavimas"
+
+#: modules/module_reading_goals.lua:1270
+#, fuzzy
+msgid "Ring Style"
+msgstr "Stilius"
+
+#: modules/module_reading_goals.lua:1263
+#, fuzzy
+msgid "Rings"
+msgstr "Nustatymai"
+
+#: modules/critter/phrases.lua:83
+msgid "Rise and read!"
+msgstr ""
+
+#: modules/module_quick_actions.lua:457 screens/sui_quicksettings_bar.lua:1657
+msgid "Round"
+msgstr "Apvalus"
+
+#: engines/sui_book_grid.lua:1993
+msgid "Round Overlay"
+msgstr "Apvali perdanga"
+
+#: modules/module_tab_grid.lua:633
+#, fuzzy
+msgid "Round Pill"
+msgstr "Apvalus"
+
+#: modules/module_quick_actions.lua:458 screens/sui_quicksettings_bar.lua:1658
+msgid "Rounded Square"
+msgstr "Suapvalintas kvadratas"
+
+#: engines/sui_book_grid.lua:1919 modules/module_reading_stats.lua:1171
+msgid "Rows"
+msgstr "Eilutės"
+
+#: infra/sui_datenames.lua:43
+msgid "Sat"
+msgstr "Šeštadienis"
+
+#: features/sui_accent_picker.lua:88
+msgid "Saturation"
+msgstr ""
+
+#: infra/sui_datenames.lua:49
+msgid "Saturday"
+msgstr "Šeštadienis"
+
+#: features/sui_manual_books.lua:106 features/sui_manual_books.lua:134
+#: features/sui_presets.lua:937 features/sui_quickactions.lua:2610
+#: infra/sui_goals.lua:115 screens/sui_menu.lua:3693
+#: screens/sui_settings_window.lua:524 screens/sui_stats_windows.lua:514
+msgid "Save"
+msgstr "Išsaugoti"
+
+#: features/sui_presets.lua:930 screens/sui_menu.lua:3686
+msgid "Save as new preset"
+msgstr "Išsaugoti kaip naują išankstinę nuostatą"
+
+#: features/sui_backup.lua:1115
+msgid "Save backup as"
+msgstr ""
+
+#: screens/sui_menu.lua:3691
+msgid "Save icon preset"
+msgstr "Išsaugoti piktogramų išankstinę nuostatą"
+
+#: features/sui_presets.lua:935
+msgid "Save preset"
+msgstr "Išsaugoti išankstinę nuostatą"
+
+#: engines/sui_book_grid.lua:1856 engines/sui_book_grid.lua:1858
+#: modules/critter/module_critter.lua:648
+#: modules/critter/module_critter.lua:650 modules/module_action_list.lua:304
+#: modules/module_action_list.lua:306 modules/module_clock.lua:1055
+#: modules/module_clock.lua:1057 modules/module_coverdeck.lua:1463
+#: modules/module_coverdeck.lua:1465 modules/module_currently.lua:1250
+#: modules/module_currently.lua:1252 modules/module_heatmap.lua:323
+#: modules/module_heatmap.lua:325 modules/module_quick_actions.lua:428
+#: modules/module_quick_actions.lua:430 modules/module_quote.lua:1355
+#: modules/module_quote.lua:1359 modules/module_quote.lua:1480
+#: modules/module_reading_goals.lua:1107 modules/module_reading_goals.lua:1109
+#: modules/module_reading_stats.lua:1111 modules/module_reading_stats.lua:1113
+#: screens/sui_menu.lua:2358
+msgid "Scale"
+msgstr "Mastelis"
+
+#: features/sui_cover_elements.lua:293
+msgid ""
+"Scale for the badges (progress, pages, etc.).\n"
+"100% is the default size."
+msgstr ""
+
+#: modules/module_currently.lua:1266
+msgid ""
+"Scale for the cover thumbnail only.\n"
+"100% is the default size.\n"
+"When Dynamic Cover Size is on, this scales the cover relative to its current "
+"dynamic size instead, and the cover never shrinks below its 100% size."
+msgstr ""
+"Mastelis taikomas tik viršelio miniatiūrai.\n"
+"100% yra numatytasis dydis.\n"
+"Kai įjungtas Dinamiškas viršelio dydis, mastelis taikomas atsižvelgiant į "
+"esamą dinaminį dydį, o viršelis niekada nesumažėja žemiau 100% savo dydžio."
+
+#: modules/module_coverdeck.lua:1474
+msgid ""
+"Scale for the cover thumbnails only.\n"
+"100% is the default size."
+msgstr ""
+"Mastelis tik viršelių miniatiūroms.\n"
+"100% yra numatytasis dydis."
+
+#: engines/sui_book_grid.lua:1868
+msgid ""
+"Scale for the cover thumbnails only.\n"
+"Text and progress bar follow the module scale.\n"
+"100% is the default size."
+msgstr ""
+"Mastelis tik viršelių miniatiūroms.\n"
+"Tekstas ir progreso juosta seka modulio mastelį.\n"
+"100% yra numatytasis dydis."
+
+#: features/sui_cover_elements.lua:129
+msgid ""
+"Scale for the folder name overlay text.\n"
+"100% is the default size."
+msgstr ""
+"Mastelis aplanko pavadinimo perdangos tekstui.\n"
+"100% yra numatytasis dydis."
+
+#: engines/sui_group_cell.lua:313
+#, fuzzy
+msgid "Scale for the group count badge."
+msgstr ""
+"Mastelis kolekcijos knygų skaičiaus ženkleliui.\n"
+"100% yra numatytasis dydis."
+
+#: screens/sui_quicksettings_bar.lua:1639
+msgid ""
+"Scale for the label text.\n"
+"100% is the default size."
+msgstr ""
+"Mastelis etiketės tekstui.\n"
+"100% yra numatytasis dydis."
+
+#: modules/module_coverdeck.lua:1619 modules/module_currently.lua:1387
+msgid "Scale for the progress badge."
+msgstr ""
+
+#: engines/sui_book_grid.lua:1960
+msgid ""
+"Scale for this module's corner badges (progress, pages, series, new book)."
+msgstr ""
+"Mastelis šio modulio kampiniams ženkleliams (pažanga, puslapiai, serija, "
+"nauja knyga).\n"
+"100% yra numatytasis dydis."
+
+#: modules/module_coverdeck.lua:1466
+msgid "Scale for this module."
+msgstr "Šio modulio mastelis."
+
+#: engines/sui_book_grid.lua:1859 modules/critter/module_critter.lua:651
+#: modules/module_action_list.lua:307 modules/module_clock.lua:1058
+#: modules/module_currently.lua:1253 modules/module_quick_actions.lua:431
+#: modules/module_quote.lua:1361 modules/module_reading_goals.lua:1110
+#: modules/module_reading_stats.lua:1114
+msgid ""
+"Scale for this module.\n"
+"100% is the default size."
+msgstr ""
+"Šio modulio mastelis.\n"
+"100% yra numatytasis dydis."
+
+#: modules/module_heatmap.lua:326
+msgid ""
+"Scale for this module.\n"
+"100% is the default size. Capped at 100% here: the grid always has as many "
+"columns as \"Weeks shown\" (or, in Time of day view, 24), so there's no room "
+"to grow the cells past their autofit size without the grid overflowing the "
+"card."
+msgstr ""
+"Šio modulio mastelis.\n"
+"100% yra numatytasis dydis. Čia apribota iki 100%: tinklelis visada turi "
+"tiek stulpelių, kiek nustatyta „Rodomos savaitės“ (arba 24, Paros meto "
+"rodinyje), todėl langeliams nėra kur augti virš automatinio dydžio, kad "
+"tinklelis neišsikištų už kortelės ribų."
+
+#: screens/sui_menu.lua:2376
+msgid ""
+"Scales all modules and labels together.\n"
+"100% is the default size."
+msgstr ""
+"Mastelis visiems moduliams ir etiketėms kartu.\n"
+"100% yra numatytasis dydis."
+
+#: screens/sui_menu.lua:2398
+msgid ""
+"Scales the module label text above each module, on top of the size set in "
+"Style > Module Labels.\n"
+"100% is the default size."
+msgstr ""
+
+#: screens/sui_menu.lua:3040
+msgid "Scan Subfolders for Covers"
+msgstr "Skenuoti subaplankus viršeliams"
+
+#: screens/sui_settings_window.lua:523 screens/sui_settings_window.lua:1127
+msgid "Screen name"
+msgstr "Ekrano pavadinimas"
+
+#: screens/sui_menu.lua:2329
+msgid ""
+"Screen shown after closing a book. Gestures and quick actions that name a "
+"destination always open that destination."
+msgstr ""
+
+#: features/library/sui_library_search.lua:181
+#: features/sui_quickactions.lua:889 infra/sui_config.lua:134
+#: screens/sui_titlebar.lua:115 screens/sui_titlebar.lua:1251
+msgid "Search"
+msgstr "Ieškoti"
+
+#: features/sui_style.lua:93
+msgid "Search Button"
+msgstr "Paieškos mygtukas"
+
+#: features/sui_quickactions.lua:906
+#, fuzzy
+msgid "Search Library not available."
+msgstr "Istorija nepasiekiama."
+
+#: features/library/sui_library_search.lua:180
+#, fuzzy
+msgid "Search library"
+msgstr "Naršyti biblioteką"
+
+#: features/library/sui_library_search.lua:162
+msgid "Search results: %1"
+msgstr ""
+
+#: features/library/sui_label_options.lua:135 features/sui_style.lua:1429
+msgid "Secondary"
+msgstr ""
+
+#: screens/sui_menu.lua:3235
+msgid "Secondary Color"
+msgstr ""
+
+#: engines/sui_window.lua:2347 engines/sui_window.lua:3697
+#: features/library/sui_hold_rows.lua:246
+msgid "Select"
+msgstr "Pasirinkti"
+
+#: features/sui_presets.lua:875 features/sui_presets.lua:883
+#: features/sui_presets.lua:888 screens/sui_menu.lua:3677
+msgid "Select Preset"
+msgstr "Pasirinkti išankstinę nuostatą"
+
+#: screens/sui_menu.lua:2254
+msgid "Select Wallpaper"
+msgstr "Pasirinkti foną"
+
+#: modules/module_collections.lua:358
+msgid "Select at least 2 collections to arrange."
+msgstr "Pasirinkite bent 2 kolekcijas, kad galėtumėte išdėstyti."
+
+#: infra/sui_datenames.lua:30
+msgid "Sep"
+msgstr "rugs."
+
+#: infra/sui_datenames.lua:38
+msgid "September"
+msgstr "Rugsėjis"
+
+#: features/library/sui_library_browse.lua:68
+#: features/sui_quickactions.lua:1005 infra/sui_config.lua:143
+#: modules/module_currently.lua:279 modules/module_currently.lua:1375
+msgid "Series"
+msgstr "Serija"
+
+#: engines/sui_book_grid.lua:2069 engines/sui_book_grid.lua:2085
+msgid "Series Badge"
+msgstr "Serijos ženklelis"
+
+#: engines/sui_book_grid.lua:2080
+msgid "Series Badge Color"
+msgstr "Serijos ženklelio spalva"
+
+#: features/sui_cover_elements.lua:57
+msgid "Series Index"
+msgstr "Serijos indeksas"
+
+#: screens/sui_menu.lua:40
+msgid "Set"
+msgstr "Nustatyti"
+
+#: modules/module_reading_goals.lua:1170
+msgid "Set Goal"
+msgstr "Nustatyti tikslą"
+
+#: features/library/sui_folder_hold_dialog.lua:36
+msgid "Set as HOME folder"
+msgstr ""
+
+#: modules/module_collections.lua:332
+msgid "Set collection cover"
+msgstr "Nustatyti kolekcijos viršelį"
+
+#: engines/sui_group_cell.lua:580
+#, fuzzy
+msgid "Set cover"
+msgstr "Nustatyti aplanko viršelį"
+
+#: features/library/sui_foldercovers.lua:561
+#: features/library/sui_library_browse.lua:879
+#: features/library/sui_series_grouping.lua:386
+msgid "Set folder cover"
+msgstr "Nustatyti aplanko viršelį"
+
+#: screens/sui_onboarding.lua:204 screens/sui_onboarding.lua:397
+msgid "Set the Home Folder"
+msgstr ""
+
+#: screens/sui_onboarding.lua:329
+msgid "Set your reading goal"
+msgstr "Nustatykite savo skaitymo tikslą"
+
+#: features/sui_quickactions.lua:982 infra/sui_config.lua:140
+msgid "Settings"
+msgstr "Nustatymai"
+
+#: screens/sui_settings_window.lua:303 screens/sui_settings_window.lua:308
+msgid "Settings not found."
+msgstr "Nustatymai nerasti."
+
+#: screens/sui_menu.lua:1007 screens/sui_menu.lua:1034
+#: screens/sui_menu.lua:1176 screens/sui_menu.lua:2544
+#: screens/sui_quicksettings_bar.lua:1685
+msgid "Settings on Long Tap"
+msgstr "Nustatymai ilgu paspaudimu"
+
+#: modules/critter/phrases.lua:122
+msgid "Settle in with a good book."
+msgstr ""
+
+#: modules/module_clock.lua:255
+msgid "Seven"
+msgstr "Septyni"
+
+#: modules/module_clock.lua:258
+msgid "Seventeen"
+msgstr "Septyniolika"
+
+#: infra/sui_config.lua:1714
+msgid ""
+"Share of the row this module occupies.\n"
+"100% = full width. Modules under 100% share a row when their widths fit "
+"(bento grid)."
+msgstr ""
+
+#: features/library/sui_finished_books.lua:59
+#: features/sui_cover_elements.lua:236 screens/sui_menu.lua:2747
+msgid "Show"
+msgstr ""
+
+#: modules/module_clock.lua:1067
+msgid "Show Battery"
+msgstr "Rodyti akumuliatorių"
+
+#: modules/module_clock.lua:1065
+msgid "Show Clock"
+msgstr "Rodyti laikrodį"
+
+#: modules/module_clock.lua:1066
+msgid "Show Date"
+msgstr "Rodyti datą"
+
+#: modules/module_action_list.lua:316 modules/module_action_list.lua:342
+msgid "Show Icon"
+msgstr "Rodyti piktogramą"
+
+#: screens/sui_menu.lua:589
+msgid "Show Page Count in Title Bar"
+msgstr "Rodyti puslapių skaičių antraštės juostoje"
+
+#: screens/sui_menu.lua:2981
+msgid "Show Uncategorized Items"
+msgstr ""
+
+#: screens/sui_menu.lua:2433
+msgid ""
+"Show a brief \"Closing book…\" notice when closing a book, preventing "
+"accidental double-taps while e-ink refreshes."
+msgstr ""
+"Rodyti trumpą „Uždaroma knyga…“ pranešimą uždarant knygą, kad išvengtumėte "
+"atsitiktinių dvigubų paspaudimų e-rašalo atnaujinimo metu."
+
+#: features/sui_stats_menu.lua:118
+msgid ""
+"Show a brief \"Loading statistics…\" notice when opening a statistics "
+"window, preventing accidental double-taps while e-ink refreshes."
+msgstr ""
+"Rodyti trumpą „Įkeliama statistika…“ pranešimą atidarant statistikos langą, "
+"kad išvengtumėte atsitiktinių dvigubų paspaudimų e-rašalo atnaujinimo metu."
+
+#: engines/sui_book_sources.lua:276 modules/module_coverdeck.lua:1661
+#: modules/module_recent.lua:49
+msgid "Show finished books"
+msgstr "Rodyti baigtas knygas"
+
+#: modules/module_reading_stats.lua:1206
+msgid "Show icons"
+msgstr ""
+
+#: modules/module_heatmap.lua:359
+msgid "Show legend"
+msgstr "Rodyti legendą"
+
+#: screens/sui_menu.lua:2494
+msgid "Show on Close"
+msgstr "Rodyti uždarant"
+
+#: screens/sui_menu.lua:2483
+msgid "Show on Open"
+msgstr "Rodyti atidarant"
+
+#: infra/sui_config.lua:2047
+msgid "Show section label"
+msgstr "Rodyti skyriaus etiketę"
+
+#: screens/sui_quicksettings_bar.lua:1626
+msgid ""
+"Show the frontlight and warmth sliders below the book details in the Book "
+"layout."
+msgstr ""
+
+#: screens/sui_menu.lua:2259
+msgid "Show wallpaper on all screens"
+msgstr "Rodyti foną visuose ekranuose"
+
+#: screens/sui_menu.lua:2851
+msgid "Shown in captions"
+msgstr ""
+
+#: screens/sui_menu.lua:593
+msgid ""
+"Shows \"Page X of Y\" in the title bar subtitle when browsing the library, "
+"history or collections.\n"
+"Navpager enables this automatically.\n"
+"Not available when Navpager is active."
+msgstr ""
+"Rodo „Puslapis X iš Y“ antraštės juostos paantraštėje naršant biblioteką, "
+"istoriją ar kolekcijas.\n"
+"Navpager tai įjungia automatiškai.\n"
+"Nepasiekiama, kai Navpager aktyvus."
+
+#: screens/sui_menu.lua:484
+msgid ""
+"Shows a row of dots at the bottom of the homescreen.\n"
+"The active page dot is filled; the others are dimmed.\n"
+"Always active when Navpager is selected."
+msgstr ""
+"Rodo taškų eilutę pradžios ekrano apačioje.\n"
+"Aktyvaus puslapio taškas užpildytas; kiti pritemdyti.\n"
+"Visada aktyvus, kai pasirinktas Navpager."
+
+#: engines/sui_book_grid.lua:1535
+msgid "Shuffle"
+msgstr "Maišyti"
+
+#: modules/module_library.lua:244
+msgid "Shuffle now"
+msgstr "Maišyti dabar"
+
+#: modules/module_currently.lua:1420
+msgid "Simple"
+msgstr "Paprastas"
+
+#: _meta.lua:5 main.lua:2336 main.lua:2349 screens/sui_menu.lua:4143
+#: screens/sui_menu.lua:4220
+msgid "Simple UI"
+msgstr "Simple UI"
+
+#: infra/sui_updater.lua:448
+msgid ""
+"Simple UI %s installed.\n"
+"\n"
+"Restart KOReader to apply the update?"
+msgstr ""
+"Simple UI %s įdiegtas.\n"
+"\n"
+"Perkrauti KOReader, kad pritaikytumėte atnaujinimą?"
+
+#: infra/sui_updater.lua:492
+msgid ""
+"Simple UI %s is available!\n"
+"You have %s."
+msgstr ""
+"Simple UI %s yra prieinamas!\n"
+"Jūs turite %s."
+
+#: screens/sui_settings_window.lua:1034
+msgid "Simple UI Settings"
+msgstr "Simple UI nustatymai"
+
+#: screens/sui_onboarding.lua:294
+msgid ""
+"Simple UI is designed to be simple and flexible. Here are a few tips to get "
+"the most out of it."
+msgstr ""
+"Simple UI sukurtas būti paprastas ir lankstus. Štai keli patarimai, kaip iš "
+"jo išspausti maksimumą."
+
+#: infra/sui_updater.lua:486
+msgid "Simple UI is up to date (%s)."
+msgstr "Simple UI yra naujausias (%s)."
+
+#: main.lua:201
+msgid ""
+"Simple UI was updated (%s → %s).\n"
+"\n"
+"A restart is recommended to apply all changes cleanly."
+msgstr ""
+
+#: screens/sui_menu.lua:4153
+msgid ""
+"Simple UI will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Simple UI bus %s po perkrovimo.\n"
+"\n"
+"Perkrauti dabar?"
+
+#: main.lua:991
+msgid "Simple UI: Go to Homescreen"
+msgstr "Simple UI: Eiti į pradžios ekraną"
+
+#: main.lua:997
+msgid "Simple UI: Go to Library"
+msgstr "Simple UI: Eiti į biblioteką"
+
+#: main.lua:1021
+msgid "Simple UI: Navigation Bar"
+msgstr "Simple UI: Naršymo juosta"
+
+#: main.lua:1015
+msgid "Simple UI: Recent"
+msgstr "Simple UI: Naujausios"
+
+#: main.lua:1009
+msgid "Simple UI: Settings"
+msgstr "Simple UI: Nustatymai"
+
+#: main.lua:1003
+msgid "Simple UI: Toggle Homescreen / Library"
+msgstr "Simple UI: Perjungti pradžios ekraną / biblioteką"
+
+#: engines/sui_group_cell.lua:261 features/sui_cover_elements.lua:317
+msgid "Single Cover"
+msgstr "Vienas viršelis"
+
+#: modules/module_clock.lua:254
+msgid "Six"
+msgstr "Šeši"
+
+#: modules/module_clock.lua:258
+msgid "Sixteen"
+msgstr "Šešiolika"
+
+#: features/sui_cover_elements.lua:291 infra/sui_config.lua:1030
+#: modules/module_action_list.lua:301 modules/module_action_list.lua:334
+#: screens/sui_menu.lua:963 screens/sui_menu.lua:1721
+#: screens/sui_quicksettings_bar.lua:1637
+#: screens/sui_quicksettings_bar.lua:1638
+msgid "Size"
+msgstr "Dydis"
+
+#: screens/sui_menu.lua:3293
+msgid ""
+"Size of the module labels.\n"
+"100% is the default size."
+msgstr ""
+
+#: screens/sui_menu.lua:1129
+msgid ""
+"Size of the tab icons.\n"
+"100% is the default size."
+msgstr ""
+"Skirtukų piktogramų dydis.\n"
+"100% yra numatytasis dydis."
+
+#: screens/sui_menu.lua:1140
+msgid ""
+"Size of the tab label text.\n"
+"100% is the default size."
+msgstr ""
+"Skirtuko etiketės teksto dydis.\n"
+"100% yra numatytasis dydis."
+
+#: modules/module_tab_grid.lua:668
+#, fuzzy
+msgid ""
+"Size of the tab labels.\n"
+"100% matches the homescreen section labels."
+msgstr ""
+"Skirtuko etiketės teksto dydis.\n"
+"100% yra numatytasis dydis."
+
+#: screens/sui_menu.lua:1723
+msgid ""
+"Size of the title bar buttons and tabs.\n"
+"100% is the default size."
+msgstr ""
+
+#: engines/sui_book_grid.lua:2165 modules/critter/module_critter.lua:698
+#: modules/module_action_list.lua:356 modules/module_clock.lua:1084
+#: modules/module_coverdeck.lua:1612 modules/module_currently.lua:1379
+#: modules/module_quick_actions.lua:442 modules/module_quote.lua:1447
+#: modules/module_quote.lua:1468 modules/module_reading_goals.lua:1128
+#: modules/module_reading_stats.lua:1131
+#, fuzzy
+msgid ""
+"Size of this text.\n"
+"100% is the default size."
+msgstr ""
+"Skirtuko etiketės teksto dydis.\n"
+"100% yra numatytasis dydis."
+
+#: features/sui_quickactions.lua:597
+msgid "Sleep"
+msgstr "Miego režimas"
+
+#: modules/critter/phrases.lua:104
+msgid "Sleep well. The book will keep."
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1610
+msgid "Slider Style"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1625
+msgid "Sliders in Book Layout"
+msgstr ""
+
+#: screens/sui_menu.lua:556
+msgid "Small"
+msgstr "Mažas"
+
+#: infra/sui_backdrop.lua:81
+msgid "Solid"
+msgstr "Vientisas"
+
+#: engines/sui_book_grid.lua:1548 modules/module_collections.lua:443
+#: modules/module_library.lua:225
+msgid "Sort"
+msgstr "Rikiavimas"
+
+#: modules/module_coverdeck.lua:1530 modules/module_quote.lua:1415
+msgid "Source"
+msgstr "Šaltinis"
+
+#: screens/sui_menu.lua:1160
+msgid ""
+"Space below the bottom navigation bar.\n"
+"100% is the default spacing."
+msgstr ""
+"Tarpas po apatiniu naršymo juosta.\n"
+"100% yra numatytasis tarpas."
+
+#: screens/sui_menu.lua:3308
+msgid ""
+"Space between the characters of a module label, as a percentage of its text "
+"size."
+msgstr ""
+
+#: modules/module_spacer.lua:58 modules/module_spacer.lua:112
+msgid "Spacer"
+msgstr "Tarpiklis"
+
+#: modules/module_spacer.lua:89 modules/module_spacer.lua:90
+msgid "Spacer Size"
+msgstr "Tarpiklio dydis"
+
+#: modules/module_clock.lua:1131 modules/module_clock.lua:1132
+msgid "Spacing"
+msgstr "Tarpas"
+
+#: modules/module_tab_grid.lua:634
+msgid "Square Pill"
+msgstr ""
+
+#: screens/sui_onboarding.lua:447
+msgid "Start using Simple UI"
+msgstr "Pradėti naudoti Simple UI"
+
+#: infra/sui_patches.lua:1039 infra/sui_patches.lua:1041
+#: screens/sui_menu.lua:2318
+msgid "Start with"
+msgstr "Pradėti su"
+
+#: screens/sui_onboarding.lua:131
+msgid "Start with a ready-made layout. You can change everything later."
+msgstr "Pradėkite su paruoštu išdėstymu. Viską galite pakeisti vėliau."
+
+#: features/sui_manual_books.lua:110
+msgid "Started"
+msgstr ""
+
+#: modules/module_coverdeck.lua:127 modules/module_coverdeck.lua:1584
+#: modules/module_coverdeck.lua:1604 modules/module_coverdeck.lua:1611
+#: modules/module_currently.lua:282 modules/module_currently.lua:1340
+#: modules/module_currently.lua:1359 screens/sui_quicksettings_bar.lua:219
+#: screens/sui_quicksettings_bar.lua:1567
+msgid "Statistics"
+msgstr "Statistika"
+
+#: features/sui_stats_menu.lua:117
+msgid "Statistics Loading Notice"
+msgstr "Statistikos įkėlimo pranešimas"
+
+#: screens/sui_stats_windows.lua:58
+msgid "Statistics database library not available."
+msgstr "Statistikos duomenų bazės biblioteka nepasiekiama."
+
+#: features/sui_quickactions.lua:966
+msgid "Statistics plugin not available."
+msgstr "Statistikos įskiepis nepasiekiamas."
+
+#: features/sui_quickactions.lua:951 infra/sui_config.lua:138
+#: screens/sui_menu.lua:2621 screens/sui_settings_window.lua:388
+#: screens/sui_settings_window.lua:453
+msgid "Stats"
+msgstr "Statistika"
+
+#: modules/module_currently.lua:1428
+msgid "Stats layout"
+msgstr "Statistikos išdėstymas"
+
+#: features/sui_stats_menu.lua:57 modules/module_coverdeck.lua:1711
+#: modules/module_currently.lua:1484 modules/module_reading_goals.lua:1310
+msgid "Stats updated successfully."
+msgstr "Statistika sėkmingai atnaujinta."
+
+#: screens/sui_menu.lua:2633
+msgid "Status Bar"
+msgstr "Būsenos juosta"
+
+#: screens/sui_menu.lua:2287
+#, fuzzy
+msgid "Status Bar Opacity"
+msgstr "Būsenos juostos dydis"
+
+#: screens/sui_menu.lua:964
+msgid "Status Bar Size"
+msgstr "Būsenos juostos dydis"
+
+#: screens/sui_menu.lua:808
+msgid ""
+"Status Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Būsenos juosta bus %s po perkrovimo.\n"
+"\n"
+"Perkrauti dabar?"
+
+#: modules/module_reading_stats.lua:282
+msgid "Status — Abandoned"
+msgstr "Būsena — Atsisakyta"
+
+#: modules/module_reading_stats.lua:281
+msgid "Status — Reading"
+msgstr "Būsena — Skaitoma"
+
+#: modules/module_reading_stats.lua:280
+msgid "Status — Unread"
+msgstr "Būsena — Neskaityta"
+
+#: screens/sui_settings_window.lua:337
+msgid "Status, title, navigation and pagination"
+msgstr "Būsena, antraštė, naršymas ir puslapiavimas"
+
+#: modules/critter/phrases.lua:107
+msgid "Still awake?"
+msgstr ""
+
+#: features/sui_stats_menu.lua:134 modules/module_reading_stats.lua:250
+#: screens/sui_stats_windows.lua:3227
+msgid "Streak"
+msgstr "Serija"
+
+#: features/sui_stats_menu.lua:62
+msgid "Streak Mode"
+msgstr "Serijos režimas"
+
+#: modules/critter/phrases.lua:141
+msgid "Streak started!"
+msgstr ""
+
+#: screens/sui_menu.lua:2269
+msgid "Stretch to fill screen"
+msgstr "Ištempti iki viso ekrano"
+
+#: features/sui_cover_elements.lua:110 infra/sui_config.lua:1023
+#: modules/module_coverdeck.lua:1482 modules/module_reading_stats.lua:1183
+#: modules/module_tab_grid.lua:584 modules/module_tab_grid.lua:631
+#: screens/sui_menu.lua:1758 screens/sui_menu.lua:3275
+#: screens/sui_menu.lua:4177 screens/sui_settings_window.lua:351
+#: screens/sui_settings_window.lua:1039
+msgid "Style"
+msgstr "Stilius"
+
+#: screens/sui_menu.lua:1781 screens/sui_menu.lua:1784
+msgid "Sub-page Buttons"
+msgstr "Subpuslapių mygtukai"
+
+#: infra/sui_datenames.lua:43
+msgid "Sun"
+msgstr "Sekmadienis"
+
+#: infra/sui_datenames.lua:48
+msgid "Sunday"
+msgstr "Sekmadienis"
+
+#: modules/critter/phrases.lua:126
+msgid "Sweet dreams and good books."
+msgstr ""
+
+#: modules/module_tab_grid.lua:587
+#, fuzzy
+msgid "Swipe Bar"
+msgstr "Perbraukimo indikatorius"
+
+#: screens/sui_menu.lua:988
+msgid "Swipe Indicator"
+msgstr "Perbraukimo indikatorius"
+
+#: features/sui_quickactions.lua:1824 features/sui_quickactions.lua:1827
+#: features/sui_quickactions.lua:2511 features/sui_quickactions.lua:2599
+msgid "System Actions"
+msgstr "Sistemos veiksmai"
+
+#: features/sui_style.lua:1275 screens/sui_menu.lua:3330
+#: screens/sui_menu.lua:3338
+msgid "System Icons"
+msgstr "Sistemos piktogramos"
+
+#: features/sui_presets.lua:296
+msgid "System Presets"
+msgstr ""
+
+#: features/sui_quickactions.lua:2978
+msgid "System action error: %s"
+msgstr "Sistemos veiksmo klaida: %s"
+
+#: screens/sui_stats_windows.lua:2510
+msgid "THIS MONTH"
+msgstr "ŠIS MĖNUO"
+
+#: screens/sui_stats_windows.lua:2509
+msgid "THIS WEEK"
+msgstr "ŠI SAVAITĖ"
+
+#: screens/sui_heatmap_popup.lua:92
+msgid "TIME OF DAY"
+msgstr "PAROS METAS"
+
+#: screens/sui_stats_windows.lua:2505
+msgid "TODAY'S SUMMARY"
+msgstr "ŠIANDIENOS SANTRAUKA"
+
+#: features/sui_style.lua:1270 modules/module_tab_grid.lua:628
+msgid "Tab Bar"
+msgstr "Skirtukų juosta"
+
+#: screens/sui_menu.lua:1091
+msgid "Tab Style"
+msgstr "Skirtuko stilius"
+
+#: features/sui_style.lua:1225
+msgid "Tab bar icons must be PNG or SVG."
+msgstr "Skirtukų juostos piktogramos turi būti PNG arba SVG formato."
+
+#: features/sui_style.lua:301
+msgid "Tab: Back to File Browser"
+msgstr "Skirtukas: Grįžti į failų naršyklę"
+
+#: features/sui_style.lua:280
+msgid "Tab: File Browser Settings"
+msgstr "Skirtukas: Failų naršyklės nustatymai"
+
+#: features/sui_style.lua:252
+msgid "Tab: Menu"
+msgstr "Skirtukas: Meniu"
+
+#: features/sui_style.lua:287
+msgid "Tab: Reader Navigation"
+msgstr "Skirtukas: Skaityklės naršymas"
+
+#: features/sui_style.lua:294
+msgid "Tab: Reader Typeset"
+msgstr "Skirtukas: Skaityklės maketavimas"
+
+#: features/sui_style.lua:273
+msgid "Tab: Search"
+msgstr "Skirtukas: Paieška"
+
+#: features/sui_style.lua:259
+msgid "Tab: Settings"
+msgstr "Skirtukas: Nustatymai"
+
+#: features/sui_style.lua:308
+msgid "Tab: SimpleUI Quick Settings"
+msgstr "Skirtukas: SimpleUI spartieji nustatymai"
+
+#: features/sui_style.lua:266
+msgid "Tab: Tools"
+msgstr "Skirtukas: Įrankiai"
+
+#: features/sui_presets.lua:158 modules/module_tab_grid.lua:930
+#: modules/module_tab_grid.lua:1100
+msgid "Tabbed Grid"
+msgstr ""
+
+#: modules/module_tab_grid.lua:635 modules/module_tab_grid.lua:863
+#: modules/module_tab_grid.lua:866 screens/sui_menu.lua:350
+#: screens/sui_menu.lua:1762
+msgid "Tabs"
+msgstr "Skirtukai"
+
+#: screens/sui_menu.lua:358
+msgid "Tabs  (%d/%d — %d left)"
+msgstr "Skirtukai  (%d/%d — %d liko)"
+
+#: screens/sui_menu.lua:356
+msgid "Tabs  (%d/%d — at limit)"
+msgstr "Skirtukai  (%d/%d — pasiektas limitas)"
+
+#: screens/sui_menu.lua:1586
+msgid "Tabs and Search"
+msgstr ""
+
+#: features/library/sui_library_browse.lua:69
+#: features/sui_quickactions.lua:1006 infra/sui_config.lua:145
+msgid "Tags"
+msgstr "Žymos"
+
+#: modules/critter/phrases.lua:91
+msgid "Taking a break?"
+msgstr ""
+
+#: screens/sui_settings_window.lua:487
+msgid "Tap \"Create Screen\" below to add one."
+msgstr "Bakstelėkite „Kurti ekraną“ žemiau, kad pridėtumėte."
+
+#: modules/module_clock.lua:256
+msgid "Ten"
+msgstr "Dešimt"
+
+#: engines/sui_book_grid.lua:1991 infra/sui_config.lua:1100
+#: modules/module_quote.lua:1482 modules/module_tab_grid.lua:667
+#: modules/module_tab_grid.lua:932 screens/sui_menu.lua:241
+msgid "Text"
+msgstr "Tekstas"
+
+#: features/library/sui_label_options.lua:116
+msgid "Text Size"
+msgstr "Teksto dydis"
+
+#: screens/sui_menu.lua:243
+msgid "Text only"
+msgstr "Tik tekstas"
+
+#: modules/critter/phrases.lua:269
+msgid "That makes me happy."
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:1493
+msgid ""
+"The Quick Settings Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Greitųjų nustatymų juosta bus %s po perkrovimo.\n"
+"\n"
+"Perkrauti dabar?"
+
+#: screens/sui_menu.lua:2507
+msgid ""
+"The cover shown right as a book opens normally comes from the library's "
+"cached thumbnail, which can look soft on higher-resolution screens. When on, "
+"SimpleUI instead reads the cover straight from the book file for that moment "
+"(also covers books never opened before, which otherwise show no cover at "
+"all) — at the cost of a brief extra pause while opening, since the file has "
+"to be read twice. Cover on close is unaffected either way: it already reads "
+"the full-quality cover from the open book."
+msgstr ""
+"Viršelis, rodomas iškart atveriant knygą, paprastai gaunamas iš bibliotekos "
+"podėlyje saugomos miniatiūros, kuri didesnės skiriamosios gebos ekranuose "
+"gali atrodyti neryški. Kai įjungta, SimpleUI tuo metu nuskaito viršelį "
+"tiesiai iš knygos failo (taip pat apima knygas, kurios niekada nebuvo "
+"atvertos ir kitaip visai neturėtų viršelio) — už tai tenka mokėti trumpa "
+"papildoma pauze atveriant, nes failą reikia nuskaityti du kartus. Viršelis "
+"uždarant nepaveikiamas bet kuriuo atveju: jis jau nuskaito pilnos kokybės "
+"viršelį iš atvertos knygos."
+
+#: modules/critter/module_critter.lua:589
+msgid "The critter may use it in what it says."
+msgstr ""
+
+#: main.lua:1395 screens/sui_bottombar.lua:1861
+msgid "The navigation bar is already available on this screen."
+msgstr "Naršymo juosta šiame ekrane jau prieinama."
+
+#: modules/critter/phrases.lua:96
+msgid "The perfect time to unwind with a book."
+msgstr ""
+
+#: features/sui_manual_books.lua:62
+msgid "The start date is after the finish date."
+msgstr ""
+
+#: screens/sui_menu.lua:1714
+msgid ""
+"The title bar style will change after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+
+#: modules/critter/phrases.lua:244
+msgid "The weekend is made for reading."
+msgstr ""
+
+#: infra/sui_patches.lua:1181
+msgid "The «To Be Read» collection cannot be renamed."
+msgstr "„Skaitytinių“ kolekcijos pervadinti negalima."
+
+#: modules/module_clock.lua:257
+msgid "Thirteen"
+msgstr "Trylika"
+
+#: modules/module_clock.lua:262
+msgid "Thirty"
+msgstr "Trisdešimt"
+
+#: features/sui_backup.lua:976
+msgid "This backup contains no settings or files."
+msgstr ""
+
+#: modules/module_tbr.lua:354
+msgid ""
+"This book is marked as Finished, so it can't be added to To Be Read.\n"
+"Change its status to Reading or On Hold first."
+msgstr ""
+"Ši knyga pažymėta kaip Baigta, todėl jos negalima pridėti į Skaitytinas.\n"
+"Pirmiausia pakeiskite jos būseną į Skaitoma arba Sulaikyta."
+
+#: features/sui_quickactions.lua:3117 features/sui_quickactions.lua:3196
+msgid ""
+"This group is empty.\n"
+"Add actions to it from Settings → Quick Actions."
+msgstr ""
+"Ši grupė tuščia.\n"
+"Pridėkite į ją veiksmų iš Nustatymai → Greitieji veiksmai."
+
+#: modules/module_reading_stats.lua:246 modules/module_reading_stats.lua:247
+msgid "This month"
+msgstr ""
+
+#: modules/module_reading_stats.lua:247
+msgid "This month — Pages"
+msgstr "Šis mėnuo — Puslapiai"
+
+#: modules/module_reading_stats.lua:246
+msgid "This month — Time"
+msgstr "Šis mėnuo — Laikas"
+
+#: features/sui_presets.lua:343
+msgid "This name is reserved by a built-in preset."
+msgstr "Šis pavadinimas rezervuotas įtaisytosios išankstinės nuostatos."
+
+#: modules/module_reading_stats.lua:242 modules/module_reading_stats.lua:243
+#: modules/module_reading_stats.lua:270
+msgid "This week"
+msgstr ""
+
+#: modules/module_reading_stats.lua:243
+msgid "This week — Pages"
+msgstr "Ši savaitė — Puslapiai"
+
+#: modules/module_reading_stats.lua:242
+msgid "This week — Time"
+msgstr "Ši savaitė — Laikas"
+
+#: screens/sui_menu.lua:4057
+msgid ""
+"This will delete all Simple UI settings and restart KOReader.\n"
+"Are you sure?"
+msgstr ""
+"Tai ištrins visus Simple UI nustatymus ir perkraudinys KOReader.\n"
+"Ar tikrai?"
+
+#: modules/module_clock.lua:253
+msgid "Three"
+msgstr "Trys"
+
+#: infra/sui_datenames.lua:43
+msgid "Thu"
+msgstr "Ketvirtadienis"
+
+#: infra/sui_datenames.lua:49
+msgid "Thursday"
+msgstr "Ketvirtadienis"
+
+#: modules/critter/phrases.lua:88
+msgid "Time for a few pages?"
+msgstr ""
+
+#: modules/module_heatmap.lua:224 modules/module_heatmap.lua:341
+msgid "Time of day"
+msgstr "Paros metas"
+
+#: infra/sui_book_stats.lua:178
+msgid "Time read"
+msgstr "Skaitymo laikas"
+
+#: infra/sui_book_stats.lua:179
+msgid "Time remaining"
+msgstr "Likusis laikas"
+
+#: modules/critter/module_critter.lua:349
+msgid "Tiny Critter"
+msgstr ""
+
+#: features/sui_manual_books.lua:108 modules/module_coverdeck.lua:124
+#: modules/module_coverdeck.lua:1611 modules/module_currently.lua:277
+#: modules/module_currently.lua:1373 screens/sui_menu.lua:2759
+#: screens/sui_quicksettings_bar.lua:217 screens/sui_titlebar.lua:117
+msgid "Title"
+msgstr "Pavadinimas"
+
+#: engines/sui_book_grid.lua:1530 modules/module_library.lua:203
+msgid "Title (A–Z)"
+msgstr "Pavadinimas (A–Z)"
+
+#: engines/sui_book_grid.lua:1531 modules/module_library.lua:204
+msgid "Title (Z–A)"
+msgstr "Pavadinimas (Z–A)"
+
+#: features/sui_style.lua:1264 screens/sui_menu.lua:2635
+msgid "Title Bar"
+msgstr "Antraštės juosta"
+
+#: screens/sui_menu.lua:2288
+msgid "Title Bar Opacity"
+msgstr ""
+
+#: screens/sui_menu.lua:1722
+msgid "Title Bar Size"
+msgstr ""
+
+#: screens/sui_menu.lua:1751
+msgid ""
+"Title Bar will be %s after restart.\n"
+"\n"
+"Restart now?"
+msgstr ""
+"Antraštės juosta bus %s po perkrovimo.\n"
+"\n"
+"Perkrauti dabar?"
+
+#: screens/sui_menu.lua:2760
+msgid "Title and Author"
+msgstr "Pavadinimas ir autorius"
+
+#: engines/sui_book_sources.lua:348 modules/module_coverdeck.lua:1494
+#: modules/module_tbr.lua:378
+msgid "To Be Read"
+msgstr "Skaitytini"
+
+#: engines/sui_book_sources.lua:360
+msgid "To Be Read Books"
+msgstr "Skaitytinos knygos"
+
+#: modules/module_reading_goals.lua:872 modules/module_reading_goals.lua:950
+#: modules/module_reading_goals.lua:952 modules/module_reading_goals.lua:1000
+#: modules/module_reading_goals.lua:1003 modules/module_reading_stats.lua:240
+#: modules/module_reading_stats.lua:241
+msgid "Today"
+msgstr "Šiandien"
+
+#: modules/module_reading_stats.lua:241
+msgid "Today — Pages"
+msgstr "Šiandien — Puslapiai"
+
+#: modules/module_reading_stats.lua:240
+msgid "Today — Time"
+msgstr "Šiandien — Laikas"
+
+#: modules/critter/phrases.lua:45
+msgid "Today's reading"
+msgstr ""
+
+#: engines/sui_window.lua:3715
+msgid "Toggle"
+msgstr "Perjungti"
+
+#: engines/sui_group_cell.lua:297 features/library/sui_label_options.lua:144
+#: features/sui_cover_elements.lua:95 modules/module_tab_grid.lua:597
+msgid "Top"
+msgstr "Viršuje"
+
+#: screens/sui_topbar.lua:636
+msgid "Top Bar"
+msgstr "Viršutinė juosta"
+
+#: infra/sui_config.lua:1760
+msgid "Top Margin"
+msgstr "Viršutinis tarpas"
+
+#: modules/critter/module_critter.lua:625
+msgid "Topics"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:887 screens/sui_stats_windows.lua:3378
+msgid "Total"
+msgstr "Iš viso"
+
+#: screens/sui_stats_windows.lua:2232 screens/sui_stats_windows.lua:2248
+msgid "Total time"
+msgstr "Bendras laikas"
+
+#: features/sui_backup.lua:705
+msgid "Total: %d settings, %d files (%s)"
+msgstr ""
+
+#: infra/sui_backdrop.lua:80
+msgid "Transparent"
+msgstr "Permatomas"
+
+#: infra/sui_datenames.lua:43
+msgid "Tue"
+msgstr "Antradienis"
+
+#: infra/sui_datenames.lua:48
+msgid "Tuesday"
+msgstr "Antradienis"
+
+#: modules/module_clock.lua:256
+msgid "Twelve"
+msgstr "Dvylika"
+
+#: modules/module_clock.lua:262
+msgid "Twenty"
+msgstr "Dvidešimt"
+
+#: modules/module_clock.lua:253
+msgid "Two"
+msgstr "Du"
+
+#: features/sui_cover_elements.lua:64 features/sui_cover_elements.lua:78
+#: modules/module_heatmap.lua:338
+msgid "Type"
+msgstr "Tipas"
+
+#: screens/sui_menu.lua:3922
+msgid "UI Font"
+msgstr "Sąsajos šriftas"
+
+#: features/library/sui_virtual_path.lua:75
+msgid "Uncategorized"
+msgstr ""
+
+#: screens/sui_menu.lua:3012
+msgid "Uniformize Covers (2:3)"
+msgstr "Suvienodinti viršelius (2:3)"
+
+#: engines/sui_cover_placeholder.lua:145
+msgid "Unknown"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:775
+msgid "Unknown error."
+msgstr "Nežinoma klaida."
+
+#: features/sui_style.lua:2713
+msgid "Unsupported format (use a folder or a .zip file)"
+msgstr "Nepalaikomas formatas (naudokite aplanką arba .zip failą)"
+
+#: features/sui_quickactions.lua:110 features/sui_quickactions.lua:1768
+#: features/sui_style.lua:1103 features/sui_style.lua:1218
+msgid ""
+"Unsupported icon format.\n"
+"Please use a PNG or SVG file."
+msgstr ""
+"Nepalaikomas piktogramos formatas.\n"
+"Naudokite PNG arba SVG failą."
+
+#: engines/sui_window.lua:2355 engines/sui_window.lua:3709
+msgid "Update"
+msgstr "Atnaujinti"
+
+#: features/sui_stats_menu.lua:146 modules/module_coverdeck.lua:1694
+#: modules/module_currently.lua:1466 modules/module_reading_goals.lua:1292
+#: modules/module_reading_goals.lua:1328 modules/module_reading_stats.lua:1222
+msgid "Update Stats Now"
+msgstr "Atnaujinti statistiką dabar"
+
+#: infra/sui_updater.lua:465
+msgid "Update cancelled."
+msgstr "Atnaujinimas atšauktas."
+
+#: infra/sui_updater.lua:666
+msgid "Update check cancelled."
+msgstr "Atnaujinimų tikrinimas atšauktas."
+
+#: features/sui_presets.lua:961 screens/sui_menu.lua:3718
+msgid "Update with current settings"
+msgstr "Atnaujinti su dabartiniais nustatymais"
+
+#: screens/sui_menu.lua:4036
+msgid "Updater module not found."
+msgstr "Atnaujinimo modulis nerastas."
+
+#: modules/critter/module_critter.lua:595
+msgid "Use at most %1 characters."
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2814
+msgid "Use freeze"
+msgstr "Naudoti užšaldymą"
+
+#: features/sui_quickactions.lua:2060
+msgid "Use this Nerd Font icon?"
+msgstr "Naudoti šią Nerd Font piktogramą?"
+
+#: screens/sui_menu.lua:506
+msgid ""
+"Uses the standard KOReader pagination bar on the homescreen.\n"
+"Not available when Navpager is active."
+msgstr ""
+"Naudoja standartinę KOReader puslapiavimo juostą pradžios ekrane.\n"
+"Nepasiekiama, kai Navpager aktyvus."
+
+#: modules/module_reading_stats.lua:1130
+msgid "Value"
+msgstr ""
+
+#: screens/sui_settings_window.lua:376
+msgid "Version, author and updates"
+msgstr "Versija, autorius ir atnaujinimai"
+
+#: screens/sui_menu.lua:4011
+msgid "Version: %s"
+msgstr "Versija: %s"
+
+#: infra/sui_config.lua:1762
+msgid ""
+"Vertical space above this module.\n"
+"100% is the default spacing."
+msgstr ""
+"Vertikalus tarpas virš šio modulio.\n"
+"100% yra numatytasis tarpas."
+
+#: modules/module_clock.lua:1133
+#, fuzzy
+msgid ""
+"Vertical space between items.\n"
+"100% is the default spacing."
+msgstr ""
+"Vertikalus tarpas virš šio modulio.\n"
+"100% yra numatytasis tarpas."
+
+#: screens/sui_stats_windows.lua:2507 screens/sui_stats_windows.lua:3086
+msgid "WEEK STREAK"
+msgstr "SAVAITĖS SERIJA"
+
+#: modules/module_clock.lua:270
+msgid "WORD_CLOCK_TENS_SEP"
+msgstr " "
+
+#: features/sui_backup.lua:142 screens/sui_menu.lua:2599
+#: screens/sui_settings_window.lua:431 screens/sui_settings_window.lua:437
+msgid "Wallpaper"
+msgstr "Fonas"
+
+#: features/sui_backup.lua:143
+msgid "Wallpaper settings and image files"
+msgstr ""
+
+#: screens/sui_quicksettings_bar.lua:593
+msgid "Warmth"
+msgstr "Šiluma"
+
+#: screens/sui_quicksettings_bar.lua:1623
+msgid "Warmth Slider"
+msgstr "Šilumos slankiklis"
+
+#: screens/sui_menu.lua:2533
+msgid "Warn when modules on a page exceed the available screen height."
+msgstr "Įspėti, kai moduliai puslapyje viršija galimą ekrano aukštį."
+
+#: engines/sui_heatmap_widgets.lua:127 infra/sui_datenames.lua:43
+msgid "Wed"
+msgstr "Trečiadienis"
+
+#: infra/sui_datenames.lua:48
+msgid "Wednesday"
+msgstr "Trečiadienis"
+
+#: modules/module_heatmap.lua:305 modules/module_heatmap.lua:309
+msgid "Weeks shown"
+msgstr "Rodomos savaitės"
+
+#: screens/sui_onboarding.lua:395 screens/sui_onboarding.lua:396
+msgid "Welcome to Simple UI"
+msgstr "Sveiki atvykę į Simple UI"
+
+#: modules/critter/phrases.lua:220
+msgid "Well done today."
+msgstr ""
+
+#: modules/critter/phrases.lua:225
+msgid "Well done, %s!"
+msgstr ""
+
+#: modules/critter/phrases.lua:212
+msgid "What a habit!"
+msgstr ""
+
+#: modules/critter/phrases.lua:114
+msgid "What shall we read today?"
+msgstr ""
+
+#: infra/sui_updater.lua:493
+msgid "What's new:"
+msgstr "Kas naujo:"
+
+#: features/sui_stats_menu.lua:90
+#, fuzzy
+msgid ""
+"When a finished book is deleted from the device (file or folder), keep it "
+"counted in the Books Read statistics on the Home Screen.\n"
+"\n"
+"Books changed back to Reading or Abandoned are automatically removed from "
+"this list."
+msgstr ""
+"Kai baigta knyga ištrinama iš įrenginio, ji ir toliau įskaičiuojama į "
+"pradžios ekrane rodomą perskaitytų knygų statistiką.\n"
+"\n"
+"Knygos, kurių būsena pakeičiama atgal į „Skaitoma“ arba „Atsisakyta“, iš šio "
+"sąrašo automatiškai pašalinamos."
+
+#: screens/sui_menu.lua:2545
+msgid ""
+"When enabled, long-pressing a module on the home screen opens its settings "
+"menu.\n"
+"Disable this to prevent settings from appearing on long tap."
+msgstr ""
+"Kai įjungta, ilgai paspaudus modulį pradžios ekrane atidaromas jo nustatymų "
+"meniu.\n"
+"Išjunkite, kad nustatymai neatsirastų ilgu paspaudimu."
+
+#: screens/sui_quicksettings_bar.lua:1688
+msgid ""
+"When enabled, long-pressing the Quick Settings Bar opens its settings menu.\n"
+"Disable this to prevent the settings menu from appearing on long tap."
+msgstr ""
+"Kai įjungta, ilgai paspaudus greitųjų nustatymų juostą atidaromas jos "
+"nustatymų meniu.\n"
+"Išjunkite, kad nustatymų meniu neatsirastų ilgu paspaudimu."
+
+#: screens/sui_menu.lua:1177
+msgid ""
+"When enabled, long-pressing the navigation bar opens its settings menu.\n"
+"Disable this to prevent the settings menu from appearing on long tap."
+msgstr ""
+"Kai įjungta, ilgai paspaudus naršymo juostą atidaromas jos nustatymų meniu.\n"
+"Išjunkite, kad nustatymų meniu neatsirastų ilgu paspaudimu."
+
+#: screens/sui_menu.lua:1008
+msgid ""
+"When enabled, long-pressing the top bar opens its settings menu.\n"
+"Disable this to prevent the settings menu from appearing on long tap."
+msgstr ""
+"Kai įjungta, ilgai paspaudus viršutinę juostą atidaromas jos nustatymų "
+"meniu.\n"
+"Išjunkite, kad nustatymų meniu neatsirastų ilgu paspaudimu."
+
+#: screens/sui_menu.lua:2347
+msgid ""
+"When waking the device from sleep/suspend, always return to the Home Screen "
+"— even if a book was open when it went to sleep."
+msgstr ""
+"Pažadinus įrenginį iš miego / užmigdymo režimo, visada grįžti į pradžios "
+"ekraną — net jei užmiegant buvo atverta knyga."
+
+#: modules/module_reading_stats.lua:273
+msgid "When you read most"
+msgstr ""
+
+#: infra/sui_config.lua:1481 modules/module_tab_grid.lua:646
+msgid "White"
+msgstr ""
+
+#: features/sui_quickactions.lua:914 infra/sui_config.lua:135
+msgid "Wi-Fi"
+msgstr "Wi-Fi"
+
+#: features/sui_quickactions.lua:286
+msgid "Wi-Fi off"
+msgstr "Wi-Fi išjungtas"
+
+#: infra/sui_config.lua:200
+msgid "WiFi"
+msgstr "WiFi"
+
+#: features/sui_quickactions.lua:273
+msgid "WiFi not available on this device."
+msgstr "WiFi nepasiekiamas šiame įrenginyje."
+
+#: features/sui_quickactions.lua:2205
+msgid "Wikipedia Lookup"
+msgstr "Wikipedia paieška"
+
+#: modules/critter/phrases.lua:99
+msgid "Winding down?"
+msgstr ""
+
+#: modules/module_currently.lua:1421
+msgid "With percentage"
+msgstr "Su procentais"
+
+#: modules/module_clock.lua:1094 modules/module_clock.lua:1107
+msgid "Word"
+msgstr "Žodinis"
+
+#: features/sui_manual_books.lua:102
+msgid "YYYY-MM-DD or YYYY"
+msgstr ""
+
+#: features/sui_manual_books.lua:146
+msgid "Year:"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:1159
+msgid "Yes"
+msgstr "Taip"
+
+#: screens/sui_stats_windows.lua:2803
+msgid "Yesterday is already covered by a freeze."
+msgstr "Vakar diena jau padengta užšaldymu."
+
+#: screens/sui_stats_windows.lua:2801
+msgid "You already read yesterday — there's nothing to freeze."
+msgstr "Vakar jau skaitėte — nėra ko užšaldyti."
+
+#: screens/sui_stats_windows.lua:2795
+msgid "You don't have any freezes available yet."
+msgstr "Kol kas neturite jokių galimų užšaldymų."
+
+#: screens/sui_stats_windows.lua:2812
+msgid ""
+"You have %d freeze(s) available.\n"
+"Use one to cover %s?"
+msgstr ""
+"Turite %d galimą(-us) užšaldymą(-us).\n"
+"Panaudoti vieną, kad padengtumėte %s?"
+
+#: modules/critter/phrases.lua:135
+msgid "You're on a roll!"
+msgstr ""
+
+#: modules/critter/phrases.lua:171
+msgid "Your first one this year is waiting."
+msgstr ""
+
+#: modules/module_quote.lua:1016
+msgid "Your highlights"
+msgstr "Jūsų paryškinimai"
+
+#: modules/critter/module_critter.lua:583
+#: modules/critter/module_critter.lua:588
+msgid "Your name"
+msgstr ""
+
+#: modules/critter/phrases.lua:154
+msgid "Your streak is on a break."
+msgstr ""
+
+#: modules/module_reading_stats.lua:282
+msgid "abandoned"
+msgstr "atsisakyta"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "apr"
+msgstr "bal."
+
+#: screens/sui_stats_windows.lua:1352
+msgid "april"
+msgstr "balandis"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "aug"
+msgstr "rugp."
+
+#: screens/sui_stats_windows.lua:1353
+msgid "august"
+msgstr "rugpjūtis"
+
+#: modules/module_reading_stats.lua:259
+msgid "average session (90 days)"
+msgstr ""
+
+#: modules/module_reading_stats.lua:249 screens/sui_stats_windows.lua:2110
+msgid "books finished"
+msgstr "baigtos knygos"
+
+#: modules/module_reading_stats.lua:244
+msgid "daily avg (7 days)"
+msgstr "vid. per dieną (7 d.)"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "dec"
+msgstr "gruod."
+
+#: screens/sui_stats_windows.lua:1353
+msgid "december"
+msgstr "gruodis"
+
+#: features/sui_quickactions.lua:1759 features/sui_quickactions.lua:2791
+msgid "default"
+msgstr "numatytasis"
+
+#: screens/sui_menu.lua:808 screens/sui_menu.lua:1085 screens/sui_menu.lua:1752
+#: screens/sui_menu.lua:4153 screens/sui_quicksettings_bar.lua:1494
+msgid "disabled"
+msgstr "išjungta"
+
+#: features/sui_backup.lua:699
+#, fuzzy
+msgid "empty"
+msgstr "Tuščias"
+
+#: screens/sui_menu.lua:808 screens/sui_menu.lua:1085 screens/sui_menu.lua:1752
+#: screens/sui_menu.lua:4153 screens/sui_quicksettings_bar.lua:1494
+msgid "enabled"
+msgstr "įjungta"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "feb"
+msgstr "vas."
+
+#: screens/sui_stats_windows.lua:1352
+msgid "february"
+msgstr "vasaris"
+
+#: features/sui_style.lua:2659
+msgid "ffi/archiver not available in this KOReader version"
+msgstr "ffi/archiver nepasiekiamas šioje KOReader versijoje"
+
+#: features/sui_quickactions.lua:2053
+msgid "hex code, e.g. E001"
+msgstr "šešioliktainis kodas, pvz., E001"
+
+#: screens/sui_stats_windows.lua:1817 screens/sui_stats_windows.lua:2108
+msgid "hours read"
+msgstr "valandos skaitytos"
+
+#: modules/module_reading_stats.lua:281
+msgid "in progress"
+msgstr "vykdoma"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "jan"
+msgstr "saus."
+
+#: screens/sui_stats_windows.lua:1352
+msgid "january"
+msgstr "sausis"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "jul"
+msgstr "liep."
+
+#: screens/sui_stats_windows.lua:1353
+msgid "july"
+msgstr "liepa"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "jun"
+msgstr "birž."
+
+#: screens/sui_stats_windows.lua:1352
+msgid "june"
+msgstr "birželis"
+
+#: modules/module_reading_stats.lua:244 modules/module_reading_stats.lua:245
+msgid "last 7 days"
+msgstr ""
+
+#: modules/module_reading_stats.lua:257 modules/module_reading_stats.lua:260
+#: modules/module_reading_stats.lua:263 modules/module_reading_stats.lua:268
+msgid "last 90 days"
+msgstr ""
+
+#: infra/sui_updater.lua:680
+msgid "latest"
+msgstr "naujausias"
+
+#: modules/module_reading_stats.lua:256
+msgid "longest session (90 days)"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+msgid "mar"
+msgstr "kov."
+
+#: screens/sui_stats_windows.lua:1352
+msgid "march"
+msgstr "kovas"
+
+#: screens/sui_stats_windows.lua:311 screens/sui_stats_windows.lua:1348
+#: screens/sui_stats_windows.lua:1352
+msgid "may"
+msgstr "geg."
+
+#: modules/module_reading_stats.lua:252
+msgid "no streak"
+msgstr "nėra serijos"
+
+#: features/sui_quickactions.lua:1574 features/sui_quickactions.lua:2887
+#: features/sui_quickactions.lua:2906
+msgid "not configured"
+msgstr "nesukonfigūruota"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "nov"
+msgstr "lapkr."
+
+#: screens/sui_stats_windows.lua:1353
+msgid "november"
+msgstr "lapkritis"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "oct"
+msgstr "spal."
+
+#: screens/sui_stats_windows.lua:1353
+msgid "october"
+msgstr "spalis"
+
+#: modules/module_reading_stats.lua:240 modules/module_reading_stats.lua:242
+#: modules/module_reading_stats.lua:246 modules/module_reading_stats.lua:248
+#: modules/module_reading_stats.lua:271
+msgid "of reading"
+msgstr ""
+
+#: modules/module_reading_stats.lua:246
+msgid "of reading this month"
+msgstr "skaitymo šį mėnesį"
+
+#: modules/module_reading_stats.lua:242 modules/module_reading_stats.lua:270
+msgid "of reading this week"
+msgstr "skaitymo šią savaitę"
+
+#: modules/module_reading_stats.lua:240
+msgid "of reading today"
+msgstr "skaitymo šiandien"
+
+#: modules/module_reading_stats.lua:248
+msgid "of reading, all time"
+msgstr "skaitymo, visas laikas"
+
+#: features/sui_style.lua:2702
+msgid "pack_path not provided"
+msgstr "pack_path nenurodytas"
+
+#: modules/module_reading_stats.lua:241 modules/module_reading_stats.lua:243
+#: modules/module_reading_stats.lua:247 screens/sui_stats_windows.lua:2109
+#: screens/sui_stats_windows.lua:2402
+msgid "pages read"
+msgstr "perskaityti puslapiai"
+
+#: modules/module_reading_stats.lua:247
+msgid "pages read this month"
+msgstr "puslapiai perskaityti šį mėnesį"
+
+#: modules/module_reading_stats.lua:243
+msgid "pages read this week"
+msgstr "puslapiai perskaityti šią savaitę"
+
+#: modules/module_reading_stats.lua:241
+msgid "pages read today"
+msgstr "puslapiai perskaityti šiandien"
+
+#: modules/module_reading_stats.lua:245
+msgid "pages/day (7 days)"
+msgstr "pusl./d. (7 d.)"
+
+#: modules/module_reading_stats.lua:262
+msgid "pages/hour (90 days)"
+msgstr ""
+
+#: modules/module_reading_stats.lua:267
+msgid "reading sessions (90 days)"
+msgstr ""
+
+#: screens/sui_stats_windows.lua:2400
+msgid "reading time"
+msgstr "skaitymo laikas"
+
+#: screens/sui_stats_windows.lua:312 screens/sui_stats_windows.lua:1349
+msgid "sep"
+msgstr "rugs."
+
+#: screens/sui_stats_windows.lua:1353
+msgid "september"
+msgstr "rugsėjis"
+
+#: modules/module_reading_stats.lua:280
+msgid "unread"
+msgstr "neskaityta"
+
+#: modules/module_reading_stats.lua:273
+msgid "when you read most"
+msgstr ""
+
+#: infra/sui_updater.lua:682
+msgid "⬆ Update available: %s"
+msgstr "⬆ Galimas atnaujinimas: %s"
+
+#: features/sui_arrange.lua:425 screens/sui_menu.lua:1933
+msgid "  (%d left)"
+msgid_plural "  (%d left)"
+msgstr[0] "  (%d liko)"
+msgstr[1] "  (%d liko)"
+msgstr[2] "  (%d liko)"
+
+#: modules/module_reading_goals.lua:1189
+msgid "  Set Goal  (%d book in %s)"
+msgid_plural "  Set Goal  (%d books in %s)"
+msgstr[0] "  Nustatyti tikslą  (%d knyga %s)"
+msgstr[1] "  Nustatyti tikslą  (%d knygos %s)"
+msgstr[2] "  Nustatyti tikslą  (%d knygų %s)"
+
+#: modules/module_reading_goals.lua:721 screens/sui_stats_windows.lua:767
+msgid "%d book"
+msgid_plural "%d books"
+msgstr[0] "%d knyga"
+msgstr[1] "%d knygos"
+msgstr[2] "%d knygų"
+
+#: modules/critter/phrases.lua:71
+msgid "%d book finished this year"
+msgid_plural "%d books finished this year"
+msgstr[0] ""
+msgstr[1] ""
+
+#: modules/module_reading_goals.lua:1138
+msgid "%d book in %s"
+msgid_plural "%d books in %s"
+msgstr[0] "%d knyga %s"
+msgstr[1] "%d knygos %s"
+msgstr[2] "%d knygų %s"
+
+#: screens/sui_stats_windows.lua:1217
+msgid "%d book read"
+msgid_plural "%d books read"
+msgstr[0] ""
+msgstr[1] ""
+
+#: modules/critter/phrases.lua:164
+msgid "%d book to go for your goal."
+msgid_plural "%d books to go for your goal."
+msgstr[0] ""
+msgstr[1] ""
+
+#: infra/sui_book_stats.lua:190 screens/sui_stats_windows.lua:1975
+#: screens/sui_stats_windows.lua:1977
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "%d diena"
+msgstr[1] "%d dienos"
+msgstr[2] "%d dienų"
+
+#: modules/critter/phrases.lua:137
+msgid "%d day of reading in a row."
+msgid_plural "%d days of reading in a row."
+msgstr[0] ""
+msgstr[1] ""
+
+#: modules/critter/phrases.lua:67
+msgid "%d day strong!"
+msgid_plural "%d days strong!"
+msgstr[0] ""
+msgstr[1] ""
+
+#: modules/critter/phrases.lua:205
+msgid "%d day, your longest streak yet."
+msgid_plural "%d days, your longest streak yet."
+msgstr[0] ""
+msgstr[1] ""
+
+#: screens/sui_stats_windows.lua:3132
+msgid "%d freeze available"
+msgid_plural "%d freezes available"
+msgstr[0] "%d užšaldymas prieinamas"
+msgstr[1] "%d užšaldymai prieinami"
+msgstr[2] "%d užšaldymų prieinama"
+
+#: features/sui_quickactions.lua:1566 features/sui_quickactions.lua:2879
+#: features/sui_quickactions.lua:2900
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] "%d elementas"
+msgstr[1] "%d elementai"
+msgstr[2] "%d elementų"
+
+#: modules/critter/phrases.lua:188
+msgid "%d minute read today!"
+msgid_plural "%d minutes read today!"
+msgstr[0] ""
+msgstr[1] ""
+
+#: modules/critter/phrases.lua:179
+msgid "%d of %d book."
+msgid_plural "%d of %d books."
+msgstr[0] ""
+msgstr[1] ""
+
+#: modules/critter/phrases.lua:196
+msgid "%d page turned today!"
+msgid_plural "%d pages turned today!"
+msgstr[0] ""
+msgstr[1] ""
+
+#: screens/sui_stats_windows.lua:1995 screens/sui_stats_windows.lua:1997
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] "%d savaitė"
+msgstr[1] "%d savaitės"
+msgstr[2] "%d savaičių"
+
+#: modules/module_reading_goals.lua:719
+msgid "%d/%d book"
+msgid_plural "%d/%d books"
+msgstr[0] "%d/%d knyga"
+msgstr[1] "%d/%d knygos"
+msgstr[2] "%d/%d knygų"
+
+#: modules/module_collections.lua:548
+msgid "(%d collection)"
+msgid_plural "(%d collections)"
+msgstr[0] "(%d kolekcija)"
+msgstr[1] "(%d kolekcijos)"
+msgstr[2] "(%d kolekcijų)"
+
+#: modules/module_quick_actions.lua:368
+msgid "(%d/%d — %d left)"
+msgid_plural "(%d/%d — %d left)"
+msgstr[0] "(%d/%d — %d liko)"
+msgstr[1] "(%d/%d — %d liko)"
+msgstr[2] "(%d/%d — %d liko)"
+
+#: features/sui_quickactions.lua:2402
+msgid "Group (%d item)"
+msgid_plural "Group (%d items)"
+msgstr[0] "Grupė (%d elementas)"
+msgstr[1] "Grupė (%d elementai)"
+msgstr[2] "Grupė (%d elementų)"
+
+#: screens/sui_quicksettings_bar.lua:1512
+msgid "Maximum of %d slot reached. Remove one first."
+msgid_plural "Maximum of %d slots reached. Remove one first."
+msgstr[0] "Pasiektas maksimalus %d langelis. Pirmiausia pašalinkite vieną."
+msgstr[1] "Pasiektas maksimalus %d langeliai. Pirmiausia pašalinkite vieną."
+msgstr[2] "Pasiektas maksimalus %d langelių. Pirmiausia pašalinkite vieną."
+
+#: modules/critter/phrases.lua:210
+msgid "Milestone: %d day!"
+msgid_plural "Milestone: %d days!"
+msgstr[0] ""
+msgstr[1] ""
+
+#: screens/sui_menu.lua:36
+msgid ""
+"Text shown in the top bar.\n"
+"Maximum %d character."
+msgid_plural ""
+"Text shown in the top bar.\n"
+"Maximum %d characters."
+msgstr[0] ""
+"Tekstas, rodomas viršutinėje juostoje.\n"
+"Maksimalus %d simbolis."
+msgstr[1] ""
+"Tekstas, rodomas viršutinėje juostoje.\n"
+"Maksimalus %d simboliai."
+msgstr[2] ""
+"Tekstas, rodomas viršutinėje juostoje.\n"
+"Maksimalus %d simbolių."
+
+#: modules/module_action_list.lua:289 modules/module_quick_actions.lua:351
+#: screens/sui_menu.lua:1898 screens/sui_menu.lua:2012
+msgid "The maximum of %d action per module has been reached. Remove one first."
+msgid_plural ""
+"The maximum of %d actions per module has been reached. Remove one first."
+msgstr[0] ""
+"Pasiektas maksimalus %d veiksmas modulio. Pirmiausia pašalinkite vieną."
+msgstr[1] ""
+"Pasiektas maksimalus %d veiksmai modulio. Pirmiausia pašalinkite vieną."
+msgstr[2] ""
+"Pasiektas maksimalus %d veiksmų modulio. Pirmiausia pašalinkite vieną."
+
+#: modules/critter/module_critter.lua:561
+msgid ""
+"The maximum of %d decoration per side has been reached. Remove one first."
+msgid_plural ""
+"The maximum of %d decorations per side has been reached. Remove one first."
+msgstr[0] ""
+msgstr[1] ""
+
+#: features/sui_quickactions.lua:1636 features/sui_quickactions.lua:2844
+msgid "The maximum of %d quick action has been reached. Delete one first."
+msgid_plural ""
+"The maximum of %d quick actions has been reached. Delete one first."
+msgstr[0] ""
+"Pasiektas maksimalus %d greitasis veiksmas. Pirmiausia ištrinkite vieną."
+msgstr[1] ""
+"Pasiektas maksimalus %d greitieji veiksmai. Pirmiausia ištrinkite vieną."
+msgstr[2] ""
+"Pasiektas maksimalus %d greitųjų veiksmų. Pirmiausia ištrinkite vieną."
+
+#: screens/sui_menu.lua:365
+msgid "The maximum of %d tab has been reached. Remove one first."
+msgid_plural "The maximum of %d tabs has been reached. Remove one first."
+msgstr[0] "Pasiektas maksimalus %d skirtukas. Pirmiausia pašalinkite vieną."
+msgstr[1] "Pasiektas maksimalus %d skirtukai. Pirmiausia pašalinkite vieną."
+msgstr[2] "Pasiektas maksimalus %d skirtukų. Pirmiausia pašalinkite vieną."
+
+#: modules/module_reading_stats.lua:255
+msgid "day"
+msgid_plural "days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: screens/sui_stats_windows.lua:1820
+msgid "day read"
+msgid_plural "days read"
+msgstr[0] "diena skaityta"
+msgstr[1] "dienos skaitytos"
+msgstr[2] "dienų skaityta"
+
+#: modules/module_reading_stats.lua:253
+msgid "day streak"
+msgid_plural "days streak"
+msgstr[0] "dienų serija"
+msgstr[1] "dienų serija"
+msgstr[2] ""
+
+#: screens/sui_stats_windows.lua:1835
+msgid "page read"
+msgid_plural "pages read"
+msgstr[0] "puslapis perskaitytas"
+msgstr[1] "puslapiai perskaityti"
+msgstr[2] "puslapių perskaityta"
+
+#~ msgid "Badges"
+#~ msgstr "Ženkleliai"
+
+#~ msgid "Bar Style"
+#~ msgstr "Juostos stilius"
+
+#~ msgid "Folder Cover Type"
+#~ msgstr "Aplanko viršelio tipas"
+
+#~ msgid "Follow Library"
+#~ msgstr "Kaip bibliotekoje"
+
+#~ msgid "Number of Books in Folder"
+#~ msgstr "Knygų skaičius aplanke"
+
+#~ msgid "Number of Pages"
+#~ msgstr "Puslapių skaičius"
+
+#~ msgid "Overlays"
+#~ msgstr "Perdangos"
+
+#~ msgid ""
+#~ "Scale for the library badges (progress, pages, etc.).\n"
+#~ "100% is the default size."
+#~ msgstr ""
+#~ "Mastelis bibliotekos ženkleliams (progresas, puslapiai ir t.t.).\n"
+#~ "100% yra numatytasis dydis."
+
+#~ msgid ""
+#~ "Scales the section label text above each module.\n"
+#~ "100% is the default size."
+#~ msgstr ""
+#~ "Mastelis skyriaus etiketės tekstui virš kiekvieno modulio.\n"
+#~ "100% yra numatytasis dydis."
+
+#~ msgid "Title and Author Below Covers"
+#~ msgstr "Pavadinimas ir autorius po viršeliais"
+
+#~ msgid ""
+#~ "Title and author strip enabled.\n"
+#~ "\n"
+#~ "Restart now?"
+#~ msgstr ""
+#~ "Pavadinimo ir autoriaus juostelė įjungta.\n"
+#~ "\n"
+#~ "Perkrauti dabar?"
+
+#~ msgid "Title only"
+#~ msgstr "Tik pavadinimas"
+
+#~ msgid ""
+#~ "Title strip disabled.\n"
+#~ "\n"
+#~ "Restart now?"
+#~ msgstr ""
+#~ "Pavadinimo juostelė išjungta.\n"
+#~ "\n"
+#~ "Perkrauti dabar?"
+
+#~ msgid ""
+#~ "Title strip enabled.\n"
+#~ "\n"
+#~ "Restart now?"
+#~ msgstr ""
+#~ "Pavadinimo juostelė įjungta.\n"
+#~ "\n"
+#~ "Perkrauti dabar?"
+
+#~ msgid "UI Font  (default)"
+#~ msgstr "Sąsajos šriftas  (numatytasis)"
+
+#~ msgid "UI Font  [%s]"
+#~ msgstr "Sąsajos šriftas  [%s]"
+
+#~ msgid "Visibility"
+#~ msgstr "Matomumas"
+
+#~ msgid "Visible"
+#~ msgstr "Matoma"
+
+#~ msgid "The maximum of %d stat per row has been reached. Remove one first."
+#~ msgid_plural ""
+#~ "The maximum of %d stats per row has been reached. Remove one first."
+#~ msgstr[0] ""
+#~ "Pasiektas maksimalus %d statistika eilutėje. Pirmiausia pašalinkite vieną."
+#~ msgstr[1] ""
+#~ "Pasiektas maksimalus %d statistikos eilutėje. Pirmiausia pašalinkite "
+#~ "vieną."
+#~ msgstr[2] ""
+#~ "Pasiektas maksimalus %d statistikų eilutėje. Pirmiausia pašalinkite vieną."
+
+#~ msgid "Button Background"
+#~ msgstr "Mygtuko fonas"
+
+#, fuzzy
+#~ msgid "Button Opacity"
+#~ msgstr "Mygtuko dydis"
+
+#, fuzzy
+#~ msgid "Button Style"
+#~ msgstr "Mygtuko dydis"

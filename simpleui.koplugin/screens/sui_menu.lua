@@ -1,0 +1,4265 @@
+-- menu.lua — Simple UI
+-- Builds the full settings submenu registered in the KOReader main menu
+-- (Top Bar, Navigation Bar, Quick Actions, Pagination Bar).
+-- Returns an installer: require("menu")(plugin) populates plugin.addToMainMenu.
+
+local UIManager = require("ui/uimanager")
+local Device    = require("device")
+local Screen    = Device.screen
+local lfs       = require("libs/libkoreader-lfs")
+local logger    = require("logger")
+local _ = require("infra/sui_i18n").translate
+local N_ = require("infra/sui_i18n").ngettext
+local T = require("ffi/util").template
+
+-- Heavy UI widgets — lazy-loaded on first use so that require("menu") at boot
+-- does not pull them into memory before the user ever opens the settings menu.
+-- On low-memory devices these requires were the most likely point of silent
+-- failure that caused the menu entry to open nothing.
+local function Dialogs() return require("features/dialogs/sui_dialogs") end
+local function NativeWidgets() return require("features/dialogs/sui_native_widgets") end
+-- Offers a restart for a change that needs one.
+local function askRestart(text) Dialogs().askRestart{ text = text } end
+local function PathChooser()      return require("ui/widget/pathchooser")       end
+local function SortWidget()       return require("ui/widget/sortwidget")        end
+
+local Config    = require("infra/sui_config")
+local UI        = require("infra/sui_core")
+local Accent    = require("infra/sui_accent")
+local Bottombar = require("screens/sui_bottombar")
+local SUISettings = require("infra/sui_store")
+local Backdrop    = require("infra/sui_backdrop")
+
+-- Asks for the top bar custom text; `on_set(text)` runs once it is stored.
+local function promptCustomText(on_set)
+    Dialogs().prompt{
+        title       = _("Custom Text"),
+        description = string.format(N_("Text shown in the top bar.\nMaximum %d character.",
+                      "Text shown in the top bar.\nMaximum %d characters.", Config.TOPBAR_CUSTOM_TEXT_MAX),
+                      Config.TOPBAR_CUSTOM_TEXT_MAX),
+        value       = Config.getTopbarCustomText(),
+        ok_text     = _("Set"),
+        allow_empty = true,
+        on_submit   = function(text)
+            Config.setTopbarCustomText(text)
+            on_set(text)
+        end,
+    }
+end
+-- Single source of truth for the *full* action set (built-ins + externally
+-- registered actions, e.g. Custom Screens' "open_custom_screen:<id>" QAs —
+-- see infra/sui_custom_screens.lua). Config.ALL_ACTIONS only ever mirrors the
+-- built-ins, so every pool below is built from QA.allIds() instead.
+local QA        = require("features/sui_quickactions")
+local Arrange   = require("features/sui_arrange")
+
+-- ---------------------------------------------------------------------------
+-- Installer function
+-- ---------------------------------------------------------------------------
+
+return function(SimpleUIPlugin)
+
+SimpleUIPlugin.addToMainMenu = function(self, menu_items)
+    local plugin = self
+
+    -- Local aliases for Config functions.
+    local loadTabConfig       = Config.loadTabConfig
+    local saveTabConfig       = Config.saveTabConfig
+    local getCustomQAList     = Config.getCustomQAList
+    local saveCustomQAList    = Config.saveCustomQAList
+    local getCustomQAConfig   = Config.getCustomQAConfig
+    local saveCustomQAConfig  = Config.saveCustomQAConfig
+    local deleteCustomQA      = Config.deleteCustomQA
+    local nextCustomQAId      = Config.nextCustomQAId
+    local getTopbarConfig     = Config.getTopbarConfig
+    local saveTopbarConfig    = Config.saveTopbarConfig
+    local _ensureHomePresent  = Config._ensureHomePresent
+    local _sanitizeLabel      = Config.sanitizeLabel
+    local _homeLabel          = Config.homeLabel
+    local _getNonFavoritesCollections = Config.getNonFavoritesCollections
+    -- NOTE: Config.ALL_ACTIONS / Config.ACTION_BY_ID are intentionally NOT
+    -- aliased here anymore — every action pool + label lookup in this file
+    -- goes through QA.allIds()/QA.getEntry() instead, so externally
+    -- registered actions (Custom Screens) are included. See the QA require
+    -- above.
+    local TOPBAR_ITEMS        = Config.getAvailableTopbarItems()
+    local TOPBAR_ITEM_LABEL   = Config.TOPBAR_ITEM_LABEL
+    local MAX_CUSTOM_QA       = Config.MAX_CUSTOM_QA
+    local CUSTOM_ICON         = Config.CUSTOM_ICON
+    local CUSTOM_PLUGIN_ICON  = Config.CUSTOM_PLUGIN_ICON
+    local CUSTOM_DISPATCHER_ICON = Config.CUSTOM_DISPATCHER_ICON
+    local TOTAL_H             = Bottombar.TOTAL_H
+    local MAX_LABEL_LEN       = Config.MAX_LABEL_LEN
+
+    -- Hardware capability — evaluated once per menu session, not per item render.
+    -- All pool builders (tabs, position, QA) share this single check so that
+    -- "Brightness" appears consistently in every pool on devices that have a
+    -- frontlight, and is absent on those that don't.
+    local _has_fl = nil
+    local function hasFrontlight()
+        if _has_fl == nil then
+            local ok, v = pcall(function() return Device:hasFrontlight() end)
+            _has_fl = ok and v == true
+        end
+        return _has_fl
+    end
+
+    -- Returns true when the given action id should be shown in menus on this device.
+    -- Currently only "frontlight" is hardware-gated; all other ids are always shown.
+    local function actionAvailable(id)
+        if id == "frontlight" then return hasFrontlight() end
+        if require("features/sui_quickactions").getBrowseMode(id) then
+            local ok_bm, BM = pcall(require, "features/library/sui_library_browse")
+            return ok_bm and BM and BM.isEnabled()
+        end
+        return true
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Mode radio-item helper
+    -- -----------------------------------------------------------------------
+
+    local function modeItem(label, mode_value)
+        return {
+            text           = label,
+            radio          = true,
+            keep_menu_open = true,
+            checked_func   = function() return Config.getNavbarMode() == mode_value end,
+            callback       = function()
+                Config.saveNavbarMode(mode_value)
+                plugin:_scheduleRebuild()
+            end,
+        }
+    end
+
+    -- Helper: applies a full layout refresh after transparency / wallpaper-visibility changes.
+    -- Pass `{ keep_wallpaper = true }` when the wallpaper image is unchanged.
+    local function _applyFullLayoutRefresh(opts)
+        plugin:_rewrapAllWidgets()
+        local Patches = package.loaded["infra/sui_patches"]
+        if Patches and Patches.injectWallpaperIntoFullscreenWidget then
+            local core_ok, core = pcall(require, "infra/sui_core")
+            local stack = core_ok and core.getWindowStack and core.getWindowStack()
+            if stack then
+                for _, entry in ipairs(stack) do
+                    if entry.widget and entry.widget._navbar_injected then
+                        pcall(Patches.injectWallpaperIntoFullscreenWidget, entry.widget)
+                    end
+                end
+            end
+        end
+        local HS = package.loaded["screens/sui_homescreen"]
+        if HS and HS.rebuildLayout then
+            HS.rebuildLayout(opts)
+        end
+        local FM = package.loaded["apps/filemanager/filemanager"]
+        if FM and FM.instance then
+            FM.instance._navbar_inner = nil
+            pcall(function() FM.instance:setupLayout() end)
+            UIManager:setDirty(FM.instance, "ui")
+        end
+    end
+
+    -- Refresh run after a bar surface setting changes: rebuilds the UI once
+    -- and updates the open menu so the new value shows immediately; the
+    -- wallpaper image is untouched.
+    local function makeBarRefresh(ctx_menu)
+        return function(touchmenu)
+            _applyFullLayoutRefresh({ keep_wallpaper = true })
+            if ctx_menu and ctx_menu.refresh then
+                ctx_menu.refresh()
+            elseif touchmenu and touchmenu.updateItems then
+                touchmenu:updateItems()
+            elseif ctx_menu and ctx_menu.updateItems then
+                ctx_menu:updateItems()
+            end
+        end
+    end
+
+    -- Background Opacity entry shared by the Wallpaper settings and each bar's
+    -- own settings. Every caller reads and writes the same stored strength
+    -- through the wallpaper module, so a change in one place shows in the
+    -- others. Available only while a wallpaper is active.
+    local function makeBackdropEntry(opts, ctx_menu)
+        local SUIWallpaper  = require("features/sui_wallpaper")
+        local extra_enabled = opts.enabled_func
+        opts.enabled_func = function()
+            return SUIWallpaper.isWallpaperActive() and (not extra_enabled or extra_enabled())
+        end
+        opts.refresh = makeBarRefresh(ctx_menu)
+        return Config.makeBackdropStrengthItem(opts)
+    end
+
+    -- Bars with a surface: the info text of their opacity dialog and the
+    -- condition that enables their menu entries, when they have either.
+    local BAR_MENU_SPECS = {
+        statusbar  = {},
+        navbar     = {},
+        titlebar   = {
+            info         = _("0% transparent, 100% solid. Applies across the full width of the title bar."),
+            enabled_func = function() return require("screens/sui_titlebar").isEnabled() end,
+        },
+        pagination = {
+            info         = _("0% transparent, 100% solid. Applies to the native page bar in Library, History, Collections and similar screens."),
+            enabled_func = function() return SUISettings:nilOrTrue("simpleui_bar_pagination_visible") end,
+        },
+    }
+
+    local function appendItem(items, item)
+        items[#items + 1] = item
+        return items
+    end
+
+    -- Opacity entry for one bar ("statusbar", "navbar", "titlebar" or
+    -- "pagination"), titled "Background Opacity" unless `title` is given.
+    local function makeBarBackdropItem(kind, ctx_menu, title)
+        local WP, spec = require("features/sui_wallpaper"), BAR_MENU_SPECS[kind]
+        return makeBackdropEntry({
+            title         = title or _("Background Opacity"),
+            info          = spec.info,
+            get           = function() return WP.getBarStrength(kind) end,
+            set           = function(n) WP.setBarStrength(kind, n) end,
+            default_value = Backdrop.SURFACE_DEFAULT[kind].strength,
+            enabled_func  = spec.enabled_func,
+        }, ctx_menu)
+    end
+
+    -- "Background" submenu of one bar: Color, Frame and Opacity. Color and
+    -- Frame always apply; opacity only over a wallpaper.
+    local function makeBarSurfaceMenu(kind, ctx_menu)
+        local WP, spec = require("features/sui_wallpaper"), BAR_MENU_SPECS[kind]
+        return Config.makeSurfaceMenu{
+            surface               = WP.barSurface(kind),
+            refresh               = makeBarRefresh(ctx_menu),
+            enabled_func          = spec.enabled_func,
+            get_strength          = function() return WP.getBarStrength(kind) end,
+            set_strength          = function(n) WP.setBarStrength(kind, n) end,
+        }
+    end
+
+    local function makeTypeMenu()
+        return {
+            modeItem(_("Icons") .. " + " .. _("Text"), "both"),
+            modeItem(_("Icons only"),                   "icons"),
+            modeItem(_("Text only"),                    "text"),
+        }
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Tab and position menu builders
+    -- -----------------------------------------------------------------------
+
+    local function makePositionMenu(pos)
+        local items        = {}
+        local cached_tabs
+        local cached_labels = {}
+
+        local function getTabs()
+            if not cached_tabs then cached_tabs = loadTabConfig() end
+            return cached_tabs
+        end
+
+        local function getResolvedLabel(id)
+            if not cached_labels[id] then
+                if id:match("^custom_qa_%d+$") then
+                    cached_labels[id] = getCustomQAConfig(id).label
+                elseif id == "home" then
+                    cached_labels[id] = _homeLabel()
+                else
+                    -- QA.getEntry resolves built-ins AND externally registered
+                    -- actions (e.g. a Custom Screen's QA), unlike the raw
+                    -- ACTION_BY_ID lookup this used to fall back to.
+                    cached_labels[id] = QA.getEntry(id).label
+                end
+            end
+            return cached_labels[id]
+        end
+
+        local pool = {}
+        for _i, id in ipairs(QA.allIds()) do
+            if actionAvailable(id) then pool[#pool + 1] = id end
+        end
+        for _i, qa_id in ipairs(getCustomQAList()) do pool[#pool + 1] = qa_id end
+
+        for _i, id in ipairs(pool) do
+            local _id = id
+            items[#items + 1] = {
+                text_func    = function()
+                    local lbl  = getResolvedLabel(_id)
+                    local tabs = getTabs()
+                    for i, tid in ipairs(tabs) do
+                        if tid == _id and i ~= pos then
+                            return lbl .. "  (#" .. i .. ")"
+                        end
+                    end
+                    return lbl
+                end,
+                checked_func = function() return getTabs()[pos] == _id end,
+                keep_menu_open = true,
+                callback     = function()
+                    local tabs    = loadTabConfig()
+                    cached_tabs   = nil
+                    cached_labels = {}
+                    local old_id  = tabs[pos]
+                    if old_id == _id then return end
+                    tabs[pos] = _id
+                    for i, tid in ipairs(tabs) do
+                        if i ~= pos and tid == _id then tabs[i] = old_id; break end
+                    end
+                    _ensureHomePresent(tabs)
+                    saveTabConfig(tabs)
+                    plugin:_scheduleRebuild()
+                end,
+            }
+        end
+        -- Pre-compute sort keys once so text_func is not called O(N log N) times
+        -- during the sort comparison (#13).
+        for _i, item in ipairs(items) do
+            local t = item.text_func()
+            item._sort_key = (t:match("^(.-)%s+%(#") or t):lower()
+        end
+        table.sort(items, function(a, b) return a._sort_key < b._sort_key end)
+        for _i, item in ipairs(items) do item._sort_key = nil end
+        return items
+    end
+
+    local function getActionLabel(id)
+        if not id then return "?" end
+        if id:match("^custom_qa_%d+$") then return getCustomQAConfig(id).label end
+        if id == "home" then return _homeLabel() end
+        -- QA.getEntry resolves built-ins AND externally registered actions
+        -- (e.g. a Custom Screen's QA); the old ACTION_BY_ID-only lookup
+        -- silently fell back to the raw id for anything not in that table.
+        return QA.getEntry(id).label
+    end
+
+    -- Every action a tab can show on this device.
+    local function getTabPool()
+        local pool = {}
+        for _i, id in ipairs(QA.allIds()) do
+            if actionAvailable(id) then pool[#pool + 1] = { id = id, label = getActionLabel(id) } end
+        end
+        for _i, qa_id in ipairs(getCustomQAList()) do
+            pool[#pool + 1] = { id = qa_id, label = getActionLabel(qa_id) }
+        end
+        return pool
+    end
+
+    local function makeTabsItem(ctx_menu)
+        return Arrange.makeListItem{
+            ctx_menu  = ctx_menu,
+            title     = _("Tabs"),
+            text_func = function()
+                local n     = #loadTabConfig()
+                local limit = Config.effectiveMaxTabs()
+                local remaining = limit - n
+                if remaining <= 0 then
+                    return string.format(_("Tabs  (%d/%d — at limit)"), n, limit)
+                end
+                return string.format(_("Tabs  (%d/%d — %d left)"), n, limit, remaining)
+            end,
+            labels = {
+                action  = _("Arrange Tabs"),
+                empty   = _("No items selected."),
+                too_few = _("Add at least 2 tabs to arrange."),
+                full    = function(max)
+                    return string.format(N_("The maximum of %d tab has been reached. Remove one first.",
+                        "The maximum of %d tabs has been reached. Remove one first.", max), max)
+                end,
+                at_min  = function()
+                    return Config.isNavpagerEnabled()
+                        and _("Minimum 1 tab required in navpager mode.")
+                        or  _("Minimum 2 tabs required. Select another tab first.")
+                end,
+            },
+            max    = function() return Config.effectiveMaxTabs() end,
+            min    = function() return Config.isNavpagerEnabled() and 1 or 2 end,
+            pool   = getTabPool,
+            label  = getActionLabel,
+            getIds = loadTabConfig,
+            setIds = function(ids)
+                _ensureHomePresent(ids)
+                saveTabConfig(ids)
+                plugin:_scheduleRebuild()
+            end,
+        }
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Pagination bar menu builder
+    -- -----------------------------------------------------------------------
+
+    local function makePaginationBarMenu(ctx_menu)
+        -- ── helpers ──────────────────────────────────────────────────────────
+        -- "Geral" state is encoded in two existing keys:
+        --   Predefinido : pagination_visible=true,  navpager=false
+        --   Navpager    : navpager=true             (pagination_visible ignored)
+        --   Oculto      : pagination_visible=false, navpager=false
+        local function getGeral()
+            if SUISettings:isTrue("simpleui_bar_navpager_enabled") then
+                return "navpager"
+            elseif SUISettings:nilOrTrue("simpleui_bar_pagination_visible") then
+                return "predefinido"
+            else
+                return "oculto"
+            end
+        end
+
+        local function setGeral(mode)
+            if mode == "navpager" then
+                SUISettings:saveSetting("simpleui_bar_navpager_enabled", true)
+                SUISettings:saveSetting("simpleui_bar_pagination_visible", false)
+                -- Navpager requires dot pager on homescreen (koreader style not allowed).
+                if not SUISettings:nilOrTrue("simpleui_bar_dotpager_always") then
+                    SUISettings:saveSetting("simpleui_bar_dotpager_always", true)
+                end
+                -- Trim tabs to navpager limit if needed.
+                local tabs = Config.loadTabConfig()
+                if #tabs > Config.MAX_TABS_NAVPAGER then
+                    while #tabs > Config.MAX_TABS_NAVPAGER do
+                        table.remove(tabs, #tabs)
+                    end
+                    Config.saveTabConfig(tabs)
+                end
+            elseif mode == "predefinido" then
+                SUISettings:saveSetting("simpleui_bar_navpager_enabled", false)
+                SUISettings:saveSetting("simpleui_bar_pagination_visible", true)
+            else -- "oculto"
+                SUISettings:saveSetting("simpleui_bar_navpager_enabled", false)
+                SUISettings:saveSetting("simpleui_bar_pagination_visible", false)
+            end
+        end
+
+        -- ── menu ─────────────────────────────────────────────────────────────
+        local items = {
+                -- ── Subfolder: General ────────────────────────────────────────────
+            {
+                text           = _("Mode"),
+                sub_item_table = {
+                    {
+                        text         = _("Default"),
+                        radio        = true,
+                        checked_func = function() return getGeral() == "predefinido" end,
+                        callback     = function()
+                            if getGeral() == "predefinido" then return end
+                            setGeral("predefinido")
+                            askRestart(_("Pagination bar set to Default.\n\nRestart now?"))
+                        end,
+                    },
+                    {
+                        text         = _("Navpager"),
+                        radio        = true,
+                        checked_func = function() return getGeral() == "navpager" end,
+                        help_text    = _("Replaces the pagination bar with Prev/Next arrows at the edges of the navigation bar.\nThe arrows dim when there is no previous or next page.\nWith navpager active, as few as 1 tab and at most 4 tabs can be configured."),
+                        callback     = function()
+                            if getGeral() == "navpager" then return end
+                            setGeral("navpager")
+                            askRestart(_("Navpager enabled.\n\nRestart now?"))
+                        end,
+                    },
+                    {
+                        text         = _("Hidden"),
+                        radio        = true,
+                        checked_func = function() return getGeral() == "oculto" end,
+                        callback     = function()
+                            if getGeral() == "oculto" then return end
+                            setGeral("oculto")
+                            askRestart(_("Pagination bar hidden.\n\nRestart now?"))
+                        end,
+                    },
+                },
+            },
+                -- ── Subfolder: Home Screen ────────────────────────────────────────
+            {
+                text           = _("Home Screen Style"),
+                sub_item_table = {
+                    {
+                        text         = _("Dot Pager"),
+                        radio        = true,
+                        checked_func = function()
+                            -- Dot Pager is always forced when Navpager is active.
+                            return not SUISettings:isTrue("simpleui_hs_pagination_hidden")
+                                and (SUISettings:nilOrTrue("simpleui_bar_dotpager_always")
+                                    or getGeral() == "navpager")
+                        end,
+                        help_text    = _("Shows a row of dots at the bottom of the homescreen.\nThe active page dot is filled; the others are dimmed.\nAlways active when Navpager is selected."),
+                        callback     = function()
+                            SUISettings:saveSetting("simpleui_hs_pagination_hidden", false)
+                            if not SUISettings:nilOrTrue("simpleui_bar_dotpager_always") then
+                                SUISettings:saveSetting("simpleui_bar_dotpager_always", true)
+                            end
+                            plugin:_scheduleRebuild()
+                            local ok_hs, HS = pcall(require, "screens/sui_homescreen")
+                            if ok_hs and HS then HS.refresh(true) end
+                        end,
+                        keep_menu_open = true,
+                    },
+                    {
+                        text         = _("KOReader"),
+                        radio        = true,
+                        -- Not selectable when Navpager is active.
+                        enabled_func = function() return getGeral() ~= "navpager" end,
+                        checked_func = function()
+                            return not SUISettings:isTrue("simpleui_hs_pagination_hidden")
+                                and not SUISettings:nilOrTrue("simpleui_bar_dotpager_always")
+                                and getGeral() ~= "navpager"
+                        end,
+                        help_text    = _("Uses the standard KOReader pagination bar on the homescreen.\nNot available when Navpager is active."),
+                        callback     = function()
+                            SUISettings:saveSetting("simpleui_hs_pagination_hidden", false)
+                            if SUISettings:nilOrTrue("simpleui_bar_dotpager_always") then
+                                SUISettings:saveSetting("simpleui_bar_dotpager_always", false)
+                            end
+                            plugin:_scheduleRebuild()
+                            local ok_hs, HS = pcall(require, "screens/sui_homescreen")
+                            if ok_hs and HS then HS.refresh(true) end
+                        end,
+                        keep_menu_open = true,
+                    },
+                    {
+                        text         = _("Hidden"),
+                        radio        = true,
+                        -- Not selectable when Navpager is active (navpager needs dot pager).
+                        enabled_func = function() return getGeral() ~= "navpager" end,
+                        checked_func = function()
+                            return SUISettings:isTrue("simpleui_hs_pagination_hidden")
+                                and getGeral() ~= "navpager"
+                        end,
+                        help_text    = _("Hides the pagination bar on the homescreen.\nNot available when Navpager is active."),
+                        callback     = function()
+                            if SUISettings:isTrue("simpleui_hs_pagination_hidden") then return end
+                            SUISettings:saveSetting("simpleui_hs_pagination_hidden", true)
+                            local ok_hs, HS = pcall(require, "screens/sui_homescreen")
+                            if ok_hs and HS then HS.refresh(true) end
+                        end,
+                        keep_menu_open = true,
+                    },
+                },
+            },
+                -- ── Subfolder: Size (only when general is not hidden) ─────────────
+            {
+                text           = _("Bar Size"),
+                enabled_func   = function() return getGeral() ~= "oculto" end,
+                sub_item_table = {
+                    {
+                        text           = _("Extra Small"),
+                        radio          = true,
+                        enabled_func   = function() return getGeral() ~= "oculto" end,
+                        checked_func   = function()
+                            return (SUISettings:readSetting("simpleui_bar_pagination_size") or "s") == "xs"
+                        end,
+                        callback       = function()
+                            SUISettings:saveSetting("simpleui_bar_pagination_size", "xs")
+                            askRestart(_("Pagination bar size will change after restart.\n\nRestart now?"))
+                        end,
+                    },
+                    {
+                        text           = _("Small"),
+                        radio          = true,
+                        enabled_func   = function() return getGeral() ~= "oculto" end,
+                        checked_func   = function()
+                            return (SUISettings:readSetting("simpleui_bar_pagination_size") or "s") == "s"
+                        end,
+                        callback       = function()
+                            SUISettings:saveSetting("simpleui_bar_pagination_size", "s")
+                            askRestart(_("Pagination bar size will change after restart.\n\nRestart now?"))
+                        end,
+                    },
+                    {
+                        text           = _("Default"),
+                        radio          = true,
+                        enabled_func   = function() return getGeral() ~= "oculto" end,
+                        checked_func   = function()
+                            return (SUISettings:readSetting("simpleui_bar_pagination_size") or "s") == "m"
+                        end,
+                        callback       = function()
+                            SUISettings:saveSetting("simpleui_bar_pagination_size", "m")
+                            askRestart(_("Pagination bar size will change after restart.\n\nRestart now?"))
+                        end,
+                    },
+                },
+            },
+        }
+
+        -- ── Number of pages in the title bar ─────────────────────────────────
+        -- The page count lives in the title bar subtitle, which only the classic
+        -- style has.
+        local Titlebar = require("screens/sui_titlebar")
+        if Titlebar.getStyle() == Titlebar.STYLE_CLASSIC then
+            items[#items + 1] = {
+                text         = _("Show Page Count in Title Bar"),
+                checked_func = function()
+                    return SUISettings:isTrue("simpleui_bar_pagination_show_subtitle")
+                end,
+                help_text    = _("Shows \"Page X of Y\" in the title bar subtitle when browsing the library, history or collections.\nNavpager enables this automatically.\nNot available when Navpager is active."),
+                callback     = function()
+                    local on = SUISettings:isTrue("simpleui_bar_pagination_show_subtitle")
+                    SUISettings:saveSetting("simpleui_bar_pagination_show_subtitle", not on)
+                    plugin:_scheduleRebuild()
+                end,
+                keep_menu_open = true,
+            }
+        end
+
+        appendItem(items, makeBarSurfaceMenu("pagination", ctx_menu))
+
+        return items
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Topbar menu builders
+    -- -----------------------------------------------------------------------
+
+    local function makeTopbarItemsMenu(ctx_menu)
+        local items = {}
+
+        -- Custom Text item — toggle visibility via tap, edit text via long-press.
+        do
+            local k = "custom_text"
+            -- "Edit Custom Text" -- plain action item, opens the text prompt on tap.
+            items[#items + 1] = {
+                text_func = function()
+                    local t = Config.getTopbarCustomText()
+                    if t ~= "" then
+                        return _("Edit Custom Text") .. '  "' .. t .. '"'
+                    end
+                    return _("Edit Custom Text")
+                end,
+                keep_menu_open = true,
+                callback = function()
+                    promptCustomText(function(text)
+                        -- Auto-enable when text is set and item is hidden.
+                        local cfg = getTopbarConfig()
+                        if text ~= "" and (cfg.side[k] or "hidden") == "hidden" then
+                            if not cfg.order_center then cfg.order_center = {} end
+                            cfg.side[k] = "right"
+                            local new_left, new_center = {}, {}
+                            for _, v in ipairs(cfg.order_left) do if v ~= k then new_left[#new_left + 1] = v end end
+                            cfg.order_left = new_left
+                            for _, v in ipairs(cfg.order_center) do if v ~= k then new_center[#new_center + 1] = v end end
+                            cfg.order_center = new_center
+                            local found = false
+                            for _i, v in ipairs(cfg.order_right) do if v == k then found = true; break end end
+                            if not found then cfg.order_right[#cfg.order_right + 1] = k end
+                            saveTopbarConfig(cfg)
+                        end
+                        plugin:_scheduleRebuild()
+                    end)
+                end,
+                separator = true,
+                sui_hidden = ctx_menu and ctx_menu.is_sui and true or nil,
+            }
+        end
+
+        if #items > 0 then items[#items].separator = true end
+
+        items[#items + 1] = {
+            text           = _("Arrange Items"),
+            keep_menu_open = true,
+            separator      = true,
+            callback       = function()
+                local cfg        = getTopbarConfig()
+                if not cfg.order_center then cfg.order_center = {} end
+                local SEP_LEFT   = "__sep_left__"
+                local SEP_CENTER = "__sep_center__"
+                local SEP_RIGHT  = "__sep_right__"
+                local sort_items = {}
+                sort_items[#sort_items + 1] = { text = _("Left"):upper(), orig_item = SEP_LEFT, is_divider = true, pin_top = true }
+                for _i, key in ipairs(cfg.order_left) do
+                    if cfg.side[key] ~= "hidden" then
+                        sort_items[#sort_items + 1] = { text = TOPBAR_ITEM_LABEL(key), orig_item = key }
+                    end
+                end
+                sort_items[#sort_items + 1] = { text = _("Center"):upper(), orig_item = SEP_CENTER, is_divider = true }
+                for _i, key in ipairs(cfg.order_center) do
+                    if cfg.side[key] == "center" then
+                        sort_items[#sort_items + 1] = { text = TOPBAR_ITEM_LABEL(key), orig_item = key }
+                    end
+                end
+                sort_items[#sort_items + 1] = { text = _("Right"):upper(), orig_item = SEP_RIGHT, is_divider = true }
+                for _i, key in ipairs(cfg.order_right) do
+                    if cfg.side[key] ~= "hidden" then
+                        sort_items[#sort_items + 1] = { text = TOPBAR_ITEM_LABEL(key), orig_item = key }
+                    end
+                end
+                local function on_save()
+                    local sep_left_pos, sep_center_pos, sep_right_pos
+                    for j, item in ipairs(sort_items) do
+                        if item.orig_item == SEP_LEFT   then sep_left_pos   = j end
+                        if item.orig_item == SEP_CENTER then sep_center_pos = j end
+                        if item.orig_item == SEP_RIGHT  then sep_right_pos  = j end
+                    end
+                    if not sep_left_pos or not sep_center_pos or not sep_right_pos
+                            or sep_left_pos > sep_center_pos or sep_center_pos > sep_right_pos
+                            or (sort_items[1] and sort_items[1].orig_item ~= SEP_LEFT) then
+                        local uim = ctx_menu and ctx_menu.UIManager or UIManager
+                        UI.Notify.toast(_("Invalid arrangement.\nKeep the Left, Center and Right separators in order."))
+                        return
+                    end
+                    local new_left, new_center, new_right = {}, {}, {}
+                    local current_side = nil
+                    for _i, item in ipairs(sort_items) do
+                        if     item.orig_item == SEP_LEFT   then current_side = "left"
+                        elseif item.orig_item == SEP_CENTER then current_side = "center"
+                        elseif item.orig_item == SEP_RIGHT  then current_side = "right"
+                        elseif current_side == "left"   then new_left[#new_left + 1]     = item.orig_item; cfg.side[item.orig_item] = "left"
+                        elseif current_side == "center" then new_center[#new_center + 1] = item.orig_item; cfg.side[item.orig_item] = "center"
+                        elseif current_side == "right"  then new_right[#new_right + 1]   = item.orig_item; cfg.side[item.orig_item] = "right"
+                        end
+                    end
+                    -- Keep hidden items at the tail of each list so they can be restored later.
+                    for _i, key in ipairs(cfg.order_left)   do if cfg.side[key] == "hidden" then new_left[#new_left + 1]     = key end end
+                    for _i, key in ipairs(cfg.order_center) do if cfg.side[key] == "hidden" then new_center[#new_center + 1] = key end end
+                    for _i, key in ipairs(cfg.order_right)  do if cfg.side[key] == "hidden" then new_right[#new_right + 1]   = key end end
+                    cfg.order_left   = new_left
+                    cfg.order_center = new_center
+                    cfg.order_right  = new_right
+                    saveTopbarConfig(cfg)
+                    plugin:_scheduleRebuild()
+                    if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                end
+
+                if ctx_menu and ctx_menu.show_arrange then
+                    ctx_menu.show_arrange({
+                        title             = _("Arrange Items"),
+                        items             = sort_items,
+                        on_change         = on_save,
+                        on_close          = on_save
+                    })
+                else
+                    UIManager:show(SortWidget():new{
+                        title             = _("Arrange Items"),
+                        item_table        = sort_items,
+                        covers_fullscreen = true,
+                        callback          = on_save,
+                    })
+                end
+            end,
+        }
+
+        local sorted_keys = {}
+        for _i, k in ipairs(Config.getAvailableTopbarItems()) do sorted_keys[#sorted_keys + 1] = k end
+        table.sort(sorted_keys, function(a, b) return TOPBAR_ITEM_LABEL(a):lower() < TOPBAR_ITEM_LABEL(b):lower() end)
+
+        for _i, key in ipairs(sorted_keys) do
+            local k = key
+            items[#items + 1] = {
+                text_func    = function()
+                    local side = Config.getTopbarConfigCached().side[k] or "hidden"
+                    local label = TOPBAR_ITEM_LABEL(k)
+                    if side == "left"   then return label .. "  \xe2\x97\x82"
+                    elseif side == "center" then return label .. "  \xe2\x97\x86"
+                    elseif side == "right"  then return label .. "  \xe2\x96\xb8"
+                    else return label end
+                end,
+                -- Uses the cached config so opening the menu doesn't rebuild
+                -- the config table once per item (#16).
+                checked_func = function()
+                    return (Config.getTopbarConfigCached().side[k] or "hidden") ~= "hidden"
+                end,
+                keep_menu_open = true,
+                callback = function()
+                    -- Reads fresh config for the mutation, then invalidates cache.
+                    local cfg = getTopbarConfig()
+                    if not cfg.order_center then cfg.order_center = {} end
+                    if (cfg.side[k] or "hidden") == "hidden" then
+                        -- Restore to the last known slot, checking all three lists.
+                        local last_side = "right"
+                        for _i, v in ipairs(cfg.order_left)   do if v == k then last_side = "left";   break end end
+                        for _i, v in ipairs(cfg.order_center) do if v == k then last_side = "center"; break end end
+                        cfg.side[k] = last_side
+                        if last_side == "left" then
+                            local found = false
+                            for _i, v in ipairs(cfg.order_left) do if v == k then found = true; break end end
+                            if not found then cfg.order_left[#cfg.order_left + 1] = k end
+                        elseif last_side == "center" then
+                            local found = false
+                            for _i, v in ipairs(cfg.order_center) do if v == k then found = true; break end end
+                            if not found then cfg.order_center[#cfg.order_center + 1] = k end
+                        else
+                            local found = false
+                            for _i, v in ipairs(cfg.order_right) do if v == k then found = true; break end end
+                            if not found then cfg.order_right[#cfg.order_right + 1] = k end
+                        end
+                    else
+                        cfg.side[k] = "hidden"
+                    end
+                    saveTopbarConfig(cfg)   -- also calls Config.invalidateTopbarConfigCache()
+                    plugin:_scheduleRebuild()
+                    if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                end,
+            }
+        end
+        return items
+    end
+
+
+    local function makeTopbarMenu(ctx_menu)
+        local Config = require("infra/sui_config")
+        local flat = {
+            {
+                text_func    = function()
+                    return _("Enable Status Bar")
+                end,
+                checked_func = function() return SUISettings:nilOrTrue("simpleui_topbar_enabled") end,
+                keep_menu_open = true,
+                callback     = function()
+                    local on = SUISettings:nilOrTrue("simpleui_topbar_enabled")
+                    SUISettings:saveSetting("simpleui_topbar_enabled", not on)
+                    askRestart(string.format(_("Status Bar will be %s after restart.\n\nRestart now?"), on and _("disabled") or _("enabled")))
+                end,
+                separator = true,
+            },
+            {
+                text = _("Items"),
+                sub_item_table_func = function() return makeTopbarItemsMenu(ctx_menu) end,
+                sui_build = ctx_menu and ctx_menu.is_sui and function(ctx, _item)
+                    local SUIWindow = require("engines/sui_window")
+                    return SUIWindow.ListRow{
+                        title        = _("Items"),
+                        subtitle     = function()
+                            local cfg = Config.getTopbarConfig()
+                            local names = {}
+                            for _, key in ipairs(cfg.order_left) do
+                                if (cfg.side[key] or "hidden") ~= "hidden" then names[#names + 1] = Config.TOPBAR_ITEM_LABEL(key) end
+                            end
+                            for _, key in ipairs(cfg.order_center) do
+                                if (cfg.side[key] or "hidden") == "center" then names[#names + 1] = Config.TOPBAR_ITEM_LABEL(key) end
+                            end
+                            for _, key in ipairs(cfg.order_right) do
+                                if (cfg.side[key] or "hidden") == "right" then names[#names + 1] = Config.TOPBAR_ITEM_LABEL(key) end
+                            end
+                            return #names > 0 and table.concat(names, "  ·  ") or _("No items selected.")
+                        end,
+                        inner_w      = ctx.inner_w,
+                        show_chevron = true,
+                        on_tap       = function()
+                            local cfg        = Config.getTopbarConfig()
+                            local SEP_LEFT   = "__sep_left__"
+                            local SEP_CENTER = "__sep_center__"
+                            local SEP_RIGHT  = "__sep_right__"
+                            local sort_items = {}
+                            
+                            local function add_item(k)
+                                local subtitle = nil
+                                local on_more = nil
+                                if k == "custom_text" then
+                                    local t = Config.getTopbarCustomText()
+                                    if t ~= "" then subtitle = t else subtitle = _("Empty") end
+                                    on_more = function(anchor_dimen)
+                                        local SUIWindow2 = require("engines/sui_window")
+                                        SUIWindow2.ActionMenu{
+                                            anchor = anchor_dimen,
+                                            items = {
+                                                {
+                                                    text = _("Edit Custom Text"),
+                                                    icon = "edit",
+                                                    on_tap = function()
+                                                        promptCustomText(function()
+                                                            plugin:_scheduleRebuild()
+                                                            ctx.repaint()
+                                                        end)
+                                                    end,
+                                                }
+                                            }
+                                        }
+                                    end
+                                end
+                                sort_items[#sort_items + 1] = {
+                                    text = Config.TOPBAR_ITEM_LABEL(k),
+                                    orig_item = k,
+                                    subtitle = subtitle,
+                                    on_more = on_more,
+                                }
+                            end
+                            
+                            sort_items[#sort_items + 1] = { text = _("Left"):upper(), orig_item = SEP_LEFT, is_divider = true, pin_top = true }
+                            for _, key in ipairs(cfg.order_left) do
+                                if (cfg.side[key] or "hidden") ~= "hidden" then add_item(key) end
+                            end
+                            sort_items[#sort_items + 1] = { text = _("Center"):upper(), orig_item = SEP_CENTER, is_divider = true }
+                            for _, key in ipairs(cfg.order_center) do
+                                if (cfg.side[key] or "hidden") == "center" then add_item(key) end
+                            end
+                            sort_items[#sort_items + 1] = { text = _("Right"):upper(), orig_item = SEP_RIGHT, is_divider = true }
+                            for _, key in ipairs(cfg.order_right) do
+                                if (cfg.side[key] or "hidden") == "right" then add_item(key) end
+                            end
+                            
+                            ctx.push("arrange", {
+                                title = _("Items"),
+                                items = sort_items,
+                                empty_text = _("No items selected."),
+                                on_delete = function(item)
+                                    cfg.side[item.orig_item] = "hidden"
+                                end,
+                                on_change = function(items_to_save)
+                                    local new_left, new_center, new_right = {}, {}, {}
+                                    local current_side = nil
+                                    for _, item in ipairs(items_to_save) do
+                                        if     item.orig_item == SEP_LEFT   then current_side = "left"
+                                        elseif item.orig_item == SEP_CENTER then current_side = "center"
+                                        elseif item.orig_item == SEP_RIGHT  then current_side = "right"
+                                        elseif current_side == "left"   then new_left[#new_left + 1]     = item.orig_item; cfg.side[item.orig_item] = "left"
+                                        elseif current_side == "center" then new_center[#new_center + 1] = item.orig_item; cfg.side[item.orig_item] = "center"
+                                        elseif current_side == "right"  then new_right[#new_right + 1]   = item.orig_item; cfg.side[item.orig_item] = "right"
+                                        end
+                                    end
+                                    for _, key in ipairs(cfg.order_left)   do if (cfg.side[key] or "hidden") == "hidden" then new_left[#new_left + 1]     = key end end
+                                    for _, key in ipairs(cfg.order_center) do if (cfg.side[key] or "hidden") == "hidden" then new_center[#new_center + 1] = key end end
+                                    for _, key in ipairs(cfg.order_right)  do if (cfg.side[key] or "hidden") == "hidden" then new_right[#new_right + 1]   = key end end
+                                    cfg.order_left   = new_left
+                                    cfg.order_center = new_center
+                                    cfg.order_right  = new_right
+                                    Config.saveTopbarConfig(cfg)
+                                    plugin:_scheduleRebuild()
+                                end,
+                                footer_text = _("Add Item"),
+                                footer_enabled = function()
+                                    local cfg2 = Config.getTopbarConfigCached()
+                                    for _, k in ipairs(Config.getAvailableTopbarItems()) do
+                                        if (cfg2.side[k] or "hidden") == "hidden" then return true end
+                                    end
+                                    return false
+                                end,
+                                footer_action = function(ctx2)
+                                    local cfg2 = Config.getTopbarConfig()
+                                    local picker_items = {}
+                                    for _, k in ipairs(Config.getAvailableTopbarItems()) do
+                                        if (cfg2.side[k] or "hidden") == "hidden" then
+                                            local _k = k
+                                            local _label = Config.TOPBAR_ITEM_LABEL(k)
+                                            picker_items[#picker_items + 1] = {
+                                                text = _label,
+                                                on_tap = function(picker_ctx)
+                                                    cfg2.side[_k] = "right"
+                                                    local new_left, new_center = {}, {}
+                                                    for _, v in ipairs(cfg2.order_left) do if v ~= _k then new_left[#new_left + 1] = v end end
+                                                    cfg2.order_left = new_left
+                                                    for _, v in ipairs(cfg2.order_center) do if v ~= _k then new_center[#new_center + 1] = v end end
+                                                    cfg2.order_center = new_center
+                                                    local found = false
+                                                    for _, v in ipairs(cfg2.order_right) do if v == _k then found = true; break end end
+                                                    if not found then cfg2.order_right[#cfg2.order_right + 1] = _k end
+                                                    Config.saveTopbarConfig(cfg2)
+                                                    add_item(_k)
+                                                    plugin:_scheduleRebuild()
+                                                    picker_ctx.pop()
+                                                    ctx2.repaint()
+                                                end
+                                            }
+                                        end
+                                    end
+                                    ctx2.push("item_picker", {
+                                        title = _("Add Item"),
+                                        items = picker_items,
+                                    })
+                                end
+                            })
+                        end
+                    }
+                end or nil,
+            },
+            Config.makeSpinItem{
+                text_func    = function() return _("Size") end,
+                title        = _("Status Bar Size"),
+                info         = _("Height of the top status bar.\n100% is the default size."),
+                get          = Config.getTopbarSizePct,
+                value_min    = Config.TOPBAR_SIZE_MIN,
+                value_max    = Config.TOPBAR_SIZE_MAX,
+                value_step   = Config.TOPBAR_SIZE_STEP,
+                default_value= Config.TOPBAR_SIZE_DEF,
+                unit         = "%",
+                set          = function(value)
+                    Config.setTopbarSizePct(value)
+                    UI.invalidateDimCache()
+                    plugin:_rewrapAllWidgets()
+                    -- Topbar size is global chrome, not Homescreen-specific — refresh
+                    -- whichever screen(s) are actually live (Homescreen or a Custom
+                    -- Screen), not just the flat built-in-Homescreen instance.
+                    local ok_se, ScreenEngine = pcall(require, "engines/sui_screen_engine")
+                    if ok_se and ScreenEngine then ScreenEngine.refreshAllLiveImmediate(true) end
+                    -- Repaint the settings screen itself so this row's value_func
+                    -- picks up the new percentage now, not the next time it's opened.
+                    if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                    askRestart(_("A restart is required to apply the new bar size across all layouts.\n\nRestart now?"))
+                end,
+            },
+            {
+                text           = _("Swipe Indicator"),
+                keep_menu_open = true,
+                checked_func   = function() return SUISettings:nilOrTrue("simpleui_topbar_swipe_indicator") end,
+                callback = function()
+                    SUISettings:saveSetting("simpleui_topbar_swipe_indicator",
+                        not SUISettings:nilOrTrue("simpleui_topbar_swipe_indicator"))
+                    plugin:_scheduleRebuild()
+                end,
+            },
+            {
+                text           = _("Hide Wi-Fi Icon When Off"),
+                keep_menu_open = true,
+                checked_func   = function() return Config.getWifiHideWhenOff() end,
+                callback = function()
+                    Config.setWifiHideWhenOff(not Config.getWifiHideWhenOff())
+                    plugin:_scheduleRebuild()
+                end,
+            },
+            {
+                text         = _("Settings on Long Tap"),
+                help_text    = _("When enabled, long-pressing the top bar opens its settings menu.\nDisable this to prevent the settings menu from appearing on long tap."),
+                checked_func = function()
+                    return SUISettings:nilOrTrue("simpleui_topbar_settings_on_hold")
+                end,
+                keep_menu_open = true,
+                callback = function()
+                    local on = SUISettings:nilOrTrue("simpleui_topbar_settings_on_hold")
+                    SUISettings:saveSetting("simpleui_topbar_settings_on_hold", not on)
+                end,
+            },
+        }
+        local master = { flat[1] }
+        local item_rows, size_rows, appearance_extra, behaviour = {}, {}, {}, {}
+        local size_labels = { [_("Bar Size")] = true, [_("Icon Size")] = true }
+        for i = 2, #flat do
+            local row = flat[i]
+            local label = row.text
+            if type(label) ~= "string" and row.text_func then
+                local ok, v = pcall(row.text_func)
+                if ok then label = v end
+            end
+            label = label or ""
+            if label == _("Items") then
+                item_rows[#item_rows + 1] = row
+            elseif type(label) == "string" and size_labels[label] then
+                size_rows[#size_rows + 1] = row
+            elseif label == _("Settings on Long Tap") then
+                behaviour[#behaviour + 1] = row
+            else
+                appearance_extra[#appearance_extra + 1] = row
+            end
+        end
+        appendItem(appearance_extra, makeBarSurfaceMenu("statusbar", ctx_menu))
+        return Config.buildModuleMenu({
+            master     = master,
+            items      = item_rows,
+            appearance = {
+                size  = #size_rows > 0 and size_rows or nil,
+                extra = #appearance_extra > 0 and appearance_extra or nil,
+            },
+            behaviour  = behaviour,
+        }, ctx_menu)
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Bottom bar menu builder
+    -- -----------------------------------------------------------------------
+
+    local function makeNavbarMenu(ctx_menu)
+        local Config = require("infra/sui_config")
+
+        -- Radio entry selecting a bar layout ("full" or "floating").
+        local function layoutItem(label, layout)
+            return {
+                text           = label,
+                radio          = true,
+                checked_func   = function() return Bottombar.getBarLayout() == layout end,
+                keep_menu_open = true,
+                callback       = function()
+                    require("features/sui_wallpaper").setNavbarLayout(layout)
+                    UI.invalidateDimCache()
+                    plugin:_scheduleRebuild()
+                    if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                end,
+            }
+        end
+
+        local flat = {
+            {
+                text_func    = function()
+                    return _("Enable Navigation Bar")
+                end,
+                checked_func = function() return SUISettings:nilOrTrue("simpleui_bar_enabled") end,
+                keep_menu_open = true,
+                callback     = function()
+                    local on = SUISettings:nilOrTrue("simpleui_bar_enabled")
+                    SUISettings:saveSetting("simpleui_bar_enabled", not on)
+                    askRestart(string.format(_("Navigation Bar will be %s after restart.\n\nRestart now?"), on and _("disabled") or _("enabled")))
+                end,
+                separator = true,
+            },
+            makeTabsItem(ctx_menu),
+            {
+                text = _("Tab Style"),
+                sub_item_table_func = makeTypeMenu,
+            },
+            {
+                text = _("Layout"),
+                sub_item_table = {
+                    layoutItem(_("Full-width"), "full"),
+                    layoutItem(_("Floating"),   "floating"),
+                },
+            },
+            Config.makeSpinItem{
+                text_func    = function() return _("Bar Size") end,
+                title        = _("Navigation Bar Size"),
+                info         = _("Height of the bottom navigation bar.\n100% is the default size."),
+                get          = Config.getBarSizePct,
+                value_min    = Config.BAR_SIZE_MIN,
+                value_max    = Config.BAR_SIZE_MAX,
+                value_step   = Config.BAR_SIZE_STEP,
+                default_value= Config.BAR_SIZE_DEF,
+                unit         = "%",
+                set          = function(value)
+                    Config.setBarSizePct(value)
+                    UI.invalidateDimCache()
+                    plugin:_rewrapAllWidgets()
+                    -- Navbar size is global chrome, not Homescreen-specific — refresh
+                    -- whichever screen(s) are actually live (Homescreen or a Custom
+                    -- Screen), not just the flat built-in-Homescreen instance.
+                    local ok_se, ScreenEngine = pcall(require, "engines/sui_screen_engine")
+                    if ok_se and ScreenEngine then ScreenEngine.refreshAllLiveImmediate(true) end
+                    -- Repaint the settings screen itself so this row's value_func
+                    -- picks up the new percentage now, not the next time it's opened.
+                    if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                    askRestart(_("A restart is required to apply the new bar size across all layouts.\n\nRestart now?"))
+                end,
+            },
+            Config.makeScaleItem({
+                text_func     = function() return _("Icon Size") end,
+                title         = _("Icon Size"),
+                info          = _("Size of the tab icons.\n100% is the default size."),
+                get           = function() return Config.getIconScalePct() end,
+                set           = function(pct) Config.setIconScalePct(pct) end,
+                refresh       = function()
+                    UI.invalidateDimCache(); plugin:_rebuildAllNavbars()
+                    if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                end,
+            }),
+            Config.makeScaleItem({
+                text_func     = function() return _("Label Size") end,
+                title         = _("Label Size"),
+                info          = _("Size of the tab label text.\n100% is the default size."),
+                get           = function() return Config.getNavbarLabelScalePct() end,
+                set           = function(pct) Config.setNavbarLabelScalePct(pct) end,
+                refresh       = function()
+                    UI.invalidateDimCache(); plugin:_rebuildAllNavbars()
+                    if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                end,
+            }),
+            Config.makeChromeLabelFontItem({
+                bar     = "navbar",
+                title   = _("Label Font"),
+                _lc     = _,
+                refresh = function()
+                    UI.invalidateDimCache(); plugin:_rebuildAllNavbars()
+                    if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                end,
+            }),
+            Config.makeScaleItem({
+                text_func     = function() return _("Bottom Margin") end,
+                title         = _("Bottom Margin"),
+                info          = _("Space below the bottom navigation bar.\n100% is the default spacing."),
+                get           = function() return Config.getBottomMarginPct() end,
+                set           = function(pct) Config.setBottomMarginPct(pct) end,
+                refresh       = function()
+                    UI.invalidateDimCache(); plugin:_rewrapAllWidgets()
+                    -- Bottom margin is global chrome, not Homescreen-specific — refresh
+                    -- whichever screen(s) are actually live (Homescreen or a Custom
+                    -- Screen), not just the flat built-in-Homescreen instance.
+                    local ok_se, ScreenEngine = pcall(require, "engines/sui_screen_engine")
+                    if ok_se and ScreenEngine then ScreenEngine.refreshAllLiveImmediate(true) end
+                    if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                end,
+                value_min     = Config.BOT_MARGIN_MIN, value_max = Config.BOT_MARGIN_MAX,
+                value_step    = Config.BOT_MARGIN_STEP, default_value = Config.BOT_MARGIN_DEF,
+            }),
+            {
+                text         = _("Settings on Long Tap"),
+                help_text    = _("When enabled, long-pressing the navigation bar opens its settings menu.\nDisable this to prevent the settings menu from appearing on long tap."),
+                checked_func = function()
+                    return SUISettings:nilOrTrue("simpleui_bar_settings_on_hold")
+                end,
+                keep_menu_open = true,
+                callback = function()
+                    local on = SUISettings:nilOrTrue("simpleui_bar_settings_on_hold")
+                    SUISettings:saveSetting("simpleui_bar_settings_on_hold", not on)
+                end,
+            },
+        }
+        -- Canonical chrome order: Master → Items → Appearance → Behaviour
+        local master = { flat[1] }
+        local items  = { flat[2] }
+        local behaviour = { flat[#flat] }
+        local size_rows, appearance_extra = {}, {}
+        local size_labels = {
+            [_("Bar Size")] = true,
+            [_("Icon Size")] = true,
+            [_("Label Size")] = true,
+            [_("Bottom Margin")] = true,
+        }
+        for i = 3, #flat - 1 do
+            local row = flat[i]
+            local label = row.text
+            if type(label) ~= "string" and row.text_func then
+                local ok, v = pcall(row.text_func)
+                if ok then label = v end
+            end
+            if type(label) == "string" and size_labels[label] then
+                size_rows[#size_rows + 1] = row
+            else
+                appearance_extra[#appearance_extra + 1] = row
+            end
+        end
+        appendItem(appearance_extra, makeBarSurfaceMenu("navbar", ctx_menu))
+        return Config.buildModuleMenu({
+            master     = master,
+            items      = items,
+            appearance = {
+                size  = #size_rows > 0 and size_rows or nil,
+                extra = #appearance_extra > 0 and appearance_extra or nil,
+            },
+            behaviour  = behaviour,
+        }, ctx_menu)
+    end
+    plugin._makeNavbarMenu = makeNavbarMenu
+    plugin._makeTopbarMenu = makeTopbarMenu
+
+    -- -----------------------------------------------------------------------
+    -- Title Bar menu builder
+    -- -----------------------------------------------------------------------
+
+    -- Forward-declare _reapplyAllTitlebars here so it is in scope for every
+    -- closure below that calls it (visibility toggles, arrange on_save, etc).
+    -- It used to be declared local further down, after those closures had
+    -- already been written — since Lua resolves a free variable against
+    -- whatever local is in scope at the point the closure is defined, those
+    -- earlier call sites captured no local at all and hit the global
+    -- namespace instead, crashing with "attempt to call global
+    -- '_reapplyAllTitlebars' (a nil value)" on any Titlebar Buttons change.
+    local _reapplyAllTitlebars
+    _reapplyAllTitlebars = function()
+        local Titlebar = require("screens/sui_titlebar")
+        local FM = package.loaded["apps/filemanager/filemanager"]
+        local fm = FM and FM.instance
+        local stack = require("infra/sui_core").getWindowStack()
+        Titlebar.reapplyAll(fm, stack)
+        if fm then UIManager:setDirty(fm[1], "ui") end
+    end
+
+    -- Builds a visibility toggle list for one context ("fm" or "sub").
+    local function makeTitleBarItemsForCtx(ctx)
+        local Titlebar = require("screens/sui_titlebar")
+        local items = {}
+        for _i, item in ipairs(Titlebar.ITEMS) do
+            if item.ctx == ctx then
+                local item_id    = item.id
+                local item_label = item.label
+                items[#items + 1] = {
+                    text_func = function()
+                        local state = Titlebar.isItemVisible(item_id) and _("On") or _("Off")
+                        return item_label() .. " — " .. state
+                    end,
+                    checked_func   = function() return Titlebar.isItemVisible(item_id) end,
+                    enabled_func   = function() return Titlebar.isEnabled() end,
+                    keep_menu_open = true,
+                    callback       = function()
+                        Titlebar.setItemVisible(item_id, not Titlebar.isItemVisible(item_id))
+                        _reapplyAllTitlebars()
+                    end,
+                }
+            end
+        end
+        return items
+    end
+
+    -- Builds an arrange-items menu for one context.
+    -- cfg_getter / cfg_saver — functions that load/save the side config.
+    -- ctx — "fm" or "inj", used to filter M.ITEMS.
+    local function makeTitleBarArrangeMenu(ctx_menu, ctx, cfg_getter, cfg_saver)
+        local Titlebar   = require("screens/sui_titlebar")
+        local SEP_LEFT   = "__sep_left__"
+        local SEP_RIGHT  = "__sep_right__"
+
+        -- Build label lookup for this context.
+        local labels = {}
+        for _i, item in ipairs(Titlebar.ITEMS) do
+            if item.ctx == ctx and not item.no_side then
+                labels[item.id] = item.label
+            end
+        end
+
+        local cfg        = cfg_getter()
+        local sort_items = {}
+
+        sort_items[#sort_items + 1] = {
+            text = _("Left"):upper(), orig_item = SEP_LEFT, is_divider = true, pin_top = true,
+        }
+        -- Only list currently visible items here. Hidden items are preserved
+        -- separately by the "preserve hidden items" step in on_save() below,
+        -- which appends them from cfg.order_left/order_right every time it
+        -- runs. Listing them here too meant every on_save() call (each drag
+        -- reorder fires one, plus one more on close) re-appended a hidden
+        -- item on top of the copies already carried over from the previous
+        -- save, so the hidden item count kept doubling with every use.
+        for _i, id in ipairs(cfg.order_left) do
+            if labels[id] and Titlebar.isItemVisible(id) then
+                sort_items[#sort_items + 1] = { text = labels[id](), orig_item = id }
+            end
+        end
+        sort_items[#sort_items + 1] = {
+            text = _("Right"):upper(), orig_item = SEP_RIGHT, is_divider = true,
+        }
+        for _i, id in ipairs(cfg.order_right) do
+            if labels[id] and Titlebar.isItemVisible(id) then
+                sort_items[#sort_items + 1] = { text = labels[id](), orig_item = id }
+            end
+        end
+
+        local function on_save()
+                -- Validate: separators must be in correct relative order.
+                local sep_l, sep_r
+                for j, item in ipairs(sort_items) do
+                    if item.orig_item == SEP_LEFT  then sep_l = j end
+                    if item.orig_item == SEP_RIGHT then sep_r = j end
+                end
+                if not sep_l or not sep_r or sep_l > sep_r
+                        or (sort_items[1] and sort_items[1].orig_item ~= SEP_LEFT) then
+                    local uim = ctx_menu and ctx_menu.UIManager or UIManager
+                    UI.Notify.toast(_("Invalid arrangement.\nKeep items between the Left and Right separators."))
+                    return
+                end
+                local new_left, new_right = {}, {}
+                local current_side = nil
+                for _i, item in ipairs(sort_items) do
+                    if     item.orig_item == SEP_LEFT  then current_side = "left"
+                    elseif item.orig_item == SEP_RIGHT then current_side = "right"
+                    elseif current_side == "left"  then
+                        new_left[#new_left + 1]    = item.orig_item
+                        cfg.side[item.orig_item]   = "left"
+                    elseif current_side == "right" then
+                        new_right[#new_right + 1]  = item.orig_item
+                        cfg.side[item.orig_item]   = "right"
+                    end
+                end
+                -- Preserve hidden items at the end of each order list. seen_left and
+                -- seen_right guard against re-adding an id already placed above. With
+                -- the sort_items visibility filter above, that should not happen, but
+                -- this also defends against order_left/order_right that already have a
+                -- duplicate saved from before this fix (repeated use of this menu could
+                -- accumulate duplicates without it).
+                local seen_left, seen_right = {}, {}
+                for _i, id in ipairs(new_left)  do seen_left[id]  = true end
+                for _i, id in ipairs(new_right) do seen_right[id] = true end
+                for _i, id in ipairs(cfg.order_left)  do
+                    if not Titlebar.isItemVisible(id) and not seen_left[id] then
+                        new_left[#new_left + 1] = id
+                        seen_left[id] = true
+                    end
+                end
+                for _i, id in ipairs(cfg.order_right) do
+                    if not Titlebar.isItemVisible(id) and not seen_right[id] then
+                        new_right[#new_right + 1] = id
+                        seen_right[id] = true
+                    end
+                end
+                cfg.order_left  = new_left
+                cfg.order_right = new_right
+                cfg_saver(cfg)
+                _reapplyAllTitlebars()
+                if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+        end
+
+        if ctx_menu and ctx_menu.show_arrange then
+            ctx_menu.show_arrange({
+                title             = _("Arrange Buttons"),
+                items             = sort_items,
+                on_change         = on_save,
+                on_close          = on_save
+            })
+        else
+            UIManager:show(SortWidget():new{
+                title             = _("Arrange Buttons"),
+                item_table        = sort_items,
+                covers_fullscreen = true,
+                callback          = on_save,
+            })
+        end
+    end
+
+    local function makeTitleBarSUIBuild(ctx_menu, title_str, tb_ctx, cfg_getter, cfg_saver)
+        return ctx_menu and ctx_menu.is_sui and function(ctx, _item)
+            local SUIWindow = require("engines/sui_window")
+            local Titlebar  = require("screens/sui_titlebar")
+
+            return SUIWindow.ListRow{
+                title        = title_str,
+                subtitle     = function()
+                    local cfg = cfg_getter()
+                    local labels = {}
+                    for _i, t_item in ipairs(Titlebar.ITEMS) do
+                        if t_item.ctx == tb_ctx and not t_item.no_side then
+                            labels[t_item.id] = t_item.label
+                        end
+                    end
+                    local names = {}
+                    for _, key in ipairs(cfg.order_left) do
+                        if Titlebar.isItemVisible(key) and labels[key] then names[#names + 1] = labels[key]() end
+                    end
+                    for _, key in ipairs(cfg.order_right) do
+                        if Titlebar.isItemVisible(key) and labels[key] then names[#names + 1] = labels[key]() end
+                    end
+                    return #names > 0 and table.concat(names, "  ·  ") or _("No items selected.")
+                end,
+                inner_w      = ctx.inner_w,
+                show_chevron = true,
+                on_tap       = function()
+                     ctx.push("nested_menu", {
+                        title = title_str,
+                        footer_text = _("Add Button"),
+                        footer_enabled = function()
+                            for _i, item in ipairs(Titlebar.ITEMS) do
+                                if item.ctx == tb_ctx and not item.no_side then
+                                    if not Titlebar.isItemVisible(item.id) then return true end
+                                end
+                            end
+                            return false
+                        end,
+                        footer_action = function(ctx2)
+                            local picker_items = {}
+                            for _i, item in ipairs(Titlebar.ITEMS) do
+                                if item.ctx == tb_ctx and not item.no_side then
+                                    if not Titlebar.isItemVisible(item.id) then
+                                        local _id = item.id
+                                        local _label = item.label()
+                                        picker_items[#picker_items + 1] = {
+                                            text = _label,
+                                            on_tap = function(picker_ctx)
+                                                Titlebar.setItemVisible(_id, true)
+                                                local cfg = cfg_getter()
+                                                cfg.side[_id] = "right"
+                                                local new_left = {}
+                                                for _, v in ipairs(cfg.order_left) do if v ~= _id then new_left[#new_left + 1] = v end end
+                                                cfg.order_left = new_left
+                                                local found = false
+                                                for _, v in ipairs(cfg.order_right) do if v == _id then found = true; break end end
+                                                if not found then cfg.order_right[#cfg.order_right + 1] = _id end
+                                                cfg_saver(cfg)
+                                                _reapplyAllTitlebars()
+                                                picker_ctx.pop()
+                                                ctx2.repaint()
+                                            end
+                                        }
+                                    end
+                                end
+                            end
+                            ctx2.push("item_picker", {
+                                title = _("Add Button"),
+                                items = picker_items,
+                            })
+                        end,
+                    items_func = function()
+                        local result_items = {}
+
+                        for _i, item in ipairs(Titlebar.ITEMS) do
+                            if item.ctx == tb_ctx and item.no_side then
+                                local item_id = item.id
+                                local item_label = item.label
+                                result_items[#result_items + 1] = {
+                                    text_func = function()
+                                        local state = Titlebar.isItemVisible(item_id) and _("On") or _("Off")
+                                        return item_label() .. " — " .. state
+                                    end,
+                                    checked_func   = function() return Titlebar.isItemVisible(item_id) end,
+                                    enabled_func   = function() return Titlebar.isEnabled() end,
+                                    keep_menu_open = true,
+                                    callback       = function()
+                                        Titlebar.setItemVisible(item_id, not Titlebar.isItemVisible(item_id))
+                                        _reapplyAllTitlebars()
+                                    end,
+                                }
+                            end
+                        end
+
+                        if #result_items > 0 then
+                            result_items[#result_items].separator = true
+                        end
+
+                        result_items[#result_items + 1] = {
+                            text = "Arrange List Wrapper",
+                            sui_build = function(ctx3, item3)
+                                local SEP_LEFT  = "__sep_left__"
+                                local SEP_RIGHT = "__sep_right__"
+                                
+                                local labels = {}
+                                for _i, t_item in ipairs(Titlebar.ITEMS) do
+                                    if t_item.ctx == tb_ctx and not t_item.no_side then
+                                        labels[t_item.id] = t_item.label
+                                    end
+                                end
+
+                                local cfg = cfg_getter()
+                                local sort_items = {}
+                                sort_items[#sort_items + 1] = { text = _("Left"):upper(), orig_item = SEP_LEFT, is_divider = true, pin_top = true }
+                                for _i, key in ipairs(cfg.order_left) do
+                                    if Titlebar.isItemVisible(key) and labels[key] then
+                                        sort_items[#sort_items + 1] = { text = labels[key](), orig_item = key }
+                                    end
+                                end
+                                sort_items[#sort_items + 1] = { text = _("Right"):upper(), orig_item = SEP_RIGHT, is_divider = true }
+                                for _i, key in ipairs(cfg.order_right) do
+                                    if Titlebar.isItemVisible(key) and labels[key] then
+                                        sort_items[#sort_items + 1] = { text = labels[key](), orig_item = key }
+                                    end
+                                end
+
+                                return SUIWindow.ArrangeList{
+                                    inner_w    = ctx3.inner_w,
+                                    items      = sort_items,
+                                    empty_text = _("No items selected."),
+                                    on_repaint = function() ctx3.repaint() end,
+                                    on_delete  = function(idx, sitem)
+                                        Titlebar.setItemVisible(sitem.orig_item, false)
+                                        _reapplyAllTitlebars()
+                                    end,
+                                    on_change  = function(items_to_save)
+                                        local cfg2 = cfg_getter()
+                                        local new_left, new_right = {}, {}
+                                        local current_side = nil
+                                        for _i, sitem in ipairs(items_to_save) do
+                                            if     sitem.orig_item == SEP_LEFT   then current_side = "left"
+                                            elseif sitem.orig_item == SEP_RIGHT  then current_side = "right"
+                                            elseif current_side == "left"   then new_left[#new_left + 1]   = sitem.orig_item; cfg2.side[sitem.orig_item] = "left"
+                                            elseif current_side == "right"  then new_right[#new_right + 1] = sitem.orig_item; cfg2.side[sitem.orig_item] = "right"
+                                            end
+                                        end
+                                        for _i, key in ipairs(cfg2.order_left)   do if not Titlebar.isItemVisible(key) then new_left[#new_left + 1]   = key end end
+                                        for _i, key in ipairs(cfg2.order_right)  do if not Titlebar.isItemVisible(key) then new_right[#new_right + 1] = key end end
+                                        cfg2.order_left   = new_left
+                                        cfg2.order_right  = new_right
+                                        cfg_saver(cfg2)
+                                        _reapplyAllTitlebars()
+                                    end
+                                }
+                            end
+                        }
+                        return result_items
+                    end
+                    })
+                end
+            }
+        end or nil
+    end
+
+    local function makeTitleBarFMMenu(ctx_menu)
+        local Titlebar = require("screens/sui_titlebar")
+        local items = makeTitleBarItemsForCtx("fm")
+        if #items > 0 then items[#items].separator = true end
+        items[#items + 1] = {
+            text           = _("Arrange Buttons"),
+            enabled_func   = function() return Titlebar.isEnabled() end,
+            keep_menu_open = true,
+            callback       = function()
+                makeTitleBarArrangeMenu(ctx_menu, "fm", Titlebar.getFMConfig, Titlebar.saveFMConfig)
+            end,
+        }
+        return items
+    end
+
+    local function makeTitleBarSubMenu(ctx_menu)
+        local Titlebar = require("screens/sui_titlebar")
+        local items = makeTitleBarItemsForCtx("sub")
+        if #items > 0 then items[#items].separator = true end
+        items[#items + 1] = {
+            text           = _("Arrange Buttons"),
+            enabled_func   = function() return Titlebar.isEnabled() end,
+            keep_menu_open = true,
+            callback       = function()
+                makeTitleBarArrangeMenu(ctx_menu, "sub", Titlebar.getSubConfig, Titlebar.saveSubConfig)
+            end,
+        }
+        return items
+    end
+
+    -- Tabs style: one list for the browse tabs and the search button. The eye
+    -- shows or hides an entry; the arrows reorder it.
+    local function makeTitleBarTabsItems(ctx_menu)
+        local Titlebar = require("screens/sui_titlebar")
+        local title    = _("Tabs and Search")
+
+        local function isEnabled() return Titlebar.isEnabled() end
+
+        -- Toggles an entry unless it is the last visible one. Returns whether it changed.
+        local function toggleEntry(id)
+            local visible = Titlebar.isItemVisible(id)
+            if visible then
+                local others = 0
+                for _i, e in ipairs(Titlebar.getTabsEntries()) do
+                    if e.visible and e.id ~= id then others = others + 1 end
+                end
+                if others == 0 then
+                    UI.Notify.toast(_("At least one item must stay visible."), 2)
+                    return false
+                end
+            end
+            Titlebar.setItemVisible(id, not visible)
+            _reapplyAllTitlebars()
+            return true
+        end
+
+        local function saveOrder(sort_items)
+            local order = {}
+            for _i, it in ipairs(sort_items) do order[#order + 1] = it.orig_item end
+            Titlebar.setTabsOrder(order)
+            _reapplyAllTitlebars()
+        end
+
+        local function summary()
+            local names = {}
+            for _i, e in ipairs(Titlebar.getTabsEntries()) do
+                if e.visible then names[#names + 1] = e.label end
+            end
+            return #names > 0 and table.concat(names, "  ·  ") or _("No items selected.")
+        end
+
+        local function arrangeItems(ctx)
+            local items = {}
+            for _i, e in ipairs(Titlebar.getTabsEntries()) do
+                local id = e.id
+                items[#items + 1] = Config.applyVisibilityToggle({
+                    text      = e.label,
+                    orig_item = id,
+                }, {
+                    is_visible  = function() return Titlebar.isItemVisible(id) end,
+                    set_visible = function() return toggleEntry(id) end,
+                    repaint     = ctx.repaint,
+                })
+            end
+            return items
+        end
+
+        local items = {
+            {
+                text           = title,
+                enabled_func   = isEnabled,
+                keep_menu_open = true,
+                callback       = function()
+                    local sort_items = {}
+                    for _i, e in ipairs(Titlebar.getTabsEntries()) do
+                        sort_items[#sort_items + 1] = { text = e.label, orig_item = e.id }
+                    end
+                    local SortWidget = ctx_menu.SortWidget or require("ui/widget/sortwidget")
+                    UIManager:show(SortWidget:new{
+                        title             = title,
+                        item_table        = sort_items,
+                        covers_fullscreen = true,
+                        callback          = function() saveOrder(sort_items) end,
+                    })
+                end,
+                sui_build = ctx_menu.is_sui and function(ctx, _item)
+                    local SUIWindow = require("engines/sui_window")
+                    return SUIWindow.ListRow{
+                        title        = title,
+                        subtitle     = summary,
+                        inner_w      = ctx.inner_w,
+                        show_chevron = true,
+                        on_tap       = function()
+                            ctx.push("arrange", {
+                                title     = title,
+                                items     = arrangeItems(ctx),
+                                on_change = saveOrder,
+                            })
+                        end,
+                    }
+                end or nil,
+            },
+        }
+
+        -- Classic menu: visibility checklist (the SUI list has the eye toggle).
+        if not ctx_menu.is_sui then
+            for _i, e in ipairs(Titlebar.getTabsEntries()) do
+                local id = e.id
+                items[#items + 1] = {
+                    text           = e.label,
+                    checked_func   = function() return Titlebar.isItemVisible(id) end,
+                    enabled_func   = isEnabled,
+                    keep_menu_open = true,
+                    callback       = function() toggleEntry(id) end,
+                }
+            end
+        end
+        return items
+    end
+
+    local function makeTitleBarMenu(ctx_menu)
+        local Config = require("infra/sui_config")
+        local function titlebar() return require("screens/sui_titlebar") end
+
+        -- Radio row bound to a getter/setter pair of the title-bar module.
+        local function radioItem(label, key, get, set, on_change)
+            return {
+                text         = label,
+                radio        = true,
+                keep_menu_open = true,
+                checked_func = function() return get() == key end,
+                callback     = function()
+                    if get() == key then return end
+                    set(key)
+                    on_change()
+                end,
+            }
+        end
+        local function styleItem(label, key)
+            return radioItem(label, key,
+                function() return titlebar().getStyle() end,
+                function(v) titlebar().setStyle(v) end,
+                function() askRestart(_("The title bar style will change after restart.\n\nRestart now?")) end)
+        end
+        local function isEnabled() return titlebar().isEnabled() end
+
+        -- Size row shared by both styles. The classic bar rescales in place; the
+        -- tabs bar is built at startup and rescales after a restart.
+        local size_row = Config.makeScaleItem{
+            text_func     = function() return _("Size") end,
+            title         = _("Title Bar Size"),
+            info          = _("Size of the title bar buttons and tabs.\n100% is the default size."),
+            get           = function() return titlebar().getSizePct() end,
+            set           = function(pct) titlebar().setSizePct(pct) end,
+            value_max     = titlebar().SIZE_MAX_PCT,
+            refresh       = function()
+                if titlebar().isTabsStyle() then
+                    askRestart(_("A restart is required to apply the new bar size across all layouts.\n\nRestart now?"))
+                else
+                    _reapplyAllTitlebars()
+                end
+                if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+            end,
+        }
+        size_row.enabled_func = isEnabled
+
+        -- The enable toggle is the first row and stays on top as the master row.
+        local master = {
+            {
+                text_func    = function()
+                    return _("Enable Title Bar")
+                end,
+                checked_func = function() return require("screens/sui_titlebar").isEnabled() end,
+                separator    = true,
+                callback     = function()
+                    local Titlebar = require("screens/sui_titlebar")
+                    local on = Titlebar.isEnabled()
+                    Titlebar.setEnabled(not on)
+                    askRestart(string.format(
+                        _("Title Bar will be %s after restart.\n\nRestart now?"),
+                        on and _("disabled") or _("enabled")
+                    ))
+                end,
+            },
+        }
+        local style_row = {
+            text      = _("Style"),
+            enabled_func = isEnabled,
+            sub_item_table = {
+                styleItem(_("Classic"), "classic"),
+                styleItem(_("Tabs"),    "tabs"),
+            },
+        }
+
+        -- The classic style offers the full item and size customization; the
+        -- tabs style the arrangement of its tabs and search button.
+        local items
+        if titlebar().getStyle() == titlebar().STYLE_TABS then
+            items = makeTitleBarTabsItems(ctx_menu)
+        else
+            local Titlebar = require("screens/sui_titlebar")
+            items = {
+                {
+                    text         = _("Library Buttons"),
+                    enabled_func = isEnabled,
+                    sub_item_table_func = function() return makeTitleBarFMMenu(ctx_menu) end,
+                    sui_build = makeTitleBarSUIBuild(ctx_menu, _("Library Buttons"), "fm", Titlebar.getFMConfig, Titlebar.saveFMConfig),
+                },
+                {
+                    text         = _("Sub-page Buttons"),
+                    enabled_func = isEnabled,
+                    sub_item_table_func = function() return makeTitleBarSubMenu(ctx_menu) end,
+                    sui_build = makeTitleBarSUIBuild(ctx_menu, _("Sub-page Buttons"), "sub", Titlebar.getSubConfig, Titlebar.saveSubConfig),
+                },
+            }
+        end
+
+        return Config.buildModuleMenu({
+            master     = master,
+            items      = items,
+            appearance = {
+                size  = { size_row },
+                extra = appendItem({ style_row }, makeBarSurfaceMenu("titlebar", ctx_menu)),
+            },
+        }, ctx_menu)
+    end
+
+    plugin._makeTitleBarMenu = makeTitleBarMenu
+
+    -- -----------------------------------------------------------------------
+    -- Quick Actions
+    -- -----------------------------------------------------------------------
+
+    -- Quick Actions — delegated to sui_quickactions.lua
+    local QA = require("features/sui_quickactions")
+    local function makeQuickActionsMenu(ctx_menu)
+        return QA.makeMenuItems(plugin, ctx_menu)
+    end
+    plugin._makeQuickActionsMenu = makeQuickActionsMenu
+
+    local function refreshHomescreen()
+        -- Rebuild the widget tree immediately (synchronous) with keep_cache=false
+        -- so that book modules (Currently Reading, Recent Books) re-prefetch their
+        -- data. Using keep_cache=true would reuse _cached_books_state which was
+        -- built before those modules were enabled (with current_fp=nil, recent_fps={})
+        -- causing the newly-enabled modules to render empty until the next full open.
+        -- Collections and other modules have no per-instance cache so this is a
+        -- no-op cost for them.
+        --
+        -- We also schedule a setDirty via UIManager:nextTick to guarantee a repaint
+        -- AFTER the menu widget is removed from the stack. Any setDirty fired while
+        -- the menu is open is painted behind it; when the menu closes the UIManager
+        -- only repaints the menu frame region, not the full HS. nextTick runs after
+        -- the current event's onCloseWidget teardown, so the HS is the top widget
+        -- by the time the dirty is processed.
+        local HS = package.loaded["screens/sui_homescreen"]
+        if not (HS and HS._instance) then return end
+        local hs = HS._instance
+        hs:_refreshImmediate(false)
+        UIManager:nextTick(function()
+            if HS._instance == hs and hs._navbar_container then
+                UIManager:setDirty(hs, "ui")
+            end
+        end)
+    end
+
+    -- _goalTapCallback: shown when the user taps the Reading Goals widget on
+    -- the Homescreen. Lets them set the annual goal.
+    self._goalTapCallback = function()
+        require("infra/sui_goals").showDialog("annual", refreshHomescreen)
+    end
+
+    -- -----------------------------------------------------------------------
+    -- Shared parametric helpers
+    -- All menu-building functions below accept a `ctx` table:
+    --   ctx.pfx       — settings key prefix, e.g. "simpleui_hs_"
+    --   ctx.pfx_qa    — QA settings prefix, e.g. "simpleui_hs_qa_"
+    --   ctx.refresh   — zero-arg function to refresh the page after a change
+    -- -----------------------------------------------------------------------
+
+    local MAX_QA_ITEMS = 6  -- max actions per QA slot (used by makeQAMenu)
+
+    local HOMESCREEN_CTX = {
+        pfx     = "simpleui_hs_",
+        pfx_qa  = "simpleui_hs_qa_",
+        refresh = refreshHomescreen,
+    }
+
+    local Registry = require("modules/moduleregistry")
+
+    -- Returns number of active modules for a given ctx.
+    local function countModules(ctx)
+        return Registry.countEnabled(ctx.pfx)
+    end
+
+    -- getQAPool — builds the list of available actions for Quick Actions menus.
+    -- Must be declared before makeQAMenu/makeModulesMenu which use it.
+    local function getQAPool()
+        local available = {}
+        for _i, id in ipairs(QA.allIds()) do
+            if actionAvailable(id) then
+                available[#available+1] = { id = id, label = id == "home" and Config.homeLabel() or QA.getEntry(id).label }
+            end
+        end
+        for _i, qa_id in ipairs(getCustomQAList()) do
+            local _qid = qa_id
+            available[#available+1] = { id = _qid, label = getCustomQAConfig(_qid).label }
+        end
+        return available
+    end
+
+    -- Builds the QA slot sub-menu for a given ctx and slot number.
+    local function makeQAMenu(ctx, slot_n)
+        local items_key  = ctx.pfx_qa .. slot_n .. "_items"
+        local labels_key = ctx.pfx_qa .. slot_n .. "_labels"
+        local slot_label = _("Quick Actions Row")
+        local function getItems() return SUISettings:readSetting(items_key) or {} end
+        local function isSelected(id)
+            for _i, v in ipairs(getItems()) do if v == id then return true end end
+            return false
+        end
+        local function toggleItem(id)
+            local items = getItems(); local new_items = {}; local found = false
+            for _i, v in ipairs(items) do if v == id then found = true else new_items[#new_items+1] = v end end
+            if not found then
+                if #items >= MAX_QA_ITEMS then
+                    UI.Notify.toast(string.format(N_("The maximum of %d action per module has been reached. Remove one first.", "The maximum of %d actions per module has been reached. Remove one first.", MAX_QA_ITEMS), MAX_QA_ITEMS), 2)
+                    return
+                end
+                new_items[#new_items+1] = id
+            end
+            SUISettings:saveSetting(items_key, new_items); ctx.refresh()
+        end
+        local items_sub = {}
+        local sorted_pool = {}
+        for _i, a in ipairs(getQAPool()) do sorted_pool[#sorted_pool+1] = a end
+        table.sort(sorted_pool, function(a, b) return a.label:lower() < b.label:lower() end)
+        items_sub[#items_sub+1] = {
+            text           = _("Arrange Items"),
+            keep_menu_open = true,
+            separator      = true,
+            enabled_func   = function() return #getItems() >= 2 end,
+            callback       = function()
+              local qa_ids = getItems()
+              if #qa_ids < 2 then UI.Notify.toast(_("Add at least 2 actions to arrange."), 2); return end
+              local pool_labels = {}; for _i, a in ipairs(getQAPool()) do pool_labels[a.id] = a.label end
+              local sort_items = {}
+              for _i, id in ipairs(qa_ids) do sort_items[#sort_items+1] = { text = pool_labels[id] or id, orig_item = id } end
+              UIManager:show(SortWidget():new{ title = string.format(_("Arrange %s"), slot_label), covers_fullscreen = true, item_table = sort_items,
+                  callback = function()
+                      local new_order = {}; for _i, item in ipairs(sort_items) do new_order[#new_order+1] = item.orig_item end
+                      SUISettings:saveSetting(items_key, new_order); ctx.refresh()
+                  end })
+          end,
+        }
+        for _i, a in ipairs(sorted_pool) do
+            local aid = a.id; local _lbl = a.label
+            items_sub[#items_sub+1] = {
+                text_func = function()
+                    if isSelected(aid) then return _lbl end
+                    local rem = MAX_QA_ITEMS - #getItems()
+                    if rem <= 2 then return _lbl .. string.format(N_("  (%d left)", "  (%d left)", rem), rem) end
+                    return _lbl
+                end,
+                checked_func   = function() return isSelected(aid) end,
+                keep_menu_open = true,
+                callback       = function() toggleItem(aid) end,
+            }
+        end
+        return {
+            {
+                text           = _("Hide Label"),
+                checked_func   = function() return not SUISettings:nilOrTrue(labels_key) end,
+                keep_menu_open = true,
+                separator      = true,
+                callback       = function()
+                    SUISettings:saveSetting(labels_key, not SUISettings:nilOrTrue(labels_key))
+                    ctx.refresh()
+                end,
+            },
+            {
+                text                = _("Items"),
+                sub_item_table_func = function() return items_sub end,
+                sui_build = ctx and ctx.is_sui and function(ctx2, _item)
+                    local SUIWindow = require("engines/sui_window")
+                    return SUIWindow.ListRow{
+                        title        = _("Items"),
+                        subtitle     = function()
+                            local qa_ids = getItems()
+                            if #qa_ids == 0 then return _("No items selected.") end
+                            local pool_labels = {}
+                            for _, a in ipairs(getQAPool()) do pool_labels[a.id] = a.label end
+                            local names = {}
+                            for _, id in ipairs(qa_ids) do
+                                names[#names + 1] = pool_labels[id] or id
+                            end
+                            return table.concat(names, "  ·  ")
+                        end,
+                        inner_w      = ctx2.inner_w,
+                        item_count   = function() return #getItems() end,
+                        max_items    = MAX_QA_ITEMS,
+                        show_chevron = true,
+                        on_tap       = function()
+                            local qa_ids = getItems()
+                            local pool_labels = {}
+                            for _, a in ipairs(getQAPool()) do pool_labels[a.id] = a.label end
+                            local sort_items = {}
+                            for _, id in ipairs(qa_ids) do
+                                sort_items[#sort_items + 1] = { text = pool_labels[id] or id, orig_item = id }
+                            end
+                            
+                            ctx2.push("arrange", {
+                                title = _("Items"),
+                                items = sort_items,
+                                empty_text = _("No items selected."),
+                                item_count = function() return #getItems() end,
+                                max_items  = MAX_QA_ITEMS,
+                                on_delete = function(item) end,
+                                on_change = function(items_to_save)
+                                    local new_order = {}
+                                    for _, it in ipairs(items_to_save) do new_order[#new_order + 1] = it.orig_item end
+                                    SUISettings:saveSetting(items_key, new_order)
+                                    ctx.refresh()
+                                end,
+                                footer_text = _("Add Item"),
+                                footer_action = function(ctx3)
+                                    local picker_items = {}
+                                    local sorted_pool2 = {}
+                                    for _, a in ipairs(getQAPool()) do sorted_pool2[#sorted_pool2 + 1] = a end
+                                    table.sort(sorted_pool2, function(a, b) return a.label:lower() < b.label:lower() end)
+
+                                    for _, a in ipairs(sorted_pool2) do
+                                        if not isSelected(a.id) then
+                                            local _id = a.id
+                                            local _label = a.label
+                                            picker_items[#picker_items + 1] = {
+                                                text   = _label,
+                                                on_tap = function(picker_ctx)
+                                                    local cur = getItems()
+                                                    if #cur >= MAX_QA_ITEMS then
+                                                        UI.Notify.toast(string.format(N_("The maximum of %d action per module has been reached. Remove one first.", "The maximum of %d actions per module has been reached. Remove one first.", MAX_QA_ITEMS), MAX_QA_ITEMS), 2)
+                                                        return
+                                                    end
+                                                    cur[#cur + 1] = _id
+                                                    SUISettings:saveSetting(items_key, cur)
+                                                    table.insert(sort_items, { text = _label, orig_item = _id })
+                                                    ctx.refresh()
+                                                    picker_ctx.pop()
+                                                    ctx3.repaint()
+                                                end,
+                                            }
+                                        end
+                                    end
+                                    ctx3.push("item_picker", {
+                                        title = _("Add Item"),
+                                        items = picker_items,
+                                    })
+                                end
+                            })
+                        end
+                    }
+                end or nil,
+            },
+        }
+    end
+
+    -- Builds the full "Modules" sub-menu for a given ctx.
+    -- Fully registry-driven: no module ids hardcoded here.
+    local function makeModulesMenu(ctx)
+        -- ctx_menu passed to each module's getMenuItems()
+        -- SortWidget is resolved lazily on first access via __index so that
+        -- require("ui/widget/...") is deferred until the user actually opens
+        -- a module settings menu, not when makeModulesMenu runs.
+        local ctx_menu_data = {
+            pfx           = ctx.pfx,
+            pfx_qa        = ctx.pfx_qa,
+            refresh       = ctx.refresh,
+            UIManager     = UIManager,
+            _             = _,
+            N_            = N_,
+            MAX_LABEL_LEN = MAX_LABEL_LEN,
+            makeQAMenu    = makeQAMenu,
+            _cover_picker = nil,
+        }
+        local ctx_menu = setmetatable(ctx_menu_data, {
+            __index = function(t, k)
+                if k == "SortWidget" then
+                    local v = SortWidget(); rawset(t, k, v); return v
+                end
+            end,
+        })
+
+        local function loadOrder()
+            local saved   = SUISettings:readSetting(ctx.pfx .. "module_order")
+            local default = Registry.defaultOrder()
+            if type(saved) ~= "table" or #saved == 0 then return default end
+            local seen = {}; local result = {}
+            for _loop_, v in ipairs(saved) do seen[v] = true; result[#result+1] = v end
+            for _loop_, v in ipairs(default) do if not seen[v] then result[#result+1] = v end end
+            return result
+        end
+
+        -- Toggle item for one module descriptor.
+        -- Persistence is fully delegated to mod.setEnabled(pfx, on).
+        local function makeToggleItem(mod)
+            local _mod = mod
+            return {
+                text_func = function()
+                    return _(_mod.name) -- Translated at display time
+                end,
+                checked_func   = function() return Registry.isEnabled(_mod, ctx.pfx) end,
+                keep_menu_open = true,
+                callback = function()
+                    local on = Registry.isEnabled(_mod, ctx.pfx)
+                    if type(_mod.setEnabled) == "function" then
+                        _mod.setEnabled(ctx.pfx, not on)
+                    elseif _mod.enabled_key then
+                        SUISettings:saveSetting(ctx.pfx .. _mod.enabled_key, not on)
+                    end
+                    ctx.refresh()
+                end,
+            }
+        end
+
+        -- Module Settings sub-menu: one entry per module that has getMenuItems.
+        -- Count labels are provided by mod.getCountLabel(pfx) — no per-id special cases.
+        local function makeModuleSettingsMenu()
+            local items    = {}
+            local qa_items = {}
+            local function _moduleSettingsItems(_mod)
+                local list = type(_mod.getMenuItems) == "function" and (_mod.getMenuItems(ctx_menu) or {}) or {}
+                -- Top Margin + Width and Position — same chrome as every other
+                -- module settings screen, see Config.appendModuleChromeItems.
+                Config.appendModuleChromeItems(list, {
+                    mod          = _mod,
+                    pfx          = ctx.pfx,
+                    refresh      = ctx_menu.refresh,
+                    layout_sheet = function()
+                        require("features/dialogs/sui_bento_sheet").show{
+                            mod_id     = _mod.id,
+                            pfx        = ctx.pfx,
+                            on_changed = function()
+                                if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                            end,
+                        }
+                    end,
+                })
+                return list
+            end
+            for _loop_, mod in ipairs(Registry.list()) do
+                -- Every module gets a settings entry so Width and Position is reachable
+                -- from the global menu as well as from long-press on the homescreen.
+                local _mod = mod
+                local text_fn = function()
+                    local count_lbl = type(_mod.getCountLabel) == "function"
+                        and _mod.getCountLabel(ctx.pfx)
+                    return count_lbl
+                        and (_(_mod.name) .. "  " .. count_lbl)
+                        or   _(_mod.name)
+                end
+                if Registry.getMenuGroup(_mod.id) == "quick_actions" then
+                    qa_items[#qa_items + 1] = {
+                        text_func           = text_fn,
+                        sub_item_table_func = function() return _moduleSettingsItems(_mod) end,
+                    }
+                else
+                    items[#items + 1] = {
+                        text_func           = text_fn,
+                        sub_item_table_func = function() return _moduleSettingsItems(_mod) end,
+                    }
+                end
+            end
+            if #qa_items > 0 then
+                items[#items + 1] = {
+                    text                = _("Quick Actions"),
+                    sub_item_table_func = function() return qa_items end,
+                }
+            end
+            return items
+        end
+
+        return {
+            {
+                text_func = function()
+                    local n = countModules(ctx)
+                    return string.format(_("Modules  (%d)"), n)
+                end,
+                sub_item_table_func = function()
+                    local result = {
+                        {
+                            text = _("Edit Home Screen Layout"),
+                            callback = function()
+                                local SettingsWindow = require("screens/sui_settings_window")
+                                SettingsWindow:show()
+                            end,
+                        },
+                        {
+                            text = _("Module Settings"),
+                            sub_item_table_func = makeModuleSettingsMenu,
+                        },
+                    }
+                    return result
+                end,
+            },
+        }
+    end
+
+    local function makeWallpaperMenuItems(ctx_menu)
+        local SUIWallpaper = require("features/sui_wallpaper")
+
+        local function strengthItem(opts)
+            return makeBackdropEntry(opts, ctx_menu)
+        end
+
+        -- Wallpaper tint entry (0–99 %, no tint by default).
+        local function tintItem(opts)
+            opts.default_value = 0
+            opts.value_max     = SUIWallpaper.TINT_MAX
+            opts.format        = function(strength) return strength .. "%" end
+            return strengthItem(opts)
+        end
+
+        -- Image option that rebuilds the wallpaper when toggled.
+        local function imageToggleItem(text, get, set)
+            return {
+                text           = text,
+                enabled_func   = SUIWallpaper.styleGetWallpaperEnabled,
+                checked_func   = get,
+                keep_menu_open = true,
+                callback       = function()
+                    set(not get())
+                    _applyFullLayoutRefresh()
+                end,
+            }
+        end
+
+        local function selectWallpaperItems()
+            local items = {
+                {
+                    text           = _("Browse…"),
+                    keep_menu_open = true,
+                    separator      = true,
+                    callback       = function()
+                        local AssetBrowser = require("engines/sui_asset_browser")
+                        UIManager:show(AssetBrowser:new{
+                            path       = SUIWallpaper.styleGetWallpapersDir(),
+                            extensions = SUIWallpaper.SUPPORTED_WALLPAPER_EXTS,
+                            title      = _("Choose wallpaper"),
+                            onConfirm  = function(path)
+                                SUIWallpaper.styleSetWallpaper(path)
+                                _applyFullLayoutRefresh()
+                            end,
+                        })
+                    end,
+                },
+            }
+            for _i, wp in ipairs(SUIWallpaper.styleScanWallpapers()) do
+                local _wp = wp
+                items[#items + 1] = {
+                    text_func      = function() return _wp.label end,
+                    radio          = true,
+                    checked_func   = function() return SUIWallpaper.styleGetWallpaper() == _wp.path end,
+                    keep_menu_open = true,
+                    callback       = function()
+                        SUIWallpaper.styleSetWallpaper(_wp.path)
+                        _applyFullLayoutRefresh()
+                    end,
+                }
+            end
+            if #items == 1 then
+                items[#items + 1] = { text = _("No wallpapers found."), enabled = false }
+            end
+            items[#items + 1] = { text = _("Place images in:"), enabled = false, separator = true }
+            items[#items + 1] = { text = SUIWallpaper.styleGetWallpapersDir(), enabled = false }
+            return items
+        end
+
+        -- Ordered as: source → image rendering → tint → surfaces over the
+        -- wallpaper (top of the screen to bottom).
+        return {
+            {
+                text           = _("Enable Wallpaper"),
+                checked_func   = SUIWallpaper.styleGetWallpaperEnabled,
+                keep_menu_open = true,
+                separator      = true,
+                callback       = function()
+                    SUIWallpaper.styleSetWallpaperEnabled(not SUIWallpaper.styleGetWallpaperEnabled())
+                    _applyFullLayoutRefresh()
+                end,
+            },
+            {
+                text                = _("Select Wallpaper"),
+                enabled_func        = SUIWallpaper.styleGetWallpaperEnabled,
+                sub_item_table_func = selectWallpaperItems,
+            },
+            {
+                text           = _("Show wallpaper on all screens"),
+                checked_func   = SUIWallpaper.styleGetWallpaperShowInFM,
+                enabled_func   = SUIWallpaper.isWallpaperActive,
+                keep_menu_open = true,
+                separator      = true,
+                callback       = function()
+                    SUIWallpaper.styleSetWallpaperShowInFM(not SUIWallpaper.styleGetWallpaperShowInFM())
+                    _applyFullLayoutRefresh()
+                end,
+            },
+            imageToggleItem(_("Stretch to fill screen"),
+                SUIWallpaper.styleGetWallpaperStretch, SUIWallpaper.styleSetWallpaperStretch),
+            imageToggleItem(_("Auto-rotate"),
+                SUIWallpaper.styleGetWallpaperAutoRotate, SUIWallpaper.styleSetWallpaperAutoRotate),
+            imageToggleItem(_("Invert in Night Mode"),
+                SUIWallpaper.styleGetWallpaperInvertNight, SUIWallpaper.styleSetWallpaperInvertNight),
+            tintItem({
+                title = _("Lighten"),
+                info  = _("Fades the wallpaper towards white to improve text readability."),
+                get   = SUIWallpaper.styleGetWallpaperLighten,
+                set   = SUIWallpaper.styleSetWallpaperLighten,
+            }),
+            tintItem({
+                title = _("Darken"),
+                info  = _("Fades the wallpaper towards black."),
+                get   = SUIWallpaper.styleGetWallpaperDarken,
+                set   = SUIWallpaper.styleSetWallpaperDarken,
+            }),
+            makeBarBackdropItem("statusbar",  ctx_menu, _("Status Bar Opacity")),
+            makeBarBackdropItem("titlebar",   ctx_menu, _("Title Bar Opacity")),
+            makeBarBackdropItem("pagination", ctx_menu, _("Pagination Bar Opacity")),
+            makeBarBackdropItem("navbar",     ctx_menu, _("Navigation Bar Opacity")),
+        }
+    end
+    plugin.makeWallpaperMenuItems = makeWallpaperMenuItems
+
+    -- Host "Start with" menu, already extended with the Home Screen choice and
+    -- reused as is so the plugin and the host share one menu and one setting.
+    -- The row label is static; the active choice is the row value (see the
+    -- row title/value convention in engines/sui_window.lua).
+    local function startWithItem()
+        local FileManagerMenu = require("apps/filemanager/filemanagermenu")
+        local item    = FileManagerMenu:getStartWithMenuTable()
+        local choices = item.sub_item_table
+
+        for _i, choice in ipairs(choices) do
+            choice.keep_menu_open = true
+        end
+
+        local function activeChoiceLabel()
+            for _i, choice in ipairs(choices) do
+                if choice.checked_func and choice.checked_func() then
+                    return choice.text
+                end
+            end
+            return ""
+        end
+
+        item.text_func      = nil
+        item.text           = _("Start with")
+        item.value_func     = activeChoiceLabel
+        item.mandatory_func = activeChoiceLabel
+        return item
+    end
+
+    -- Radio menu for the screen shown after closing a book.
+    local function bookCloseTargetItem()
+        local TARGET = Config.BOOK_CLOSE_TARGET
+        return Config.makeRadioSubmenuItem{
+            text      = _("After closing a book"),
+            help_text = _("Screen shown after closing a book. Gestures and quick actions that name a destination always open that destination."),
+            options   = {
+                { value = TARGET.HOMESCREEN,  label = _("Home Screen")  },
+                { value = TARGET.LIBRARY,     label = _("Library")      },
+                { value = TARGET.BOOK_FOLDER, label = _("Book Folder")  },
+            },
+            get = Config.getBookCloseTarget,
+            set = Config.setBookCloseTarget,
+        }
+    end
+
+    local function makeBehaviourMenuItems(ctx)
+        ctx = ctx or HOMESCREEN_CTX
+        local items = {
+            startWithItem(),
+            bookCloseTargetItem(),
+            {
+                text           = _("Return to Home Screen on Wakeup"),
+                help_text      = _("When waking the device from sleep/suspend, always return to the Home Screen — even if a book was open when it went to sleep."),
+                checked_func   = function()
+                    return SUISettings:isTrue("simpleui_hs_return_on_wakeup")
+                end,
+                keep_menu_open = true,
+                callback       = function()
+                    local on = SUISettings:isTrue("simpleui_hs_return_on_wakeup")
+                    SUISettings:saveSetting("simpleui_hs_return_on_wakeup", not on)
+                end,
+            },
+            {
+                text_func = function() return _("Scale") end,
+                separator = true,
+                sub_item_table = {
+                    {
+                        text_func    = function() return _("Lock Scale") end,
+                        checked_func = function() return Config.isScaleLinked() end,
+                        keep_menu_open = true,
+                        separator = true,
+                        callback = function()
+                            Config.setScaleLinked(not Config.isScaleLinked())
+                            _applyFullLayoutRefresh()
+                        end,
+                    },
+                    Config.makeSpinItem{
+                        text_func    = function() return _("Modules") end,
+                        title        = _("Module Scale"),
+                        info         = function()
+                            return Config.isScaleLinked()
+                                and _("Scales all modules and labels together.\n100% is the default size.")
+                                or  _("Global scale for all modules.\nIndividual overrides in Module Settings take precedence.\n100% is the default size.")
+                        end,
+                        get          = Config.getModuleScalePct,
+                        value_min    = Config.SCALE_MIN,
+                        value_max    = Config.SCALE_MAX,
+                        value_step   = Config.SCALE_STEP,
+                        default_value= Config.SCALE_DEF,
+                        unit         = "%",
+                        set          = function(value)
+                            Config.setModuleScale(value)
+                            _applyFullLayoutRefresh()
+                            if ctx and ctx.refresh then ctx.refresh() end
+                        end,
+                    },
+                    Config.makeSpinItem{
+                        text_func    = function() return _("Labels") end,
+                        guard        = function()
+                            if not Config.isScaleLinked() then return true end
+                            UI.Notify.toast(_("Disable \"Lock Scale\" first to set a custom label scale."))
+                        end,
+                        title        = _("Label Scale"),
+                        info         = _("Scales the module label text above each module, on top of the size set in Style > Module Labels.\n100% is the default size."),
+                        get          = Config.getLabelScalePct,
+                        value_min    = Config.SCALE_MIN,
+                        value_max    = Config.SCALE_MAX,
+                        value_step   = Config.SCALE_STEP,
+                        default_value= Config.SCALE_DEF,
+                        unit         = "%",
+                        set          = function(value)
+                            Config.setLabelScale(value)
+                            _applyFullLayoutRefresh()
+                            if ctx and ctx.refresh then ctx.refresh() end
+                        end,
+                    },
+                    {
+                        text      = _("Reset to Default Scale"),
+                        separator = true,
+                        callback  = function()
+                            local Dialogs = require("features/dialogs/sui_dialogs")
+                            Dialogs.confirm{
+                                text    = _("Reset all scales to default (100%)? This cannot be undone."),
+                                ok_text = _("Reset"),
+                                ok_callback = function()
+                                    Config.resetAllScales(ctx.pfx, ctx.pfx_qa)
+                                    local FC = package.loaded["features/library/sui_foldercovers"]
+                                    if FC and FC.invalidateCache then FC.invalidateCache() end
+                                    _applyFullLayoutRefresh()
+                                    if ctx and ctx.refresh then ctx.refresh() end
+                                end,
+                            }
+                        end,
+                    },
+                },
+            },
+            {
+                text = _("Closing Book Notice"),
+                help_text = _("Show a brief \"Closing book…\" notice when closing a book, preventing accidental double-taps while e-ink refreshes."),
+                sub_item_table = {
+                    {
+                        text = _("Always"),
+                        radio = true,
+                        keep_menu_open = true,
+                        checked_func = function()
+                            local mode = SUISettings:readSetting("simpleui_hs_closing_notice_mode")
+                            if not mode then
+                                return SUISettings:readSetting("simpleui_hs_closing_notice") ~= false
+                            end
+                            return mode == "always"
+                        end,
+                        callback = function()
+                            SUISettings:saveSetting("simpleui_hs_closing_notice_mode", "always")
+                        end,
+                    },
+                    {
+                        text = _("Gesture Only"),
+                        radio = true,
+                        keep_menu_open = true,
+                        checked_func = function()
+                            return SUISettings:readSetting("simpleui_hs_closing_notice_mode") == "gesture_only"
+                        end,
+                        callback = function()
+                            SUISettings:saveSetting("simpleui_hs_closing_notice_mode", "gesture_only")
+                        end,
+                    },
+                    {
+                        text = _("Never"),
+                        radio = true,
+                        keep_menu_open = true,
+                        checked_func = function()
+                            local mode = SUISettings:readSetting("simpleui_hs_closing_notice_mode")
+                            if not mode then
+                                return SUISettings:readSetting("simpleui_hs_closing_notice") == false
+                            end
+                            return mode == "never"
+                        end,
+                        callback = function()
+                            SUISettings:saveSetting("simpleui_hs_closing_notice_mode", "never")
+                        end,
+                    },
+                },
+            },
+            {
+                text = _("Book Cover Transition"),
+                help_text = _("Briefly show the book cover full-screen when opening or closing a book, masking the page-layout flash. Normally requires the book to already be indexed by the cover browser (its cover must have been seen at least once in a grid/list view) — see \"High-Quality Cover\" below to also cover un-indexed books."),
+                sub_item_table = {
+                    {
+                        text           = _("Show on Open"),
+                        checked_func   = function()
+                            return SUISettings:isTrue("simpleui_reader_cover_open")
+                        end,
+                        keep_menu_open = true,
+                        callback       = function()
+                            local on = SUISettings:isTrue("simpleui_reader_cover_open")
+                            SUISettings:saveSetting("simpleui_reader_cover_open", not on)
+                        end,
+                    },
+                    {
+                        text           = _("Show on Close"),
+                        help_text      = _("Replaces the \"Closing book…\" notice above with the cover for that close, when a cover is available."),
+                        checked_func   = function()
+                            return SUISettings:isTrue("simpleui_reader_cover_close")
+                        end,
+                        keep_menu_open = true,
+                        callback       = function()
+                            local on = SUISettings:isTrue("simpleui_reader_cover_close")
+                            SUISettings:saveSetting("simpleui_reader_cover_close", not on)
+                        end,
+                    },
+                    {
+                        text           = _("High-Quality Cover"),
+                        help_text      = _("The cover shown right as a book opens normally comes from the library's cached thumbnail, which can look soft on higher-resolution screens. When on, SimpleUI instead reads the cover straight from the book file for that moment (also covers books never opened before, which otherwise show no cover at all) — at the cost of a brief extra pause while opening, since the file has to be read twice. Cover on close is unaffected either way: it already reads the full-quality cover from the open book."),
+                        checked_func   = function()
+                            return SUISettings:isTrue("simpleui_reader_cover_bestquality")
+                        end,
+                        keep_menu_open = true,
+                        callback       = function()
+                            local on = SUISettings:isTrue("simpleui_reader_cover_bestquality")
+                            SUISettings:saveSetting("simpleui_reader_cover_bestquality", not on)
+                        end,
+                    },
+                    {
+                        text           = _("Preserve Cover Proportions"),
+                        help_text      = _("By default the cover is stretched to fill the whole screen, which can distort it if its proportions don't match your screen's. When on, the cover keeps its original proportions instead, centered over a black background."),
+                        checked_func   = function()
+                            return SUISettings:isTrue("simpleui_reader_cover_fit")
+                        end,
+                        keep_menu_open = true,
+                        callback       = function()
+                            local on = SUISettings:isTrue("simpleui_reader_cover_fit")
+                            SUISettings:saveSetting("simpleui_reader_cover_fit", not on)
+                        end,
+                    },
+                },
+            },
+            {
+                text           = _("Overflow Warning"),
+                help_text      = _("Warn when modules on a page exceed the available screen height."),
+                checked_func   = function()
+                    return SUISettings:nilOrTrue("simpleui_hs_overflow_warn")
+                end,
+                keep_menu_open = true,
+                callback       = function()
+                    local on = SUISettings:nilOrTrue("simpleui_hs_overflow_warn")
+                    SUISettings:saveSetting("simpleui_hs_overflow_warn", not on)
+                end,
+            },
+            {
+                text           = _("Settings on Long Tap"),
+                help_text      = _("When enabled, long-pressing a module on the home screen opens its settings menu.\nDisable this to prevent settings from appearing on long tap."),
+                checked_func   = function()
+                    return SUISettings:nilOrTrue("simpleui_hs_settings_on_hold")
+                end,
+                keep_menu_open = true,
+                callback       = function()
+                    local on = SUISettings:nilOrTrue("simpleui_hs_settings_on_hold")
+                    SUISettings:saveSetting("simpleui_hs_settings_on_hold", not on)
+                    refreshHomescreen()
+                end,
+            },
+        }
+
+        -- Shown only when the device maps a key to KOReader's "Home" name
+        -- (PocketBook, reMarkable, Cervantes, Sony, some Kindles, …). Natively
+        -- the Home key closes the reader into the file manager (or navigates
+        -- the FM to home_dir). This option redirects the physical Home key to
+        -- the SimpleUI Home Screen; the file browser title-bar home icon still
+        -- goes to the home folder.
+        if Config.deviceHasHomeKey() then
+            table.insert(items, 3, {
+                text           = _("Home key opens Home Screen"),
+                help_text      = _("Makes the device's physical Home key open the SimpleUI Home Screen — while reading and while browsing files — instead of KOReader's native Home behaviour. The file browser title-bar home icon still goes to the home folder."),
+                checked_func   = function()
+                    return SUISettings:isTrue("simpleui_home_key_opens_hs")
+                end,
+                keep_menu_open = true,
+                callback       = function()
+                    local on = SUISettings:isTrue("simpleui_home_key_opens_hs")
+                    SUISettings:saveSetting("simpleui_home_key_opens_hs", not on)
+                end,
+            })
+        end
+
+        return items
+    end
+    plugin.makeBehaviourMenuItems = makeBehaviourMenuItems
+
+    function plugin.makeStatsMenuItems(opts)
+        return require("features/sui_stats_menu").makeMenuItems{
+            refresh     = refreshHomescreen,
+            open_window = opts and opts.open_window,
+        }
+    end
+
+    local function makeHomescreenMenu(ctx_menu)
+        return {
+            {
+                text = _("Modules"),
+                sub_item_table_func = function() return makeModulesMenu(HOMESCREEN_CTX) end,
+            },
+            -- Moved here from the "Style" section: see screens/sui_settings_window.lua's
+            -- buildHomeScreenSettings for the equivalent move in the SUIWindow tree.
+            {
+                text = _("Wallpaper"),
+                sub_item_table_func = function(tm)
+                    return makeWallpaperMenuItems(tm)
+                end,
+            },
+            {
+                text = _("Presets"),
+                sub_item_table_func = function()
+                    local P = require("features/sui_presets")
+                    return P.makeMenuItems{
+                        on_apply       = function()
+                            local HS = package.loaded["screens/sui_homescreen"]
+                            if HS and HS.rebuildLayout then HS.rebuildLayout() end
+                            refreshHomescreen()
+                            _applyFullLayoutRefresh()
+                        end,
+                        on_save        = refreshHomescreen,
+                        in_window      = ctx_menu and ctx_menu.is_sui,
+                    }
+                end,
+            },
+            {
+                text = _("Stats"),
+                sub_item_table_func = function() return plugin.makeStatsMenuItems() end,
+            },
+            {
+                text = _("Behaviour"),
+                sub_item_table_func = function() return makeBehaviourMenuItems(HOMESCREEN_CTX) end,
+            },
+        }
+    end
+
+    local function makeBarsMenuItems(ctx_menu)
+        return {
+            { text = _("Status Bar"),     sub_item_table_func = function() return makeTopbarMenu(ctx_menu) end },
+            { text = _("Navigation Bar"),  sub_item_table_func = function() return makeNavbarMenu(ctx_menu) end },
+            { text = _("Title Bar"),      sub_item_table_func = function() return makeTitleBarMenu(ctx_menu) end },
+            { text = _("Pagination Bar"), sub_item_table_func = function() return makePaginationBarMenu(ctx_menu) end },
+            {
+                text = _("Quick Settings Bar"),
+                sub_item_table_func = function()
+                    local ok, QSBar = pcall(require, "screens/sui_quicksettings_bar")
+                    return ok and QSBar.makeMenuItems(ctx_menu) or {}
+                end
+            },
+        }
+    end
+
+    plugin.makeBarsMenuItems = makeBarsMenuItems
+
+    -- Refreshes the library mosaic view immediately after a setting change.
+    local function _refreshFC()
+        local FM = package.loaded["apps/filemanager/filemanager"]
+        local fm = FM and FM.instance
+        if fm and fm.file_chooser then
+            fm._navbar_suppress_path_change = true
+            fm.file_chooser:refreshPath()
+            fm._navbar_suppress_path_change = nil
+        end
+    end
+
+    local Finished = require("features/library/sui_finished_books")
+
+    -- "Finished Books": the display mode shared by every library view, plus
+    -- the fade intensity, which only applies in the fade mode.
+    local function makeFinishedBooksItem(FC)
+        local function refresh()
+            _refreshFC()
+            refreshHomescreen()
+        end
+        local item = Finished.makeSubmenuItem(refresh)
+        item.sub_item_table_func = function()
+            local items = Finished.appendRadioItems({}, refresh)
+            items[#items].separator = true
+            items[#items + 1] = Config.makeSpinItem{
+                text_func    = function() return _("Intensity") end,
+                enabled_func = function() return Finished.isFaded() end,
+                title        = _("Fade Intensity"),
+                info         = _("Fades finished book covers towards white.\n50% is the default."),
+                get          = FC.getFadeAmountPct,
+                value_min    = FC.FADE_AMOUNT_MIN,
+                value_max    = FC.FADE_AMOUNT_MAX,
+                value_step   = FC.FADE_AMOUNT_STEP,
+                default_value= FC.FADE_AMOUNT_DEF,
+                unit         = "%",
+                set          = function(value)
+                    FC.setFadeAmountPct(value)
+                    _refreshFC()
+                end,
+            }
+            return items
+        end
+        return item
+    end
+
+    -- "Group by Book Series": one checkbox per view whose lists can be grouped.
+    local function makeSeriesGroupingItem(FC)
+        local BM = require("features/library/sui_library_browse")
+
+        local function activeViews()
+            local labels = {}
+            for _i, mode in ipairs(BM.SERIES_GROUPING_MODES) do
+                if FC.getSeriesGrouping(mode) then labels[#labels + 1] = BM.getModeLabel(mode) end
+            end
+            return #labels > 0 and table.concat(labels, ", ") or _("Off")
+        end
+
+        local function viewItems()
+            local items = {}
+            for _i, mode in ipairs(BM.SERIES_GROUPING_MODES) do
+                items[#items + 1] = {
+                    text           = BM.getModeLabel(mode),
+                    checked_func   = function() return FC.getSeriesGrouping(mode) end,
+                    enabled_func   = function() return mode == "normal" or BM.isEnabled() end,
+                    keep_menu_open = true,
+                    callback       = function()
+                        FC.setSeriesGrouping(mode, not FC.getSeriesGrouping(mode))
+                        FC.invalidateCache()
+                        _refreshFC()
+                    end,
+                }
+            end
+            return items
+        end
+
+        return {
+            text                = _("Group by Book Series"),
+            value_func          = activeViews,
+            separator           = true,
+            enabled_func        = function() return FC.isEnabled() end,
+            sub_item_table_func = viewItems,
+        }
+    end
+
+    -- "Library Captions": title (and author) strip below the library covers.
+    -- A restart applies it, since the strip patches the mosaic item at install.
+    local function makeLibraryCaptionsItem(FC, ctx_menu)
+        local SUIWallpaper = require("features/sui_wallpaper")
+
+        local function confirmRestart()
+            askRestart(_("Library captions changed.\n\nRestart now?"))
+        end
+
+        return {
+            text         = _("Library Captions"),
+            sub_item_table_func = function()
+                return {
+                    {
+                        text           = _("Show"),
+                        checked_func   = FC.getCaptionsShow,
+                        keep_menu_open = true,
+                        callback       = function()
+                            FC.setCaptionsShow(not FC.getCaptionsShow())
+                            confirmRestart()
+                        end,
+                    },
+                    Config.makeRadioSubmenuItem{
+                        text         = _("Content"),
+                        enabled_func = FC.getCaptionsShow,
+                        options      = {
+                            { value = "title",        label = _("Title") },
+                            { value = "title_author", label = _("Title and Author") },
+                        },
+                        get          = FC.getCaptionsContent,
+                        set          = FC.setCaptionsContent,
+                        refresh      = confirmRestart,
+                    },
+                    Config.makeSurfaceMenu{
+                        surface       = SUIWallpaper.COVER_STRIP,
+                        enabled_func  = FC.getCaptionsShow,
+                        with_strength = SUIWallpaper.styleGetWallpaperShowInFM,
+                        refresh       = function(touchmenu)
+                            _refreshFC()
+                            if ctx_menu and ctx_menu.refresh then
+                                ctx_menu.refresh()
+                            elseif touchmenu and touchmenu.updateItems then
+                                touchmenu:updateItems()
+                            end
+                        end,
+                    },
+                }
+            end,
+        }
+    end
+
+    -- "Cover Shadow": one checkbox per surface that draws shadowed covers.
+    local function makeCoverShadowItem()
+        return {
+            text = _("Cover Shadow"),
+            sub_item_table_func = function()
+                local SUIStyle = require("features/sui_style")
+                -- One checkbox per surface; `refresh` redraws that surface.
+                local function scopeItem(label, scope, refresh)
+                    return {
+                        text           = label,
+                        checked_func   = function() return SUIStyle.coverShadowEnabled(scope) end,
+                        keep_menu_open = true,
+                        callback       = function()
+                            SUIStyle.setCoverShadowEnabled(scope, not SUIStyle.coverShadowEnabled(scope))
+                            refresh()
+                        end,
+                    }
+                end
+                return {
+                    scopeItem(_("Library"), SUIStyle.SHADOW_LIBRARY, function()
+                        local ok_fc, FC = pcall(require, "features/library/sui_foldercovers")
+                        if ok_fc and FC then FC.invalidateCache() end
+                        _refreshFC()
+                    end),
+                    scopeItem(_("Modules"), SUIStyle.SHADOW_MODULES, _applyFullLayoutRefresh),
+                }
+            end,
+        }
+    end
+
+    -- Style → Covers: the look of covers and their badges, shared by the
+    -- library and the home screen modules.
+    local function makeCoversMenuItems(ctx_menu)
+        local ok_fc, FC = pcall(require, "features/library/sui_foldercovers")
+        if not ok_fc or not FC then return {} end
+        local CE = require("features/sui_cover_elements")
+
+        -- A changed badge default redraws the library and the home screen.
+        local function refreshBadges()
+            FC.invalidateCache()
+            _refreshFC()
+            refreshHomescreen()
+        end
+
+        local function refreshFolderCovers()
+            FC.invalidateCache()
+            _refreshFC()
+        end
+
+        -- The stack style also shapes the Collections module, so the home
+        -- screen is redrawn along with the library.
+        local function refreshFolderStack()
+            refreshFolderCovers()
+            _applyFullLayoutRefresh()
+        end
+
+        -- Folders: library settings vs module settings. Library folder-name
+        -- options are superseded by captions when those are on.
+        local folders = {
+            text         = _("Folders"),
+            enabled_func = function() return FC.isEnabled() end,
+            sub_item_table_func = function()
+                local all = CE.makeFolderCoversItems{
+                    refresh_cover   = refreshFolderCovers,
+                    refresh_stack   = refreshFolderStack,
+                    refresh_name    = refreshFolderCovers,
+                    name_value_func = function()
+                        if FC.getCaptionsShow() then return _("Shown in captions") end
+                        return CE.isShown("name") and _("On") or _("Off")
+                    end,
+                }
+                -- all = { Cover Type, Book Stack, Folder Name }
+                local cover_type, book_stack, folder_name = all[1], all[2], all[3]
+
+                if folder_name then
+                    folder_name.enabled_func = function() return not FC.getCaptionsShow() end
+                    local prev_cb = folder_name.callback
+                    folder_name.callback = function()
+                        if FC.getCaptionsShow() then
+                            local UIManager = require("ui/uimanager")
+                            local InfoMessage = require("ui/widget/infomessage")
+                            UIManager:show(InfoMessage:new{
+                                text = _("Library captions are enabled. Folder names are shown in the caption strip under each cover instead of on the cover."),
+                            })
+                            return
+                        end
+                        if prev_cb then prev_cb() end
+                    end
+                end
+
+                return {
+                    {
+                        text                = _("Library"),
+                        sub_item_table_func = function()
+                            return { cover_type, book_stack, folder_name }
+                        end,
+                    },
+                    {
+                        text                = _("Modules"),
+                        -- Only the shared stack *style* applies to modules.
+                        -- Show/Hide of the stack is library-only (CE.isShown
+                        -- "stack"); modules hide their pile via each module's
+                        -- own settings (GroupCell hide_pile).
+                        sub_item_table_func = function()
+                            local SUIStyle = require("features/sui_style")
+                            return {
+                                Config.makeRadioSubmenuItem{
+                                    text    = _("Book Stack Style"),
+                                    options = {
+                                        { value = SUIStyle.FOLDER_STACK_DEFAULT, label = _("Default") },
+                                        { value = SUIStyle.FOLDER_STACK_CLASSIC, label = _("Classic") },
+                                    },
+                                    get     = function() return SUIStyle.getFolderStackStyle() end,
+                                    set     = function(v) SUIStyle.setFolderStackStyle(v) end,
+                                    refresh = refreshFolderStack,
+                                },
+                            }
+                        end,
+                    },
+                }
+            end,
+        }
+
+        local captions = makeLibraryCaptionsItem(FC, ctx_menu)
+        captions.enabled_func = function() return FC.isEnabled() end
+
+        return {
+            {
+                text                = _("Library Badges"),
+                sub_item_table_func = function() return CE.makeBadgesItems{ refresh = refreshBadges } end,
+            },
+            folders,
+            makeFinishedBooksItem(FC),
+            makeCoverShadowItem(),
+            captions,
+        }
+    end
+
+    local function makeLibraryMenuItems(ctx_menu)
+        local ok_fc, FC = pcall(require, "features/library/sui_foldercovers")
+        if not ok_fc or not FC then return {} end
+
+        return {
+            require("features/library/sui_hidden_books").makeMenuItem(),
+            -- ── Enable Library Custom Covers ────────────────────────────
+            {
+                text           = _("Enable Library Custom Covers"),
+                checked_func   = function() return FC.isEnabled() end,
+                keep_menu_open = true,
+                callback       = function()
+                    local enabling = not FC.isEnabled()
+                    FC.setEnabled(enabling)
+                    if enabling then
+                        pcall(FC.install)
+                    else
+                        pcall(FC.uninstall)
+                    end
+                    _refreshFC()
+                end,
+            },
+            -- ── Enable Browse by Author / Series / Tags ───────────────────────
+            {
+                text         = _("Enable Browse by Author / Series / Tags"),
+                checked_func = function()
+                    local ok_bm, BM = pcall(require, "features/library/sui_library_browse")
+                    return ok_bm and BM and BM.isEnabled()
+                end,
+                callback     = function()
+                    local ok_bm, BM = pcall(require, "features/library/sui_library_browse")
+                    if not (ok_bm and BM) then return end
+                    local enabling = not BM.isEnabled()
+                    BM.setEnabled(enabling)
+                    local FM2 = package.loaded["apps/filemanager/filemanager"]
+                    local fm2 = FM2 and FM2.instance
+                    if fm2 then
+                        local ok_tb, TB = pcall(require, "screens/sui_titlebar")
+                        if ok_tb and TB then pcall(TB.restore, fm2) end
+                    end
+                    if enabling then
+                        pcall(BM.install)
+                    else
+                        local fc2 = fm2 and fm2.file_chooser
+                        if fc2 and fc2.path then
+                            if fc2.path:find("/\u{E257}", 1, true) then
+                                BM.exitToNormal(fc2, fm2)
+                            end
+                        end
+                        BM.setSavedMode("normal")
+                        pcall(BM.uninstall)
+                    end
+                    if fm2 then
+                        local ok_tb, TB = pcall(require, "screens/sui_titlebar")
+                        if ok_tb and TB then pcall(TB.apply, fm2) end
+                    end
+                end,
+            },
+            -- ── Show Uncategorized Items ──────────────────────────────────────
+            {
+                text           = _("Show Uncategorized Items"),
+                help_text      = _("Lists books without an author, series or tag as a separate group in the Authors, Series and Tags views."),
+                keep_menu_open = true,
+                enabled_func   = function()
+                    local ok_bm, BM = pcall(require, "features/library/sui_library_browse")
+                    return ok_bm and BM and BM.isEnabled()
+                end,
+                checked_func   = function()
+                    local ok_bm, BM = pcall(require, "features/library/sui_library_browse")
+                    return ok_bm and BM and BM.getShowEmpty()
+                end,
+                callback       = function()
+                    local ok_bm, BM = pcall(require, "features/library/sui_library_browse")
+                    if not (ok_bm and BM) then return end
+                    BM.setShowEmpty(not BM.getShowEmpty())
+                    local FM2 = package.loaded["apps/filemanager/filemanager"]
+                    local fc2 = FM2 and FM2.instance and FM2.instance.file_chooser
+                    if fc2 and BM.getPathLevel(fc2.path) == "dim_list" then
+                        pcall(function() fc2:refreshPath() end)
+                    end
+                end,
+            },
+            -- ── Group by Book Series ──────────────────────────────────────────
+            makeSeriesGroupingItem(FC),
+            -- ── Cover Settings ───────────────────────────────────
+            {
+                text         = _("Cover Settings"),
+                enabled_func = function() return FC.isEnabled() end,
+                sub_item_table = {
+                    -- ── Uniformize Covers (2:3) ────────────────────────────────
+                    {
+                        text           = _("Uniformize Covers (2:3)"),
+                        checked_func   = function() return FC.getCoverMode() == "2_3" end,
+                        keep_menu_open = true,
+                        callback       = function()
+                            FC.setCoverMode(FC.getCoverMode() == "2_3" and "default" or "2_3")
+                            _refreshFC()
+                        end,
+                    },
+                    {
+                        text           = _("Hide Selection Underline"),
+                        checked_func   = function() return FC.getHideUnderline() end,
+                        keep_menu_open = true,
+                        callback       = function() FC.setHideUnderline(not FC.getHideUnderline()); _refreshFC() end,
+                    },
+                    {
+                        text           = _("Placeholder Cover for Bookless Folders"),
+                        checked_func   = function() return FC.getSubfolderCover() end,
+                        keep_menu_open = true,
+                        callback       = function()
+                            FC.setSubfolderCover(not FC.getSubfolderCover())
+                            if not FC.getSubfolderCover() then
+                                FC.setRecursiveCover(false)
+                            end
+                            FC.invalidateCache()
+                            _refreshFC()
+                        end,
+                    },
+                    {
+                        text           = _("Scan Subfolders for Covers"),
+                        checked_func   = function() return FC.getRecursiveCover() end,
+                        enabled_func   = function() return FC.getSubfolderCover() end,
+                        keep_menu_open = true,
+                        callback       = function()
+                            FC.setRecursiveCover(not FC.getRecursiveCover())
+                            FC.invalidateCache()
+                            _refreshFC()
+                        end,
+                    },
+                },
+            },
+            -- ── Library View ─────────────────────────────────────────────────
+            -- Exposes only the 3 items-per-page items from CoverBrowser:
+            --   • Items per page in portrait mosaic mode
+            --   • Items per page in landscape mosaic mode
+            --   • Items per page in portrait list mode
+            -- The remaining items (Progress, Display hints, Series, cache, etc.)
+            -- are intentionally omitted.
+            {
+                text      = _("Display"),
+                separator = true,
+                sub_item_table_func = function()
+                    -- CoverBrowser is registered as fm.coverbrowser via
+                    -- FileManager:registerModule(plugin_module.name, ...).
+                    -- We call addToMainMenu with a temporary table to
+                    -- get the items without depending on setUpdateItemTable having
+                    -- been invoked (which only happens when the native menu is opened).
+                    local FM = package.loaded["apps/filemanager/filemanager"]
+                    local fm = FM and FM.instance
+                    local cb = fm and fm.coverbrowser
+                    if not cb or type(cb.addToMainMenu) ~= "function" then
+                        return {}
+                    end
+
+                    -- We pre-populate filebrowser_settings with a stub so that
+                    -- CoverBrowser doesn't bail out early on the check
+                    -- `if menu_items.filebrowser_settings == nil then return end`
+                    -- and injects the "Mosaic and detailed list settings" item.
+                    local tmp = {
+                        filebrowser_settings = {
+                            sub_item_table = {
+                                {}, -- placeholder pos 1 (Show hidden files)
+                                {}, -- placeholder pos 2 (Show unsupported files)
+                                {}, -- placeholder pos 3 (Classic mode settings)
+                            },
+                        },
+                    }
+                    local ok = pcall(cb.addToMainMenu, cb, tmp)
+                    if not ok then return {} end
+
+                    local items = {}
+
+                    -- 1. "Display mode" — mosaic/list/classic radio (untouched)
+                    if tmp.filemanager_display_mode then
+                        table.insert(items, tmp.filemanager_display_mode)
+                    end
+
+                    -- 2. "Mosaic and detailed list settings" filtered to the
+                    --    first 3 entries (grid/list size dialogs).
+                    --    CoverBrowser inserts at pos 4+ of the stub.
+                    local mosaic_item
+                    for i, child in ipairs(tmp.filebrowser_settings.sub_item_table) do
+                        if i > 3 and (child.text or child.text_func) then
+                            mosaic_item = child
+                            break
+                        end
+                    end
+
+                    local fc = fm.file_chooser
+                    if mosaic_item and fc and type(mosaic_item.sub_item_table) == "table" then
+                        -- Entries keep their native dialogs, drawn as sheets
+                        -- above this window. Each row gets a
+                        -- static label and shows the current size as its value
+                        -- (see the row title/value convention in
+                        -- engines/sui_window.lua). Defaults mirror the native ones.
+                        local size_rows = {
+                            { label = _("Portrait mosaic mode"),
+                              value = function()
+                                  return T(_("%1 × %2"), fc.nb_cols_portrait or 3, fc.nb_rows_portrait or 3)
+                              end },
+                            { label = _("Landscape mosaic mode"),
+                              value = function()
+                                  return T(_("%1 × %2"), fc.nb_cols_landscape or 4, fc.nb_rows_landscape or 2)
+                              end },
+                            { label = _("Portrait list mode"),
+                              value = function() return tostring(fc.files_per_page or 10) end },
+                        }
+                        local filtered = {}
+                        for i, row in ipairs(size_rows) do
+                            local entry = mosaic_item.sub_item_table[i]
+                            if not entry then break end
+                            entry.text           = row.label
+                            entry.text_func      = nil
+                            entry.value_func     = row.value
+                            entry.mandatory_func = row.value
+                            entry.separator      = nil
+                            local native_callback = entry.callback
+                            entry.callback = function(...)
+                                return NativeWidgets().showOverWindows(native_callback, ...)
+                            end
+                            filtered[#filtered + 1] = entry
+                        end
+                        table.insert(items, {
+                            text           = mosaic_item.text,
+                            separator      = mosaic_item.separator,
+                            sub_item_table = filtered,
+                        })
+                    end
+
+                    return items
+                end,
+            },
+        }
+    end
+    plugin.makeLibraryMenuItems = makeLibraryMenuItems
+
+    -- Redraws what is painted in the palette colours after one of them changed:
+    -- every bar and the Home Screen when a surface takes the colour as its tone
+    -- (`surfaces`), else the navigation bars and the Home Screen; the Library
+    -- too when `library` is true.
+    local function refreshPalette(surfaces, library)
+        UI.invalidateDimCache()
+        if surfaces then
+            _applyFullLayoutRefresh({ keep_wallpaper = true })
+        else
+            plugin:_rebuildAllNavbars()
+            refreshHomescreen()
+        end
+        require("screens/sui_titlebar").refreshAccent()
+        if library then _refreshFC() end
+    end
+
+    -- Diameter of the disc ending a colour row, relative to the body font size.
+    local COLOR_DISC_SCALE = 1.4
+
+    -- Row that opens the colour picker for one palette colour. `spec`:
+    --   text, window  title of the row and picker, and name of the picker window
+    --   clear_text    label of the picker button that clears the colour
+    --   get_hex       the stored "#RRGGBB", or nil while none is set
+    --   unset_text    function returning what the row shows while none is set
+    --   apply         function(hex | nil) storing the choice and redrawing what uses it
+    local function makeColorItem(ctx_menu, spec)
+        local function openPicker()
+            require("features/sui_accent_picker").show{
+                title      = spec.text,
+                name       = spec.window,
+                hex        = spec.get_hex(),
+                clear_text = spec.clear_text,
+                on_apply   = function(hex)
+                    spec.apply(hex)
+                    if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                end,
+            }
+        end
+        return {
+            text           = spec.text,
+            keep_menu_open = true,
+            callback       = openPicker,
+            mandatory_func = function() return spec.get_hex() or spec.unset_text() end,
+            -- In a window the row ends with a disc showing the colour, or with
+            -- text while none is set.
+            sui_build      = ctx_menu and ctx_menu.is_sui and function(ctx, _item)
+                local SUIStyle = require("features/sui_style")
+                local hex      = spec.get_hex()
+                local size     = math.floor(ctx.SZ(SUIStyle.FS_BODY) * COLOR_DISC_SCALE)
+                return require("engines/sui_window").ListRow{
+                    title        = _item.text,
+                    inner_w      = ctx.inner_w,
+                    right_widget = hex and SUIStyle.buildColorChip(size, size, Accent.toColor(hex)) or nil,
+                    right_value  = not hex and spec.unset_text() or nil,
+                    on_tap       = openPicker,
+                }
+            end or nil,
+        }
+    end
+
+    -- Style > Colors: the accent of the active controls and the secondary
+    -- colour of the surfaces.
+    local function makeColorItems(ctx_menu)
+        local SUIStyle = require("features/sui_style")
+        return {
+            makeColorItem(ctx_menu, {
+                text         = _("Accent Color"),
+                window       = "sui_win_accent",
+                clear_text   = _("Clear"),
+                get_hex      = Accent.getHex,
+                unset_text   = function() return _("Not set") end,
+                apply        = function(hex)
+                    local first = hex ~= nil and Accent.getHex() == nil
+                    Accent.setHex(hex)
+                    -- Setting the first accent moves the gray surfaces to the secondary.
+                    local adopted = first and Accent.isEnabled() and Backdrop.adoptSecondary()
+                    -- A secondary that follows the accent changes with it. Library
+                    -- badges, folder names and captions are rebuilt with the new colour.
+                    local follows = not Accent.isSecondaryCustom()
+                    refreshPalette(
+                        adopted
+                            or Backdrop.usesTone(Backdrop.TONE.ACCENT)
+                            or follows and Backdrop.usesTone(Backdrop.TONE.SECONDARY),
+                        true)
+                end,
+            }),
+            makeColorItem(ctx_menu, {
+                text         = _("Secondary Color"),
+                window       = "sui_win_secondary",
+                clear_text   = _("Follow accent"),
+                get_hex      = function() return Accent.isSecondaryCustom() and Accent.getSecondaryHex() or nil end,
+                unset_text   = function()
+                    return Accent.getHex() and _("Follows accent") or _("Not set")
+                end,
+                apply        = function(hex)
+                    Accent.setSecondaryHex(hex)
+                    if SUIStyle.usesColor("secondary") then
+                        refreshPalette(Backdrop.usesTone(Backdrop.TONE.SECONDARY), true)
+                    end
+                end,
+            }),
+        }
+    end
+
+    plugin.makeStyleMenuItems = function(ctx_menu)
+        -- Name of the UI font in use, or "Default".
+        local function uiFontValue()
+            if not SUISettings:isTrue("simpleui_ui_font_enabled") then return _("Default") end
+            return SUISettings:get("simpleui_ui_font_name") or "Noto Sans"
+        end
+
+        -- Style > Module Labels: the heading above each homescreen module.
+        -- The "Style" row picks Classic or All caps; below it sit the Font,
+        -- Size and Style of the selected style, plus Letter Spacing for All
+        -- caps. Color (Default, Accent, Secondary) applies to both styles. Each style keeps its own values. Settings-window section
+        -- headers use a fixed all-caps look independent of this choice.
+        local function makeSectionLabelItems()
+            local LabelStyle = require("features/sui_label_style")
+            local SUIStyle   = require("features/sui_style")
+            local function refreshLabels()
+                _applyFullLayoutRefresh()
+                if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+            end
+            local function isCaps() return LabelStyle.isCaps() end
+            local function isClassic() return not LabelStyle.isCaps() end
+
+            local rows = {
+                Config.makeRadioSubmenuItem{
+                    text      = _("Style"),
+                    options   = {
+                        { value = "classic", label = _("Classic") },
+                        { value = "caps",    label = _("All caps") },
+                    },
+                    get       = function() return LabelStyle.isCaps() and "caps" or "classic" end,
+                    set       = function(v) LabelStyle.setCaps(v == "caps") end,
+                    refresh   = refreshLabels,
+                    separator = true,
+                },
+            }
+
+            -- Rows of one style, shown only while that style is selected.
+            local function addStyleRows(elem, active)
+                local text_style = Config.makeTextStyleItem{
+                    mod_id  = LabelStyle.MOD_ID,
+                    elem    = elem,
+                    title   = _("Module Labels"),
+                    info    = _("Size of the module labels.\n100% is the default size."),
+                    refresh = refreshLabels,
+                    _lc     = _,
+                }
+                for _i, entry in ipairs(text_style.sub_item_table) do
+                    entry.enabled_func = active
+                    rows[#rows + 1] = entry
+                end
+            end
+            -- Offered only while a palette colour is on screen.
+            local palette = SUIStyle.paletteOptions(_)
+            if #palette > 0 then
+                local options = { { value = "none", label = _("Default") } }
+                for _i, option in ipairs(palette) do options[#options + 1] = option end
+                rows[#rows + 1] = Config.makeRadioSubmenuItem{
+                    text      = _("Color"),
+                    options   = options,
+                    get       = function()
+                        local choice = LabelStyle.getColor()
+                        return choice and SUIStyle.paletteChoiceAvailable(choice) and choice or "none"
+                    end,
+                    set       = function(v) LabelStyle.setColor(v ~= "none" and v or nil) end,
+                    refresh   = refreshLabels,
+                    separator = true,
+                }
+            end
+            addStyleRows(LabelStyle.ELEM_CLASSIC, isClassic)
+            addStyleRows(LabelStyle.ELEM_CAPS, isCaps)
+            rows[#rows + 1] = Config.makeSpinItem{
+                text_func     = function() return _("Letter Spacing") end,
+                enabled_func  = isCaps,
+                title         = _("Letter Spacing"),
+                info          = _("Space between the characters of a module label, as a percentage of its text size."),
+                get           = LabelStyle.getTrackingPct,
+                value_min     = LabelStyle.TRACK_MIN,
+                value_max     = LabelStyle.TRACK_MAX,
+                value_step    = LabelStyle.TRACK_STEP,
+                default_value = LabelStyle.TRACK_DEF,
+                unit          = "%",
+                set           = function(v) LabelStyle.setTrackingPct(v) end,
+                refresh       = refreshLabels,
+            }
+            return rows
+        end
+
+        local items = {
+            -- ── Icons (sub-folder) ─────────────────────────────────────
+            {
+                text = _("Icons"),
+                sub_item_table = {
+                    -- ── System Icons ──────────────────────────────────────────
+                    {
+                        text_func = function()
+                            local ok_ss, SUIStyle = pcall(require, "features/sui_style")
+                            if not ok_ss or not SUIStyle then return _("System Icons") end
+                            local has_custom = false
+                            for _, s in ipairs(SUIStyle.SLOTS) do
+                                if s.group ~= "sui_qa_defaults" and SUIStyle.getIcon(s.id) ~= nil then
+                                    has_custom = true
+                                    break
+                                end
+                            end
+                            return _("System Icons") .. (has_custom and "  \u{270E}" or "")
+                        end,
+                        sub_item_table_func = function()
+                            local ok_ss, SUIStyle = pcall(require, "features/sui_style")
+                            if not ok_ss or not SUIStyle then return {} end
+                            return SUIStyle.makeMenuItems(plugin)
+                        end,
+                        sui_build = ctx_menu and ctx_menu.is_sui and function(ctx, _item)
+                            local SUIWindow = require("engines/sui_window")
+                            return SUIWindow.ListRow{
+                                title        = type(_item.text_func) == "function" and _item.text_func() or _item.text,
+                                inner_w      = ctx.inner_w,
+                                show_chevron = true,
+                                on_tap       = function()
+                                    local SUIStyle = require("features/sui_style")
+                                    if SUIStyle.sui_build_system_icons then SUIStyle.sui_build_system_icons(plugin, ctx_menu, ctx) end
+                                end
+                            }
+                        end or nil,
+                    },
+                    -- ── Quick Actions Icons ────────────────────────────────────
+                    {
+                        text_func = function()
+                            return _("Quick Actions Icons") .. (QA.hasCustomIcons() and "  \u{270E}" or "")
+                        end,
+                        sub_item_table_func = function() return QA.makeIconsMenuItems(plugin) end,
+                        sui_build = ctx_menu and ctx_menu.is_sui and function(ctx, _item)
+                            local SUIWindow = require("engines/sui_window")
+                            return SUIWindow.ListRow{
+                                title        = type(_item.text_func) == "function" and _item.text_func() or _item.text,
+                                inner_w      = ctx.inner_w,
+                                show_chevron = true,
+                                on_tap       = function()
+                                    QA.sui_build_qa_icons(plugin, ctx_menu, ctx)
+                                end
+                            }
+                        end or nil,
+                    },
+                    -- ── Icon Packs ────────────────────────────────────────────
+                    {
+                        text = _("Icon Packs"),
+                        sub_item_table_func = function()
+                            local ok_ip, IP = pcall(require, "features/sui_style")
+                            if not ok_ip or not IP then
+                                return {{ text = _("Module unavailable"), enabled = false }}
+                            end
+
+                            -- ── Helper: reapply all icon changes ─────────────────
+                            local function _reapplyAllPacks()
+                                -- Titlebar (system icons)
+                                local ok_tb, TB = pcall(require, "screens/sui_titlebar")
+                                if ok_tb and TB then
+                                    local FM = package.loaded["apps/filemanager/filemanager"]
+                                    local fm = FM and FM.instance
+                                    if fm then
+                                        pcall(TB.reapplyAll, fm, UIManager._window_stack)
+                                    end
+                                    if TB.refreshBrowseIcons and fm then
+                                        TB.refreshBrowseIcons(fm)
+                                    end
+                                end
+                                -- Pagination chevrons and collections back button
+                                local ok_ss2, SS2 = pcall(require, "features/sui_style")
+                                if ok_ss2 and SS2 then
+                                    local FM2 = package.loaded["apps/filemanager/filemanager"]
+                                    local fm2 = FM2 and FM2.instance
+                                    if fm2 and fm2.file_chooser then
+                                        pcall(SS2.applyPaginationIcons, fm2.file_chooser)
+                                    end
+                                    local ok_ui2, UIManager2 = pcall(require, "ui/uimanager")
+                                    if ok_ui2 then
+                                        for _, entry in ipairs(UIManager2._window_stack or {}) do
+                                            local w = entry.widget
+                                            if w and w.page_info_left_chev then
+                                                pcall(SS2.applyPaginationIcons, w)
+                                            end
+                                            if w and (w.name == "collections" or w.name == "coll_list") then
+                                                pcall(SS2.applyCollBackIcon, w)
+                                            end
+                                        end
+                                    end
+                                end
+
+                                -- Invalidate Quick Actions & Folder Covers caches
+                                local ok_qa, QA_pack = pcall(require, "features/sui_quickactions")
+                                if ok_qa and QA_pack and QA_pack.invalidateCustomQACache then QA_pack.invalidateCustomQACache() end
+                                local ok_fc, FC = pcall(require, "features/library/sui_foldercovers")
+                                if ok_fc and FC and FC.invalidateCache then FC.invalidateCache() end
+                                local FM = package.loaded["apps/filemanager/filemanager"]
+                                local fm_inst = FM and FM.instance
+                                if fm_inst and fm_inst.file_chooser then
+                                    fm_inst._navbar_suppress_path_change = true
+                                    fm_inst.file_chooser:refreshPath()
+                                    fm_inst._navbar_suppress_path_change = nil
+                                end
+
+                                -- QA navbars
+                                plugin:_rebuildAllNavbars()
+                                -- Icon packs affect every screen, not just the built-in
+                                -- Homescreen — repaint whichever screen(s) are actually live.
+                                -- Deferred to nextTick so setDirty is processed with the
+                                -- live screen back on top of the stack once this menu closes.
+                                local ok_se, ScreenEngine = pcall(require, "engines/sui_screen_engine")
+                                if ok_se and ScreenEngine then
+                                    UIManager:nextTick(function()
+                                        ScreenEngine.refreshAllLiveImmediate(false)
+                                    end)
+                                end
+                            end
+
+                            local items = {}
+
+                            -- ── Install zip ───────────────────────────────────────
+                            local function _installPackAndNotify(zip_path)
+                                local pack_name, err = IP.installZip(zip_path)
+                                if pack_name then
+                                    UI.Notify.toast(string.format(
+                                            _("Pack \"%s\" installed.\nYou can now apply it from the list."),
+                                            pack_name), 4)
+                                else
+                                    UI.Notify.toast(_("Error installing pack:") .. "\n" .. tostring(err), 5)
+                                end
+                            end
+
+                            items[#items + 1] = {
+                                text = _("Install pack from ZIP"),
+                                sub_item_table_func = function()
+                                    local sub = {}
+                                    local dir = IP.getPacksDir()
+                                    if dir then
+                                        sub[#sub + 1] = {
+                                            text = _("Browse…"),
+                                            keep_menu_open = true,
+                                            callback = function()
+                                                local AssetBrowser = require("engines/sui_asset_browser")
+                                                UIManager:show(AssetBrowser:new{
+                                                    path            = dir,
+                                                    -- No image format applies to a .zip archive, so there is
+                                                    -- nothing to preview — skip the thumbnail column entirely.
+                                                    extensions      = { zip = true },
+                                                    show_thumbnails = false,
+                                                    title           = _("Choose icon pack"),
+                                                    onConfirm       = function(path) _installPackAndNotify(path) end,
+                                                })
+                                            end,
+                                            separator = true,
+                                        }
+                                    end
+
+                                    local lfs = require("libs/libkoreader-lfs")
+                                    local T   = require("ffi/util").template
+                                    local zips = {}
+                                    if dir and lfs.attributes(dir, "mode") == "directory" then
+                                        for fname in lfs.dir(dir) do
+                                            if fname ~= "." and fname ~= ".." and fname:lower():match("%.zip$") then
+                                                zips[#zips + 1] = { name = fname, path = dir .. "/" .. fname }
+                                            end
+                                        end
+                                        table.sort(zips, function(a, b) return a.name:lower() < b.name:lower() end)
+                                    end
+
+                                    if #zips == 0 then
+                                        sub[#sub + 1] = {
+                                            text    = T(_("No .zip files found.\nPlace .zip files in:\n%1"), dir or ""),
+                                            enabled = false,
+                                        }
+                                    else
+                                        for _i, z in ipairs(zips) do
+                                            local _z = z
+                                            sub[#sub + 1] = {
+                                                text     = _z.name,
+                                                callback = function() _installPackAndNotify(_z.path) end,
+                                            }
+                                        end
+                                    end
+                                    return sub
+                                end,
+                                separator = true,
+                            }
+
+                            -- ── Pack list ─────────────────────────────────────────
+                            local packs = IP.listPacks()
+                            if #packs == 0 then
+                                items[#items + 1] = {
+                                    text    = _("No packs found.") .. "\n"
+                                              .. _("Place a folder or .zip in:") .. "\n"
+                                              .. (IP.getPacksDir() or ""),
+                                    enabled = false,
+                                }
+                            else
+                                for _i, pack in ipairs(packs) do
+                                    local _pack = pack
+                                    items[#items + 1] = {
+                                        text     = _pack.name,
+                                        callback = function()
+                                            local result, err = IP.applyPack(_pack.path)
+                                            if result then
+                                                _reapplyAllPacks()
+                                                UI.Notify.toast(string.format(
+                                                        _("Pack \"%s\" applied.\n%d icons replaced."),
+                                                        _pack.name, result.applied))
+                                            else
+                                                UI.Notify.toast(_("Error applying pack:") .. "\n" .. tostring(err), 5)
+                                            end
+                                        end,
+                                    }
+                                end
+                            end
+
+                            return items
+                        end,
+                        separator = true,
+                    },
+                    -- ── Icon Presets ──────────────────────────────────────────
+                    -- Consolidated here (previously nested under Style > Icons >
+                    -- Icon Presets, 4 levels deep).
+                    {
+                        text = _("Icon Presets"),
+                        sub_item_table_func = function()
+                            local ok_ip, P   = pcall(require, "features/sui_presets")
+                            local ok_qa, QA2 = pcall(require, "features/sui_quickactions")
+                            local ok_ss, SS2 = pcall(require, "features/sui_style")
+                            local IP  = ok_ip and P and P.icons or nil
+                            local QA2 = ok_qa and QA2 or nil
+
+                            -- Asks for a new name for the icon preset `name`; the
+                            -- active-preset pointer follows the rename.
+                            local function renameIconPreset(name, on_done)
+                                if not IP then return end
+                                P.promptName{
+                                    store     = IP,
+                                    title     = string.format(_("Rename \"%s\""), name),
+                                    value     = name,
+                                    ok_text   = _("Rename"),
+                                    on_submit = function(new_name)
+                                        IP.rename(name, new_name)
+                                        if SUISettings:get("simpleui_icon_active_preset") == name then
+                                            SUISettings:set("simpleui_icon_active_preset", new_name)
+                                        end
+                                        on_done()
+                                    end,
+                                }
+                            end
+
+                            -- Helper: reapply all icon changes after a preset is applied.
+                            local function _reapplyAll()
+                                -- Titlebar (system icons).
+                                local ok_tb, TB = pcall(require, "screens/sui_titlebar")
+                                if ok_tb and TB then
+                                    local FM = package.loaded["apps/filemanager/filemanager"]
+                                    local fm = FM and FM.instance
+                                    if fm then
+                                        pcall(TB.reapplyAll, fm, UIManager._window_stack)
+                                    end
+                                    if TB.refreshBrowseIcons and fm then
+                                        TB.refreshBrowseIcons(fm)
+                                    end
+                                end
+                                -- Pagination chevrons and collections back button.
+                                local ok_ss2, SS2 = pcall(require, "features/sui_style")
+                                if ok_ss2 and SS2 then
+                                    local FM2 = package.loaded["apps/filemanager/filemanager"]
+                                    local fm2 = FM2 and FM2.instance
+                                    if fm2 and fm2.file_chooser then
+                                        pcall(SS2.applyPaginationIcons, fm2.file_chooser)
+                                    end
+                                    local ok_ui2, UIManager2 = pcall(require, "ui/uimanager")
+                                    if ok_ui2 then
+                                        for _, entry in ipairs(UIManager2._window_stack or {}) do
+                                            local w = entry.widget
+                                            if w and w.page_info_left_chev then
+                                                pcall(SS2.applyPaginationIcons, w)
+                                            end
+                                            if w and (w.name == "collections" or w.name == "coll_list") then
+                                                pcall(SS2.applyCollBackIcon, w)
+                                            end
+                                        end
+                                    end
+                                end
+
+                                -- Invalidate Quick Actions & Folder Covers caches
+                                if QA2 and QA2.invalidateCustomQACache then QA2.invalidateCustomQACache() end
+                                local ok_fc, FC = pcall(require, "features/library/sui_foldercovers")
+                                if ok_fc and FC and FC.invalidateCache then FC.invalidateCache() end
+                                local FM = package.loaded["apps/filemanager/filemanager"]
+                                local fm_inst = FM and FM.instance
+                                if fm_inst and fm_inst.file_chooser then
+                                    fm_inst._navbar_suppress_path_change = true
+                                    fm_inst.file_chooser:refreshPath()
+                                    fm_inst._navbar_suppress_path_change = nil
+                                end
+
+                                -- QA navbars.
+                                plugin:_rebuildAllNavbars()
+                                -- Icon presets affect every screen, not just the built-in
+                                -- Homescreen — repaint whichever screen(s) are actually live,
+                                -- after the menu closes (nextTick) so setDirty is processed
+                                -- with the live screen back on top of the stack.
+                                local ok_se, ScreenEngine = pcall(require, "engines/sui_screen_engine")
+                                if ok_se and ScreenEngine then
+                                    UIManager:nextTick(function()
+                                        ScreenEngine.refreshAllLiveImmediate(false)
+                                    end)
+                                end
+                            end
+
+                            local items = {}
+                            local names = IP and IP.listNames() or {}
+
+                            -- ── Select Preset ──────────────────────────────────────
+                            local select_items = {}
+                            for _k, name in ipairs(names) do
+                                local _name = name
+                                select_items[#select_items + 1] = {
+                                    text_func = function() return _name end,
+                                    radio = true,
+                                    checked_func = function()
+                                        return SUISettings:get("simpleui_icon_active_preset") == _name
+                                    end,
+                                    callback = function()
+                                        if not IP then return end
+                                        -- Applying an icon preset touches every live screen
+                                        -- (titlebar, pagination, navbars, folder covers), so
+                                        -- this runs under the same shared "Applying preset…"
+                                        -- notice used for homescreen presets — see
+                                        -- infra/sui_core.lua's applyPresetWithNotice().
+                                        local ok = require("infra/sui_core").applyPresetWithNotice(function()
+                                            if not IP.apply(_name, QA2) then return false end
+                                            SUISettings:set("simpleui_icon_active_preset", _name)
+                                            return true
+                                        end, _reapplyAll)
+                                        if not ok then
+                                            UI.Notify.toast(string.format(_("Preset \"%s\" not found."), _name), 2)
+                                        end
+                                    end,
+                                }
+                            end
+
+                            items[#items + 1] = {
+                                text           = _("Select Preset"),
+                                enabled        = #names > 0,
+                                dim            = #names == 0,
+                                sub_item_table = select_items,
+                                separator      = true,
+                            }
+
+                            -- ── Save as new preset ─────────────────────────────────
+                            items[#items + 1] = {
+                                text     = _("Save as new preset"),
+                                callback = function()
+                                    if not IP then return end
+                                    P.promptName{
+                                        store     = IP,
+                                        title     = _("Save icon preset"),
+                                        hint      = _("Preset name"),
+                                        ok_text   = _("Save"),
+                                        overwrite = true,
+                                        on_submit = function(name)
+                                            IP.save(name)
+                                            SUISettings:set("simpleui_icon_active_preset", name)
+                                            UI.Notify.toast(string.format(_("Preset \"%s\" saved."), name), 2)
+                                            UIManager:nextTick(function()
+                                                if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                                            end)
+                                        end,
+                                    }
+                                end,
+                            }
+
+                            -- ── Manage presets ──────────────────────────────────────────
+                            if #names > 0 then
+                                items[#items + 1] = {
+                                    text = _("Manage presets"),
+                                    sub_item_table_func = function()
+                                        local sub = {}
+                                        for _k, name in ipairs(IP and IP.listNames() or {}) do
+                                            local _name = name
+                                            sub[#sub + 1] = {
+                                                text = _name,
+                                                sub_item_table = {
+                                                    { text = _("Update with current settings"), callback = function()
+                                                        Dialogs().confirm{
+                                                            text = string.format(_("Overwrite preset \"%s\" with the current icon settings?"), _name),
+                                                            ok_text     = _("Overwrite"),
+                                                            cancel_text = _("Cancel"),
+                                                            ok_callback = function()
+                                                                if IP then
+                                                                    IP.save(_name)
+                                                                    SUISettings:set("simpleui_icon_active_preset", _name)
+                                                                    UI.Notify.toast(string.format(_("Preset \"%s\" updated."), _name), 2)
+                                                                    UIManager:nextTick(function() if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end end)
+                                                                end
+                                                            end,
+                                                        }
+                                                    end },
+                                                    { text = _("Rename"), callback = function()
+                                                        renameIconPreset(_name, function()
+                                                            UIManager:nextTick(function() if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end end)
+                                                        end)
+                                                    end },
+                                                    { text = _("Delete"), callback = function()
+                                                        Dialogs().confirm{
+                                                            text        = string.format(_("Delete preset \"%s\"?"), _name),
+                                                            ok_text     = _("Delete"),
+                                                            cancel_text = _("Cancel"),
+                                                            ok_callback = function()
+                                                                if IP then
+                                                                    IP.delete(_name)
+                                                                    local active = SUISettings:get("simpleui_icon_active_preset")
+                                                                    if active == _name then SUISettings:del("simpleui_icon_active_preset") end
+                                                                end
+                                                                UIManager:nextTick(function() if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end end)
+                                                            end,
+                                                        }
+                                                    end },
+                                                }
+                                            }
+                                        end
+                                        return sub
+                                    end,
+                                    sui_build = ctx_menu and ctx_menu.is_sui and function(ctx, _item)
+                                        local SUIWindow = require("engines/sui_window")
+                                        return SUIWindow.ListRow{
+                                            title        = _("Manage presets"),
+                                            inner_w      = ctx.inner_w,
+                                            show_chevron = true,
+                                            on_tap       = function()
+                                                ctx.push("nested_menu", {
+                                                    title = _("Manage presets"),
+                                                    items_func = function()
+                                                        return {
+                                                            {
+                                                                text = "Items List",
+                                                                sui_build = function(ctx2)
+                                                                    local SUIWindow2 = require("engines/sui_window")
+                                                                    local rows = {}
+                                                                    for _k, name in ipairs(IP and IP.listNames() or {}) do
+                                                                        local _name = name
+                                                                        rows[#rows + 1] = SUIWindow2.ListRow{
+                                                                            title     = _name,
+                                                                            inner_w   = ctx2.inner_w,
+                                                                            on_delete = function()
+                                                                                Dialogs().confirm{
+                                                                                    text        = string.format(_("Delete preset \"%s\"?"), _name),
+                                                                                    ok_text     = _("Delete"),
+                                                                                    cancel_text = _("Cancel"),
+                                                                                    ok_callback = function()
+                                                                                        if IP then
+                                                                                            IP.delete(_name)
+                                                                                            local active = SUISettings:get("simpleui_icon_active_preset")
+                                                                                            if active == _name then SUISettings:del("simpleui_icon_active_preset") end
+                                                                                        end
+                                                                                        ctx2.repaint()
+                                                                                        UIManager:nextTick(function() if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end end)
+                                                                                    end,
+                                                                                }
+                                                                            end,
+                                                                            on_edit = function()
+                                                                                renameIconPreset(_name, function()
+                                                                                    ctx2.repaint()
+                                                                                    UIManager:nextTick(function() if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end end)
+                                                                                end)
+                                                                            end,
+                                                                            on_update = function()
+                                                                                Dialogs().confirm{
+                                                                                    text = string.format(_("Overwrite preset \"%s\" with the current icon settings?"), _name),
+                                                                                    ok_text     = _("Overwrite"),
+                                                                                    cancel_text = _("Cancel"),
+                                                                                    ok_callback = function()
+                                                                                        if IP then
+                                                                                            IP.save(_name)
+                                                                                            SUISettings:set("simpleui_icon_active_preset", _name)
+                                                                                            UI.Notify.toast(string.format(_("Preset \"%s\" updated."), _name), 2)
+                                                                                            ctx2.repaint()
+                                                                                            UIManager:nextTick(function() if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end end)
+                                                                                        end
+                                                                                    end,
+                                                                                }
+                                                                            end,
+                                                                        }
+                                                                    end
+                                                                    if #rows == 0 then
+                                                                        rows[#rows + 1] = SUIWindow2.ListRow{ title = _("No presets found."), inner_w = ctx2.inner_w }
+                                                                    end
+                                                                    return rows
+                                                                end
+                                                            }
+                                                        }
+                                                    end
+                                                })
+                                            end
+                                        }
+                                    end or nil,
+                                }
+                            end
+
+                            -- ── Import ─────────────────────────────────────────────
+                            items[#items + 1] = {
+                                text = _("Import preset"),
+                                sub_item_table_func = function()
+                                    local sub = {}
+                                    if not IP then return sub end
+                                    local files = IP.listImportFiles()
+
+                                    if #files == 0 then
+                                        sub[#sub + 1] = {
+                                            text    = T(_("No preset files found.\nPlace .lua files in:\n%1"), IP.getImportDir() or ""),
+                                            enabled = false,
+                                        }
+                                    else
+                                        for _i, f in ipairs(files) do
+                                            local _f = f
+                                            sub[#sub + 1] = {
+                                                text     = _f.name,
+                                                callback = function()
+                                                    local imported_name, err = IP.import(_f.path)
+                                                    if imported_name then
+                                                        UI.Notify.toast(string.format(_("Preset \"%s\" imported."), imported_name))
+                                                        UIManager:nextTick(function()
+                                                            if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                                                        end)
+                                                    else
+                                                        UI.Notify.toast(_("Error importing preset: ") .. tostring(err), 4)
+                                                    end
+                                                end,
+                                            }
+                                        end
+                                    end
+                                    return sub
+                                end,
+                                separator = true,
+                            }
+
+                            -- ── Export ─────────────────────────────────────────────
+                            if #names > 0 then
+                                items[#items + 1] = {
+                                    text = _("Export preset"),
+                                    sub_item_table_func = function()
+                                        local sub = {}
+                                        for _k, name in ipairs(IP and IP.listNames() or {}) do
+                                            local _name = name
+                                            sub[#sub + 1] = {
+                                                text     = _name,
+                                                callback = function()
+                                                    if not IP then return end
+                                                    local filepath, err = IP.export(_name)
+                                                    if filepath then
+                                                        UI.Notify.toast(string.format(_("Preset exported to:\n%s"), filepath), 4)
+                                                    else
+                                                        UI.Notify.toast(_("Error exporting preset: ") .. tostring(err), 4)
+                                                    end
+                                                end,
+                                            }
+                                        end
+                                        return sub
+                                    end,
+                                }
+                            end
+
+                            return items
+                        end,
+                        separator = true,
+                    },
+                    -- ── Night mode colours ────────────────────────────────────
+                    {
+                        text         = _("Don't Invert Colored Icons in Night Mode"),
+                        help_text    = _("Icons that contain color keep their original colors in night mode instead of being inverted.\nMonochrome icons are not affected and keep following the interface colors.\nRequires a color screen."),
+                        checked_func = function() return require("features/sui_style").keepIconColorsInNight() end,
+                        keep_menu_open = true,
+                        callback = function()
+                            local SUIStyle = require("features/sui_style")
+                            SUIStyle.setKeepIconColorsInNight(not SUIStyle.keepIconColorsInNight())
+                            _applyFullLayoutRefresh()
+                        end,
+                    },
+                }, -- end Icons sub_item_table
+            },   -- end Icons submenu
+            -- ── Covers ────────────────────────────────────────────────────
+            {
+                text                = _("Covers"),
+                sub_item_table_func = function() return makeCoversMenuItems(ctx_menu) end,
+            },
+            -- ── UI Font ───────────────────────────────────────────────────
+            {
+                text = _("UI Font"),
+                value_func     = uiFontValue,
+                mandatory_func = uiFontValue,
+                sub_item_table_func = function()
+                    local ok_ss, SUIStyle = pcall(require, "features/sui_style")
+                    if not ok_ss or not SUIStyle then return {} end
+                    local ok_fi, items = pcall(SUIStyle.makeFontMenuItems)
+                    if not ok_fi or type(items) ~= "table" then return {} end
+                    return items
+                end,
+            },
+            -- ── Module Labels ─────────────────────────────────────────────
+            {
+                text                = _("Module Labels"),
+                value_func          = function()
+                    return require("features/sui_label_style").isCaps() and _("All caps") or _("Classic")
+                end,
+                sub_item_table_func = makeSectionLabelItems,
+            },
+            -- ── Global Text Size ──────────────────────────────────────────
+            -- Global scale applied to every KOReader UI text size, via a
+            -- patch on ui/font.lua's Font:getFace() (sui_patches.lua
+            -- patchFontGetFace) — covers native menus/dialogs AND
+            -- SimpleUI's own widgets alike, not just Simple UI. Does not
+            -- affect the book's reading font size (crengine, separate
+            -- system). Like the UI Font picker above, a restart is needed
+            -- to fully apply it everywhere (the scale is captured once, at
+            -- plugin-init patch time).
+            Config.makeSpinItem{
+                text_func    = function() return _("Global Text Size") end,
+                title        = _("Global Text Size"),
+                info         = _("Global scale applied to all of KOReader's interface text — menus, dialogs, titles, and Simple UI. It does not change the book's reading font size, which has its own setting.\n100% is the default size. Useful when a chosen UI font (see UI Font above) renders smaller or larger than usual."),
+                get          = Config.getFontScalePct,
+                value_min    = Config.FONT_SCALE_MIN,
+                value_max    = Config.FONT_SCALE_MAX,
+                value_step   = Config.FONT_SCALE_STEP,
+                default_value= Config.FONT_SCALE_DEF,
+                unit         = "%",
+                set          = function(value)
+                    Config.setFontScalePct(value)
+                    askRestart(_("A restart is required to apply the new text size everywhere.\n\nRestart now?"))
+                end,
+            },
+            {
+                text = _("Progress Bar Type"),
+                sub_item_table = {
+                    {
+                        text           = _("Flat"),
+                        radio          = true,
+                        checked_func   = function() return (SUISettings:get("simpleui_style_progress_bar_type") or "flat") == "flat" end,
+                        keep_menu_open = true,
+                        callback       = function()
+                            SUISettings:set("simpleui_style_progress_bar_type", "flat")
+                            refreshHomescreen()
+                            if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                        end,
+                    },
+                    {
+                        text           = _("Framed"),
+                        radio          = true,
+                        checked_func   = function() return (SUISettings:get("simpleui_style_progress_bar_type") or "flat") == "framed" end,
+                        keep_menu_open = true,
+                        callback       = function()
+                            SUISettings:set("simpleui_style_progress_bar_type", "framed")
+                            refreshHomescreen()
+                            if ctx_menu and ctx_menu.refresh then ctx_menu.refresh() end
+                        end,
+                    },
+                },
+            },
+        }
+        if Accent.isSupported() then
+            items[#items + 1] = {
+                text                = _("Colors"),
+                sub_item_table_func = function() return makeColorItems(ctx_menu) end,
+            }
+        end
+        return items
+    end
+
+    local function makeAboutMenuItems(ctx_menu)
+        local _plugin_dir = require("infra/sui_paths").getPluginDirNoSlash()
+        local ok, Meta = pcall(dofile, _plugin_dir .. "/_meta.lua")
+        if not ok or type(Meta) ~= "table" or Meta.name ~= "simpleui" then
+            local rok, rmeta = pcall(require, "_meta")
+            Meta = (rok and type(rmeta) == "table" and rmeta.name == "simpleui" and rmeta) or {}
+        end
+        return {
+            {
+                text           = string.format(_("Version: %s"), Meta.version or "?"),
+                keep_menu_open = true,
+                callback       = function() end,
+            },
+            {
+                text           = string.format(_("Author: %s"), Meta.author or "?"),
+                keep_menu_open = true,
+                callback       = function() end,
+            },
+            {
+                text           = _("Automatic Update Check"),
+                checked_func   = function()
+                    return SUISettings:isTrue("simpleui_updater_auto_check")
+                end,
+                keep_menu_open = true,
+                callback       = function()
+                    SUISettings:set("simpleui_updater_auto_check",
+                        not SUISettings:isTrue("simpleui_updater_auto_check"))
+                end,
+            },
+            {
+                text      = _("Check for Updates"),
+                callback  = function()
+                    local ok_upd, Updater = pcall(require, "infra/sui_updater")
+                    if not ok_upd then
+                        UI.Notify.toast(_("Updater module not found."), 4)
+                        return
+                    end
+                    Updater.checkForUpdates()
+                end,
+            },
+            {
+                text                = _("Backup & Restore"),
+                -- Built lazily so the scope chooser closures are only allocated
+                -- when the user actually opens this submenu (same OPT-H pattern
+                -- as every other sub_item_table_func above).
+                sub_item_table_func = function()
+                    return require("features/sui_backup").makeMenuItems(ctx_menu)
+                end,
+            },
+            {
+                text      = _("Factory Reset"),
+                separator = true,
+                callback  = function()
+                    local UIM = ctx_menu and ctx_menu.UIManager or UIManager
+                    Dialogs().confirm{
+                        text        = _("This will delete all Simple UI settings and restart KOReader.\nAre you sure?"),
+                        ok_text     = _("Delete Settings"),
+                        cancel_text = _("Cancel"),
+                        ok_callback = function()
+                            local keys_to_delete = {}
+                            for k, _ in SUISettings:iterateKeys() do
+                                keys_to_delete[#keys_to_delete + 1] = k
+                            end
+                            for _, k in ipairs(keys_to_delete) do
+                                SUISettings:del(k)
+                            end
+                            SUISettings:flush()
+
+                            Config.setStartWithHomescreen(false)
+                            UIM:restartKOReader()
+                        end,
+                    }
+                end,
+            },
+        }
+    end
+    plugin.makeAboutMenuItems = makeAboutMenuItems
+
+    -- -----------------------------------------------------------------------
+    -- Main menu entry
+    -- -----------------------------------------------------------------------
+
+    -- sorting_hint = "tools" places this entry in the Tools section of the
+    -- KOReader main menu (where Statistics, Terminal, etc. live).
+    -- Using a dedicated key "simpleui" avoids colliding with the section table.
+    --
+    -- OPT-H: All sub-menus are now built lazily via sub_item_table_func.
+    -- Previously makeNavbarMenu(), makePaginationBarMenu() and makeTopbarMenu()
+    -- were called eagerly at registration time, creating hundreds of closures
+    -- (checked_func, callback, enabled_func, etc.) even if the user never opens
+    -- the menu. With sub_item_table_func the closures are only allocated when
+    -- the user actually taps the menu entry.
+    --
+    -- Menu structure (reorganised):
+    --   Simple UI
+    --   ├── [On/Off toggle]
+    --   ├── Bars          ← all peripheral UI bars
+    --   │   ├── Status Bar
+    --   │   ├── Navigation Bar
+    --   │   ├── Title Bar
+    --   │   └── Pagination Bar
+    --   ├── Home Screen   ← everything about the homescreen
+    --   │   └── (modules, quick actions, wallpaper, behaviour, presets)
+    --   ├── Library       ← book-browser settings
+    --   ├── Appearance    ← icons and font
+    --   │   ├── System Icons
+    --   │   ├── Quick Actions Icons
+    --   │   ├── Icon Packs
+    --   │   ├── Icon Presets
+    --   │   └── UI Font
+    --   ├── Quick Actions ← global custom quick actions
+    --   └── About
+    -- -------------------------------------------------------------------
+    -- Native KOReader Tools menu entry (currently disabled — see below)
+    -- -------------------------------------------------------------------
+    -- The full native sub_item_table (Bars / Home Screen / Library / Style /
+    -- Quick Actions / About) is kept intact here, wrapped in a function that
+    -- is never called. This preserves 100% of the original menu-building
+    -- code (nothing deleted) while avoiding the cost of building it every
+    -- time the Tools menu opens, since it is not attached below.
+    --
+    -- The individual sub-menu builders used inside this table (makeBarsMenuItems,
+    -- makeHomescreenMenu, plugin.makeLibraryMenuItems, plugin.makeStyleMenuItems,
+    -- plugin.makeAboutMenuItems, etc.) remain fully active and are reused by
+    -- the SUI Settings Window (screens/sui_settings_window.lua) via the
+    -- `plugin.make*` fields set earlier in this installer — hiding the native
+    -- menu below does not affect the SUI Settings Window in any way.
+    --
+    -- To restore the native Tools > Simple UI submenu instead of opening the
+    -- SUI Settings Window, replace the menu_items.simpleui assignment below
+    -- with:
+    --   menu_items.simpleui = {
+    --       sorting_hint        = "tools",
+    --       text                = _("Simple UI"),
+    --       sub_item_table_func = _buildNativeMenuSubItemTable,
+    --   }
+    local function _buildNativeMenuSubItemTable()
+        local sub_item_table = {
+            -- ── Enable / Disable toggle ───────────────────────────────────────
+            {
+                text_func    = function()
+                    return _("Simple UI") .. " — " .. (SUISettings:nilOrTrue("simpleui_enabled") and _("On") or _("Off"))
+                end,
+                checked_func = function() return SUISettings:nilOrTrue("simpleui_enabled") end,
+                callback     = function()
+                    local on = SUISettings:nilOrTrue("simpleui_enabled")
+                    SUISettings:saveSetting("simpleui_enabled", not on)
+                    -- When disabling SimpleUI, reset "Start with Homescreen" if active,
+                    -- because "homescreen_simpleui" is not a value the base KOReader
+                    -- understands — leaving it set would cause a blank screen on next boot.
+                    if on then Config.setStartWithHomescreen(false) end
+                    askRestart(string.format(_("Simple UI will be %s after restart.\n\nRestart now?"), on and _("disabled") or _("enabled")))
+                end,
+                separator = true,
+            },
+            -- ── Bars ─────────────────────────────────────────────────────────
+            -- Groups all peripheral UI bars (top, bottom, pagination, title).
+            {
+                text = _("Bars"),
+                sub_item_table_func = function() return makeBarsMenuItems() end,
+            },
+            -- ── Home Screen ──────────────────────────────────────────────────
+            -- All settings that apply to the homescreen context live here.
+            { text = _("Home Screen"), sub_item_table_func = makeHomescreenMenu },
+            -- ── Library ──────────────────────────────────────────────────────
+            -- Book-browser settings: folder covers, series grouping, browse by meta.
+            {
+                text = _("Library"),
+                sub_item_table_func = function() return plugin.makeLibraryMenuItems() end,
+            },
+            -- ── Appearance ───────────────────────────────────────────────────
+            -- Consolidates all visual customisation: icons (system, quick actions,
+            -- packs, presets) and the UI font. Previously split across Style > Icons
+            -- (4 levels deep) and Style > UI Font.
+            {
+                text = _("Style"),
+                sub_item_table_func = function() return plugin.makeStyleMenuItems(nil) end,
+            },
+            -- ── Quick Actions ────────────────────────────────────────────────
+            -- Global custom quick actions (not homescreen-specific).
+            {
+                text_func = function()
+                    local n   = #getCustomQAList()
+                    local rem = MAX_CUSTOM_QA - n
+                    if n == 0 then return _("Quick Actions") end
+                    if rem <= 0 then
+                        return string.format(_("Quick Actions  (%d/%d — at limit)"), n, MAX_CUSTOM_QA)
+                    end
+                    return string.format(_("Quick Actions  (%d/%d — %d left)"), n, MAX_CUSTOM_QA, rem)
+                end,
+                sub_item_table_func = makeQuickActionsMenu,
+            },
+            -- -----------------------------------------------------------------
+            -- About submenu
+            -- -----------------------------------------------------------------
+            {
+                text                = _("About"),
+                separator           = true,
+                sub_item_table_func = function() return plugin.makeAboutMenuItems(nil) end,
+            },
+        }
+        -- Update banner: injected as the first item of the native submenu
+        -- when a newer version is available. Uses in-memory cache (zero I/O).
+        do
+            local ok_u, Updater = pcall(require, "infra/sui_updater")
+            local banner = (ok_u and Updater) and Updater.build_update_banner_item() or nil
+            if banner then
+                table.insert(sub_item_table, 1, banner)
+            end
+        end
+        return sub_item_table
+    end
+
+    -- -------------------------------------------------------------------
+    -- Active Tools menu entry: opens the SUI Settings Window directly.
+    -- -------------------------------------------------------------------
+    menu_items.simpleui = {
+        sorting_hint = "tools",
+        text         = _("Simple UI"),
+        callback     = function()
+            local SettingsWindow = require("screens/sui_settings_window")
+            SettingsWindow:show()
+        end,
+    }
+end -- addToMainMenu
+end -- installer function
