@@ -45,7 +45,7 @@ Kindle 插件目录：`koreader/plugins/`；Kobo：`.adds/koreader/plugins/`。�
 
 本版是测试发布。已自动验证：隐藏与恢复、重载后持久化、同名路径隔离、文件保留、原生文件浏览过滤、主页网格过滤、微信读书检测/启动分发/入口去重，以及 Lua 语法。
 
-v3.0.0-qiaomu.2 的隐藏与恢复画面已获一台 Kindle 用户确认；v3.0.0-qiaomu.3 的微信读书入口重启保持仍待真机复测。自动测试通过不代表所有视觉和触控交互均已验收。未宣称所有 Kindle/Kobo/Android 机型兼容。
+2026-10-24，用户已在一台运行 KOReader v2026.07.1 的 Kindle 上确认：隐藏与恢复后的画面问题已修复，v3.0.0-qiaomu.3 的微信读书入口修复正常。301 个插件文件通过 Wi-Fi SSH/SFTP 安装并逐项校验，保留设备设置和隐藏记录。此结果不代表所有交互或 Kindle/Kobo/Android 机型均已验收。
 
 ```bash
 python3 -m pip install -r requirements-dev.txt
@@ -75,4 +75,4 @@ Files, annotations and reading history are preserved. Visibility is not encrypti
 
 Requires KOReader v2026.03+ and its enabled CoverBrowser plugin. Back up your existing plugin folder and `settings/simpleui`, then extract the release's **simpleui.koplugin.zip** into KOReader's `plugins/` directory and restart. Keep the folder name exactly `simpleui.koplugin`. Add the Flat Library module to browse books across subfolders. To roll back, restore your previous plugin and settings backup.
 
-This is a test release: automated visibility, dispatch and syntax tests pass; hide/restore rendering in .2 has been user-confirmed on one Kindle; WeRead shortcut persistence in .3 still needs a device recheck. Other devices are not claimed as tested. Run the commands above to test and build the distributable ZIP. No account, device settings, history or hidden-book list is included.
+This is a test release: automated visibility, dispatch and syntax tests pass; on 2026-10-24, a user confirmed the hide/restore rendering fix and the .3 WeRead shortcut fix on one Kindle running KOReader v2026.07.1. All 301 plugin files were installed and hash-verified via paired Wi-Fi SSH/SFTP, preserving settings and hidden records. This does not establish acceptance of every interaction or other devices. Run the commands above to test and build the distributable ZIP. No account, device settings, history or hidden-book list is included.
