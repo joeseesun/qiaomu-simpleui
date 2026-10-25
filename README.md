@@ -75,7 +75,9 @@
 2. **下载并校验**（在电脑上执行）：
 
    ```bash
-   gh release download --repo joeseesun/qiaomu-simpleui --pattern 'simpleui.koplugin.zip' --pattern 'SHA256SUMS' --dir ./qiaomu
+   # 本项目目前发布的是测试版（pre-release），不带版本号的下载只认稳定版，所以先取最新的版本号
+   TAG=$(gh release list --repo joeseesun/qiaomu-simpleui --exclude-drafts --limit 1 --json tagName --jq '.[0].tagName')
+   gh release download "$TAG" --repo joeseesun/qiaomu-simpleui --pattern 'simpleui.koplugin.zip' --pattern 'SHA256SUMS' --dir ./qiaomu
    (cd qiaomu && shasum -a 256 -c SHA256SUMS)
    gh release download --repo finlater/weread.koplugin --pattern 'weread.koplugin-v*.zip*' --dir ./weread
    (cd weread && shasum -a 256 -c weread.koplugin-v*.zip.sha256)
@@ -146,7 +148,7 @@ Qiaomu SimpleUI is a customization of **Doctor Hetfield's SimpleUI 3.0.0** for K
 
 **Install**: requires KOReader v2026.03+ with CoverBrowser enabled. Back up `koreader/plugins/simpleui.koplugin` and `koreader/settings/simpleui`, download **simpleui.koplugin.zip** from Releases (verify with `SHA256SUMS`), extract it into KOReader's `plugins/` directory (Kindle `koreader/plugins/`, Kobo `.adds/koreader/plugins/`) and restart. For WeRead, install `weread.koplugin` from its own releases into the same folder, restart, then sign in yourself via **Tools → WeRead → WeChat QR login** after enabling "WeRead Skill" (API key) in the WeRead phone app.
 
-**For AI agents** installing on a user's behalf: follow the Chinese section [给 AI Agent 的安装指引](#给-ai-agent-的安装指引). In short: never jailbreak, flash firmware or install KOReader itself; never sign in, read or print account data, cookies, API keys or SSH keys; download only from `joeseesun/qiaomu-simpleui` and `finlater/weread.koplugin` and verify SHA-256; back up existing plugin folders and `settings/simpleui`; install folders named exactly `simpleui.koplugin` and `weread.koplugin`; verify file counts/hashes and the version in `_meta.lua`; let the user restart KOReader and complete the WeChat QR login; on failure read the end of `koreader/crash.log` and roll back from the backup.
+**For AI agents** installing on a user's behalf: follow the Chinese section [给 AI Agent 的安装指引](#给-ai-agent-的安装指引). In short: never jailbreak, flash firmware or install KOReader itself; never sign in, read or print account data, cookies, API keys or SSH keys; download only from `joeseesun/qiaomu-simpleui` (releases are pre-releases, so resolve the newest tag with `gh release list` before `gh release download`) and `finlater/weread.koplugin`, and verify SHA-256; back up existing plugin folders and `settings/simpleui`; install folders named exactly `simpleui.koplugin` and `weread.koplugin`; verify file counts/hashes and the version in `_meta.lua`; let the user restart KOReader and complete the WeChat QR login; on failure read the end of `koreader/crash.log` and roll back from the backup.
 
 **Privacy and limits**: AI is off until configured and only sends what you explicitly ask about (selection, article or page, clipped to ~20k characters) plus the title and question to the service you chose. The key is stored at `/var/local/qiaomu/ai.json` (root-only, not visible over USB) and kept out of command lines and logs. The phone setup page runs only while the QR code is shown (one-time token, auto-stops after saving or 5 idle minutes) and uses plain HTTP on your LAN, so use trusted Wi-Fi only. Hiding is not encryption. Device acceptance so far covers one Kindle Paperwhite 4 on KOReader v2026.07.1; see [docs/home-news-progress.md](docs/home-news-progress.md) for what is and is not verified yet.
 
