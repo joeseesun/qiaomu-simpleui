@@ -1053,6 +1053,19 @@ function SimpleUIPlugin:init()
         if SUISettings:nilOrTrue("simpleui_enabled") then
             Patches.installAll(self)
 
+            -- News articles read in ReaderUI: gesture actions, and removal of
+            -- history left by an earlier crash or build.
+            pcall(function()
+                local NewsSession = require("features/sui_news_session")
+                NewsSession.registerActions()
+                NewsSession.sweep()
+                require("features/sui_ai_actions").registerActions()
+            end)
+            -- AI translate / AI meaning in the reader's highlight and dictionary popups.
+            if self.ui and self.ui.document then
+                pcall(function() require("features/sui_ai_actions").attach(self.ui) end)
+            end
+
             pcall(function() QSBar.install() end)
             -- Register the TBR button in the Library hold dialog (single book).
             -- addFileDialogButtons is the official KOReader API for this.
@@ -1858,8 +1871,12 @@ function SimpleUIPlugin:onCloseDocument()
     -- with is_reload false, so it is never affected). If no cover is found
     -- (e.g. CoverBrowser not installed, or the book was never indexed) this
     -- silently falls through to the ordinary text notice further down.
+    -- News articles switch or return to their list: no book-close feedback.
+    local closing_file = self.ui and self.ui.document and self.ui.document.file
+    local ok_news, NewsEpub = pcall(require, "features/sui_news_epub")
+    local is_news = ok_news and NewsEpub.isNewsDoc(closing_file)
     local cover_shown = false
-    if not is_reload then
+    if not is_reload and not is_news then
         if Patches and Patches.CoverTransition and Patches.CoverTransition.isCloseEnabled() then
             local orig_show = WindowHooks.origShow()
             local live_doc  = self.ui and self.ui.document
@@ -1909,7 +1926,7 @@ function SimpleUIPlugin:onCloseDocument()
                 and "never" or "always"
         end
 
-        local suppress = is_reload or cover_shown
+        local suppress = is_reload or cover_shown or is_news
 
         if (notice_mode == "always" and not suppress)
                 or (notice_mode == "gesture_only" and via_gesture) then

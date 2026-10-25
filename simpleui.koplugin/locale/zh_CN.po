@@ -6221,3 +6221,362 @@ msgstr "微信读书"
 #. Qiaomu customization
 msgid "WeRead is not available. Enable its plugin and restart KOReader."
 msgstr "微信读书不可用，请启用插件并重启 KOReader。"
+
+msgid "Recently added"
+msgstr "最近加入"
+
+msgid "News"
+msgstr "资讯"
+
+msgid "Qiaomu picks"
+msgstr "乔木精选"
+
+msgid "Could not update. Saved articles are still available."
+msgstr "更新失败，已保存的文章仍可阅读。"
+
+msgid "Could not save news."
+msgstr "资讯保存失败。"
+
+msgid "Could not open article."
+msgstr "文章打开失败。"
+
+msgid "Next article"
+msgstr "下一篇"
+
+msgid "End of article"
+msgstr "本文完"
+
+msgid "Open in simple viewer"
+msgstr "用简易阅读页打开"
+
+msgid "Ask AI"
+msgstr "问 AI"
+
+msgid "Ask AI about this page"
+msgstr "问 AI：这一页"
+
+msgid "Qiaomu AI: ask about this page"
+msgstr "乔木 AI：问这一页"
+
+msgid "More actions…"
+msgstr "更多问题…"
+
+msgid "Type a question"
+msgstr "自己提问"
+
+msgid "Saved to"
+msgstr "已保存到"
+
+msgid "Could not save."
+msgstr "保存失败。"
+
+msgid "Your question"
+msgstr "你的问题"
+
+msgid "Ask"
+msgstr "提问"
+
+msgid "Continue this conversation."
+msgstr "接着刚才的对话继续问。"
+
+msgid "Nothing to ask about here."
+msgstr "这里没有可以提问的内容。"
+
+msgid "Selected text"
+msgstr "选中的文字"
+
+msgid "This page"
+msgstr "这一页"
+
+msgid "This article"
+msgstr "整篇文章"
+
+msgid "Swipe up for more"
+msgstr "向上滑动查看更多"
+
+msgid "Translate"
+msgstr "翻译"
+
+msgid "AI request failed."
+msgstr "AI 请求失败。"
+
+msgid "Copy"
+msgstr "复制"
+
+msgid "Save as note"
+msgstr "存为批注"
+
+msgid "Add to vocabulary"
+msgstr "加入生词本"
+
+msgid "Added to vocabulary builder."
+msgstr "已加入生词本。"
+
+msgid "AI translate"
+msgstr "AI 翻译"
+
+msgid "AI meaning"
+msgstr "AI 释义"
+
+msgid "Asking AI… Tap outside to cancel."
+msgstr "正在询问 AI… 点卡片外面取消"
+
+msgid "AI settings cleared."
+msgstr "已清除 AI 设置。"
+
+msgid "API key"
+msgstr "API Key"
+
+msgid "Available for 5 minutes and closes after saving. Use only on a Wi-Fi network you trust."
+msgstr "5 分钟内有效，保存后自动关闭。请只在你信任的 Wi-Fi 下使用。"
+
+msgid "Clear AI settings"
+msgstr "清除 AI 设置"
+
+msgid "Connected in about %d s."
+msgstr "连接成功，用时约 %d 秒。"
+
+msgid "Connection failed."
+msgstr "连接失败。"
+
+msgid "Could not start the phone setup page."
+msgstr "无法打开手机配置页。"
+
+msgid "Custom service"
+msgstr "自定义接口"
+
+msgid "Not set up yet. Set it up from your phone: no typing on the Kindle."
+msgstr "还没有配置。用手机扫码配置，不用在 Kindle 上打字。"
+
+msgid "Qiaomu AI · Set up from your phone"
+msgstr "乔木 AI · 用手机配置"
+
+msgid "Qiaomu AI"
+msgstr "乔木 AI"
+
+msgid "Saved."
+msgstr "已保存。"
+
+msgid "Scan with a phone on the same Wi-Fi, then fill in the service, API key and models."
+msgstr "用连着同一个 Wi-Fi 的手机扫码，填写服务、API Key 和模型。"
+
+msgid "Set up from your phone"
+msgstr "用手机配置"
+
+msgid "Test connection"
+msgstr "测试连接"
+
+msgid "Testing connection… Tap to cancel."
+msgstr "正在测试连接… 点击取消"
+
+msgid "Translation"
+msgstr "翻译"
+
+msgid "Type the API key on Kindle"
+msgstr "在 Kindle 上输入 API Key"
+
+msgid "Connect to Wi-Fi first"
+msgstr "请先连接 Wi-Fi"
+
+msgid "Zhuque Fangsong"
+msgstr "朱雀仿宋"
+
+msgid "LXGW WenKai"
+msgstr "霞鹜文楷"
+
+msgid "Source Han Serif"
+msgstr "思源宋体"
+
+msgid "Source Han Sans"
+msgstr "思源黑体"
+
+msgid "Show articles"
+msgstr "显示"
+
+msgid "More actions"
+msgstr "更多操作"
+
+msgid "WeChat"
+msgstr "微信公众号"
+
+msgid "Podcasts"
+msgstr "播客"
+
+msgid "Blogs and news"
+msgstr "博客与资讯"
+
+msgid "All picks"
+msgstr "全部精选"
+
+msgid "%d unread"
+msgstr "%d 未读"
+
+msgid "All · %s"
+msgstr "全部 · %s"
+
+msgid "Channels"
+msgstr "频道"
+
+msgid "Qiaomu channels"
+msgstr "乔木频道"
+
+msgid "%d sources"
+msgstr "%d 个来源"
+
+msgid "Reader community"
+msgstr "读者社区"
+
+msgid "Line spacing"
+msgstr "行距"
+
+msgid "Margins"
+msgstr "页边距"
+
+msgid "Tight"
+msgstr "紧凑"
+
+msgid "Previous article"
+msgstr "上一篇"
+
+msgid "Font size"
+msgstr "字号"
+
+msgid "Standard"
+msgstr "标准"
+
+msgid "Relaxed"
+msgstr "宽松"
+
+msgid "Spacious"
+msgstr "很宽"
+
+msgid "Narrow"
+msgstr "窄"
+
+msgid "Medium"
+msgstr "中"
+
+msgid "Wide"
+msgstr "宽"
+
+msgid "More settings…"
+msgstr "更多设置…"
+
+msgid "This is the last article."
+msgstr "已经是最后一篇。"
+
+msgid "This is the first article."
+msgstr "已经是第一篇。"
+
+msgid "Qiaomu picks: next article"
+msgstr "乔木精选：下一篇"
+
+msgid "Qiaomu picks: previous article"
+msgstr "乔木精选：上一篇"
+
+msgid "Qiaomu picks: back to list"
+msgstr "乔木精选：返回列表"
+
+msgid "Unsave"
+msgstr "取消收藏"
+
+msgid "Save article"
+msgstr "收藏文章"
+
+msgid "Previous page"
+msgstr "上一页"
+
+msgid "Next page"
+msgstr "下一页"
+
+msgid "Back to articles"
+msgstr "返回列表"
+
+msgid "Loading article… Tap to cancel."
+msgstr "正在加载文章…点击取消。"
+
+msgid "Read"
+msgstr "已读"
+
+msgid "Unread"
+msgstr "未读"
+
+msgid "Offline"
+msgstr "已离线"
+
+msgid "No articles here. Use the menu to update or change the filter."
+msgstr "暂无文章，可从菜单更新或切换筛选。"
+
+msgid "Updated"
+msgstr "更新于"
+
+msgid "Update to load Qiaomu picks"
+msgstr "更新后即可阅读乔木精选"
+
+msgid "Saved articles"
+msgstr "收藏的文章"
+
+msgid "All articles"
+msgstr "全部文章"
+
+msgid "Updating Qiaomu picks… Tap to cancel."
+msgstr "正在更新乔木精选…点击取消。"
+
+msgid "All sources"
+msgstr "全部来源"
+
+msgid "Sources"
+msgstr "来源筛选"
+
+msgid "Mark unread"
+msgstr "标为未读"
+
+msgid "Mark read"
+msgstr "标为已读"
+
+msgid "Update now"
+msgstr "立即更新"
+
+msgid "Bookshelf"
+msgstr "书架"
+
+msgid "Bookshelf settings"
+msgstr "书架设置"
+
+msgid "Update sources"
+msgstr "更新来源"
+
+msgid "Updating sources… Tap to cancel."
+msgstr "正在更新来源…点击取消。"
+
+
+msgid "Download missing images"
+msgstr "下载缺失图片"
+
+
+msgid "Font settings"
+msgstr "字体与排版"
+
+
+msgid "News cache"
+msgstr "资讯缓存"
+
+
+msgid "Free space"
+msgstr "剩余空间"
+
+
+msgid "Clear unstarred cache"
+msgstr "清理未收藏缓存"
+
+
+msgid "Connect to Wi-Fi to download images."
+msgstr "请连接 Wi-Fi 下载图片。"
+
+
+msgid "Not enough cache space. Clear unstarred cache and retry."
+msgstr "缓存空间不足，请清理未收藏缓存后重试。"
+
+
+msgid "Images could not be downloaded. Use the menu to retry."
+msgstr "图片暂时无法下载，可在菜单中重试。"

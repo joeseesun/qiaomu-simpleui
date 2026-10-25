@@ -29,6 +29,9 @@ local Config     = require("infra/sui_config")
 local LabelStyle = require("features/sui_label_style")
 local PageNav    = require("engines/sui_page_nav")
 local UI         = require("infra/sui_core")
+local IconButton = require("ui/widget/iconbutton")
+local Paths      = require("infra/sui_paths")
+local SUIStyle   = require("features/sui_style")
 
 local PAD = UI.PAD
 
@@ -143,9 +146,30 @@ local function buildTitleRow(desc, avail_w, scale, turn_page, focusable, inside)
     -- The title gets a real-width slot so the right side stays at the row's
     -- right edge (a TextWidget only reports its glyph width).
     local row = HorizontalGroup:new{ align = "center" }
+    local title_slot_w = math.max(1, avail_w - right:getSize().w - gap)
+    local title_content = title_widget
+    if desc.on_menu then
+        local icon_size = math.max(12, math.floor(row_h * 0.7))
+        local more = IconButton:new{
+            width = icon_size, height = icon_size,
+            padding = math.max(2, math.floor(row_h * 0.15)),
+            callback = desc.on_menu, allow_flash = false,
+        }
+        -- IconButton's icon field accepts a symbolic native name, not a file.
+        SUIStyle.restoreDefaultIcon(more, nil, Paths.getPluginDir() .. "icons/qiaomu_more.svg")
+        title_widget:free()
+        title_widget = LabelStyle.makeText{
+            text = desc.text, fgcolor = title_fg, scale = scale,
+            max_width = math.max(1, title_slot_w - more:getSize().w - gap),
+        }
+        title_content = HorizontalGroup:new{
+            align = "center", title_widget, HorizontalSpan:new{ width = gap }, more,
+        }
+        stops[#stops + 1] = { id = "menu", widget = more }
+    end
     row[#row + 1] = LeftContainer:new{
-        dimen = Geom:new{ w = math.max(1, avail_w - right:getSize().w - gap), h = row_h },
-        title_widget,
+        dimen = Geom:new{ w = title_slot_w, h = row_h },
+        title_content,
     }
     row[#row + 1] = HorizontalSpan:new{ width = gap }
     row[#row + 1] = right
@@ -158,7 +182,7 @@ local function buildWidget(desc, w, scale, turn_page, focusable, inside)
     local avail_w = w - side * 2
     local content
     local stops = {}
-    if desc.right_text then
+    if desc.right_text or desc.on_menu then
         content, stops = buildTitleRow(desc, avail_w, scale, desc.npages > 1 and turn_page or nil, focusable, inside)
     else
         content = LabelStyle.makeText{
@@ -197,6 +221,7 @@ function M.get(cache, id, desc, w, landscape_factor, turn_page, focusable, insid
         inside and 1 or 0, ink and tostring(ink.blk) or "",
         tostring(LabelStyle.color(inside)),
         LabelStyle.signature(),
+        desc.on_menu and "menu" or "",
     }, "|")
 
     local entry = cache[id]

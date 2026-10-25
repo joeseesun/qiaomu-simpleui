@@ -6,7 +6,9 @@ plugin=root/'simpleui.koplugin'
 output=root/'dist'
 output.mkdir(exist_ok=True)
 archive=output/'simpleui.koplugin.zip'
-files=sorted(p for p in plugin.rglob('*') if p.is_file() and '__pycache__' not in p.parts)
+files=sorted(p for p in plugin.rglob('*') if p.is_file()
+    and '__pycache__' not in p.parts and not any(part.startswith('.') for part in p.relative_to(plugin).parts)
+    and p.name != 'Thumbs.db')
 assert (plugin/'main.lua') in files
 assert (plugin/'features/library/sui_hidden_books.lua') in files
 assert (plugin/'features/sui_qiaomu.lua') in files

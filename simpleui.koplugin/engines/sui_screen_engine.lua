@@ -36,6 +36,7 @@ local GestureRange     = require("ui/gesturerange")
 local HorizontalSpan   = require("ui/widget/horizontalspan")
 local InputContainer   = require("ui/widget/container/inputcontainer")
 local LeftContainer    = require("ui/widget/container/leftcontainer")
+local ScrollableContainer = require("ui/widget/container/scrollablecontainer")
 local TextWidget       = require("ui/widget/textwidget")
 local TitleBar         = require("ui/widget/titlebar")
 local UIManager        = require("ui/uimanager")
@@ -1204,6 +1205,9 @@ end
 function ScreenWidget:onScreenSwipe(_args, ges)
     if ges then
         local dir = ges.direction
+        if (dir == "north" or dir == "south") and self._body_scroll then
+            if self._body_scroll:onScrollableSwipe(nil, ges) then return true end
+        end
         if (dir == "west" or dir == "east") and not self:_isSideEdge(ges) then
             if not self:_swipeBookMod(ges) then self:_swipePage(dir) end
             return true
@@ -1468,7 +1472,9 @@ function ScreenWidget:_initLayout()
     -- bar instead of silently extending underneath it.
     local content_h = self._navbar_content_h or UI.getContentHeight()
     local side_off  = UI.SIDE_PAD()
-    local inner_w   = UI.getInnerW(sw)
+    -- Reserve the native scrollbar gutter before laying out covers. Without
+    -- this, adding a vertical scrollbar also creates horizontal overflow.
+    local inner_w   = math.max(1, UI.getInnerW(sw) - ScrollableContainer:getScrollbarWidth())
 
     self._layout_sw        = sw
     self._layout_content_h = content_h
@@ -1508,10 +1514,32 @@ function ScreenWidget:_initLayout()
         dimen        = Geom:new{ w = sw, h = content_h },
         body,
     }
+    local scroll = ScrollableContainer:new{
+        dimen = Geom:new{ w = sw, h = content_h },
+        show_parent = self,
+        content_widget,
+    }
+    -- Horizontal swipes belong to book-grid/screen pagination. Native
+    -- scrolling handles the vertical axis, including touch hit-testing of
+    -- scrolled content and clipping refreshes above the persistent navbar.
+    function scroll:onScrollableSwipe(args, ges)
+        if ges.direction ~= "north" and ges.direction ~= "south" then return false end
+        return ScrollableContainer.onScrollableSwipe(self, args, ges)
+    end
+    function scroll:getCropRegion()
+        if self._is_scrollable ~= true then return Geom:new(self.dimen) end
+        return ScrollableContainer.getCropRegion(self)
+    end
+    function scroll:free()
+        self:onCloseWidget()
+        ScrollableContainer.free(self)
+    end
+    self._body_scroll = scroll
+    self.cropping_widget = scroll
     local outer = FrameContainer:new{
         bordersize = 0, padding = 0,
         dimen      = Geom:new{ w = sw, h = content_h },
-        content_widget,
+        scroll,
     }
 
     -- SUIWallpaper.styleGetBgWidget() already creates the ImageWidget with
@@ -2733,6 +2761,14 @@ function ScreenWidget:_updatePage(keep_cache, books_only, stats_only)
     end
 
     self:_updateFooter(footer_page, footer_total)
+    if self._body_scroll then
+        -- Recompute content size after adding/removing modules. The page
+        -- footer is an overlay, so reserve its height in the scroll viewport.
+        local footer_h = self._footer_bc and self._footer_bc.dimen.h > 0
+            and self._footer_bc[1]:getSize().h or 0
+        self._body_scroll.dimen.h = math.max(1, self._layout_content_h - footer_h)
+        self._body_scroll:reset()
+    end
     _updateNavpager(self, footer_page, footer_total)
 
     -- Reschedule the clock tick when the clock module is on the current page,
@@ -2746,7 +2782,7 @@ function ScreenWidget:_updatePage(keep_cache, books_only, stats_only)
 
     -- Warn when module heights overflow the visible area (portrait only).
     -- Skipped when the user has disabled the warning in settings.
-    if not is_landscape
+    if not self._body_scroll and not is_landscape
        and SUISettings:nilOrTrue(self._pfx .. "overflow_warn") then
         local total_body_h = 0
         for i = 1, #body do
@@ -3161,6 +3197,9 @@ end
 function ScreenWidget:_labelFor(mod, col_w, ctx, inside)
     local desc = SectionLabel.describe(mod, ctx)
     if not desc then return nil end
+    if mod.showActions then
+        desc.on_menu = function() mod.showActions(ctx) end
+    end
     self._label_cache = self._label_cache or {}
     self._turn_page_fn = self._turn_page_fn or function(mod_id, delta)
         return self:_turnBookModPage(mod_id, delta)
@@ -3819,6 +3858,8 @@ function ScreenWidget:onCloseWidget()
     -- SUICoverCache/_bim_ref_cache (SH.getBookCover, SH.getCroppedBookCover,
     -- module_collections's stack/quad builders) -- audited 2026-08-08.
     self:free()
+    self._body_scroll = nil
+    self.cropping_widget = nil
 
     -- Header chevrons call back into this instance; drop them with it.
     if self._label_cache then SectionLabel.release(self._label_cache) end
