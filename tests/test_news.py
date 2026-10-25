@@ -77,9 +77,14 @@ package.loaded["socket"].dns.getaddrinfo=function()
 end
 package.loaded["device"].isKindle=function() return true end
 local real_popen=io.popen
+local real_open=io.open
+io.open=function(path,...)
+ if path=="/usr/bin/curl" then return {close=function() return true end} end
+ return real_open(path,...)
+end
 io.popen=function(command)
  attempts=attempts+1;commands[#commands+1]=command
- local result=(attempts==1 and 'partial' or '{"entries":[]}')..string.char(10)..(attempts==1 and "000" or "200")..string.char(10)..(attempts==1 and "28" or "0")
+ local result=(attempts==1 and 'partial' or '{"entries":[]}')..string.char(10).."200"..string.char(10)..(attempts==1 and "28" or "0")
  local done=false
  return {read=function() if done then return end;done=true;return result end,close=function() end}
 end
@@ -93,8 +98,10 @@ io.popen=function()
  attempts=attempts+1;local done=false
  return {read=function() if done then return end;done=true;return string.char(10).."403"..string.char(10).."22" end,close=function() end}
 end
-assert(N.request("/api/entries")==nil and attempts==1)
+local response,error_message=N.request("/api/entries")
+assert(response==nil and attempts==1 and error_message=="HTTP 403")
 io.popen=real_popen
+io.open=real_open
 package.loaded["device"].isKindle=function() return false end
 -- Empty/stale AI assets fall back to the full original, never a summary.
 local real_request=N.request
