@@ -6,13 +6,19 @@ from lupa.lua54 import LuaRuntime, lua_type
 ROOT = Path(__file__).resolve().parents[1] / 'simpleui.koplugin'
 with tempfile.TemporaryDirectory() as tmp:
     lua = LuaRuntime(unpack_returned_tuples=True)
+    lua.execute('native_null=function() return native_null end')
+    is_null=lua.eval('function(v) return v==native_null end')
     def to_lua(value):
+        if value is None:
+            return lua.globals().native_null
         if isinstance(value, dict):
             return lua.table_from({k: to_lua(v) for k, v in value.items()})
         if isinstance(value, list):
             return lua.table_from([to_lua(v) for v in value])
         return value
     def from_lua(value):
+        if lua_type(value) == 'function' and is_null(value):
+            return None
         if lua_type(value) == 'table':
             keys = list(value.keys())
             if keys and all(isinstance(k, int) for k in keys):
@@ -135,7 +141,8 @@ package.loaded["ui/widget/textviewer"]={new=function(_,o)
  o.onClose=function() o.close_callback() end
  return o
 end}
-package.loaded["ui/network/manager"]={runWhenOnline=function() error("offline article must not enable networking") end}
+package.loaded["ui/network/manager"]={isOnline=function() return false end,
+ runWhenOnline=function() error("offline article must not enable networking") end}
 local R=require("screens/sui_news_reader")
 R.open()
 local list=shown[#shown]
@@ -153,5 +160,42 @@ R.actions(entry)
 shown[#shown].buttons[1][1].callback()
 assert(not N.flag("a").read)
 assert(not package.loaded["apps/reader/readerui"] and not package.loaded["readhistory"])
+-- LuaJSON represents JSON null with a function. Native Trapper cannot
+-- serialize it as a Lua object; exercise the real job through string IPC.
+local online=true
+local requests=0
+package.loaded["ui/network/manager"]={
+ isOnline=function() return online end,
+ runWhenOnline=function(_,callback) callback() end,
+}
+package.loaded["ui/trapper"]={
+ wrap=function(_,callback) callback() end,
+ dismissableRunInSubprocess=function(_,task,_,simple)
+  assert(simple==true,"news tasks must use native Trapper's string return mode")
+  local result=task();assert(type(result)=="string")
+  -- The boundary only carries bytes, so LuaJSON's null function stays local.
+  return true,result
+ end,
+}
+N.fetchIndex=function()
+ requests=requests+1
+ return {entries={{id="fresh",title="Fresh",sourceId="s",publishedTs=999,nullable=native_null}}}
+end
+R.update()
+assert(N.state().entries[1].id=="fresh" and requests==1)
+list:onCloseWidget()
+R.open();assert(requests==2,"entering News refreshes even with a cached list")
+shown[#shown]:onCloseWidget()
+online=false
+R.open();assert(requests==2,"offline visits retain cached content without enabling Wi-Fi")
+online=true
+N.fetchIndex=function() return nil,"HTTP 503" end
+R.update();assert(shown[#shown].text:find("HTTP 503",1,true),"IPC retains the useful error")
+assert(N.state().entries[1].id=="fresh","a failed refresh keeps the cached list")
+N.fetchIndex=function() error("fixture task exception") end
+R.update();assert(shown[#shown].text:find("fixture task exception",1,true))
+package.loaded["ui/trapper"].dismissableRunInSubprocess=function() return false end
+local count=#shown
+R.update();assert(#shown==count,"cancelled refresh shows no failure notice")
 ''')
 print('PASS: persisted offline content/read/star/progress, bounded rolling index, saved retention, ID/size/HTTP validation, original fallback, real article/menu callbacks and book-history isolation.')

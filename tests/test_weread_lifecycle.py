@@ -22,6 +22,7 @@ lua.execute('''
 package.path=plugin_root.."/?.lua;"..package.path
 persisted={simpleui_enabled=true,simpleui_qiaomu_defaults_v1=true,
  simpleui_qiaomu_weread_tab_added=true,
+ simpleui_qiaomu_weread_tab_migrated_v2=true,
  simpleui_bar_tabs={"homescreen","home","favorites","history","qiaomu_weread","sui_settings"}}
 local store={
  get=function(_,k,d) if persisted[k]==nil then return d end return persisted[k] end,

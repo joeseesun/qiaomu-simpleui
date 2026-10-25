@@ -1,5 +1,6 @@
 -- Separate article navigation; never opens ReaderUI or writes book history.
 local News = require("features/sui_news")
+local JSON = require("json")
 local UIManager = require("ui/uimanager")
 local Screen = require("device").screen
 local _ = require("infra/sui_i18n").translate
@@ -14,8 +15,19 @@ local function job(label, task, done)
     require("ui/network/manager"):runWhenOnline(function()
         local Trapper = require("ui/trapper")
         Trapper:wrap(function()
-            local completed, result, err = Trapper:dismissableRunInSubprocess(task, label)
+            -- LuaJSON's null marker is a function; native LuaJIT serialization
+            -- rejects it. Transfer JSON bytes, not decoded API objects.
+            local completed, payload = Trapper:dismissableRunInSubprocess(function()
+                local ok, value, err = pcall(task)
+                local envelope = ok and { result = value, error = err } or { error = tostring(value) }
+                local encoded, result = pcall(JSON.encode, envelope)
+                if encoded then return result end
+                return JSON.encode{ error = tostring(result) }
+            end, label, true)
             if not completed then return end
+            local decoded, response = pcall(JSON.decode, payload or "")
+            local result = decoded and type(response) == "table" and response.result
+            local err = decoded and type(response) == "table" and response.error or "Invalid response"
             if not result then
                 notice(_("Could not update. Saved articles are still available.") .. "\n" .. tostring(err or ""))
                 return
@@ -189,7 +201,11 @@ function M.actions(entry)
 end
 
 function M.open()
-    if menu then UIManager:show(menu); return end
+    if menu then
+        UIManager:show(menu)
+        if require("ui/network/manager"):isOnline() then M.update() end
+        return
+    end
     menu = require("ui/widget/menu"):new{
         title = _("Qiaomu picks"), item_table = items(),
         width = Screen:getWidth(), height = Screen:getHeight(),
@@ -208,8 +224,9 @@ function M.open()
     end
     M.redraw()
     UIManager:show(menu)
-    -- First visit is explicit user intent; subsequent visits remain offline.
-    if #News.state().entries == 0 then M.update() end
+    -- Show cached entries immediately, refresh on every online visit, and
+    -- retain offline reading without asking to enable Wi-Fi for a cached list.
+    if require("ui/network/manager"):isOnline() or #News.state().entries == 0 then M.update() end
 end
 
 return M
