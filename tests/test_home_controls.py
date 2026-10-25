@@ -56,3 +56,49 @@ screen._body_scroll.scrollable=false
 assert(screen:onScreenSwipe(nil,{direction="south"})=="file_manager")
 ''')
 print('PASS: bar-aware viewport/crop, scrollbar gutter, vertical swipe, horizontal grid navigation, non-overflow fallback.')
+
+# Native IconButton passes icon to IconWidget as a symbolic name. A file path
+# silently becomes icon-not-found; exercise the actual title-row builder and
+# the project's existing native-image replacement helper together.
+label=(ROOT/'engines/sui_section_label.lua').read_text()
+style=(ROOT/'features/sui_style.lua').read_text()
+title_row=re.search(r'local function buildTitleRow\(.*?\nend\n',label,re.S).group()
+restore=re.search(r'function M.restoreDefaultIcon\(.*?\nend\n',style,re.S).group()
+icons=LuaRuntime(unpack_returned_tuples=True)
+icons.globals().builder_source=title_row+'\nreturn buildTitleRow'
+icons.globals().restore_source=restore
+icons.globals().plugin_root=str(ROOT)
+icons.execute('''
+local function widget(o)
+ o=o or {}
+ function o:getSize() return self.dimen or {w=self.width or 24,h=self.height or 24} end
+ function o:free() end
+ function o:init() end
+ return o
+end
+local factory={new=function(_,o) return widget(o) end}
+CenterContainer=factory;HorizontalGroup=factory;HorizontalSpan=factory;LeftContainer=factory
+Geom={new=function(_,o) return o end}
+PAD=8
+LabelStyle={color=function() end,makeText=function() return widget() end}
+PageNav={indicatorFace=function() end}
+UI={makeColoredText=function() return widget() end}
+Paths={getPluginDir=function() return plugin_root.."/" end}
+IconButton={new=function(_,o)
+ o=widget(o)
+ o.image=widget{icon=o.icon,file="resources/icons/icon-not-found.svg"}
+ return o
+end}
+M={}
+assert(load(restore_source))()
+SUIStyle=M
+local build=assert(load(builder_source))()
+local invoked=false
+local row,stops=build({text="Recently added",on_menu=function() invoked=true end},992,1,nil,true)
+local more=stops[1].widget
+assert(more.image.file==plugin_root.."/icons/qiaomu_more.svg",
+ "overflow icon must load its SVG file, not the native warning fallback")
+assert(more.image.icon==nil)
+more.callback();assert(invoked)
+''')
+print('PASS: shelf overflow uses a real icon file and retains its menu callback.')

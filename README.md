@@ -6,7 +6,7 @@
 
 A customized SimpleUI for KOReader with a cleaner header, a WeRead shortcut, and reversible book visibility.
 
-[下载测试版](https://github.com/joeseesun/qiaomu-simpleui/releases/tag/v3.0.0-qiaomu.4) · [原版 SimpleUI](https://github.com/doctorhetfield-cmd/simpleui.koplugin) · [GPL-3.0](LICENSE)
+[下载测试版](https://github.com/joeseesun/qiaomu-simpleui/releases/tag/v3.0.0-qiaomu.5) · [原版 SimpleUI](https://github.com/doctorhetfield-cmd/simpleui.koplugin) · [GPL-3.0](LICENSE)
 
 基于 Doctor Hetfield 的 **SimpleUI 3.0.0**，保留上游作者和许可证。本仓库提供定制版本，不代表上游官方发布。
 
@@ -32,7 +32,7 @@ A customized SimpleUI for KOReader with a cleaner header, a WeRead shortcut, and
 - 列表显示标题、来源、发布日期、未读及已离线状态。打开文章标为已读，长按可改回未读或收藏。
 - 正文优先使用已有且未过期的乔木解读，否则读取服务提供的原文；打开成功即保存离线正文，退出时保存阅读位置。标题、正文、页码和收藏属于独立资讯数据，不写入书籍阅读历史或「继续阅读」。
 - 「已离线」只表示该篇正文已经保存，不表示列表中所有文章都已下载。当前为文字阅读，外部图片、嵌入音视频不下载；单篇正文上限 400 KB。
-- Kindle 优先使用系统内置 curl 的 HTTPS 和 CA 证书，并在 DNS 提供的地址之间进行有限故障切换；不会安装程序或修改全局 DNS、防火墙。其他平台使用 KOReader 的 LuaSocket 请求实现。
+- Kindle 使用系统内置 curl，优先连接现有源站，公网 CDN 作为一次备用；API 域名与 HTTPS 证书校验保持一致，不固定服务器 IP。不会安装程序或修改全局 DNS、防火墙。其他平台使用 KOReader 的 LuaSocket 请求实现。
 
 KOReader 另外自带 [News downloader (RSS/Atom)](https://github.com/koreader/koreader/blob/master/plugins/newsdownloader.koplugin/main.lua)，可以添加其他 RSS/Atom 订阅并下载为 EPUB。当前独立资讯列表接入乔木精选，尚未将任意 RSS 订阅合并到这份列表。
 
@@ -92,7 +92,7 @@ It hides the top swipe indicator on first activation, adds a shortcut for an ins
 
 Files, annotations and reading history are preserved. Visibility is not encryption: other applications and ordinary file pickers can still access the files. Records use full paths; external renames/moves do not migrate records automatically. The optional WeRead plugin is not bundled; a compatible `openBookshelf` or `launch` method is required.
 
-The .4 candidate defaults the flat shelf to newest file date first, adds a shelf overflow menu, and uses KOReader's native vertical scrolling for oversized home layouts while retaining horizontal book pagination. Explicit sort/badge preferences remain respected. A one-time migration replaces the Favorites navigation tab with News; book favorites stay in the shelf menu and Library settings. News reads Qiaomu's existing public API, keeps unread/saved/offline/progress data outside book history, and caches an article after opening it. Arbitrary RSS/Atom feeds remain available through KOReader's built-in News Downloader; they are not yet part of the separate Qiaomu news list.
+The .5 candidate defaults the flat shelf to newest file date first, adds a shelf overflow menu, and uses KOReader's native vertical scrolling for oversized home layouts while retaining horizontal book pagination. Explicit sort/badge preferences remain respected. A one-time migration replaces the Favorites navigation tab with News; book favorites stay in the shelf menu and Library settings. News reads Qiaomu's existing public API, keeps unread/saved/offline/progress data outside book history, and caches an article after opening it. Arbitrary RSS/Atom feeds remain available through KOReader's built-in News Downloader; they are not yet part of the separate Qiaomu news list.
 
 Requires KOReader v2026.03+ and its enabled CoverBrowser plugin. Back up your existing plugin folder and `settings/simpleui`, then extract the release's **simpleui.koplugin.zip** into KOReader's `plugins/` directory and restart. Keep the folder name exactly `simpleui.koplugin`. Add the Flat Library module to browse books across subfolders. To roll back, restore your previous plugin and settings backup.
 

@@ -17,7 +17,7 @@ Updated 2026-10-25. Base: `f8a91a3`; branch: `codex/home-arrivals-news`.
 - News uses the same anonymous API paths and compact-list header as the current Obsidian RSS client. Existing published rewrites are preferred; original full content is the fallback. No AI generation is requested.
 - Public source-name metadata ships with the plugin (113 enabled sources as of 2026-10-25). Refreshing the large catalog is a separate user action, so catalog failure cannot prevent loading the latest article list.
 - The rolling index keeps 200 entries plus older saved articles. Opened bodies are cached separately under the user's settings directory. Article IDs cannot overwrite the index file.
-- Kindle uses its built-in curl with system CA verification, gzip, bounded response size, timeout and at most two current DNS addresses. HTTP responses are distinguished from transport failures; a partial body is not accepted merely because headers contained HTTP 200. Other platforms retain the native LuaSocket path.
+- Kindle uses its built-in curl with system CA verification, gzip, bounded response size, timeout and at most two connection routes. HTTP responses are distinguished from transport failures; a partial body is not accepted merely because headers contained HTTP 200. Other platforms retain the native LuaSocket path.
 - Packaging now excludes Finder metadata and hidden files. The current plugin payload has 305 files; private installation receipts and screenshots are excluded.
 
 ## Device evidence and outstanding work
@@ -29,3 +29,12 @@ Updated 2026-10-25. Base: `f8a91a3`; branch: `codex/home-arrivals-news`.
 - Frozen plugin/test source: `b74589166032f9e274081256a819b3f8f65cfe97`; [CI succeeded](https://github.com/joeseesun/qiaomu-simpleui/actions/runs/40152133365). [PR #5](https://github.com/joeseesun/qiaomu-simpleui/pull/5) remains a draft.
 - The `.4` prerelease draft contains only the installation ZIP and SHA256SUMS. It is not publicly published. Uploaded ZIP digest: `5b894f126d2878738e290770d4826051c425949c6047c394c394c42063373f50` (2,626,433 bytes); the artifact is frozen to the source above.
 - Next: after the requested KOReader restart, inspect the actual new home/menu/news rendering and test a complete article/offline reopen. Keep the release draft until the outstanding device checks are resolved.
+
+## `.5` follow-up after restart
+
+- The user restarted KOReader; the device framebuffer showed the new Qiaomu news menu, and the one-time news-tab migration persisted. The actual Update action failed with transport exit 28. A standalone successful smoke test was insufficient to establish reliable UI refresh.
+- Verbose device traces reproduced TLS handshake stalls against both current CDN IPv4 answers. Keeping the API URL, SNI, Host and certificate validation unchanged while connecting through the existing DNS-only origin name `vps2.qiaomu.ai` returned all 60 entries twice in 3.20 and 2.49 seconds. No infrastructure or DNS configuration was modified.
+- `.5` prioritizes that origin connection using curl `--connect-to` and allows one public-CDN fallback. Deployment IPs are not pinned; native curl bounds DNS/connect/transfer time.
+- The reported warning triangle was caused by supplying an absolute SVG path as IconButton's symbolic icon name. The title-row builder now uses SimpleUI's existing `restoreDefaultIcon` helper to load the SVG as a file.
+- Both added regressions failed on the previous code and pass after these changes. The six behavior suites, 152 Lua parses and both Chinese locale compilation checks pass.
+- `.5` package: 305 files, 2,626,478 bytes; SHA-256 `de7c58df9223fa4132e2fd970cc23b9e535cafcde8412c156b7649b27a8dac57`. Wireless installation and actual post-restart home/article interactions are pending.

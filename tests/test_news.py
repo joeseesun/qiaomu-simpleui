@@ -69,8 +69,8 @@ assert(N.request("/api/entries").entries)
 status=503;assert(N.request("/api/entries")==nil)
 status=200;payload="not json";assert(N.request("/api/entries")==nil)
 assert(timeout_reset==3)
--- Try at most two DNS-advertised IPv4 endpoints. Keep the original TLS SNI
--- and Host semantics and do not retry real HTTP errors on another address.
+-- Use the existing origin's DNS name, retaining the public API's TLS/Host.
+-- The CDN remains one bounded fallback; do not retry real HTTP errors.
 local commands,attempts={},0
 package.loaded["socket"].dns.getaddrinfo=function()
  return {{family="inet",addr="172.67.1.1"},{family="inet",addr="104.21.1.1"}}
@@ -89,8 +89,10 @@ io.popen=function(command)
  return {read=function() if done then return end;done=true;return result end,close=function() end}
 end
 assert(N.request("/api/entries").entries and attempts==2)
-assert(commands[1]:find("rss.qiaomu.ai:443:104.21.1.1",1,true))
-assert(commands[2]:find("rss.qiaomu.ai:443:172.67.1.1",1,true))
+assert(commands[1]:find("--connect-to 'rss.qiaomu.ai:443:vps2.qiaomu.ai:443'",1,true),
+ "Kindle must avoid the failing CDN TLS path using the existing origin")
+assert(not commands[2]:find("--connect-to",1,true), "fallback uses the public API's DNS")
+assert(not commands[1]:find("--resolve",1,true), "do not pin deployment IPs")
 assert(commands[1]:find("https://rss.qiaomu.ai/api/entries",1,true))
 assert(commands[1]:find("--proto '=https'",1,true) and not commands[1]:find("--insecure",1,true))
 attempts=0

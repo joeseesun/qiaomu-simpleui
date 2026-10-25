@@ -141,18 +141,21 @@ local function shellQuote(value)
     return "'" .. value:gsub("'", "'\\''") .. "'"
 end
 
-local function curlRequest(path, addresses)
+local function curlRequest(path)
     -- Kindle's built-in curl uses its system TLS/CA stack. LuaSec can stall
     -- on these same CDN handshakes. No external program is installed.
     local last_error
-    for i = 1, math.min(2, #addresses) do
-        local command = "/usr/bin/curl --silent --fail --compressed --connect-timeout 8 --max-time 25"
+    for i = 1, 2 do
+        local command = "/usr/bin/curl --silent --fail --compressed --ipv4 --connect-timeout 8 --max-time 25"
             .. " --max-filesize 4194304 --proto '=https'"
             .. " --header 'Accept: application/json' --header 'X-Rss-List: reader-v1'"
             .. " --user-agent 'Qiaomu-SimpleUI/3.0.0'"
             .. " --write-out '\\n%{http_code}'"
-        if addresses[i] then
-            command = command .. " --resolve " .. shellQuote("rss.qiaomu.ai:443:" .. addresses[i])
+        if i == 1 then
+            -- Existing DNS-only origin hostname, not a new service or pinned IP.
+            -- --connect-to changes routing only: TLS SNI, certificate validation
+            -- and HTTP Host remain rss.qiaomu.ai. The public CDN is the fallback.
+            command = command .. " --connect-to " .. shellQuote("rss.qiaomu.ai:443:vps2.qiaomu.ai:443")
         end
         command = command .. " " .. shellQuote(M.ORIGIN .. path)
             .. " 2>/dev/null; qiaomu_news_exit=$?; printf '\\n%s' \"$qiaomu_news_exit\""
@@ -184,19 +187,9 @@ end
 
 function M.request(path)
     assert(path:sub(1, 5) == "/api/", "Invalid API path")
-    local socket = require("socket")
-    local addresses, seen = {}, {}
-    local resolved = socket.dns.getaddrinfo("rss.qiaomu.ai") or {}
-    for _i, item in ipairs(resolved) do
-        if item.family == "inet" and not seen[item.addr] then
-            addresses[#addresses + 1] = item.addr; seen[item.addr] = true
-        end
-    end
-    table.sort(addresses)
-    if #addresses == 0 then addresses[1] = false end -- native DNS/IPv6 path
     local Device = require("device")
     local curl = Device.isKindle and Device:isKindle() and io.open("/usr/bin/curl", "rb")
-    if curl then curl:close(); return curlRequest(path, addresses) end
+    if curl then curl:close(); return curlRequest(path) end
     local http, socketutil = require("socket.http"), require("socketutil")
     local chunks, size, started = {}, 0, os.time()
     socketutil:set_timeout(5, 15)

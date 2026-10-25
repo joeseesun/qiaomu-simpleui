@@ -31,6 +31,7 @@ local PageNav    = require("engines/sui_page_nav")
 local UI         = require("infra/sui_core")
 local IconButton = require("ui/widget/iconbutton")
 local Paths      = require("infra/sui_paths")
+local SUIStyle   = require("features/sui_style")
 
 local PAD = UI.PAD
 
@@ -150,11 +151,12 @@ local function buildTitleRow(desc, avail_w, scale, turn_page, focusable, inside)
     if desc.on_menu then
         local icon_size = math.max(12, math.floor(row_h * 0.7))
         local more = IconButton:new{
-            icon = Paths.getPluginDir() .. "icons/qiaomu_more.svg",
             width = icon_size, height = icon_size,
             padding = math.max(2, math.floor(row_h * 0.15)),
             callback = desc.on_menu, allow_flash = false,
         }
+        -- IconButton's icon field accepts a symbolic native name, not a file.
+        SUIStyle.restoreDefaultIcon(more, nil, Paths.getPluginDir() .. "icons/qiaomu_more.svg")
         title_widget:free()
         title_widget = LabelStyle.makeText{
             text = desc.text, fgcolor = title_fg, scale = scale,
