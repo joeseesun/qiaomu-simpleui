@@ -37,6 +37,11 @@ package.loaded["datastorage"]={getSettingsDir=function() return tmp end}
 package.loaded["util"]={makePath=mkdir}
 package.loaded["infra/sui_paths"]={getPluginDir=function() return plugin_root.."/" end}
 package.loaded["infra/sui_i18n"]={translate=function(s) return s end}
+package.loaded["features/sui_news_cache"]={touch=function() end,makeRoom=function() return true end,
+ root=function() return tmp.."/simpleui/news" end,reserve=function() return function() end end}
+package.loaded["features/sui_news_images"]={html=function(a) return a.body end,urls=function() return {} end}
+package.loaded["ui/size"]={padding={buttontable=6}}
+package.loaded["features/sui_style"]={restoreDefaultIcon=function() end}
 local N=require("features/sui_news")
 assert(not N.validId("../escape")); assert(not N.validId("x/y")); assert(N.validId("abc-123"))
 N.merge({{id="a",title="Original",titleZh="中文标题",sourceId="s",publishedTs=1},
@@ -118,7 +123,7 @@ N.request=function(path)
  return {entry={id="a",content='<p>Full text</p><script>bad()</script><img src="https://x/p.png">'}}
 end
 local original=N.fetchArticle("a")
-assert(original.format=="html" and original.body=="<p>Full text</p>")
+assert(original.format=="html" and original.body=='<p>Full text</p><img src="https://x/p.png">')
 N.request=function() return {rewrite={body="# 中文解读",stale=false}} end
 assert(N.fetchArticle("a").format=="md")
 N.request=real_request
@@ -137,7 +142,9 @@ package.loaded["ui/widget/textviewer"]={new=function(_,o)
  o.box_widget={page_number=1,page_count=6}
  o.scroll_widget={scrollToRatio=function(_,r) o.box_widget.page_number=1+math.floor(r*6) end,
  scrollText=function(_,d) o.box_widget.page_number=o.box_widget.page_number+d end}
- o.button_table={getButtonById=function() return {setText=function() end} end}
+ o.button_table={getButtonById=function() return {width=250,setIcon=function(_,_,width)
+  assert(width==250,"bookmark changes must preserve the native button width")
+ end} end}
  o.onClose=function() o.close_callback() end
  return o
 end}
@@ -152,7 +159,9 @@ local viewer=shown[#shown]
 assert(viewer.title=="中文标题" and viewer.box_widget.page_number==3)
 assert(N.flag("a").read==true)
 viewer.buttons_table[1][2].callback()
-viewer.buttons_table[2][1].callback()
+assert(#viewer.buttons_table==1 and #viewer.buttons_table[1]==4,"article tools occupy one icon row")
+for _,button in ipairs(viewer.buttons_table[1]) do assert(button.icon and not button.text) end
+viewer.buttons_table[1][3].callback()
 assert(N.flag("a").starred==false)
 viewer:onClose()
 assert(N.flag("a").page==4 and list.item_table)
@@ -197,5 +206,33 @@ R.update();assert(shown[#shown].text:find("fixture task exception",1,true))
 package.loaded["ui/trapper"].dismissableRunInSubprocess=function() return false end
 local count=#shown
 R.update();assert(#shown==count,"cancelled refresh shows no failure notice")
+-- Background media tasks attach to the article rather than creating a modal.
+local I=package.loaded["features/sui_news_images"]
+local C=package.loaded["features/sui_news_cache"]
+local releases,reinitializations=0,0
+C.reserve=function() return function() releases=releases+1 end end
+I.ARTICLE_BUDGET=8*1024*1024
+I.urls=function() return {"https://images.example/photo.png"} end
+I.path=function() return nil end
+I.download=function() return {count=1,bytes=100} end
+local cancelled=false
+N.cache("a",{body="Cached article with images",format="html",media_version=1})
+package.loaded["ui/trapper"].dismissableRunInSubprocess=function(_,task,owner,simple)
+ assert(type(owner)=="table" and owner.text and simple,"background task uses the existing viewer")
+ owner.reinit=function() reinitializations=reinitializations+1 end
+ owner.dismiss_callback=function() cancelled=true end
+ return true,task()
+end
+R.openArticle(entry)
+assert(releases==1 and reinitializations==1,"completion updates local images and releases its budget")
+assert(shown[#shown].dismiss_callback==nil,"completed job clears its cancellation hook")
+package.loaded["ui/trapper"].dismissableRunInSubprocess=function(_,task,owner)
+ owner.reinit=function() reinitializations=reinitializations+1 end
+ owner.dismiss_callback=function() cancelled=true end
+ owner:onCloseWidget()
+ return true,task()
+end
+R.openArticle(entry)
+assert(cancelled and releases==2 and reinitializations==1,"closing cancels and prevents late image redraw")
 ''')
 print('PASS: persisted offline content/read/star/progress, bounded rolling index, saved retention, ID/size/HTTP validation, original fallback, real article/menu callbacks and book-history isolation.')

@@ -83,6 +83,7 @@ function M.merge(entries, sources)
                 sourceId = text(raw.sourceId, 128), sourceName = names[raw.sourceId] or text(raw.sourceName, 500),
                 published = text(raw.published, 100), publishedTs = tonumber(raw.publishedTs) or 0,
                 link = text(raw.link, 4000),
+                image = text(raw.image, 4096),
             }
         end
         if #merged >= M.MAX_ITEMS then break end
@@ -122,6 +123,7 @@ function M.cached(id)
     local article = read(root() .. "/articles/" .. id .. ".json")
     if article and type(article.body) == "string" and #article.body > 0
             and #article.body <= 400000 and (article.format == "html" or article.format == "md") then
+        require("features/sui_news_cache").touch(root() .. "/articles/" .. id .. ".json")
         return article
     end
 end
@@ -131,6 +133,9 @@ function M.cache(id, article)
     assert(type(article.body) == "string" and #article.body > 0 and #article.body <= 400000,
         "Article is empty or too large for this device")
     assert(article.format == "md" or article.format == "html", "Invalid article format")
+    if not require("features/sui_news_cache").makeRoom(#JSON.encode(article), M.state()) then
+        return nil, "News cache is full"
+    end
     write(root() .. "/articles/" .. id .. ".json", article)
     M.flag(id).offline = true
     M.save()
@@ -233,7 +238,7 @@ function M.fetchArticle(id)
     rewrite = rewrite and rewrite.rewrite
     if type(rewrite) == "table" and rewrite.stale ~= true and type(rewrite.body) == "string"
             and #rewrite.body > 0 and #rewrite.body <= 400000 then
-        return { body = rewrite.body, format = "md", version = "rewrite" }
+        return { body = rewrite.body, format = "md", version = "rewrite", base_url = M.ORIGIN, media_version=1 }
     end
     local data, err = M.request("/api/entry/" .. id)
     local entry = data and data.entry
@@ -241,13 +246,13 @@ function M.fetchArticle(id)
     local body = entry.content
     if type(body) ~= "string" or #body == 0 then return nil, "Full article unavailable" end
     if #body > 400000 then return nil, "Article too large for this device" end
-    -- Text-first offline reading: external images, embeds and scripts are not fetched.
+    -- Keep article image URLs; the separate bounded image cache localizes them.
     for _, tag in ipairs{ "script", "style", "iframe", "video", "audio", "svg" } do
         local pattern = tag:gsub("%a", function(c) return "[" .. c:lower() .. c:upper() .. "]" end)
         body = body:gsub("<" .. pattern .. "[%s>].-</" .. pattern .. "%s*>", "")
     end
-    body = body:gsub("<[Ii][Mm][Gg][%s/].->", "")
-    return { body = body, format = "html", version = "original" }
+    return { body = body, format = "html", version = "original",
+        base_url = type(entry.link)=="string" and entry.link or M.ORIGIN, media_version=1 }
 end
 
 return M

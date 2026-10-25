@@ -6309,3 +6309,35 @@ msgstr "更新來源"
 
 msgid "Updating sources… Tap to cancel."
 msgstr "正在更新來源…點擊取消。"
+
+
+msgid "Download missing images"
+msgstr "下載缺少的圖片"
+
+
+msgid "Font settings"
+msgstr "字型與排版"
+
+
+msgid "News cache"
+msgstr "資訊快取"
+
+
+msgid "Free space"
+msgstr "剩餘空間"
+
+
+msgid "Clear unstarred cache"
+msgstr "清理未收藏快取"
+
+
+msgid "Connect to Wi-Fi to download images."
+msgstr "請連接 Wi-Fi 下載圖片。"
+
+
+msgid "Not enough cache space. Clear unstarred cache and retry."
+msgstr "快取空間不足，請清理未收藏快取後重試。"
+
+
+msgid "Images could not be downloaded. Use the menu to retry."
+msgstr "圖片暫時無法下載，可在選單中重試。"

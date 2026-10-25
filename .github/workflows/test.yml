@@ -19,6 +19,7 @@ jobs:
       - run: python tests/test_arrivals.py
       - run: python tests/test_home_controls.py
       - run: python tests/test_news.py
+      - run: python tests/test_news_cache_images.py
       - run: |
           python - <<'PY'
           from pathlib import Path

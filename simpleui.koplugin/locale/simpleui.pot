@@ -8155,3 +8155,35 @@ msgstr ""
 
 msgid "Updating sources… Tap to cancel."
 msgstr ""
+
+
+msgid "Download missing images"
+msgstr ""
+
+
+msgid "Font settings"
+msgstr ""
+
+
+msgid "News cache"
+msgstr ""
+
+
+msgid "Free space"
+msgstr ""
+
+
+msgid "Clear unstarred cache"
+msgstr ""
+
+
+msgid "Connect to Wi-Fi to download images."
+msgstr ""
+
+
+msgid "Not enough cache space. Clear unstarred cache and retry."
+msgstr ""
+
+
+msgid "Images could not be downloaded. Use the menu to retry."
+msgstr ""
