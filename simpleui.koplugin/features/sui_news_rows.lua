@@ -33,9 +33,16 @@ function M.apply(menu)
             local image
             local size=math.min(Screen:scaleBySize(64),h-gap*2)
             if thumb then
-                local ok,result=pcall(function() return require("ui/widget/imagewidget"):new{
-                    file=thumb,width=size,height=size,scale_factor=0,
-                } end)
+                -- Decoded originals can exceed the shared 8 MiB ImageCache, whose
+                -- assert would abort KOReader at paint time. Keep thumbnails out
+                -- of it and decode here, where a failure only drops the image.
+                local ok,result=pcall(function()
+                    local widget=require("ui/widget/imagewidget"):new{
+                        file=thumb,width=size,height=size,scale_factor=0,file_do_cache=false,
+                    }
+                    widget:getSize()
+                    return widget
+                end)
                 if ok then image=result end
             end
             local copy_w=row.content_width-(image and size+gap or 0)

@@ -1,5 +1,15 @@
 # 更新记录 / Changelog
 
+## v3.0.0-qiaomu.15 — 测试版 / Prerelease
+
+- 首页：最近加入的书优先、书架「⋯」菜单、超高首页纵向滑动；底栏「资讯」替换低频的「我的收藏」。
+- 乔木精选：频道结构与 Qiaomu AI RSS Obsidian 插件一致（全部精选、四个乔木分组、读者社区），按频道记住筛选和页码；列表上下滑翻页；缩略图不再撑爆 KOReader 共享图片缓存（修复点文章退出 KOReader）。
+- 文章改用 KOReader 正式阅读器（EPUB）打开：不进阅读历史、阅读统计和「继续阅读」，异常退出后自动清理；乔木阅读条提供上一篇 / 下一篇 / 列表 / Aa 排版 / AI / 收藏，正文末尾可直接打开下一篇，排版沿用到下一篇。
+- 乔木 AI：手机扫码配置 DeepSeek 等 OpenAI 兼容服务（Key 仅存设备本地）；划线 AI 翻译、查词卡片（可加入生词本）、词典弹窗「AI 释义」；选中文字 / 整篇文章 / 当前页一键问答与追问，答案可存为批注或 Markdown 笔记。
+- README 新增给 AI Agent 的 KOReader 微信读书插件安装指引。
+
+English: newest-first home shelf and shelf menu; Qiaomu picks with Obsidian-matching channels; articles read in KOReader's reader without polluting book history or statistics; a reading bar with article navigation and a typography card; optional AI translation, word lookup and one-tap Q&A configured from a phone; agent-oriented install guide for the WeRead plugin. Pre-release: device acceptance covers one Kindle Paperwhite 4 on KOReader v2026.07.1 and is still incomplete for some AI actions.
+
 ## v3.0.0-qiaomu.3 — 测试版 / Prerelease
 
 - 微信读书动作在底栏清理前注册，避免重启后入口被误删。

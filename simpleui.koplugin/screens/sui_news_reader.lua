@@ -6,6 +6,7 @@ local Screen = require("device").screen
 local _ = require("infra/sui_i18n").translate
 local M = {}
 local menu, mode, source = nil, "all", nil
+local restored = false
 local Cache = require("features/sui_news_cache")
 local Images = require("features/sui_news_images")
 
@@ -158,27 +159,132 @@ function M.openArticle(entry)
         else downloadImages() end
     end
     local cached = News.cached(entry.id)
-    if cached then show(cached); return end
+    if cached then
+        -- A tap handler error would terminate KOReader; report it instead.
+        local ok, err = xpcall(show, debug.traceback, cached)
+        if not ok then
+            require("logger").warn("SimpleUI news article:", err)
+            notice(_("Could not open article.") .. "\n" .. tostring(err):match("^[^\n]*"))
+        end
+        return
+    end
     job(_("Loading article… Tap to cancel."), function() return News.fetchArticle(entry.id) end,
         function(article) News.cache(entry.id, article); show(article) end)
 end
 
 local function items()
     local rows = {}
+    local keep = require("features/sui_news_channels").filter(News.state().sources, source)
     for _i, entry in ipairs(News.state().entries) do
         local flag = News.flag(entry.id)
-        if (not source or entry.sourceId == source)
+        if keep(entry)
                 and (mode ~= "unread" or not flag.read)
                 and (mode ~= "starred" or flag.starred) then
             rows[#rows + 1] = {
                 text = News.title(entry),
                 bold = not flag.read, news_entry = entry,
-                callback = function() M.openArticle(entry) end,
+                callback = function() M.read(entry) end,
             }
         end
     end
     if #rows == 0 then rows[1] = { text = _("No articles here. Use the menu to update or change the filter."), select_enabled = false } end
     return rows
+end
+
+-- Reading order captured when an article is opened from the list: marking
+-- articles read must not reshuffle "next" while the reader is open.
+local reading_order, return_page = {}, 1
+
+local function adjacent(entry, step)
+    for i, item in ipairs(reading_order) do
+        if item.id == entry.id then return reading_order[i + step] end
+    end
+end
+
+local function readerPath(entry, article)
+    local Epub = require("features/sui_news_epub")
+    local path, err = Epub.build(entry, article, News, adjacent(entry, 1))
+    if not path then error(err) end
+    Epub.seed(path, News.state().typography)
+    return path
+end
+
+local function endOfArticle(ui, entry)
+    local nextEntry = adjacent(entry, 1)
+    local dialog
+    local function action(fn) return function() UIManager:close(dialog); fn() end end
+    local flag = News.flag(entry.id)
+    local buttons = {}
+    if nextEntry then
+        buttons[#buttons + 1] = {{ text = _("Next article") .. "：" .. News.title(nextEntry),
+            callback = action(function() M.read(nextEntry, true) end) }}
+    end
+    buttons[#buttons + 1] = {{ text = flag.starred and _("Unsave") or _("Save article"), callback = action(function()
+        flag.starred = not flag.starred; News.save()
+    end) }}
+    buttons[#buttons + 1] = {{ text = _("Back to articles"), callback = action(function() ui:onHome() end) }}
+    buttons[#buttons + 1] = {{ text = _("Cancel"), callback = action(function() end) }}
+    dialog = require("ui/widget/buttondialog"):new{ title = _("End of article"), buttons = buttons }
+    UIManager:show(dialog)
+end
+
+--- Opens an article in KOReader's reader. `from_reader` keeps the reading order.
+function M.read(entry, from_reader)
+    if not from_reader then
+        reading_order = {}
+        for _i, row in ipairs(items()) do
+            if row.news_entry then reading_order[#reading_order + 1] = row.news_entry end
+        end
+        return_page = menu and menu.page or 1
+    end
+    local Session = require("features/sui_news_session")
+    Session.profile_sink = function(profile) News.state().typography = profile; News.save() end
+    local function open(article)
+        local path = readerPath(entry, article)
+        local flag = News.flag(entry.id)
+        flag.read = true; News.save()
+        if menu then UIManager:close(menu) end
+        local function step(delta)
+            return function()
+                local target = adjacent(entry, delta)
+                if target then M.read(target, true)
+                else notice(delta > 0 and _("This is the last article.") or _("This is the first article.")) end
+            end
+        end
+        Session.open(path, entry, {
+            on_close = function() UIManager:scheduleIn(0.6, function() M.open{ page = return_page, refresh = false } end) end,
+            on_end = function(ui) endOfArticle(ui, entry) end,
+            on_next = step(1), on_prev = step(-1),
+            on_list = function() local ui = require("apps/reader/readerui").instance; if ui then ui:onHome() end end,
+            on_bar = function(ui, more)
+                require("screens/sui_news_bar").show(ui, {
+                    title = News.title, prev = adjacent(entry, -1), next = adjacent(entry, 1),
+                    starred = function() return News.flag(entry.id).starred end,
+                    toggleStar = function() local f = News.flag(entry.id); f.starred = not f.starred; News.save() end,
+                    open = function(target) M.read(target, true) end,
+                    back = function() ui:onHome() end, more = more, notify = notice,
+                    ai = function() require("screens/sui_ai_ask").fromArticle(entry, News.cached(entry.id)) end,
+                })
+            end,
+        })
+    end
+    local function guarded(article)
+        local ok, err = xpcall(open, debug.traceback, article)
+        if not ok then
+            require("logger").warn("SimpleUI news reader:", err)
+            notice(_("Could not open article.") .. "\n" .. tostring(err):match("^[^\n]*"))
+        end
+    end
+    local cached = News.cached(entry.id)
+    if cached then guarded(cached); return end
+    job(_("Loading article… Tap to cancel."), function()
+        local article = assert(News.fetchArticle(entry.id))
+        -- Fetch images with the text so the EPUB is complete offline.
+        local urls = {}
+        for _, url in ipairs(Images.urls(article)) do if not Images.path(url) then urls[#urls + 1] = url end end
+        if #urls > 0 then pcall(Images.download, urls, Images.ARTICLE_BUDGET) end
+        return article
+    end, function(article) News.cache(entry.id, article); guarded(article) end)
 end
 
 local function thumbnails()
@@ -201,63 +307,163 @@ local function thumbnails()
     end,owner,function() owner._thumb_job=false;release() end)
 end
 
+local Channels = require("features/sui_news_channels")
+local GROUP_NAMES = { wechat = _("WeChat"), podcast = _("Podcasts"), newsletter = _("Newsletter"), blogs = _("Blogs and news") }
+
+local function channelName(channel)
+    if not channel then return _("All picks") end
+    if Channels.isGroup(channel) then return GROUP_NAMES[channel:sub(#Channels.GROUP_PREFIX + 1)] or channel end
+    for _i, item in ipairs(News.state().sources) do
+        if item.id == channel then return item.name end
+    end
+    return channel
+end
+
+-- Each channel keeps its own filter and list page (plugin behaviour).
+local function channelState()
+    local all = News.state().channels or {}
+    News.state().channels = all
+    return all
+end
+
+local function selectChannel(channel)
+    local saved = channelState()
+    saved[source or "@all"] = { mode = mode, page = menu and menu.page or 1 }
+    source = channel
+    local restore = saved[channel or "@all"] or {}
+    mode = restore.mode or "all"
+    News.state().channel = channel
+    News.save()
+    M.redraw(true)
+    if menu and restore.page and restore.page > 1 and menu.onGotoPage then
+        menu:onGotoPage(math.min(restore.page, menu.page_num or restore.page))
+    end
+    if require("ui/network/manager"):isOnline() then M.update() end
+end
+
+--- Unread count and newest date (MM-DD) of a channel's cached articles.
+local function channelInfo(channel)
+    local keep, unread, newest = Channels.filter(News.state().sources, channel), 0, ""
+    for _i, entry in ipairs(News.state().entries) do
+        if keep(entry) then
+            if not News.flag(entry.id).read then unread = unread + 1 end
+            local day = (entry.published or ""):sub(6, 10)
+            if day > newest then newest = day end
+        end
+    end
+    local parts = {}
+    if unread > 0 then parts[#parts + 1] = string.format(_("%d unread"), unread) end
+    if newest ~= "" then parts[#parts + 1] = newest end
+    return table.concat(parts, " · ")
+end
+
+local function pickerMenu(title, rows)
+    local picker = require("ui/widget/menu"):new{
+        title = title, item_table = rows, items_per_page = 10,
+        width = Screen:getWidth(), height = Screen:getHeight(), is_borderless = true,
+    }
+    function picker:onMenuChoice(item)
+        if not item.callback then return true end
+        UIManager:close(self)
+        item.callback()
+        return true
+    end
+    UIManager:show(picker)
+end
+
+local function header(text) return { text = text, bold = true, dim = true, select_enabled = false } end
+local function current(channel) return channel == source and "✓" or nil end
+
+local function channelRow(channel, name)
+    local info = channelInfo(channel)
+    return { text = name or channelName(channel), mandatory = current(channel) or (info ~= "" and info or nil),
+        callback = function() selectChannel(channel) end }
+end
+
+function M.groupPage(group)
+    local sources = News.state().sources
+    local key = Channels.GROUP_PREFIX .. group
+    local rows = { channelRow(key, string.format(_("All · %s"), GROUP_NAMES[group])) }
+    for _i, item in ipairs(Channels.groupSources(sources, group)) do rows[#rows + 1] = channelRow(item.id, item.name) end
+    pickerMenu(GROUP_NAMES[group], rows)
+end
+
+--- Navigation hub (plugin: channel picker): filters, channels and actions.
+function M.channelPage()
+    local function filterRow(value, text)
+        return { text = text, mandatory = mode == value and "✓" or nil,
+            callback = function() mode = value; M.redraw(true) end }
+    end
+    local rows = {
+        header(_("Show articles")),
+        filterRow("all", _("All articles")), filterRow("unread", _("Unread")), filterRow("starred", _("Saved articles")),
+        header(_("Channels")),
+        channelRow(nil),
+        header(_("Qiaomu channels")),
+    }
+    local sources = News.state().sources
+    for _i, group in ipairs(Channels.GROUPS) do
+        local count = #Channels.groupSources(sources, group)
+        if count > 0 then
+            local inside = source == Channels.GROUP_PREFIX .. group
+            if not inside then
+                for _j, item in ipairs(Channels.groupSources(sources, group)) do
+                    if item.id == source then inside = true; break end
+                end
+            end
+            rows[#rows + 1] = { text = GROUP_NAMES[group],
+                mandatory = (inside and "✓ " or "") .. string.format(_("%d sources"), count) .. " ›",
+                callback = function() M.groupPage(group) end }
+        end
+    end
+    local community = Channels.community(sources)
+    if #community > 0 then
+        rows[#rows + 1] = header(_("Reader community"))
+        for _i, item in ipairs(community) do rows[#rows + 1] = channelRow(item.id, item.name) end
+    end
+    rows[#rows + 1] = header(_("More actions"))
+    rows[#rows + 1] = { text = _("Update now"), callback = M.update }
+    rows[#rows + 1] = { text = _("Update sources"), callback = M.updateSources }
+    rows[#rows + 1] = { text = _("News cache"), callback = M.cacheMenu }
+    pickerMenu(_("Channels"), rows)
+end
+
 function M.redraw(reset_page)
     if not menu then return end
     local filter = mode == "unread" and _("Unread") or mode == "starred" and _("Saved articles") or _("All articles")
-    if source then
-        for _i, item in ipairs(News.state().sources) do
-            if item.id == source then filter = filter .. " · " .. item.name; break end
-        end
-    end
     local rows=items()
-    menu:switchItemTable(_("Qiaomu picks"), rows, reset_page and 1 or -1, nil, filter)
+    menu:switchItemTable(channelName(source), rows, reset_page and 1 or -1, nil, filter)
 end
 
 function M.update()
     local selected = source
-    job(_("Updating Qiaomu picks… Tap to cancel."), function() return News.fetchIndex(selected) end, function(result)
+    local task
+    if Channels.isGroup(selected) then
+        local ids = {}
+        for _i, item in ipairs(Channels.groupSources(News.state().sources, selected:sub(#Channels.GROUP_PREFIX + 1))) do ids[#ids + 1] = item.id end
+        task = function() return News.fetchGroup(ids) end
+    else
+        task = function() return News.fetchIndex(selected) end
+    end
+    job(_("Updating Qiaomu picks… Tap to cancel."), task, function(result)
         News.merge(result.entries, result.sources)
         M.redraw()
     end)
 end
 
-function M.sourceMenu()
-    local rows = {
-        { text = _("All sources"), callback = function() source = nil; M.redraw(true) end },
-        { text = _("Update sources"), callback = function()
-            job(_("Updating sources… Tap to cancel."), function()
-                local data, err = News.request("/api/sources")
-                if not data or type(data.sources) ~= "table" then return nil, err end
-                return data.sources
-            end, function(sources)
-                News.merge(News.state().entries, sources)
-                M.redraw()
-                M.sourceMenu()
-            end)
-        end },
-    }
-    for _i, item in ipairs(News.state().sources) do
-        rows[#rows + 1] = { text = item.name, callback = function()
-            source = item.id
-            M.redraw(true)
-            local cached = false
-            for _j, entry in ipairs(News.state().entries) do
-                if entry.sourceId == source then cached = true; break end
-            end
-            if not cached then M.update() end
-        end }
-    end
-    local picker
-    picker = require("ui/widget/menu"):new{
-        title = _("Sources"), item_table = rows,
-        width = Screen:getWidth(), height = Screen:getHeight(),
-    }
-    function picker:onMenuChoice(item)
-        UIManager:close(self)
-        item.callback()
-    end
-    UIManager:show(picker)
+function M.updateSources()
+    job(_("Updating sources… Tap to cancel."), function()
+        local data, err = News.request("/api/sources")
+        if not data or type(data.sources) ~= "table" then return nil, err end
+        return data.sources
+    end, function(sources)
+        News.merge(News.state().entries, sources)
+        M.redraw()
+    end)
 end
+
+-- Kept for older entry points; channels replace the flat source list.
+M.sourceMenu = function() M.channelPage() end
 
 function M.actions(entry)
     local dialog
@@ -274,6 +480,8 @@ function M.actions(entry)
             {{ text = flag.starred and _("Unsave") or _("Save article"), callback = action(function()
                 flag.starred = not flag.starred; News.save(); M.redraw()
             end) }},
+            -- Fallback while the KOReader reader path is under device acceptance.
+            {{ text = _("Open in simple viewer"), callback = action(function() M.openArticle(entry) end) }},
         }
     else
         buttons = {
@@ -305,10 +513,22 @@ function M.cacheMenu()
     UIManager:show(dialog)
 end
 
-function M.open()
+--- `opts.page` restores a list page; `opts.refresh=false` skips the online update.
+function M.open(opts)
+    opts = opts or {}
+    local refresh = opts.refresh ~= false
+    require("features/sui_news_session").sweep()
+    if not restored then
+        -- Reopen the channel and filter used last time.
+        restored = true
+        local state = News.state()
+        source = state.channel
+        local saved = (state.channels or {})[source or "@all"]
+        mode = saved and saved.mode or mode
+    end
     if menu then
         UIManager:show(menu)
-        if require("ui/network/manager"):isOnline() then M.update() end
+        if refresh and require("ui/network/manager"):isOnline() then M.update() end
         return
     end
     menu = require("ui/widget/menu"):new{
@@ -326,7 +546,16 @@ function M.open()
             UIManager:scheduleIn(0,thumbnails)
         end
     end
-    function menu:onLeftButtonTap() M.actions() end
+    -- Native Menu pages only on west/east and closes on south; a news list
+    -- is read top to bottom, so vertical swipes page as well.
+    local native_swipe=menu.onSwipe
+    function menu:onSwipe(arg, ges)
+        local direction=ges and ges.direction
+        if direction=="north" then return self:onNextPage() end
+        if direction=="south" then return self:onPrevPage() end
+        return native_swipe(self,arg,ges)
+    end
+    function menu:onLeftButtonTap() M.channelPage() end
     function menu:onMenuHold(item)
         if item.news_entry then M.actions(item.news_entry) end
         return true
@@ -338,10 +567,11 @@ function M.open()
         menu = nil
     end
     M.redraw()
+    if opts.page and opts.page > 1 and menu.onGotoPage then menu:onGotoPage(math.min(opts.page, menu.page_num or opts.page)) end
     UIManager:show(menu)
     -- Show cached entries immediately, refresh on every online visit, and
     -- retain offline reading without asking to enable Wi-Fi for a cached list.
-    if require("ui/network/manager"):isOnline() or #News.state().entries == 0 then M.update() end
+    if refresh and (require("ui/network/manager"):isOnline() or #News.state().entries == 0) then M.update() end
 end
 
 return M

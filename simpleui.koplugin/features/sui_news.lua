@@ -39,9 +39,14 @@ function M.state()
         for _, key in ipairs{ "entries", "sources", "flags" } do
             if type(state[key]) ~= "table" then state[key] = {} end
         end
-        if #state.sources == 0 then
+        -- Older builds saved sources without categories, which channels need.
+        local categorized = false
+        for _, source in ipairs(state.sources) do
+            if source.category then categorized = true; break end
+        end
+        if not categorized then
             local preset = read(require("infra/sui_paths").getPluginDir() .. "data/qiaomu_sources.json")
-            state.sources = preset and preset.sources or {}
+            if preset and type(preset.sources) == "table" then state.sources = preset.sources end
         end
     end
     return state
@@ -68,7 +73,8 @@ function M.merge(entries, sources)
         local clean = {}
         for _, source in ipairs(sources) do
             if type(source) == "table" and M.validId(source.id) and type(source.name) == "string" and source.enabled ~= false then
-                clean[#clean + 1] = { id = source.id, name = text(source.name, 500) }
+                clean[#clean + 1] = { id = source.id, name = text(source.name, 500),
+                    category = text(source.category, 64), siteUrl = text(source.siteUrl, 2000) }
                 names[source.id] = source.name
             end
         end
@@ -229,6 +235,38 @@ function M.fetchIndex(source)
     -- Source names ship with the plugin and can be refreshed separately:
     -- a large or unavailable catalog must not hold up the latest articles.
     return { entries = entries.entries }
+end
+
+--- Latest entries of a channel group: one combined request, then the
+--- missing sources individually (bounded, so a large group stays quick).
+function M.fetchGroup(ids, extra_limit)
+    local entries, present, last_error = {}, {}, nil
+    local wanted = {}
+    for _, id in ipairs(ids) do assert(M.validId(id), "Invalid source ID"); wanted[id] = true end
+    local all, err = M.request("/api/entries?limit=" .. M.MAX_ITEMS)
+    if all and type(all.entries) == "table" then
+        for _, entry in ipairs(all.entries) do
+            if type(entry) == "table" and wanted[entry.sourceId] then
+                entries[#entries + 1] = entry; present[entry.sourceId] = true
+            end
+        end
+    else
+        last_error = err
+    end
+    local fetched = 0
+    for _, id in ipairs(ids) do
+        if not present[id] and fetched < (extra_limit or 8) then
+            fetched = fetched + 1
+            local page, page_err = M.request("/api/sources/" .. id .. "/entries?limit=8")
+            if page and type(page.entries) == "table" then
+                for _, entry in ipairs(page.entries) do entries[#entries + 1] = entry end
+            else
+                last_error = page_err
+            end
+        end
+    end
+    if #entries == 0 and last_error then return nil, last_error end
+    return { entries = entries }
 end
 
 function M.fetchArticle(id)

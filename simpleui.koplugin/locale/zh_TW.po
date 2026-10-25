@@ -6238,6 +6238,246 @@ msgstr "更新失敗，已儲存的文章仍可閱讀。"
 msgid "Could not save news."
 msgstr "資訊儲存失敗。"
 
+msgid "Could not open article."
+msgstr "文章開啟失敗。"
+
+msgid "Next article"
+msgstr "下一篇"
+
+msgid "End of article"
+msgstr "本文完"
+
+msgid "Open in simple viewer"
+msgstr "用簡易閱讀頁開啟"
+
+msgid "Ask AI"
+msgstr "問 AI"
+
+msgid "Ask AI about this page"
+msgstr "問 AI：這一頁"
+
+msgid "Qiaomu AI: ask about this page"
+msgstr "喬木 AI：問這一頁"
+
+msgid "More actions…"
+msgstr "更多問題…"
+
+msgid "Type a question"
+msgstr "自己提問"
+
+msgid "Saved to"
+msgstr "已儲存到"
+
+msgid "Could not save."
+msgstr "儲存失敗。"
+
+msgid "Your question"
+msgstr "你的問題"
+
+msgid "Ask"
+msgstr "提問"
+
+msgid "Continue this conversation."
+msgstr "接著剛才的對話繼續問。"
+
+msgid "Nothing to ask about here."
+msgstr "這裡沒有可以提問的內容。"
+
+msgid "Selected text"
+msgstr "選中的文字"
+
+msgid "This page"
+msgstr "這一頁"
+
+msgid "This article"
+msgstr "整篇文章"
+
+msgid "Swipe up for more"
+msgstr "向上滑動查看更多"
+
+msgid "Translate"
+msgstr "翻譯"
+
+msgid "AI request failed."
+msgstr "AI 請求失敗。"
+
+msgid "Copy"
+msgstr "複製"
+
+msgid "Save as note"
+msgstr "存為批註"
+
+msgid "Add to vocabulary"
+msgstr "加入生詞本"
+
+msgid "Added to vocabulary builder."
+msgstr "已加入生詞本。"
+
+msgid "AI translate"
+msgstr "AI 翻譯"
+
+msgid "AI meaning"
+msgstr "AI 釋義"
+
+msgid "Asking AI… Tap outside to cancel."
+msgstr "正在詢問 AI… 點卡片外面取消"
+
+msgid "AI settings cleared."
+msgstr "已清除 AI 設定。"
+
+msgid "Available for 5 minutes and closes after saving. Use only on a Wi-Fi network you trust."
+msgstr "5 分鐘內有效，儲存後自動關閉。請只在你信任的 Wi-Fi 下使用。"
+
+msgid "Clear AI settings"
+msgstr "清除 AI 設定"
+
+msgid "Connected in about %d s."
+msgstr "連線成功，用時約 %d 秒。"
+
+msgid "Connection failed."
+msgstr "連線失敗。"
+
+msgid "Could not start the phone setup page."
+msgstr "無法開啟手機設定頁。"
+
+msgid "Custom service"
+msgstr "自訂介面"
+
+msgid "Not set up yet. Set it up from your phone: no typing on the Kindle."
+msgstr "還沒有設定。用手機掃碼設定，不用在 Kindle 上打字。"
+
+msgid "Qiaomu AI · Set up from your phone"
+msgstr "喬木 AI · 用手機設定"
+
+msgid "Qiaomu AI"
+msgstr "喬木 AI"
+
+msgid "Saved."
+msgstr "已儲存。"
+
+msgid "Scan with a phone on the same Wi-Fi, then fill in the service, API key and models."
+msgstr "用連著同一個 Wi-Fi 的手機掃碼，填寫服務、API Key 和模型。"
+
+msgid "Set up from your phone"
+msgstr "用手機設定"
+
+msgid "Test connection"
+msgstr "測試連線"
+
+msgid "Testing connection… Tap to cancel."
+msgstr "正在測試連線… 點擊取消"
+
+msgid "Translation"
+msgstr "翻譯"
+
+msgid "Type the API key on Kindle"
+msgstr "在 Kindle 上輸入 API Key"
+
+msgid "Connect to Wi-Fi first"
+msgstr "請先連接 Wi-Fi"
+
+msgid "API key"
+msgstr "API Key"
+
+msgid "Zhuque Fangsong"
+msgstr "朱雀仿宋"
+
+msgid "LXGW WenKai"
+msgstr "霞鶩文楷"
+
+msgid "Source Han Serif"
+msgstr "思源宋體"
+
+msgid "Source Han Sans"
+msgstr "思源黑體"
+
+msgid "Show articles"
+msgstr "顯示"
+
+msgid "More actions"
+msgstr "更多操作"
+
+msgid "WeChat"
+msgstr "微信公眾號"
+
+msgid "Podcasts"
+msgstr "播客"
+
+msgid "Blogs and news"
+msgstr "部落格與資訊"
+
+msgid "All picks"
+msgstr "全部精選"
+
+msgid "%d unread"
+msgstr "%d 未讀"
+
+msgid "All · %s"
+msgstr "全部 · %s"
+
+msgid "Channels"
+msgstr "頻道"
+
+msgid "Qiaomu channels"
+msgstr "喬木頻道"
+
+msgid "%d sources"
+msgstr "%d 個來源"
+
+msgid "Reader community"
+msgstr "讀者社群"
+
+msgid "Line spacing"
+msgstr "行距"
+
+msgid "Margins"
+msgstr "頁邊距"
+
+msgid "Tight"
+msgstr "緊湊"
+
+msgid "Previous article"
+msgstr "上一篇"
+
+msgid "Font size"
+msgstr "字號"
+
+msgid "Standard"
+msgstr "標準"
+
+msgid "Relaxed"
+msgstr "寬鬆"
+
+msgid "Spacious"
+msgstr "很寬"
+
+msgid "Narrow"
+msgstr "窄"
+
+msgid "Medium"
+msgstr "中"
+
+msgid "Wide"
+msgstr "寬"
+
+msgid "More settings…"
+msgstr "更多設定…"
+
+msgid "This is the last article."
+msgstr "已經是最後一篇。"
+
+msgid "This is the first article."
+msgstr "已經是第一篇。"
+
+msgid "Qiaomu picks: next article"
+msgstr "喬木精選：下一篇"
+
+msgid "Qiaomu picks: previous article"
+msgstr "喬木精選：上一篇"
+
+msgid "Qiaomu picks: back to list"
+msgstr "喬木精選：返回列表"
+
 msgid "Unsave"
 msgstr "取消收藏"
 

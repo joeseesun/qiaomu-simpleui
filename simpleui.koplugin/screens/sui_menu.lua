@@ -4267,5 +4267,11 @@ SimpleUIPlugin.addToMainMenu = function(self, menu_items)
             SettingsWindow:show()
         end,
     }
+    -- Qiaomu AI service settings (translation and reading assistant).
+    menu_items.qiaomu_ai = {
+        sorting_hint = "tools",
+        text         = _("Qiaomu AI"),
+        callback     = function() require("screens/sui_ai_setup").show() end,
+    }
 end -- addToMainMenu
 end -- installer function

@@ -134,7 +134,8 @@ package.loaded["ui/uimanager"]=U
 package.loaded["device"]={screen={getWidth=function() return 1072 end,getHeight=function() return 1448 end,scaleBySize=function(_,n) return n end}}
 local Menu={new=function(self,o) setmetatable(o,{__index=self});return o end,
  switchItemTable=function(self,title,items,_,_,subtitle) self.title=title;self.item_table=items;self.subtitle=subtitle end,
- onCloseWidget=function() end}
+ onSwipe=function(self) self.paged="native" end,onNextPage=function(self) self.paged=1 end,
+ onPrevPage=function(self) self.paged=-1 end,onCloseWidget=function() end}
 package.loaded["ui/widget/menu"]=Menu
 package.loaded["ui/widget/buttondialog"]={new=function(_,o) return o end}
 package.loaded["ui/widget/infomessage"]={new=function(_,o) return o end}
@@ -150,9 +151,14 @@ package.loaded["ui/widget/textviewer"]={new=function(_,o)
 end}
 package.loaded["ui/network/manager"]={isOnline=function() return false end,
  runWhenOnline=function() error("offline article must not enable networking") end}
+package.loaded["libs/libkoreader-lfs"]={attributes=function() end,dir=function() return function() end end}
+package.loaded["logger"]=package.loaded["logger"] or {warn=function() end,info=function() end}
 local R=require("screens/sui_news_reader")
 R.open()
 local list=shown[#shown]
+list:onSwipe(nil,{direction="north"});assert(list.paged==1,"swipe up pages forward")
+list:onSwipe(nil,{direction="south"});assert(list.paged==-1,"swipe down pages back instead of closing")
+list:onSwipe(nil,{direction="west"});assert(list.paged=="native")
 local entry={id="a",title="Original",titleZh="中文标题",sourceName="来源",sourceId="s",published="2026-10-25"}
 R.openArticle(entry)
 local viewer=shown[#shown]
@@ -165,6 +171,13 @@ viewer.buttons_table[1][3].callback()
 assert(N.flag("a").starred==false)
 viewer:onClose()
 assert(N.flag("a").page==4 and list.item_table)
+-- A rendering error in a tapped article must not terminate KOReader.
+package.loaded["logger"]={warn=function() end}
+local TV=package.loaded["ui/widget/textviewer"];local tv_new=TV.new
+TV.new=function() error("fixture render failure") end
+R.openArticle(entry)
+assert(shown[#shown].text:find("fixture render failure",1,true),"article failure is reported in place")
+TV.new=tv_new
 R.actions(entry)
 shown[#shown].buttons[1][1].callback()
 assert(not N.flag("a").read)
@@ -234,5 +247,72 @@ package.loaded["ui/trapper"].dismissableRunInSubprocess=function(_,task,owner)
 end
 R.openArticle(entry)
 assert(cancelled and releases==2 and reinitializations==1,"closing cancels and prevents late image redraw")
+-- Thumbnails never enter KOReader's shared 8 MiB ImageCache (its assert
+-- aborted KOReader on device) and a decode failure only drops the image.
+local made={}
+local function widget(o) o=o or {};o.getSize=o.getSize or function() return {w=10,h=10} end;o.free=function() end;return o end
+local function ctor() return {new=function(_,o) return widget(o) end} end
+package.loaded["device"].screen.scaleBySize=function(_,n) return n end
+package.loaded["ui/font"]={getFace=function() return {} end}
+package.loaded["ffi/blitbuffer"]={COLOR_DARK_GRAY=1}
+package.loaded["ui/geometry"]={new=function(_,o) return o end}
+for _,m in ipairs{"ui/widget/textwidget","ui/widget/textboxwidget","ui/widget/verticalgroup","ui/widget/horizontalgroup",
+ "ui/widget/verticalspan","ui/widget/horizontalspan","ui/widget/container/leftcontainer",
+ "ui/widget/container/centercontainer","ui/widget/container/framecontainer",
+ "ui/widget/container/rightcontainer","ui/widget/overlapgroup"} do package.loaded[m]=ctor() end
+package.loaded["ui/widget/imagewidget"]={new=function(_,o)
+ made[#made+1]=o
+ o.getSize=function() if o.file=="bad.jpg" then error("not enough storage for cache") end;return {w=64,h=64} end
+ return widget(o)
+end}
+I.path=function(url) return url end
+local function row(image)
+ return {entry={news_entry={id="a",title="T",sourceName="S",sourceId="s",published="2026-10-25",image=image}},
+  dimen={w=1000,h=180},content_width=968,_underline_container={}}
+end
+local good,bad=row("good.jpg"),row("bad.jpg")
+package.loaded["features/sui_news_rows"]=nil
+require("features/sui_news_rows").apply({item_group={good,bad}})
+assert(#made==2 and made[1].file_do_cache==false and made[2].file_do_cache==false,"thumbnails bypass the shared image cache")
+assert(good._underline_container[1] and bad._underline_container[1],"a failed thumbnail keeps the text row")
+-- Channels follow Qiaomu AI RSS: groups from the bundled catalog, per-channel memory.
+local C=require("features/sui_news_channels")
+local f=io.open(plugin_root.."/data/qiaomu_sources.json","rb");local catalog=py_decode(f:read("*a")).sources;f:close()
+local counts={}
+for _,src in ipairs(C.channels(catalog)) do counts[C.group(src)]=(counts[C.group(src)] or 0)+1 end
+assert(counts.wechat==10 and counts.podcast==16 and counts.newsletter==18 and counts.blogs==15,"bundled catalog groups match the Obsidian plugin")
+assert(#C.community(catalog)==1)
+assert(C.group({id="x",siteUrl="https://foo.substack.com/feed"})=="newsletter" and C.group({id="wechat-a"})=="wechat")
+-- Sources saved by older builds lacked categories: reload the bundled catalog.
+N.state().sources={{id="qiaomu-blog",name="乔木博客"}};N.save()
+package.loaded["features/sui_news"]=nil;N=require("features/sui_news")
+assert(N.state().sources[1].category,"uncategorized sources are upgraded")
+N.merge({},{{id="s1",name="S",category="podcast",siteUrl="https://x.qiaomu.ai"}})
+assert(N.state().sources[1].category=="podcast" and N.state().sources[1].siteUrl=="https://x.qiaomu.ai","merge keeps channel fields")
+N.state().sources=catalog
+package.loaded["screens/sui_news_reader"]=nil;R=require("screens/sui_news_reader")
+online=false
+R.open();local list2=shown[#shown]
+list2:onLeftButtonTap()
+local hub=shown[#shown]
+local texts={};for _,row in ipairs(hub.item_table) do texts[#texts+1]=row.text end
+local joined=table.concat(texts,"|")
+assert(joined:find("WeChat",1,true) and joined:find("Podcasts",1,true) and joined:find("Reader community",1,true),"channel hub lists groups and community")
+local group_row;for _,row in ipairs(hub.item_table) do if row.text=="WeChat" then group_row=row end end
+assert(group_row.mandatory:find("10 sources",1,true))
+group_row.callback()
+local gp=shown[#shown];assert(gp.title=="WeChat" and #gp.item_table==11,"group page: all-in-group plus 10 sources")
+-- Choosing a channel switches the list, refreshes it online and remembers its filter.
+online=true
+package.loaded["ui/trapper"].dismissableRunInSubprocess=function(_,task) return true,task() end
+local fetched
+N.fetchGroup=function(ids) fetched=ids;return {entries={{id="g1",title="Group article",sourceId=ids[1],publishedTs=5}}} end
+gp.item_table[1].callback()
+assert(fetched and #fetched==10 and list2.title=="WeChat","group channel fetches its sources and titles the list")
+R.channelPage();for _,row in ipairs(shown[#shown].item_table) do if row.text=="Unread" then row.callback() end end
+R.channelPage();for _,row in ipairs(shown[#shown].item_table) do if row.text=="All picks" then row.callback() end end
+assert(list2.title=="All picks" and list2.subtitle=="All articles","each channel restores its own filter")
+R.channelPage();R.groupPage("wechat");shown[#shown].item_table[1].callback()
+assert(list2.subtitle=="Unread","returning to a channel restores the filter it had")
 ''')
-print('PASS: persisted offline content/read/star/progress, bounded rolling index, saved retention, ID/size/HTTP validation, original fallback, real article/menu callbacks and book-history isolation.')
+print('PASS: persisted offline content/read/star/progress, bounded rolling index, saved retention, ID/size/HTTP validation, original fallback, real article/menu callbacks, book-history isolation and Obsidian-matching channels with per-channel memory.')

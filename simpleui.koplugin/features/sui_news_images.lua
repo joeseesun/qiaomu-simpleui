@@ -144,14 +144,22 @@ function M.download(urls,budget)
     return {count=count,bytes=used}
 end
 function M.html(article)
-    local html=article.format=="md" and require("apps/filemanager/filemanagerconverter"):mdToHtml(article.body,"") or article.body
-    return html:gsub("<[Ii][Mm][Gg]%s[^>]*>",function(tag)
+    local html=article.body
+    if article.format=="md" then
+        html=require("apps/filemanager/filemanagerconverter"):mdToHtml(article.body,"")
+        if type(html)~="string" then
+            -- md.lua reports parser failures as nil; keep the text readable.
+            local text=require("util").htmlEscape(article.body)
+            html="<p>"..(text:gsub("\n%s*\n","</p><p>"):gsub("\n","<br/>")).."</p>"
+        end
+    end
+    return (html:gsub("<[Ii][Mm][Gg]%s[^>]*>",function(tag)
         local raw=tag:match('[Ss][Rr][Cc]%s*=%s*"([^"]+)"') or tag:match("[Ss][Rr][Cc]%s*=%s*'([^']+)'")
         local url=M.safeUrl(raw,article.base_url)
         local path=url and M.path(url)
         if not path then return "" end
         Cache.touch(path)
         return '<img src="'..path:match("([^/]+)$")..'" style="max-width:100%;height:auto;"/>'
-    end)
+    end))
 end
 return M

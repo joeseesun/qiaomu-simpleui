@@ -96,6 +96,10 @@ package.loaded["apps/filemanager/filemanagerconverter"]={mdToHtml=function(_,bod
 local html=I.html{body='<p>Text</p><img src="https://images.example/a.png"><img src="file:///etc/passwd">',format="html"}
 assert(html:find(path:match("([^/]+)$"),1,true))
 assert(not html:find("file:///",1,true) and not html:find("https://",1,true))
+package.loaded["apps/filemanager/filemanagerconverter"]={mdToHtml=function() return nil end}
+package.loaded["util"].htmlEscape=function(s) return (s:gsub("&","&amp;"):gsub("<","&lt;")) end
+local fallback=I.html{body="第一段 <b>"..string.char(10,10).."第二段",format="md"}
+assert(fallback=="<p>第一段 &lt;b></p><p>第二段</p>","failed Markdown parsing falls back to escaped text")
 assert(#I.urls{format="md",body="![one](https://images.example/a.png) ![two](https://images.example/a.png)"}==1)
 assert(C.stats().bytes<C.LIMIT)
 io.popen=original
