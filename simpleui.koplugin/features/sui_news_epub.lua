@@ -36,12 +36,12 @@ end
 
 M.CSS = [[
 body { line-height: 1.6; }
-p { margin: 0 0 0.8em 0; text-indent: 0; }
+p, div, section { margin: 0 0 0.8em 0; text-indent: 0; }
 h1.qm-title { font-size: 1.4em; line-height: 1.35; margin: 0 0 0.3em 0; text-align: left; }
 p.qm-meta { font-size: 0.8em; color: #555; margin: 0 0 1.6em 0; }
 h1, h2, h3 { line-height: 1.4; margin: 1.2em 0 0.5em 0; }
-img { max-width: 100%; }
-blockquote { margin: 0.8em 1.2em; }
+img { max-width: 100%; height: auto; }
+blockquote { margin: 0.8em 1.2em; border-left: 2px solid #555; padding-left: 0.6em; }
 pre { white-space: pre-wrap; font-size: 0.85em; }
 p.qm-end { margin-top: 2.5em; text-align: center; font-size: 0.85em; color: #555; }
 p.qm-next { margin-top: 1.2em; padding: 0.6em 0; text-align: center; font-weight: bold; }
@@ -94,11 +94,13 @@ local function prune(keep_path)
     end
 end
 
+local EPUB_BUILDER_REV = "2" -- 当样式或清洗逻辑更新时递增，促使已缓存的旧 EPUB 自动重新生成
+
 --- Builds (or reuses) the EPUB for `entry`, ending with a link to `next_entry`.
 --- Returns path, or nil and an error.
 function M.build(entry, article, News, next_entry)
     local path = M.path(entry.id)
-    local version = (article.version or "") .. ":" .. #article.body .. ":" .. (next_entry and next_entry.id or "")
+    local version = EPUB_BUILDER_REV .. ":" .. (article.version or "") .. ":" .. #article.body .. ":" .. (next_entry and next_entry.id or "")
     local stamp = path .. ".version"
     local f = io.open(stamp, "rb")
     local existing = f and f:read("*a"); if f then f:close() end
@@ -106,6 +108,14 @@ function M.build(entry, article, News, next_entry)
 
     local html = Images.html(article)
     local body = html:match("<[Bb][Oo][Dd][Yy][^>]*>(.*)</[Bb][Oo][Dd][Yy]>") or html
+    -- 剥离微信公众号等富文本中非 img 标签上的内联 style 污染（消除 font-size: 14/15/16px、淡灰字体等导致的小字与排版异常）
+    body = body:gsub("(<%a[%w%-:]*)([^>]*)(>)", function(tag, attrs, close)
+        if tag:lower() ~= "<img" then
+            attrs = attrs:gsub('%s+style%s*=%s*"[^"]*"', ""):gsub("%s+style%s*=%s*'[^']*'", "")
+        end
+        return tag .. attrs .. close
+    end)
+    body = body:gsub("<mp%-style%-type[^>]*></mp%-style%-type>", "")
     local toc
     body, toc = outline(body)
     local title = News.title(entry)
