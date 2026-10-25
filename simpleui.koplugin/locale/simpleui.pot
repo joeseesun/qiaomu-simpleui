@@ -8068,3 +8068,90 @@ msgid "day streak"
 msgid_plural "days streak"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Recently added"
+msgstr ""
+
+msgid "News"
+msgstr ""
+
+msgid "Qiaomu picks"
+msgstr ""
+
+msgid "Could not update. Saved articles are still available."
+msgstr ""
+
+msgid "Could not save news."
+msgstr ""
+
+msgid "Unsave"
+msgstr ""
+
+msgid "Save article"
+msgstr ""
+
+msgid "Previous page"
+msgstr ""
+
+msgid "Next page"
+msgstr ""
+
+msgid "Back to articles"
+msgstr ""
+
+msgid "Loading article… Tap to cancel."
+msgstr ""
+
+msgid "Read"
+msgstr ""
+
+msgid "Unread"
+msgstr ""
+
+msgid "Offline"
+msgstr ""
+
+msgid "No articles here. Use the menu to update or change the filter."
+msgstr ""
+
+msgid "Updated"
+msgstr ""
+
+msgid "Update to load Qiaomu picks"
+msgstr ""
+
+msgid "Saved articles"
+msgstr ""
+
+msgid "All articles"
+msgstr ""
+
+msgid "Updating Qiaomu picks… Tap to cancel."
+msgstr ""
+
+msgid "All sources"
+msgstr ""
+
+msgid "Sources"
+msgstr ""
+
+msgid "Mark unread"
+msgstr ""
+
+msgid "Mark read"
+msgstr ""
+
+msgid "Update now"
+msgstr ""
+
+msgid "Bookshelf"
+msgstr ""
+
+msgid "Bookshelf settings"
+msgstr ""
+
+msgid "Update sources"
+msgstr ""
+
+msgid "Updating sources… Tap to cancel."
+msgstr ""

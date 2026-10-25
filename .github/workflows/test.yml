@@ -16,6 +16,9 @@ jobs:
       - run: python tests/test_customizations.py
       - run: python tests/test_refresh_lifecycle.py
       - run: python tests/test_weread_lifecycle.py
+      - run: python tests/test_arrivals.py
+      - run: python tests/test_home_controls.py
+      - run: python tests/test_news.py
       - run: |
           python - <<'PY'
           from pathlib import Path

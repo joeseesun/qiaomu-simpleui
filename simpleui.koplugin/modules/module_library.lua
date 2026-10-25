@@ -30,13 +30,16 @@ local GridRenderer = require("engines/sui_book_grid")
 local LibraryScan  = require("engines/sui_library_scan")
 local Finished     = require("features/library/sui_finished_books")
 local SH           = require("modules/module_books_shared")
+local PageState    = require("engines/sui_section_label").PageState
 
 local MAX_ITEMS = 5  -- default_cols for the grid — same convention as Collections/Featured Collection
 
 local SORT_KEY    = "flat_library_sort_mode"    -- pfx .. SORT_KEY
 local SHUFFLE_KEY = "flat_library_shuffle_order" -- pfx .. SHUFFLE_KEY
 
-local DEFAULT_SORT = "title_asc"
+-- A book just received should be visible before its title is known. An
+-- explicitly chosen sort order still wins over this acquisition-first default.
+local DEFAULT_SORT = "date_desc"
 local SORT_ORDER   = {
     "title_asc", "title_desc", "author_asc",
     "date_desc", "date_asc", "size_desc", "size_asc", "shuffle",
@@ -162,6 +165,7 @@ local function sortRaw(raw, mode, pfx)
         local mtimes = {}
         for _, r in ipairs(raw) do mtimes[r.fp] = r.mtime end
         table.sort(fps, function(a, b)
+            if mtimes[a] == mtimes[b] then return a < b end
             if mode == "date_desc" then return mtimes[a] > mtimes[b] else return mtimes[a] < mtimes[b] end
         end)
     elseif mode == "size_desc" or mode == "size_asc" then
@@ -192,7 +196,21 @@ local function getFileList(ctx)
     if not home then return {} end
 
     local raw = LibraryScan.getRaw(home)
-    return sortRaw(raw, getSortMode(pfx), pfx)
+    local mode = getSortMode(pfx)
+    local fps = sortRaw(raw, mode, pfx)
+    if ctx and mode == "date_desc" then
+        -- When the live ctx is reused on a refresh, a new arrival must not
+        -- remain out of sight because the reader was browsing page 3. A new
+        -- ctx already starts on page 1. Keep ordinary swipe pagination intact.
+        local newest = fps[1] or ""
+        if ctx._flat_library_newest and (ctx._flat_library_newest ~= newest
+                or ctx._flat_library_count ~= #fps) then
+            PageState.setPage(ctx, "flat_library", 1)
+        end
+        ctx._flat_library_newest = newest
+        ctx._flat_library_count = #fps
+    end
+    return fps
 end
 
 -- ---------------------------------------------------------------------------
@@ -264,6 +282,9 @@ local mod = GridRenderer.makeModule{
     id          = "flat_library",
     name        = _("Flat Library"),
     label       = _("Books"),
+    label_fn    = function(pfx)
+        return getSortMode(pfx or "") == "date_desc" and _("Recently added") or _("Books")
+    end,
     default_on  = false,
     is_book_mod = true,   -- surgical repaint on swipe between pages; suppresses the generic empty-state
     max_items   = MAX_ITEMS,
@@ -281,13 +302,9 @@ local mod = GridRenderer.makeModule{
     -- Same defaults as Recent Books: progress bar + "% Read" label, no overlay.
     progress_style = { default = "bar_text" },
 
-    -- Library-style corner badges (see engines/sui_book_grid.lua's
-    -- GridRenderer.applyBadges). Flat Library is the pilot module for this:
-    -- it's the closest in spirit to the file-manager Library grid, but
-    -- "Pages"/"Series"/"New" all default off now — every corner badge is
-    -- user-editable, never locked, but purely opt-in and consistent across
-    -- every book-grid module (nothing pre-enabled by default).
-    badges = { pages = "off", series = "off", new = "off" },
+    -- Existing badge settings win. Unopened books are marked New by default;
+    -- this is a reading-state badge, not a claim about the transfer date.
+    badges = { pages = "off", series = "off", new = "on" },
 
     extra_menu_items_before = extraMenuItemsBefore,
 
@@ -305,5 +322,43 @@ local mod = GridRenderer.makeModule{
 
 -- Exposed for completeness/tests — not called internally by this file.
 function mod.invalidateCache() resetCaches() end
+
+function mod.showActions(ctx)
+    local UIManager = require("ui/uimanager")
+    local dialog
+    local function action(fn)
+        return function() UIManager:close(dialog); fn() end
+    end
+    local function setSort(mode)
+        saveSortMode(ctx.pfx or "", mode)
+        PageState.setPage(ctx, "flat_library", 1)
+        ctx.refresh_fn()
+    end
+    dialog = require("ui/widget/buttondialog"):new{
+        title = _("Bookshelf"),
+        buttons = {
+            {{ text = _("Recently added"), callback = action(function() setSort("date_desc") end) },
+             { text = _("Title (A–Z)"), callback = action(function() setSort("title_asc") end) }},
+            {{ text = _("Favorites"), callback = action(function()
+                require("features/sui_quickactions").getEntry("favorites").execute({})
+            end) }},
+            {{ text = _("Hidden books and documents"), callback = action(function()
+                local entries = require("features/library/sui_hidden_books").makeMenuItem().sub_item_table_func()
+                local hidden_menu = require("ui/widget/menu"):new{
+                    title = _("Hidden books and documents"), item_table = entries,
+                }
+                function hidden_menu:onMenuChoice(item)
+                    if item.callback then UIManager:close(self); item.callback() end
+                end
+                UIManager:show(hidden_menu)
+            end) }},
+            {{ text = _("Bookshelf settings"), callback = action(function()
+                ctx.open_settings_fn("flat_library")
+            end) }},
+            {{ text = _("Cancel"), callback = action(function() end) }},
+        },
+    }
+    UIManager:show(dialog)
+end
 
 return mod

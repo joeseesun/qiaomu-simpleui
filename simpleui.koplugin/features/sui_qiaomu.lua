@@ -16,6 +16,30 @@ function M.wereadAvailable()
 end
 
 function M.install(plugin)
+    QA.register{
+        id = "qiaomu_news", label = _("News"),
+        icon = require("infra/sui_paths").getPluginDir() .. "icons/qiaomu_news.svg",
+        is_in_place = true, is_async_in_place = true,
+        execute = function() require("screens/sui_news_reader").open() end,
+    }
+    -- Move the less frequent book collection action into the shelf menu.
+    -- This runs once, so later manual navbar choices remain respected.
+    if not Settings:isTrue("simpleui_qiaomu_news_tab_v1") then
+        local tabs, has_news = {}, false
+        for _, id in ipairs(Config.loadTabConfig()) do
+            if id == "qiaomu_news" then has_news = true end
+        end
+        for _, id in ipairs(Config.loadTabConfig()) do
+            if id == "favorites" then
+                if not has_news then tabs[#tabs + 1] = "qiaomu_news"; has_news = true end
+            else tabs[#tabs + 1] = id end
+        end
+        if not has_news and #tabs < Config.effectiveMaxTabs() then
+            table.insert(tabs, math.max(2, #tabs), "qiaomu_news")
+        end
+        Config.saveTabConfig(tabs)
+        Settings:set("simpleui_qiaomu_news_tab_v1", true)
+    end
     if not Settings:isTrue("simpleui_qiaomu_defaults_v1") then
         Settings:set("simpleui_topbar_swipe_indicator", false)
         Settings:set("simpleui_qiaomu_defaults_v1", true)

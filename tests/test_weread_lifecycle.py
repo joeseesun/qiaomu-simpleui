@@ -77,6 +77,12 @@ local function has_tab()
 end
 boot()
 assert(has_tab()==1,"restart sanitizer removed the WeRead tab before registration")
+local news_count=0
+for _,id in ipairs(persisted.simpleui_bar_tabs) do
+ if id=="qiaomu_news" then news_count=news_count+1 end
+ assert(id~="favorites","move book favorites out of the default navbar")
+end
+assert(news_count==1,"register News before the same startup sanitizer")
 boot()
 assert(has_tab()==1,"entry must survive a second cold start without duplication")
 -- Existing .1/.2 installations may already have lost the persisted entry.

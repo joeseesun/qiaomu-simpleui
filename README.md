@@ -2,11 +2,11 @@
 
 **中文** | [English](#english)
 
-给 KOReader 一个清爽的书架首页：隐藏顶部下拉提示箭头、一键打开已安装的微信读书插件、长按隐藏不想展示的书籍与文档，随时恢复。
+给 KOReader 一个清爽的阅读首页：新传入的书优先展示，内容超出屏幕时可以上下滑动；书架「⋯」集中管理排序和收藏，底栏「资讯」独立阅读乔木精选。
 
 A customized SimpleUI for KOReader with a cleaner header, a WeRead shortcut, and reversible book visibility.
 
-[下载测试版](https://github.com/joeseesun/qiaomu-simpleui/releases/tag/v3.0.0-qiaomu.3) · [原版 SimpleUI](https://github.com/doctorhetfield-cmd/simpleui.koplugin) · [GPL-3.0](LICENSE)
+[下载测试版](https://github.com/joeseesun/qiaomu-simpleui/releases/tag/v3.0.0-qiaomu.4) · [原版 SimpleUI](https://github.com/doctorhetfield-cmd/simpleui.koplugin) · [GPL-3.0](LICENSE)
 
 基于 Doctor Hetfield 的 **SimpleUI 3.0.0**，保留上游作者和许可证。本仓库提供定制版本，不代表上游官方发布。
 
@@ -19,6 +19,22 @@ A customized SimpleUI for KOReader with a cleaner header, a WeRead shortcut, and
 | 隐藏书籍与文档 | 在主页或文件夹书库长按文件，选择「从主页和书库隐藏」 |
 | 随时恢复 | 设置 → 书库 → 已隐藏的书籍与文档 → 选择条目 → 恢复显示 |
 | 保留文件夹能力 | 原有文件夹浏览仍然可用，书架与文件夹共享隐藏记录 |
+| 最近加入 | 首页平铺书架默认按文件日期从新到旧，保留用户已明确选择的其他排序；按日期排序时，新书出现会回到书架第一页 |
+| 完整浏览封面 | 超高首页可上下滑动，底栏固定；书架左右滑动和页码箭头仍用于翻页 |
+| 书架菜单 | 「最近加入」旁的「⋯」可切换排序、打开我的收藏、恢复隐藏文件和调整书架设置 |
+| 独立资讯 | 底栏「资讯」替换低频的「我的收藏」；收藏也可从「设置 → 书库 → 我的收藏」访问 |
+
+## 乔木精选与 RSS
+
+「资讯」直接读取 Qiaomu AI RSS Obsidian 插件同一套公开服务：`https://rss.qiaomu.ai/api/`，来源、文章列表和已发布的解读均复用该服务。无需在电脑运行 Obsidian，也不会调用模型生成新的文章。
+
+- 初次进入会请求联网更新，之后优先显示本地列表；菜单可手动更新、筛选未读/全部/收藏及选择来源。一次更新读取最近 60 篇，滚动保留 200 篇和额外收藏的旧文章。
+- 列表显示标题、来源、发布日期、未读及已离线状态。打开文章标为已读，长按可改回未读或收藏。
+- 正文优先使用已有且未过期的乔木解读，否则读取服务提供的原文；打开成功即保存离线正文，退出时保存阅读位置。标题、正文、页码和收藏属于独立资讯数据，不写入书籍阅读历史或「继续阅读」。
+- 「已离线」只表示该篇正文已经保存，不表示列表中所有文章都已下载。当前为文字阅读，外部图片、嵌入音视频不下载；单篇正文上限 400 KB。
+- Kindle 优先使用系统内置 curl 的 HTTPS 和 CA 证书，并在 DNS 提供的地址之间进行有限故障切换；不会安装程序或修改全局 DNS、防火墙。其他平台使用 KOReader 的 LuaSocket 请求实现。
+
+KOReader 另外自带 [News downloader (RSS/Atom)](https://github.com/koreader/koreader/blob/master/plugins/newsdownloader.koplugin/main.lua)，可以添加其他 RSS/Atom 订阅并下载为 EPUB。当前独立资讯列表接入乔木精选，尚未将任意 RSS 订阅合并到这份列表。
 
 隐藏仅改变展示可见性：原文件、批注和阅读历史保留。它不是加密或隐私保护；其他应用或普通文件选择器仍可能打开原文件。隐藏记录按完整路径保存，同名不同路径的文件相互独立；文件在外部改名或移动后，旧隐藏记录不自动跟随。
 
@@ -52,6 +68,9 @@ python3 -m pip install -r requirements-dev.txt
 python3 tests/test_customizations.py
 python3 tests/test_refresh_lifecycle.py
 python3 tests/test_weread_lifecycle.py
+python3 tests/test_arrivals.py
+python3 tests/test_home_controls.py
+python3 tests/test_news.py
 python3 scripts/package.py
 ```
 
@@ -72,6 +91,8 @@ Qiaomu SimpleUI is a customization based on **Doctor Hetfield's SimpleUI 3.0.0**
 It hides the top swipe indicator on first activation, adds a shortcut for an installed and enabled WeRead plugin, and lets you hide individual books/documents from the home screen and library through the shared long-press menu. Restore items from **Settings → Library → Hidden books and documents**.
 
 Files, annotations and reading history are preserved. Visibility is not encryption: other applications and ordinary file pickers can still access the files. Records use full paths; external renames/moves do not migrate records automatically. The optional WeRead plugin is not bundled; a compatible `openBookshelf` or `launch` method is required.
+
+The .4 candidate defaults the flat shelf to newest file date first, adds a shelf overflow menu, and uses KOReader's native vertical scrolling for oversized home layouts while retaining horizontal book pagination. Explicit sort/badge preferences remain respected. A one-time migration replaces the Favorites navigation tab with News; book favorites stay in the shelf menu and Library settings. News reads Qiaomu's existing public API, keeps unread/saved/offline/progress data outside book history, and caches an article after opening it. Arbitrary RSS/Atom feeds remain available through KOReader's built-in News Downloader; they are not yet part of the separate Qiaomu news list.
 
 Requires KOReader v2026.03+ and its enabled CoverBrowser plugin. Back up your existing plugin folder and `settings/simpleui`, then extract the release's **simpleui.koplugin.zip** into KOReader's `plugins/` directory and restart. Keep the folder name exactly `simpleui.koplugin`. Add the Flat Library module to browse books across subfolders. To roll back, restore your previous plugin and settings backup.
 

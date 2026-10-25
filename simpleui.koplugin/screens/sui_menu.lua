@@ -2934,6 +2934,12 @@ SimpleUIPlugin.addToMainMenu = function(self, menu_items)
         if not ok_fc or not FC then return {} end
 
         return {
+            {
+                text = _("Favorites"),
+                callback = function()
+                    QA.getEntry("favorites").execute({})
+                end,
+            },
             require("features/library/sui_hidden_books").makeMenuItem(),
             -- ── Enable Library Custom Covers ────────────────────────────
             {

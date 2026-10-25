@@ -6222,3 +6222,90 @@ msgstr "微信讀書"
 #. Qiaomu customization
 msgid "WeRead is not available. Enable its plugin and restart KOReader."
 msgstr "微信讀書無法使用，請啟用外掛並重新啟動 KOReader。"
+
+msgid "Recently added"
+msgstr "最近加入"
+
+msgid "News"
+msgstr "資訊"
+
+msgid "Qiaomu picks"
+msgstr "喬木精選"
+
+msgid "Could not update. Saved articles are still available."
+msgstr "更新失敗，已儲存的文章仍可閱讀。"
+
+msgid "Could not save news."
+msgstr "資訊儲存失敗。"
+
+msgid "Unsave"
+msgstr "取消收藏"
+
+msgid "Save article"
+msgstr "收藏文章"
+
+msgid "Previous page"
+msgstr "上一頁"
+
+msgid "Next page"
+msgstr "下一頁"
+
+msgid "Back to articles"
+msgstr "返回清單"
+
+msgid "Loading article… Tap to cancel."
+msgstr "正在載入文章…點擊取消。"
+
+msgid "Read"
+msgstr "已讀"
+
+msgid "Unread"
+msgstr "未讀"
+
+msgid "Offline"
+msgstr "已離線"
+
+msgid "No articles here. Use the menu to update or change the filter."
+msgstr "暫無文章，可從選單更新或切換篩選。"
+
+msgid "Updated"
+msgstr "更新於"
+
+msgid "Update to load Qiaomu picks"
+msgstr "更新後即可閱讀喬木精選"
+
+msgid "Saved articles"
+msgstr "收藏的文章"
+
+msgid "All articles"
+msgstr "全部文章"
+
+msgid "Updating Qiaomu picks… Tap to cancel."
+msgstr "正在更新喬木精選…點擊取消。"
+
+msgid "All sources"
+msgstr "全部來源"
+
+msgid "Sources"
+msgstr "來源篩選"
+
+msgid "Mark unread"
+msgstr "標為未讀"
+
+msgid "Mark read"
+msgstr "標為已讀"
+
+msgid "Update now"
+msgstr "立即更新"
+
+msgid "Bookshelf"
+msgstr "書架"
+
+msgid "Bookshelf settings"
+msgstr "書架設定"
+
+msgid "Update sources"
+msgstr "更新來源"
+
+msgid "Updating sources… Tap to cancel."
+msgstr "正在更新來源…點擊取消。"
