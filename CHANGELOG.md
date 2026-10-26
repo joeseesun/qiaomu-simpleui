@@ -1,5 +1,14 @@
 # 更新记录 / Changelog
 
+## v3.0.0-qiaomu.16 — 测试版 / Prerelease
+
+- 修复乔木精选富文本文章正文过小、Aa 字号调节无效：清理原文固定字号、字体和行高覆盖，保留显式加粗、斜体、对齐、隐藏及图片样式。
+- 旧文章 EPUB 在下次打开时自动重建；正文等长更新、标题和样式变更也会刷新缓存，保留原路径及阅读设置、位置和批注文件。
+- 新增富文本与旧缓存自动回归、设备原生排版测试脚本。在 Kindle Paperwhite 4 / KOReader v2026.07.1 上复现旧问题并验证修复，用户重启后确认旧文章 Aa 字号变化正常；其他机型、真实批注对齐及整套导航交互未在本轮单独实机验收。
+- 感谢 MoreCrazy 在 PR #7 提供的初始修复，PR #8 补全样式与缓存处理并保留原提交署名。
+
+English: fix rich-text news articles ignoring Aa font sizes while preserving explicit emphasis, alignment, hidden content and image styles. Rebuild stale EPUBs without deleting reading settings, progress or annotation sidecars. Automated regression and native Kindle rendering pass; the user confirmed Aa sizing after restarting KOReader on a Paperwhite 4 running v2026.07.1. Other devices, real annotation alignment and full navigation were not separately device-tested in this release. Includes MoreCrazy's original contribution from #7, completed in #8.
+
 ## v3.0.0-qiaomu.15 — 测试版 / Prerelease
 
 - 首页：最近加入的书优先、书架「⋯」菜单、超高首页纵向滑动；底栏「资讯」替换低频的「我的收藏」。
