@@ -34,6 +34,108 @@ local function plain(s)
     return (s:gsub("<[^>]*>", ""):gsub("&nbsp;", " "):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
+-- Remove source typography, not semantics such as bold, alignment or hiding.
+local typography = { font=true, ["font-size"]=true, ["font-family"]=true,
+    ["font-size-adjust"]=true, ["line-height"]=true, ["text-size-adjust"]=true,
+    ["-webkit-text-size-adjust"]=true, ["-moz-text-size-adjust"]=true }
+
+local function cleanStyle(value)
+    value = require("util").htmlEntitiesToUtf8(value)
+    local kept, start, quote, depth, comment = {}, 1, nil, 0, false
+    local function declaration(last)
+        local item = value:sub(start, last)
+        local property = item:gsub("/%*.-%*/", ""):match("^%s*(.-)%s*:")
+        if not property then return end
+        -- CSS identifiers may contain escapes/comments (HTML entities were
+        -- already decoded). Normalize only the name; preserve other values.
+        property = property:gsub("/%*.-%*/", ""):gsub("\\(%x+)%s?", function(hex)
+            local n = tonumber(hex, 16)
+            return n > 0 and n < 128 and string.char(n) or "?"
+        end):lower():gsub("^%s+", ""):gsub("%s+$", "")
+        if not typography[property] then kept[#kept + 1] = item end
+    end
+    for i = 1, #value do
+        local c = value:sub(i, i)
+        if comment then
+            if c == "/" and value:sub(i-1, i-1) == "*" then comment = false end
+        elseif quote then
+            if c == quote and value:sub(i-1, i-1) ~= "\\" then quote = nil end
+        elseif c == "/" and value:sub(i+1, i+1) == "*" then comment = true
+        elseif c == '"' or c == "'" then quote = c
+        elseif c == "(" then depth = depth + 1
+        elseif c == ")" then depth = math.max(0, depth - 1)
+        elseif c == ";" and depth == 0 then declaration(i-1); start = i+1 end
+    end
+    declaration(#value)
+    return table.concat(kept, ";")
+end
+
+local function cleanAttributes(tag, attrs)
+    if tag:lower() == "img" then return attrs end
+    local parts, pos = {}, 1
+    while pos <= #attrs do
+        local first = pos
+        local _, spaces = attrs:find("^%s*", pos)
+        pos = (spaces or pos-1) + 1
+        local name = attrs:sub(pos):match("^([%w_:%-]+)")
+        if not name then parts[#parts+1] = attrs:sub(first, pos); pos = pos+1
+        else
+            pos = pos + #name
+            local _, gap = attrs:find("^%s*", pos); pos = (gap or pos-1)+1
+            local value
+            if attrs:sub(pos, pos) == "=" then
+                pos = pos+1
+                local _, ws = attrs:find("^%s*", pos); pos = (ws or pos-1)+1
+                local q = attrs:sub(pos, pos)
+                if q == '"' or q == "'" then
+                    local last = attrs:find(q, pos+1, true) or (#attrs+1)
+                    value = attrs:sub(pos+1, last-1); pos = last+1
+                else
+                    local last = attrs:find("%s", pos) or (#attrs+1)
+                    value = attrs:sub(pos, last-1); pos = last
+                end
+            end
+            local lower = name:lower()
+            if lower == "style" and value then
+                local cleaned = cleanStyle(value)
+                if cleaned:find("%S") then parts[#parts+1] = ' style="' .. escape(cleaned) .. '"' end
+            elseif not (tag:lower() == "font" and (lower == "size" or lower == "face")) then
+                parts[#parts+1] = attrs:sub(first, pos-1)
+            end
+        end
+    end
+    return table.concat(parts)
+end
+
+local function cleanTypography(html)
+    local parts, pos = {}, 1
+    while pos <= #html do
+        local first = html:find("<", pos, true)
+        if not first then parts[#parts+1] = html:sub(pos); break end
+        parts[#parts+1] = html:sub(pos, first-1)
+        if html:sub(first, first+3) == "<!--" then
+            local last = html:find("-->", first+4, true)
+            if not last then parts[#parts+1] = html:sub(first); break end
+            parts[#parts+1] = html:sub(first, last+2); pos = last+3
+        else
+            local last, quote = first+1, nil
+            while last <= #html do
+                local c = html:sub(last, last)
+                if quote then if c == quote then quote = nil end
+                elseif c == '"' or c == "'" then quote = c
+                elseif c == ">" then break end
+                last = last+1
+            end
+            if last > #html then parts[#parts+1] = html:sub(first); break end
+            local text = html:sub(first, last)
+            local tag, attrs = text:match("^<([%a][%w_:%-]*)(.-)>$")
+            parts[#parts+1] = tag and ("<" .. tag .. cleanAttributes(tag, attrs) .. ">") or text
+            pos = last+1
+        end
+    end
+    return table.concat(parts)
+end
+
 M.CSS = [[
 body { line-height: 1.6; }
 p, div, section { margin: 0 0 0.8em 0; text-indent: 0; }
@@ -94,13 +196,17 @@ local function prune(keep_path)
     end
 end
 
-local EPUB_BUILDER_REV = "2" -- 当样式或清洗逻辑更新时递增，促使已缓存的旧 EPUB 自动重新生成
+local EPUB_BUILDER_REV = "2"
 
 --- Builds (or reuses) the EPUB for `entry`, ending with a link to `next_entry`.
 --- Returns path, or nil and an error.
 function M.build(entry, article, News, next_entry)
     local path = M.path(entry.id)
-    local version = EPUB_BUILDER_REV .. ":" .. (article.version or "") .. ":" .. #article.body .. ":" .. (next_entry and next_entry.id or "")
+    local inputs = { EPUB_BUILDER_REV, article.version or "", article.format or "", article.body,
+        News.title(entry), entry.sourceName or "", entry.sourceId or "", entry.published or "",
+        next_entry and next_entry.id or "", next_entry and News.title(next_entry) or "", M.CSS }
+    for i, value in ipairs(inputs) do inputs[i] = #value .. ":" .. value end
+    local version = EPUB_BUILDER_REV .. ":" .. require("ffi/sha2").sha256(table.concat(inputs))
     local stamp = path .. ".version"
     local f = io.open(stamp, "rb")
     local existing = f and f:read("*a"); if f then f:close() end
@@ -108,14 +214,7 @@ function M.build(entry, article, News, next_entry)
 
     local html = Images.html(article)
     local body = html:match("<[Bb][Oo][Dd][Yy][^>]*>(.*)</[Bb][Oo][Dd][Yy]>") or html
-    -- 剥离微信公众号等富文本中非 img 标签上的内联 style 污染（消除 font-size: 14/15/16px、淡灰字体等导致的小字与排版异常）
-    body = body:gsub("(<%a[%w%-:]*)([^>]*)(>)", function(tag, attrs, close)
-        if tag:lower() ~= "<img" then
-            attrs = attrs:gsub('%s+style%s*=%s*"[^"]*"', ""):gsub("%s+style%s*=%s*'[^']*'", "")
-        end
-        return tag .. attrs .. close
-    end)
-    body = body:gsub("<mp%-style%-type[^>]*></mp%-style%-type>", "")
+    body = cleanTypography(body)
     local toc
     body, toc = outline(body)
     local title = News.title(entry)

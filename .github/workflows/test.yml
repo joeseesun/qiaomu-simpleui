@@ -21,6 +21,7 @@ jobs:
       - run: python tests/test_news.py
       - run: python tests/test_news_cache_images.py
       - run: python tests/test_news_epub.py
+      - run: python tests/test_news_typography.py
       - run: python tests/test_ai_config.py
       - run: python tests/test_ai_lookup.py
       - run: python tests/test_ai_chat.py

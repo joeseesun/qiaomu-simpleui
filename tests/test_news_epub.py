@@ -1,6 +1,6 @@
 """News EPUBs open in KOReader's reader without leaking into book state."""
 from pathlib import Path
-import tempfile
+import tempfile, hashlib, html
 from lupa.lua54 import LuaRuntime
 
 ROOT = Path(__file__).resolve().parents[1] / 'simpleui.koplugin'
@@ -11,10 +11,13 @@ with tempfile.TemporaryDirectory() as tmp:
     lua.globals().mkdir = lambda path: Path(path).mkdir(parents=True, exist_ok=True)
     lua.globals().listdir = lambda path: lua.table_from(sorted(p.name for p in Path(path).iterdir()))
     lua.globals().isfile = lambda path: Path(path).is_file()
+    lua.globals().sha256 = lambda s: hashlib.sha256(s.encode()).hexdigest()
+    lua.globals().unescape = html.unescape
     lua.execute(r'''
 package.path=plugin_root.."/?.lua;"..package.path
 local files={}
-package.loaded["util"]={makePath=mkdir}
+package.loaded["util"]={makePath=mkdir,htmlEntitiesToUtf8=unescape}
+package.loaded["ffi/sha2"]={sha256=sha256}
 package.loaded["logger"]={info=function() end,warn=function() end}
 -- KOReader opens "./settings/..." but history stores real paths.
 package.loaded["ffi/util"]={realpath=function(p) return (p:gsub("/%./","/")) end}
