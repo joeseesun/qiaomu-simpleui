@@ -8,7 +8,7 @@
 
 [下载测试版](https://github.com/joeseesun/qiaomu-simpleui/releases) · [给 AI Agent 的安装指引](#给-ai-agent-的安装指引) · [原版 SimpleUI](https://github.com/doctorhetfield-cmd/simpleui.koplugin) · [GPL-3.0](LICENSE) · [CI](https://github.com/joeseesun/qiaomu-simpleui/actions)
 
-基于 Doctor Hetfield 的 **SimpleUI 3.0.0** 定制，保留上游作者和 GPL-3.0 许可证，不代表上游官方发布。当前版本：**v3.0.0-qiaomu.15（测试版）**，开发与实机记录见 [docs/home-news-progress.md](docs/home-news-progress.md)，设计说明见 [DESIGN.md](DESIGN.md)。
+基于 Doctor Hetfield 的 **SimpleUI 3.0.0** 定制，保留上游作者和 GPL-3.0 许可证，不代表上游官方发布。当前版本：**v3.0.0-qiaomu.16（测试版）**，开发与实机记录见 [docs/home-news-progress.md](docs/home-news-progress.md)，设计说明见 [DESIGN.md](DESIGN.md)。
 
 ## 能做什么
 
@@ -136,7 +136,7 @@ python3 scripts/package.py   # 生成 dist/simpleui.koplugin.zip 与 dist/SHA256
 <a id="english"></a>
 # English
 
-Qiaomu SimpleUI is a customization of **Doctor Hetfield's SimpleUI 3.0.0** for KOReader (GPL-3.0). It is not an official upstream release. Current version: **v3.0.0-qiaomu.15 (pre-release)**.
+Qiaomu SimpleUI is a customization of **Doctor Hetfield's SimpleUI 3.0.0** for KOReader (GPL-3.0). It is not an official upstream release. Current version: **v3.0.0-qiaomu.16 (pre-release)**.
 
 **What you get**
 
