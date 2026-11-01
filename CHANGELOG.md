@@ -1,5 +1,13 @@
 # 更新记录 / Changelog
 
+## v3.0.0-qiaomu.19 — 测试版 / Prerelease
+
+- 修复手机扫码配置 AI 时，空自定义动作列表被 Lua JSON 编码为对象，导致页面报 `quick_prompts.map is not a function`、设置加载中断的问题。
+- 兼容空对象、空数组、缺失字段和无效条目，保留有效自定义动作；设置加载完成前禁用测试与保存，防止提交不完整的表单。
+- 新增执行实际页面 JavaScript 的回归，覆盖首次空配置、已有动作、测试请求及加载失败；API Key 不会回传给页面。
+
+English: handle empty Lua objects and malformed custom-action lists on the phone setup page. Enable Test/Save only after settings load successfully. Execute the shipped JavaScript in regression tests for initial setup, custom actions and failed state requests.
+
 ## v3.0.0-qiaomu.18 — 测试版 / Prerelease
 
 - 修复 RSS 中文解读里同段多个 Markdown 链接合并、地址中的括号及下划线破坏图片和链接的问题；保留链接文字、文字强调和代码示例。

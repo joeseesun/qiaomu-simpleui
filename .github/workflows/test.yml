@@ -12,6 +12,9 @@ jobs:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: requirements-dev.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - run: python -m pip install -r requirements-dev.txt
       - run: python tests/test_customizations.py
       - run: python tests/test_refresh_lifecycle.py
@@ -24,6 +27,7 @@ jobs:
       - run: python tests/test_news_epub.py
       - run: python tests/test_news_typography.py
       - run: python tests/test_ai_config.py
+      - run: python tests/test_ai_page.py
       - run: python tests/test_ai_lookup.py
       - run: python tests/test_ai_chat.py
       - run: |
