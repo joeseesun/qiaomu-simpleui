@@ -4,7 +4,7 @@
 
 - 修复 RSS 中文解读里同段多个 Markdown 链接合并、地址中的括号及下划线破坏图片和链接的问题；保留链接文字、文字强调和代码示例。
 - 图片下载与正文渲染共用解析结果，兼容带标题的图片及 HTML 延迟加载图片；已缓存的文章联网打开时有限重试缺失图片，图片补齐后自动重建 EPUB，保留阅读设置与批注。
-- 使用 KOReader v2026.07.1 的真实 Markdown 解析器回归；在用户报告的最新文章中核对 49 个链接、9 张图片地址，与独立 CommonMark 结果一致。Kindle 屏幕渲染及设备 HTTPS 下载仍需重启后验收。
+- 使用 KOReader v2026.07.1 的真实 Markdown 解析器回归；在用户报告的最新文章中核对 49 个链接、9 张图片地址，与独立 CommonMark 结果一致。Paperwhite 5 SE 原生 LuaJIT 与 HTTPS 已实测下载一张图片并生成含图 EPUB；实际阅读画面仍待用户确认。
 
 English: fix merged inline Markdown links and broken image URLs, share parsing between downloads and rendering, and retry missing images in cached articles once per session while online. Rebuild EPUBs when image availability changes without removing reading settings or annotations. Real KOReader parser regression passes; physical Kindle rendering and HTTPS remain pending.
 
