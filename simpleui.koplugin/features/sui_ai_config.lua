@@ -3,6 +3,20 @@
 local JSON = require("json")
 local M = {}
 
+-- KOReader's JSON encoder writes an empty Lua table as `{}` (an object),
+-- not `[]` (an array). The phone page reads these lists with Array.map, so
+-- an empty list must be tagged as an array before it is written.
+local ok_util, JSONUtil = pcall(require, "json.util")
+
+--- Marks a list as a JSON array even when it is empty.
+function M.asArray(list)
+    if ok_util and JSONUtil and JSONUtil.InitArray then return JSONUtil.InitArray(list) end
+    -- Same marker LuaJSON looks for, without the extra module.
+    return setmetatable(list, { __is_luajson_array = true })
+end
+
+local asArray = M.asArray
+
 -- Presets follow Qiaomu Reader 4.9 (src/ai-providers.js); all were reachable
 -- from the reference Kindle on 2026-10-25 except where noted.
 M.PROVIDERS = {
@@ -22,6 +36,12 @@ M.PROVIDERS = {
       models = { "MiniMax-M3", "MiniMax-M2.7", "MiniMax-M2.5" }, key_url = "https://platform.minimaxi.com/user-center/basic-information/interface-key" },
     { id = "openrouter", label = "OpenRouter", base = "https://openrouter.ai/api/v1", model = "deepseek/deepseek-chat",
       models = { "deepseek/deepseek-chat" }, key_url = "https://openrouter.ai/settings/keys", slow = true },
+    -- OpenAI proper. Measured unreachable from the reference Kindle on
+    -- 2026-10-25, so it is flagged "slow" like OpenRouter: the phone page
+    -- shows a note when the service is slow from the device.
+    { id = "openai", label = "OpenAI", base = "https://api.openai.com/v1", model = "gpt-4o-mini",
+      models = { "gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "gpt-4.1", "o4-mini" },
+      key_url = "https://platform.openai.com/api-keys", slow = true },
     { id = "custom", label = "custom", base = "", model = "", models = {}, custom = true },
 }
 
@@ -53,6 +73,20 @@ M.FOLLOW_UPS = {
 -- Phone-configured extra actions are appended after the built-in ones.
 M.QUICK_PROMPTS = {}
 
+--- Returns a plain list of {name, prompt} pairs. Anything that is not a
+--- usable pair is dropped, so a JSON object in place of an array is safe.
+local function normalizePrompts(value)
+    local out = {}
+    if type(value) ~= "table" then return out end
+    for _, item in ipairs(value) do
+        if type(item) == "table" and type(item.name) == "string" and type(item.prompt) == "string"
+            and item.name ~= "" and item.prompt ~= "" and #out < 20 then
+            out[#out + 1] = { name = item.name, prompt = item.prompt }
+        end
+    end
+    return out
+end
+
 --- Built-in actions followed by the user's extra ones (deduplicated by name).
 function M.actions(builtin, cfg)
     local list, seen = {}, {}
@@ -77,7 +111,7 @@ end
 function M.defaults()
     local p = M.PROVIDERS[1]
     return { version = 1, provider = p.id, base = p.base, chat_model = p.model, translate_model = p.model,
-        thinking = false, key = "", answer_lang = "zh-CN", translate_to = "zh-CN", quick_prompts = M.QUICK_PROMPTS }
+        thinking = false, key = "", answer_lang = "zh-CN", translate_to = "zh-CN", quick_prompts = asArray(M.QUICK_PROMPTS) }
 end
 
 local cached
@@ -92,6 +126,9 @@ function M.load()
             for k, v in pairs(data) do cfg[k] = v end
         end
     end
+    -- A list saved by an older version (or by hand) may be a JSON object;
+    -- the phone page expects an array.
+    cfg.quick_prompts = asArray(normalizePrompts(cfg.quick_prompts))
     cached = cfg
     return cfg
 end
@@ -104,9 +141,13 @@ function M.save(cfg)
     local f = assert(io.open(tmp, "wb"))
     -- Restrict before the key is written.
     os.execute("chmod 600 " .. shell(tmp))
-    f:write(JSON.encode(cfg)); f:close()
+    -- The list must stay an array in the file, even when it is empty.
+    local out = {}
+    for k, v in pairs(cfg) do out[k] = v end
+    out.quick_prompts = asArray(normalizePrompts(cfg.quick_prompts))
+    f:write(JSON.encode(out)); f:close()
     assert(os.rename(tmp, M.path()))
-    cached = cfg
+    cached = out
 end
 
 function M.clear()
@@ -135,6 +176,7 @@ function M.public(cfg)
     cfg = cfg or M.load()
     local out = {}
     for k, v in pairs(cfg) do if k ~= "key" then out[k] = v end end
+    out.quick_prompts = asArray(normalizePrompts(cfg.quick_prompts))
     out.key_hint = M.keyHint(cfg)
     return out
 end
@@ -150,12 +192,15 @@ function M.merge(cfg, input)
     local p = M.provider(input.provider)
     if not p then return nil, "Unknown service" end
     out.provider = p.id
-    local base = str(input.base, 300) or p.base
+    -- The endpoint may be overridden for every provider, not just the
+    -- custom one: gateways and self-hosted servers often expose a
+    -- different path, and the user knows their own address. An empty
+    -- field keeps the preset's own base.
+    local base = str(input.base, 300)
+    if base == nil or base == "" then base = p.base end
     base = base:gsub("%s", ""):gsub("/+$", "")
-    if p.custom then
-        if not base:match("^https?://[%w%.%-]+[:%d]*[/%w%.%-_~]*$") then return nil, "Invalid service URL" end
-    else
-        base = p.base
+    if base ~= "" and not base:match("^https?://[%w%.%-]+[:%d]*[/%w%.%-_~]*$") then
+        return nil, "Invalid service URL"
     end
     out.base = base
     for _, k in ipairs{ "chat_model", "translate_model" } do
@@ -188,7 +233,7 @@ function M.merge(cfg, input)
                 prompts[#prompts + 1] = { name = name, prompt = prompt }
             end
         end
-        out.quick_prompts = prompts
+        out.quick_prompts = asArray(prompts)
     end
     return out
 end

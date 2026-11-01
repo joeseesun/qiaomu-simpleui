@@ -1,7 +1,7 @@
 -- AI reading conversations: system prompt (Qiaomu Reader aiSystemChat),
 -- reading context, follow-ups and saving answers as Markdown notes.
 local Lookup = require("features/sui_ai_lookup")
-local M = { LIMIT = 20000, NOTES = "/mnt/us/documents/乔木AI笔记" }
+local M = { LIMIT = 20000, NOTES = "/mnt/us/documents/AI笔记" }
 
 local function chars(s)
     local list = {}

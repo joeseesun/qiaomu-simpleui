@@ -57,6 +57,17 @@ local switched=assert(Config.merge(merged,{provider="kimi",chat_model="kimi-k2.6
 assert(switched.key=="" and switched.thinking==false and switched.base=="https://api.moonshot.cn/v1","switching service drops the other service's key")
 local custom=assert(Config.merge(cfg,{provider="custom",base="http://192.168.1.10:11434/v1/",chat_model="qwen3:8b"}))
 assert(custom.base=="http://192.168.1.10:11434/v1" and Config.ready(custom),"local services may run without a key")
+-- OpenAI is a first-class preset: fixed base, model list for the phone page dropdown.
+local oa=assert(Config.merge(cfg,{provider="openai",key=" sk-openai-1234 ",chat_model="gpt-4o",translate_model="gpt-4o-mini"}))
+assert(oa.base=="https://api.openai.com/v1" and oa.key=="sk-openai-1234" and Config.ready(oa),"OpenAI preset uses its own endpoint")
+local oap=assert(Config.provider("openai"))
+assert(#oap.models>=3 and oap.model=="gpt-4o-mini" and oap.key_url:find("openai",1,true),"OpenAI preset offers a model dropdown and a key URL")
+local fixed=assert(Config.merge(cfg,{provider="openai",base="",chat_model="gpt-4o"}))
+assert(fixed.base=="https://api.openai.com/v1","an empty field keeps the provider base")
+-- Every provider may point at its own gateway; an empty field keeps the preset.
+local own=assert(Config.merge(cfg,{provider="openai",base="https://gw.example/v1/",chat_model="gpt-4o"}))
+assert(own.base=="https://gw.example/v1","a custom endpoint is accepted for any provider")
+assert(not Config.merge(cfg,{provider="openai",base="file:///etc/passwd",chat_model="gpt-4o"}),"a non-http endpoint is refused")
 local many={};for i=1,25 do many[i]={name="q"..i,prompt="p"} end
 assert(#assert(Config.merge(cfg,{provider="deepseek",quick_prompts=many})).quick_prompts==20)
 -- Storage: private file, key never in the public view.
@@ -65,6 +76,12 @@ assert(file_mode(Config.path())==384,"settings file is 0600")
 assert(file_mode(Config.DIR)==448,"settings folder is 0700")
 Config.reset();assert(Config.load().key=="sk-test-1234")
 local public=Config.public();assert(public.key==nil and public.key_hint=="••••1234")
+-- An empty list must stay an array on disk: KOReader's encoder writes a
+-- bare table as `{}`, which the phone page cannot read with Array.map.
+assert(getmetatable(cfg.quick_prompts) and getmetatable(cfg.quick_prompts).__is_luajson_array,"quick_prompts is tagged as a JSON array")
+assert(getmetatable(public.quick_prompts) and getmetatable(public.quick_prompts).__is_luajson_array,"the public view carries an array")
+local withprompts=assert(Config.merge(cfg,{provider="deepseek",quick_prompts={{name="找金句",prompt="找出金句"}}}))
+assert(getmetatable(withprompts.quick_prompts).__is_luajson_array and #withprompts.quick_prompts==1)
 -- Request body follows Qiaomu Reader: tests disable DeepSeek thinking.
 local Client=require("features/sui_ai_client")
 local body=Client.body(merged,{{role="user",content="x"}},{test=true})
@@ -109,7 +126,11 @@ package.loaded["features/sui_ai_page"]={HTML="<html>page</html>"}
 local Web=require("features/sui_ai_web")
 local sent
 local srv={send=function(_,data) sent=data end}
-local function client(body) return {settimeout=function() end,receive=function(_,n) return body:sub(1,n) end,close=function() end} end
+-- The shared web server responds through the client socket.
+local function client(body)
+  return {settimeout=function() end,receive=function(_,n) return body:sub(1,n) end,close=function() end,
+    send=function(_,data) sent=data end}
+end
 local function req(line,body)
   sent=nil
   local data=line.."\r\nHost: k\r\n"..(body and ("Content-Length: "..#body.."\r\n") or "").."\r\n"
@@ -128,6 +149,7 @@ local saved=req("POST /api/save?t=abc123 HTTP/1.1",'{"provider":"kimi","key":"sk
 assert(saved:match("^HTTP/1.0 200") and not saved:find("sk-kimi-9876",1,true))
 Config.reset()
 local now=Config.load();assert(now.provider=="kimi" and now.key=="sk-kimi-9876" and now.translate_to=="en")
-assert(req("POST /api/test?t=abc123 HTTP/1.1",'{"provider":"custom","base":"","chat_model":""}'):match("^HTTP/1.0 400"),"tests need complete settings")
+local resp = req("POST /api/test?t=abc123 HTTP/1.1",'{"provider":"custom","base":"","chat_model":""}')
+assert(resp and resp:match("^HTTP/1.0 400"),"tests need complete settings, got: "..tostring(resp))
 ''')
 print('PASS: DeepSeek default, input validation (key/model/URL injection), private 0600 storage, key never in page state or curl argv, temp files removed, Qiaomu Reader request body, service errors, token-protected phone page.')

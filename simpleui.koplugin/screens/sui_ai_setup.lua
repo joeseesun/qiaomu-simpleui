@@ -71,7 +71,7 @@ function M._phone(after_save)
     page = InputContainer:new{ dimen = Geom:new{ x = 0, y = 0, w = w, h = h }, covers_fullscreen = true }
     local function cancel() Web.stop() end
     local content = VerticalGroup:new{ align = "center",
-        TextWidget:new{ text = _("Qiaomu AI · Set up from your phone"), face = Font:getFace("tfont", 24), bold = true },
+        TextWidget:new{ text = _("AI · Set up from your phone"), face = Font:getFace("tfont", 24), bold = true },
         VerticalSpan:new{ width = Size.padding.large * 2 },
         QRWidget:new{ text = url, width = qr_size, height = qr_size },
         VerticalSpan:new{ width = Size.padding.large * 2 },
@@ -163,7 +163,7 @@ function M.show()
         end) }}
     end
     buttons[#buttons + 1] = {{ text = _("Close"), callback = action(function() end) }}
-    dialog = require("ui/widget/buttondialog"):new{ title = _("Qiaomu AI") .. "\n\n" .. M.summary(cfg), buttons = buttons }
+    dialog = require("ui/widget/buttondialog"):new{ title = _("AI Settings") .. "\n\n" .. M.summary(cfg), buttons = buttons }
     UIManager:show(dialog)
 end
 

@@ -8187,3 +8187,25 @@ msgstr ""
 
 msgid "Images could not be downloaded. Use the menu to retry."
 msgstr ""
+
+
+msgid "AI Settings"
+msgstr ""
+
+msgid "AI: ask about this page"
+msgstr ""
+
+msgid "AI · Set up from your phone"
+msgstr ""
+
+msgid "Send books to the Kindle"
+msgstr ""
+
+msgid "Scan with a phone on the same Wi-Fi, then pick a file to send."
+msgstr ""
+
+msgid "Available for 5 minutes and closes after the upload. Use only on a Wi-Fi network you trust."
+msgstr ""
+
+msgid "Could not start the upload page."
+msgstr ""

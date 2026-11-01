@@ -6230,7 +6230,7 @@ msgid "News"
 msgstr "資訊"
 
 msgid "Qiaomu picks"
-msgstr "喬木精選"
+msgstr "精選"
 
 msgid "Could not update. Saved articles are still available."
 msgstr "更新失敗，已儲存的文章仍可閱讀。"
@@ -6256,8 +6256,8 @@ msgstr "問 AI"
 msgid "Ask AI about this page"
 msgstr "問 AI：這一頁"
 
-msgid "Qiaomu AI: ask about this page"
-msgstr "喬木 AI：問這一頁"
+msgid "AI: ask about this page"
+msgstr "AI：問這一頁"
 
 msgid "More actions…"
 msgstr "更多問題…"
@@ -6346,11 +6346,11 @@ msgstr "自訂介面"
 msgid "Not set up yet. Set it up from your phone: no typing on the Kindle."
 msgstr "還沒有設定。用手機掃碼設定，不用在 Kindle 上打字。"
 
-msgid "Qiaomu AI · Set up from your phone"
-msgstr "喬木 AI · 用手機設定"
+msgid "AI · Set up from your phone"
+msgstr "AI · 用手機設定"
 
-msgid "Qiaomu AI"
-msgstr "喬木 AI"
+msgid "AI Settings"
+msgstr "AI 設定"
 
 msgid "Saved."
 msgstr "已儲存。"
@@ -6419,7 +6419,7 @@ msgid "Channels"
 msgstr "頻道"
 
 msgid "Qiaomu channels"
-msgstr "喬木頻道"
+msgstr "頻道"
 
 msgid "%d sources"
 msgstr "%d 個來源"
@@ -6470,13 +6470,13 @@ msgid "This is the first article."
 msgstr "已經是第一篇。"
 
 msgid "Qiaomu picks: next article"
-msgstr "喬木精選：下一篇"
+msgstr "精選：下一篇"
 
 msgid "Qiaomu picks: previous article"
-msgstr "喬木精選：上一篇"
+msgstr "精選：上一篇"
 
 msgid "Qiaomu picks: back to list"
-msgstr "喬木精選：返回列表"
+msgstr "精選：返回列表"
 
 msgid "Unsave"
 msgstr "取消收藏"
@@ -6512,7 +6512,7 @@ msgid "Updated"
 msgstr "更新於"
 
 msgid "Update to load Qiaomu picks"
-msgstr "更新後即可閱讀喬木精選"
+msgstr "更新後即可閱讀精選"
 
 msgid "Saved articles"
 msgstr "收藏的文章"
@@ -6521,7 +6521,7 @@ msgid "All articles"
 msgstr "全部文章"
 
 msgid "Updating Qiaomu picks… Tap to cancel."
-msgstr "正在更新喬木精選…點擊取消。"
+msgstr "正在更新精選…點擊取消。"
 
 msgid "All sources"
 msgstr "全部來源"
@@ -6581,3 +6581,15 @@ msgstr "快取空間不足，請清理未收藏快取後重試。"
 
 msgid "Images could not be downloaded. Use the menu to retry."
 msgstr "圖片暫時無法下載，可在選單中重試。"
+
+msgid "Send books to the Kindle"
+msgstr "傳書到 Kindle"
+
+msgid "Scan with a phone on the same Wi-Fi, then pick a file to send."
+msgstr "用同一 Wi-Fi 的手機掃碼，然後選擇要傳送的檔案。"
+
+msgid "Available for 5 minutes and closes after the upload. Use only on a Wi-Fi network you trust."
+msgstr "頁面 5 分鐘後關閉，請在可信的 Wi-Fi 下使用。"
+
+msgid "Could not start the upload page."
+msgstr "無法開啟傳書頁面。"

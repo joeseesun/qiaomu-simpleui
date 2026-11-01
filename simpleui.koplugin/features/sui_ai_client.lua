@@ -59,6 +59,52 @@ function M.chat(cfg, messages, opts)
     return answer, type(message.reasoning_content) == "string" and message.reasoning_content or nil
 end
 
+--- Asks the endpoint which models it offers (OpenAI-compatible GET /models).
+--- Returns a list of model ids, or nil and an error. The key travels the
+--- same way as in chat(): in a private curl config file, never on the
+--- command line.
+function M.models(cfg)
+    if type(cfg) ~= "table" or type(cfg.base) ~= "string" or cfg.base == "" then
+        return nil, "No service address"
+    end
+    os.execute("mkdir -p " .. shell(Config.DIR))
+    local headers = ""
+    if cfg.key and cfg.key ~= "" then headers = 'header = "Authorization: Bearer ' .. cfg.key .. '"\n' end
+    local conf = privateFile("curl", headers)
+    local cmd = M.CURL .. " --silent --ipv4 --connect-timeout 8 --max-time 30"
+        .. " -K " .. shell(conf)
+        .. " --write-out '\\n%{http_code}' " .. shell(cfg.base .. "/models")
+        .. " 2>/dev/null; printf '\\n%s' \"$?\""
+    local pipe = io.popen(cmd, "r")
+    local out = pipe and pipe:read("*a") or ""
+    if pipe then pipe:close() end
+    os.remove(conf)
+    local raw, status, code = out:match("^(.*)\n(%d%d%d)\n(%d+)$")
+    if not raw then return nil, "Network request failed" end
+    if code ~= "0" then return nil, "Network error (" .. code .. ")" end
+    local ok, payload = pcall(JSON.decode, raw)
+    if tonumber(status) ~= 200 then
+        local message = ok and type(payload) == "table" and type(payload.error) == "table" and payload.error.message
+        return nil, "HTTP " .. status .. (type(message) == "string" and (": " .. message:sub(1, 200)) or "")
+    end
+    -- Standard shape: { data = { { id = "..." }, ... } }. Some gateways
+    -- answer with a bare array of strings or of objects.
+    local data = ok and type(payload) == "table" and (payload.data or payload.models or payload)
+    if type(data) ~= "table" then return nil, "Unexpected response" end
+    local list, seen = {}, {}
+    for _, entry in ipairs(data) do
+        local id
+        if type(entry) == "string" then id = entry
+        elseif type(entry) == "table" then id = entry.id or entry.name or entry.model end
+        if type(id) == "string" and id ~= "" and not seen[id] then
+            seen[id] = true
+            list[#list + 1] = id
+        end
+    end
+    if #list == 0 then return nil, "No models in response" end
+    return list, nil
+end
+
 --- Sends a minimal message containing no reading content.
 function M.test(cfg)
     local started = os.time()

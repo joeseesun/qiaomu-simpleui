@@ -191,7 +191,7 @@ function M.registerActions()
     local ok, Dispatcher = pcall(require, "dispatcher")
     if not ok then return end
     Dispatcher:registerAction("qiaomu_ai_page", { category = "none", event = "QiaomuAiPage",
-        title = _("Qiaomu AI: ask about this page"), reader = true })
+        title = _("AI: ask about this page"), reader = true })
 end
 
 --- Attaches the buttons to one ReaderUI instance (called from plugin init).
@@ -209,7 +209,7 @@ function M.attach(ui)
             return { text = _("Ask AI"), callback = function() require("screens/sui_ai_ask").fromHighlight(this) end }
         end)
     end
-    -- Gesture action "Qiaomu AI: ask about this page" (registered in registerActions).
+    -- Gesture action "AI: ask about this page" (registered in registerActions).
     local ReaderUI = require("apps/reader/readerui")
     if not ReaderUI.onQiaomuAiPage then
         function ReaderUI:onQiaomuAiPage()

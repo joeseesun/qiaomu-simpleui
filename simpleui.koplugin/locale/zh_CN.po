@@ -6228,8 +6228,6 @@ msgstr "最近加入"
 msgid "News"
 msgstr "资讯"
 
-msgid "Qiaomu picks"
-msgstr "乔木精选"
 
 msgid "Could not update. Saved articles are still available."
 msgstr "更新失败，已保存的文章仍可阅读。"
@@ -6255,8 +6253,6 @@ msgstr "问 AI"
 msgid "Ask AI about this page"
 msgstr "问 AI：这一页"
 
-msgid "Qiaomu AI: ask about this page"
-msgstr "乔木 AI：问这一页"
 
 msgid "More actions…"
 msgstr "更多问题…"
@@ -6348,11 +6344,7 @@ msgstr "自定义接口"
 msgid "Not set up yet. Set it up from your phone: no typing on the Kindle."
 msgstr "还没有配置。用手机扫码配置，不用在 Kindle 上打字。"
 
-msgid "Qiaomu AI · Set up from your phone"
-msgstr "乔木 AI · 用手机配置"
 
-msgid "Qiaomu AI"
-msgstr "乔木 AI"
 
 msgid "Saved."
 msgstr "已保存。"
@@ -6417,8 +6409,6 @@ msgstr "全部 · %s"
 msgid "Channels"
 msgstr "频道"
 
-msgid "Qiaomu channels"
-msgstr "乔木频道"
 
 msgid "%d sources"
 msgstr "%d 个来源"
@@ -6468,14 +6458,8 @@ msgstr "已经是最后一篇。"
 msgid "This is the first article."
 msgstr "已经是第一篇。"
 
-msgid "Qiaomu picks: next article"
-msgstr "乔木精选：下一篇"
 
-msgid "Qiaomu picks: previous article"
-msgstr "乔木精选：上一篇"
 
-msgid "Qiaomu picks: back to list"
-msgstr "乔木精选：返回列表"
 
 msgid "Unsave"
 msgstr "取消收藏"
@@ -6510,8 +6494,6 @@ msgstr "暂无文章，可从菜单更新或切换筛选。"
 msgid "Updated"
 msgstr "更新于"
 
-msgid "Update to load Qiaomu picks"
-msgstr "更新后即可阅读乔木精选"
 
 msgid "Saved articles"
 msgstr "收藏的文章"
@@ -6519,8 +6501,6 @@ msgstr "收藏的文章"
 msgid "All articles"
 msgstr "全部文章"
 
-msgid "Updating Qiaomu picks… Tap to cancel."
-msgstr "正在更新乔木精选…点击取消。"
 
 msgid "All sources"
 msgstr "全部来源"
@@ -6580,3 +6560,45 @@ msgstr "缓存空间不足，请清理未收藏缓存后重试。"
 
 msgid "Images could not be downloaded. Use the menu to retry."
 msgstr "图片暂时无法下载，可在菜单中重试。"
+
+msgid "AI Settings"
+msgstr "AI 设置"
+
+msgid "AI: ask about this page"
+msgstr "AI：问这一页"
+
+msgid "AI · Set up from your phone"
+msgstr "AI · 用手机配置"
+
+msgid "Send books to the Kindle"
+msgstr "传书到 Kindle"
+
+msgid "Scan with a phone on the same Wi-Fi, then pick a file to send."
+msgstr "用同一 Wi-Fi 的手机扫码，然后选择要发送的文件。"
+
+msgid "Available for 5 minutes and closes after the upload. Use only on a Wi-Fi network you trust."
+msgstr "页面 5 分钟后关闭，请在可信的 Wi-Fi 下使用。"
+
+msgid "Could not start the upload page."
+msgstr "无法打开传书页面。"
+
+msgid "Qiaomu picks"
+msgstr "精选"
+
+msgid "Qiaomu channels"
+msgstr "频道"
+
+msgid "Qiaomu picks: next article"
+msgstr "精选：下一篇"
+
+msgid "Qiaomu picks: previous article"
+msgstr "精选：上一篇"
+
+msgid "Qiaomu picks: back to list"
+msgstr "精选：返回列表"
+
+msgid "Update to load Qiaomu picks"
+msgstr "更新后即可阅读精选"
+
+msgid "Updating Qiaomu picks… Tap to cancel."
+msgstr "正在更新精选…点击取消。"
