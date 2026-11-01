@@ -99,7 +99,8 @@ assert(not html:find("file:///",1,true) and not html:find("https://",1,true))
 package.loaded["apps/filemanager/filemanagerconverter"]={mdToHtml=function() return nil end}
 package.loaded["util"].htmlEscape=function(s) return (s:gsub("&","&amp;"):gsub("<","&lt;")) end
 local fallback=I.html{body="第一段 <b>"..string.char(10,10).."第二段",format="md"}
-assert(fallback=="<p>第一段 &lt;b></p><p>第二段</p>","failed Markdown parsing falls back to escaped text")
+assert(fallback=="<p>第一段 &lt;b&gt;</p><p>第二段</p>","failed Markdown parsing falls back to escaped text")
+package.loaded["apps/filemanager/filemanagerconverter"]={mdToHtml=function(_,body) return body end}
 assert(#I.urls{format="md",body="![one](https://images.example/a.png) ![two](https://images.example/a.png)"}==1)
 assert(C.stats().bytes<C.LIMIT)
 io.popen=original

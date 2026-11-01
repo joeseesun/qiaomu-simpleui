@@ -196,13 +196,15 @@ local function prune(keep_path)
     end
 end
 
-local EPUB_BUILDER_REV = "2"
+local EPUB_BUILDER_REV = "3"
 
 --- Builds (or reuses) the EPUB for `entry`, ending with a link to `next_entry`.
 --- Returns path, or nil and an error.
 function M.build(entry, article, News, next_entry)
     local path = M.path(entry.id)
+    local html = Images.html(article)
     local inputs = { EPUB_BUILDER_REV, article.version or "", article.format or "", article.body,
+        article.base_url or "", html,
         News.title(entry), entry.sourceName or "", entry.sourceId or "", entry.published or "",
         next_entry and next_entry.id or "", next_entry and News.title(next_entry) or "", M.CSS }
     for i, value in ipairs(inputs) do inputs[i] = #value .. ":" .. value end
@@ -212,7 +214,6 @@ function M.build(entry, article, News, next_entry)
     local existing = f and f:read("*a"); if f then f:close() end
     if existing == version and lfs.attributes(path, "mode") == "file" then return path end
 
-    local html = Images.html(article)
     local body = html:match("<[Bb][Oo][Dd][Yy][^>]*>(.*)</[Bb][Oo][Dd][Yy]>") or html
     body = cleanTypography(body)
     local toc

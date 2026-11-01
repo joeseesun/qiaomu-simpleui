@@ -68,6 +68,18 @@ assert(content:find('src="images/'..string.rep("a",64)..'.png"',1,true) and book
 assert(book["OEBPS/toc.ncx"]:find("content.html#qm-h1",1,true) and book["OEBPS/toc.ncx"]:find("content.html#keep",1,true),"TOC follows headings")
 files={}
 assert(Epub.build(entry,{version="rewrite",body='<html><body><h2>第一节</h2><p>正文</p><img src="'..string.rep("a",64)..'.png"/><h3 id="keep">第二节</h3></body></html>'},News,nextEntry)==path and not next(files),"unchanged articles reuse their EPUB")
+-- A downloaded image must invalidate an already-built text-only EPUB even
+-- though the original article bytes have not changed.
+local media={id="media",title="Image retry",sourceName="Source"}
+local article={format="md",body="same article bytes"}
+local images=package.loaded["features/sui_news_images"]
+local old_html=images.html
+images.html=function() return "<p>Body</p>" end
+local media_path=Epub.build(media,article,News)
+images.html=function() return '<p>Body</p><img src="'..string.rep("a",64)..'.png"/>' end
+Epub.build(media,article,News)
+assert(files[media_path..".tmp"]["OEBPS/images/"..string.rep("a",64)..".png"]=="PNGDATA","new image availability rebuilds the EPUB")
+images.html=old_html
 -- Typography: new articles inherit the last news profile, default to WenKai.
 Epub.seed(path,nil)
 assert(sidecars[path].font_face=="LXGW WenKai Screen" and sidecars[path].flushed)

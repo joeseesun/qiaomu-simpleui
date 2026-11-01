@@ -9,6 +9,7 @@ local menu, mode, source = nil, "all", nil
 local restored = false
 local Cache = require("features/sui_news_cache")
 local Images = require("features/sui_news_images")
+local image_attempts = {}
 
 local function notice(message)
     UIManager:show(require("ui/widget/infomessage"):new{ text = message })
@@ -276,7 +277,26 @@ function M.read(entry, from_reader)
         end
     end
     local cached = News.cached(entry.id)
-    if cached then guarded(cached); return end
+    if cached then
+        -- Older builds cached text after missing or misparsing images. Retry
+        -- once per article/session while online; offline text opens directly.
+        local network = require("ui/network/manager")
+        if not image_attempts[entry.id] and network:isOnline() then
+            local urls = {}
+            for _, url in ipairs(Images.urls(cached)) do
+                if not Images.path(url) then urls[#urls + 1] = url end
+            end
+            if #urls > 0 then
+                image_attempts[entry.id] = true
+                job(_("Loading article… Tap to cancel."), function()
+                    pcall(Images.download, urls, Images.ARTICLE_BUDGET)
+                    return cached
+                end, guarded)
+                return
+            end
+        end
+        guarded(cached); return
+    end
     job(_("Loading article… Tap to cancel."), function()
         local article = assert(News.fetchArticle(entry.id))
         -- Fetch images with the text so the EPUB is complete offline.

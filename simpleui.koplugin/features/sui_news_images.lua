@@ -1,5 +1,6 @@
 local Cache = require("features/sui_news_cache")
 local lfs = require("libs/libkoreader-lfs")
+local Markup = require("features/sui_news_markup")
 local M = { ARTICLE_BUDGET=8*1024*1024, THUMB_BUDGET=4*1024*1024, MAX_IMAGE=2*1024*1024 }
 local function quote(s) return "'" .. s:gsub("'", "'\\''") .. "'" end
 local function key(url)
@@ -124,12 +125,8 @@ function M.urls(article)
         url=M.safeUrl(url,article.base_url)
         if url and not seen[url] and #result<12 then seen[url]=true;result[#result+1]=url end
     end
-    if article.format=="md" then
-        for url in article.body:gmatch("!%[[^%]]*%]%(([^%s%)]+)") do add(url) end
-    else
-        for tag in article.body:gmatch("<[Ii][Mm][Gg]%s[^>]*>") do
-            add(tag:match('[Ss][Rr][Cc]%s*=%s*"([^"]+)"') or tag:match("[Ss][Rr][Cc]%s*=%s*'([^']+)'"))
-        end
+    for tag in Markup.html(article):gmatch("<[Ii][Mm][Gg]%s[^>]*>") do
+        add(Markup.imageSource(tag))
     end
     return result
 end
@@ -144,17 +141,9 @@ function M.download(urls,budget)
     return {count=count,bytes=used}
 end
 function M.html(article)
-    local html=article.body
-    if article.format=="md" then
-        html=require("apps/filemanager/filemanagerconverter"):mdToHtml(article.body,"")
-        if type(html)~="string" then
-            -- md.lua reports parser failures as nil; keep the text readable.
-            local text=require("util").htmlEscape(article.body)
-            html="<p>"..(text:gsub("\n%s*\n","</p><p>"):gsub("\n","<br/>")).."</p>"
-        end
-    end
+    local html=Markup.html(article)
     return (html:gsub("<[Ii][Mm][Gg]%s[^>]*>",function(tag)
-        local raw=tag:match('[Ss][Rr][Cc]%s*=%s*"([^"]+)"') or tag:match("[Ss][Rr][Cc]%s*=%s*'([^']+)'")
+        local raw=Markup.imageSource(tag)
         local url=M.safeUrl(raw,article.base_url)
         local path=url and M.path(url)
         if not path then return "" end
