@@ -4267,11 +4267,17 @@ SimpleUIPlugin.addToMainMenu = function(self, menu_items)
             SettingsWindow:show()
         end,
     }
-    -- Qiaomu AI service settings (translation and reading assistant).
+    -- AI service settings (translation and reading assistant).
     menu_items.qiaomu_ai = {
         sorting_hint = "tools",
-        text         = _("Qiaomu AI"),
+        text         = _("AI Settings"),
         callback     = function() require("screens/sui_ai_setup").show() end,
+    }
+    -- Send books to the Kindle from a phone on the same Wi-Fi.
+    menu_items.sui_upload = {
+        sorting_hint = "tools",
+        text         = _("Send books to the Kindle"),
+        callback     = function() require("screens/sui_upload_setup").show() end,
     }
 end -- addToMainMenu
 end -- installer function
