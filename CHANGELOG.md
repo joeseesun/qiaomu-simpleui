@@ -1,5 +1,13 @@
 # 更新记录 / Changelog
 
+## v3.0.0-qiaomu.17 — 测试版 / Prerelease
+
+- 修复新安装时默认底栏加上微信读书后占满位置，导致「资讯」入口缺失的问题；默认布局的「关闭」移回菜单，底栏保留「资讯」和「微信读书」。
+- 一次性修复 .15/.16 已错误标记完成的默认底栏；保留自定义满栏及修复后的手动选择，没有空位时不再误报添加成功。
+- 回归覆盖首次启动、连续重启、旧配置迁移、自定义满栏及空位恢复；文件安装与真实设备画面验收分开记录。
+
+English: replace Power in the stock navbar with News, retaining WeRead. Repair the failed .15/.16 stock migration once, preserve custom full bars and subsequent manual choices, and retry incomplete insertion when space becomes available.
+
 ## v3.0.0-qiaomu.16 — 测试版 / Prerelease
 
 - 修复乔木精选富文本文章正文过小、Aa 字号调节无效：清理原文固定字号、字体和行高覆盖，保留显式加粗、斜体、对齐、隐藏及图片样式。

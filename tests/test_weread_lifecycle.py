@@ -119,5 +119,31 @@ assert(has_tab()==0 and #persisted.simpleui_bar_tabs==6)
 persisted.simpleui_bar_tabs={"homescreen","home","favorites","history","sui_settings"}
 boot()
 assert(has_tab()==1,"retry first insertion once space becomes available")
+-- A fresh device uses upstream defaults, without a favorites tab to replace.
+Config.ACTION_BY_ID.power=true
+Config.DEFAULT_TABS={"home","sui_settings","homescreen","history","power"}
+local function news_count()
+ local n=0
+ for _,id in ipairs(persisted.simpleui_bar_tabs) do if id=="qiaomu_news" then n=n+1 end end
+ return n
+end
+persisted={simpleui_enabled=true}
+boot()
+assert(news_count()==1 and has_tab()==1,"fresh defaults must fit both News and WeRead")
+for _,id in ipairs(persisted.simpleui_bar_tabs) do assert(id~="power") end
+boot();assert(news_count()==1 and has_tab()==1)
+-- Repair the exact .15/.16 failed migration seen on the connected Kindle.
+persisted={simpleui_enabled=true,simpleui_qiaomu_news_tab_v1=true,
+ simpleui_qiaomu_weread_tab_added=true,simpleui_qiaomu_weread_tab_migrated_v2=true,
+ simpleui_bar_tabs={"home","sui_settings","homescreen","history","qiaomu_weread","power"}}
+boot();assert(news_count()==1 and has_tab()==1,"repair falsely completed News migration")
+-- Respect subsequent manual removal and arbitrary full custom bars.
+persisted.simpleui_bar_tabs={"home","sui_settings","homescreen","history","qiaomu_weread","power"}
+boot();assert(news_count()==0,"respect manual removal after successful migration")
+persisted={simpleui_enabled=true,simpleui_bar_tabs={"homescreen","home","history","extra","sui_settings","power"}}
+boot();assert(news_count()==0 and #persisted.simpleui_bar_tabs==6)
+assert(not persisted.simpleui_qiaomu_news_tab_v2,"do not mark a failed insertion as complete")
+persisted.simpleui_bar_tabs={"homescreen","home","extra","sui_settings"}
+boot();assert(news_count()==1,"retry News when a slot becomes available")
 ''')
 print('PASS: actual startup ordering, two cold starts, upgrade repair, manual removal, disabled/missing plugin, full bar.')

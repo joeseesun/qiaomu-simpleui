@@ -87,21 +87,35 @@ function M.install(plugin)
     -- Register both external actions before any tab loader can prune them.
     -- Move the less frequent book collection action into the shelf menu.
     -- This runs once, so later manual navbar choices remain respected.
-    if not Settings:isTrue("simpleui_qiaomu_news_tab_v1") then
+    if not Settings:isTrue("simpleui_qiaomu_news_tab_v2") then
         local tabs, has_news = {}, false
+        -- Upstream's fresh defaults contain Power, not Favorites. WeRead can
+        -- fill the last slot before News is added. Retire Power only for that
+        -- stock layout; custom full bars must keep their selected actions.
+        local stock = { home=true, sui_settings=true, homescreen=true,
+            history=true, power=true, qiaomu_weread=true }
+        local seen, stock_layout = {}, true
         for _, id in ipairs(Config.loadTabConfig()) do
             if id == "qiaomu_news" then has_news = true end
+            if not stock[id] or seen[id] then stock_layout = false end
+            seen[id] = true
         end
+        stock_layout = stock_layout and seen.home and seen.sui_settings
+            and seen.homescreen and seen.history and seen.power
         for _, id in ipairs(Config.loadTabConfig()) do
-            if id == "favorites" then
+            if id == "favorites" or (stock_layout and id == "power") then
                 if not has_news then tabs[#tabs + 1] = "qiaomu_news"; has_news = true end
             else tabs[#tabs + 1] = id end
         end
         if not has_news and #tabs < Config.effectiveMaxTabs() then
             table.insert(tabs, math.max(2, #tabs), "qiaomu_news")
+            has_news = true
         end
         Config.saveTabConfig(tabs)
-        Settings:set("simpleui_qiaomu_news_tab_v1", true)
+        if has_news then
+            Settings:set("simpleui_qiaomu_news_tab_v1", true)
+            Settings:set("simpleui_qiaomu_news_tab_v2", true)
+        end
     end
     Config.invalidateTabsCache()
     require("ui/uimanager"):scheduleIn(0, function()
