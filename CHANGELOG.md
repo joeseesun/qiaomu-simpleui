@@ -1,5 +1,17 @@
 # 更新记录 / Changelog
 
+## v3.0.0-qiaomu.17 — 测试版 / Prerelease
+
+- 手机配置页：接口地址对所有服务都可编辑（留空用预设默认地址），新增「获取模型列表」按钮，Kindle 读取服务的 `/models` 后以下拉框选模型；模型名也可手动填写，照顾火山方舟接入点 ID 这类不在列表里的模型。
+- 新增「传书到 Kindle」：Kindle 显示二维码，手机选书直接上传到 `documents` 文件夹（可指定子文件夹），书库立刻能看到。复用 AI 配置页的网页骨架，multipart 解析器自研，单本上限 200 MB，不再受 64 KB 请求体限制。
+- 去掉「乔木」字样：菜单显示「AI 设置」，手机页标题与提示同步改写；英文/繁中翻译一并更新，AI 笔记文件夹改为 `AI笔记`（旧的「乔木AI笔记」保留在设备上）。
+- 书架不再列出 `.kfx`：KOReader 打不开 KFX，只会报「格式不支持」，这类书请继续用 Kindle 原生阅读。
+- 修复启动卡顿：更新检查原来请求 `releases/latest`，而仓库只有测试版版本，该地址永远 404；改为读取版本列表取最新，且失败也记录时间，失败后按 24 小时 / 3 天 / 7 天退避，元数据请求超时也从 10 秒降到 5 秒。
+- 修复手机配置页「无法读取设置」：KOReader 的 JSON 编码器把空表写成 `{}` 而不是 `[]`，自定义动作列表读回后无法遍历；现在读写都强制按数组编码，旧数据自动修复。
+- 在一台 Kindle Paperwhite 3（黑色，序列号 G090G1）上实机验证：配置页正常打开、模型下拉可用、手机传书成功并出现在书架。另一台白色设备本轮未更新。
+
+English: editable endpoint for every service plus a "Fetch model list" button that turns the model into a dropdown; a new phone-to-Kindle book upload that writes into `documents` (up to 200 MB, no 64 KB body limit); the "Qiaomu" branding replaced with plain "AI Settings"; `.kfx` dropped from the shelf because KOReader cannot open it; the boot-stalling update check fixed (prerelease-only repo, failed checks now back off 24 h / 3 d / 7 d); and the phone page's empty-list JSON bug fixed. Verified on one Kindle Paperwhite 3 (black, serial G090G1): settings page loads, model dropdown works, book upload lands on the shelf. The second device was not updated.
+
 ## v3.0.0-qiaomu.16 — 测试版 / Prerelease
 
 - 修复乔木精选富文本文章正文过小、Aa 字号调节无效：清理原文固定字号、字体和行高覆盖，保留显式加粗、斜体、对齐、隐藏及图片样式。

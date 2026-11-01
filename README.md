@@ -8,7 +8,7 @@
 
 [下载测试版](https://github.com/joeseesun/qiaomu-simpleui/releases) · [给 AI Agent 的安装指引](#给-ai-agent-的安装指引) · [原版 SimpleUI](https://github.com/doctorhetfield-cmd/simpleui.koplugin) · [GPL-3.0](LICENSE) · [CI](https://github.com/joeseesun/qiaomu-simpleui/actions)
 
-基于 Doctor Hetfield 的 **SimpleUI 3.0.0** 定制，保留上游作者和 GPL-3.0 许可证，不代表上游官方发布。当前版本：**v3.0.0-qiaomu.16（测试版）**，开发与实机记录见 [docs/home-news-progress.md](docs/home-news-progress.md)，设计说明见 [DESIGN.md](DESIGN.md)。
+基于 Doctor Hetfield 的 **SimpleUI 3.0.0** 定制，保留上游作者和 GPL-3.0 许可证，不代表上游官方发布。当前版本：**v3.0.0-qiaomu.17（测试版）**，开发与实机记录见 [docs/home-news-progress.md](docs/home-news-progress.md)，设计说明见 [DESIGN.md](DESIGN.md)。
 
 ## 能做什么
 
@@ -21,7 +21,8 @@
 | 乔木阅读条 | 读文章时点屏幕底部：上一篇 · 列表 · Aa · AI · 收藏 · 下一篇；Aa 一屏调字体（朱雀仿宋、霞鹜文楷、思源宋体、思源黑体）、字号、行距、页边距，下一篇自动沿用；正文末尾直接点「下一篇」 |
 | AI 划线翻译与查词 | 划线后「AI 翻译」：选中一个词出查词卡片（音标、本句含义、义项、例句，可加入生词本），选中一段出译文卡片（可存为批注）；词典弹窗多一个「AI 释义」 |
 | AI 一键问答 | 选中文字点「问 AI」，或在文章 / 当前页点「AI」：解释、总结要点、举个例子、补充背景、换个角度看、出题考考我、总结全文……点一下就有答案，再点「说得更简单 / 举个例子 / 继续深入」追问，答案可保存 |
-| 手机扫码配置 AI | Kindle 显示二维码，手机扫码填 DeepSeek 等服务的 API Key 和模型，不用在 Kindle 上打字；Key 只存在设备本地 |
+| 手机扫码配置 AI | Kindle 显示二维码，手机扫码填服务、接口地址、API Key 和模型，可一键拉取模型列表再下拉选择；Key 只存在设备本地 |
+| 手机传书 | Kindle 显示二维码，手机选书直接传到 documents 文件夹，书库立刻能看到（单本最大 200 MB） |
 | 微信读书入口 | 装好 [微信读书插件](https://github.com/finlater/weread.koplugin) 后自动注册快捷动作，底栏有空位时自动加入口 |
 
 ## 快速开始
@@ -50,13 +51,19 @@
 4. 登录（必须本人在手机上操作）：手机微信读书 App → 我 → 设置 → **微信读书 Skill** → 获取 API Key；然后在 KOReader 打开「工具 → 微信读书 → 微信扫码登录」，用微信扫码确认，手机显示四位验证码时在 KOReader 中输入。
 5. 再次重启后，乔木 SimpleUI 会自动注册「微信读书」快捷动作；底栏已满时，在 SimpleUI 的快捷动作 / 导航栏设置里手动选择「微信读书」。
 
-### 乔木 AI（可选）
+### AI 设置（可选）
 
-1. KOReader 顶部菜单 → 工具 → **乔木 AI** → **用手机配置**。
+1. KOReader 顶部菜单 → 工具 → **AI 设置** → **用手机配置**。
 2. 手机连同一个 Wi-Fi 扫码，选服务（默认 DeepSeek），粘贴 API Key，点「测试连接」后「保存到 Kindle」。
-3. 读书或读文章时划线即可使用「AI 翻译」「问 AI」；文章阅读条和「乔木 AI → 问 AI：这一页」可以对整篇或当前页提问。
+3. 「接口地址」可以留空（用服务默认地址），也可以填自己的中转或局域网地址；点「获取模型列表」由 Kindle 拉取可选模型，在下拉框里选。
+4. 读书或读文章时划线即可使用「AI 翻译」「问 AI」；文章阅读条和「AI：问这一页」可以对整篇或当前页提问。
 
-预设服务：DeepSeek、Kimi、通义千问、智谱 GLM、硅基流动、豆包（火山方舟）、MiniMax、OpenRouter，以及任意 OpenAI 兼容接口（可以接局域网里的 Ollama、LM Studio）。在参考 Kindle 上实测，国内这几家 0.3–0.7 秒内响应；OpenAI、Anthropic、Google 翻译从这台设备连不上。
+### 传书到 Kindle
+
+1. KOReader 顶部菜单 → 工具 → **传书到 Kindle**。
+2. 手机连同一个 Wi-Fi 扫码，选一本或多本书，点「上传到 Kindle」；文件会存进 documents 文件夹（可指定子文件夹），书库立刻能看到。
+
+预设服务：DeepSeek、Kimi、通义千问、智谱 GLM、硅基流动、豆包（火山方舟）、MiniMax、OpenRouter、OpenAI，以及任意 OpenAI 兼容接口（可以接局域网里的 Ollama、LM Studio）。在参考 Kindle 上实测，国内这几家 0.3–0.7 秒内响应；OpenAI、Anthropic、Google 翻译从这台设备连不上。
 
 ## 给 AI Agent 的安装指引
 
@@ -117,7 +124,7 @@ python3 scripts/package.py   # 生成 dist/simpleui.koplugin.zip 与 dist/SHA256
 
 ## 恢复原版
 
-退出 KOReader，把备份的原版 `simpleui.koplugin` 和 `settings/simpleui` 放回原处即可；书、批注和阅读记录不需要动。要清除 AI 配置：「工具 → 乔木 AI → 清除 AI 设置」。
+退出 KOReader，把备份的原版 `simpleui.koplugin` 和 `settings/simpleui` 放回原处即可；书、批注和阅读记录不需要动。要清除 AI 配置：「工具 → AI 设置 → 清除 AI 设置」。
 
 ## 来源与维护
 
@@ -136,21 +143,22 @@ python3 scripts/package.py   # 生成 dist/simpleui.koplugin.zip 与 dist/SHA256
 <a id="english"></a>
 # English
 
-Qiaomu SimpleUI is a customization of **Doctor Hetfield's SimpleUI 3.0.0** for KOReader (GPL-3.0). It is not an official upstream release. Current version: **v3.0.0-qiaomu.16 (pre-release)**.
+Qiaomu SimpleUI is a customization of **Doctor Hetfield's SimpleUI 3.0.0** for KOReader (GPL-3.0). It is not an official upstream release. Current version: **v3.0.0-qiaomu.17 (pre-release)**.
 
 **What you get**
 
 - A home shelf sorted by newest files, a shelf menu, and reversible hiding of books/documents (files and annotations untouched).
 - **Qiaomu picks**: Qiaomu AI RSS's public feed with the same channel structure as the Obsidian plugin (all picks, WeChat, podcasts, newsletters, blogs and news, reader community); each channel remembers its filter and page.
 - Articles open in KOReader's real reader as EPUB (fonts, TOC, dictionary, highlights) without touching reading history, statistics or "continue reading". A reading bar offers previous/next article, list, a typography card (four bundled open-source CJK fonts, size, line spacing, margins carried to the next article), AI and save.
-- **AI** (optional): AI translate and word lookup on any selection (lookup card with vocabulary-builder export; translations can be saved as notes), an "AI meaning" button in the dictionary popup, and one-tap Q&A actions (explain, key points, example, background, another angle, quiz me, summarize the article) with one-tap follow-ups. Configure DeepSeek or another OpenAI-compatible service by scanning a QR code with your phone; the key stays on the device.
+- **AI** (optional): AI translate and word lookup on any selection (lookup card with vocabulary-builder export; translations can be saved as notes), an "AI meaning" button in the dictionary popup, and one-tap Q&A actions (explain, key points, example, background, another angle, quiz me, summarize the article) with one-tap follow-ups. Configure DeepSeek or another OpenAI-compatible service by scanning a QR code with your phone; the key stays on the device. The endpoint address is editable for any service, and **Fetch model list** asks the Kindle to read `/models` so the model can be picked from a dropdown.
+- **Send books to the Kindle**: the Kindle shows a QR code, the phone picks one or more books and sends them; they land in the `documents` folder (an optional subfolder is honoured) and show up on the shelf right away, up to 200 MB per file.
 - A shortcut to the separately installed [WeRead plugin](https://github.com/finlater/weread.koplugin).
 
 **Install**: requires KOReader v2026.03+ with CoverBrowser enabled. Back up `koreader/plugins/simpleui.koplugin` and `koreader/settings/simpleui`, download **simpleui.koplugin.zip** from Releases (verify with `SHA256SUMS`), extract it into KOReader's `plugins/` directory (Kindle `koreader/plugins/`, Kobo `.adds/koreader/plugins/`) and restart. For WeRead, install `weread.koplugin` from its own releases into the same folder, restart, then sign in yourself via **Tools → WeRead → WeChat QR login** after enabling "WeRead Skill" (API key) in the WeRead phone app.
 
 **For AI agents** installing on a user's behalf: follow the Chinese section [给 AI Agent 的安装指引](#给-ai-agent-的安装指引). In short: never jailbreak, flash firmware or install KOReader itself; never sign in, read or print account data, cookies, API keys or SSH keys; download only from `joeseesun/qiaomu-simpleui` (releases are pre-releases, so resolve the newest tag with `gh release list` before `gh release download`) and `finlater/weread.koplugin`, and verify SHA-256; back up existing plugin folders and `settings/simpleui`; install folders named exactly `simpleui.koplugin` and `weread.koplugin`; verify file counts/hashes and the version in `_meta.lua`; let the user restart KOReader and complete the WeChat QR login; on failure read the end of `koreader/crash.log` and roll back from the backup.
 
-**Privacy and limits**: AI is off until configured and only sends what you explicitly ask about (selection, article or page, clipped to ~20k characters) plus the title and question to the service you chose. The key is stored at `/var/local/qiaomu/ai.json` (root-only, not visible over USB) and kept out of command lines and logs. The phone setup page runs only while the QR code is shown (one-time token, auto-stops after saving or 5 idle minutes) and uses plain HTTP on your LAN, so use trusted Wi-Fi only. Hiding is not encryption. Device acceptance so far covers one Kindle Paperwhite 4 on KOReader v2026.07.1; see [docs/home-news-progress.md](docs/home-news-progress.md) for what is and is not verified yet.
+**Privacy and limits**: AI is off until configured and only sends what you explicitly ask about (selection, article or page, clipped to ~20k characters) plus the title and question to the service you chose. The key is stored at `/var/local/qiaomu/ai.json` (root-only, not visible over USB) and kept out of command lines and logs. The phone setup page runs only while the QR code is shown (one-time token, auto-stops after saving or 5 idle minutes) and uses plain HTTP on your LAN, so use trusted Wi-Fi only. The book-upload page works the same way: one-time token, 5 idle minutes, files written only into the library folder. Hiding is not encryption. Device acceptance so far covers one Kindle Paperwhite 4 on KOReader v2026.07.1; see [docs/home-news-progress.md](docs/home-news-progress.md) for what is and is not verified yet.
 
 **Verify / build**: `pip install -r requirements-dev.txt`, run every `tests/test_*.py`, then `python3 scripts/package.py`.
 
