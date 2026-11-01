@@ -39,8 +39,12 @@ end
 
 
 -- Extensions KOReader can open. Single source of truth.
+-- NOTE: .kfx is intentionally absent. KOReader cannot open KFX at all
+-- (Amazon's DRM container), so listing it here put unopenable books on the
+-- shelf and only produced a "format not supported" error. KFX titles stay
+-- readable in the stock Kindle reader.
 LibraryScan.BOOK_EXTS = {
-    epub = true, mobi = true, azw3 = true, azw = true, kfx = true,
+    epub = true, mobi = true, azw3 = true, azw = true,
     pdf = true, djvu = true, fb2 = true, cbz = true, cbr = true,
     doc = true, docx = true, rtf = true, txt = true,
 }

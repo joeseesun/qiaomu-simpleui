@@ -32,15 +32,28 @@ local GITHUB_REPO  = "qiaomu-simpleui"
 local ASSET_NAME   = "simpleui.koplugin.zip"
 
 local AUTO_CHECK_INTERVAL = 24 * 3600  -- seconds between automatic checks
+-- Timeouts for the (small) release-metadata request. Kept well below the
+-- stock LARGE values so an unreachable GitHub fails fast instead of
+-- blocking the UI thread on every boot.
+local META_BLOCK_TIMEOUT = 5
+local META_TOTAL_TIMEOUT = 12
+-- Backoff after consecutive failures: the check must not fire on every
+-- boot when the network or GitHub is unreachable.
+local AUTO_CHECK_BACKOFF  = { 24 * 3600, 3 * 24 * 3600, 7 * 24 * 3600 }
+local AUTO_CHECK_MAX_BACKOFF_STEPS = #AUTO_CHECK_BACKOFF
 
 -- G_reader_settings keys — prefixed with "sui_upd_" to avoid collisions.
 local GS_LAST_CHECK = "sui_upd_last_check"  -- number (timestamp)
 local GS_HAS_UPDATE = "sui_upd_has_update"  -- boolean
 local GS_LATEST_VER = "sui_upd_latest_ver"  -- string without "v"
 local GS_DL_URL     = "sui_upd_dl_url"      -- string URL
+local GS_FAIL_COUNT = "sui_upd_fail_count"  -- number (consecutive failures)
 
+-- NOTE: this repository publishes only prereleases, so the
+-- "releases/latest" endpoint always answers 404. Query the release list
+-- and take the newest published entry instead.
 local _API_URL = string.format(
-    "https://api.github.com/repos/%s/%s/releases/latest",
+    "https://api.github.com/repos/%s/%s/releases",
     GITHUB_OWNER, GITHUB_REPO
 )
 
@@ -56,6 +69,7 @@ local _state_loaded = false
 local _has_update   = false
 local _latest_ver   = nil  -- string without "v", or nil
 local _dl_url       = nil  -- URL for the asset ZIP, or nil
+local _fail_count   = 0   -- consecutive failed automatic checks
 
 -- Plugin directory — resolved once at module load time.
 local _plugin_dir = require("infra/sui_paths").getPluginDirNoSlash()
@@ -126,6 +140,8 @@ local function _load_persisted_state()
     _latest_ver = (type(ver) == "string" and ver ~= "") and ver or nil
     local url   = gs:readSetting(GS_DL_URL)
     _dl_url     = _isValidAssetUrl(url) and url or nil
+    local fails = gs:readSetting(GS_FAIL_COUNT)
+    _fail_count = (type(fails) == "number" and fails > 0) and fails or 0
 
     -- Discard stale state (e.g. update already installed).
     if _has_update and not _versionGt(_latest_ver or "", _currentVersion()) then
@@ -146,6 +162,7 @@ local function _persist_state(now)
     gs:saveSetting(GS_HAS_UPDATE, _has_update)
     gs:saveSetting(GS_LATEST_VER, _latest_ver or "")
     gs:saveSetting(GS_DL_URL,     _dl_url     or "")
+    gs:saveSetting(GS_FAIL_COUNT, _fail_count)
     pcall(gs.flush, gs)
 end
 
@@ -172,10 +189,11 @@ local function _httpGet(url)
     local socket = require("socket")
 
     if ok_su then
-        socketutil:set_timeout(
-            socketutil.LARGE_BLOCK_TIMEOUT,
-            socketutil.LARGE_TOTAL_TIMEOUT
-        )
+        -- The metadata request is small, so it must not hold the UI thread.
+        -- The stock LARGE timeouts (10 s block / 30 s total) let a
+        -- half-connected network stall every boot for half a minute — the
+        -- device log showed exactly that ("timeout (wantread)").
+        socketutil:set_timeout(META_BLOCK_TIMEOUT, META_TOTAL_TIMEOUT)
     end
 
     local chunks = {}
@@ -258,6 +276,21 @@ end
 -- GitHub API response parsing
 -- ---------------------------------------------------------------------------
 
+-- The API endpoint answers with an array of releases (newest first). Older
+-- payloads were a single release object; accept both shapes so a cached
+-- response or a future endpoint change still parses.
+local function _newestRelease(data)
+    if type(data) ~= "table" then return nil end
+    if data.tag_name then return data end
+    for _, release in ipairs(data) do
+        -- Skip drafts and entries without a tag.
+        if type(release) == "table" and release.tag_name and release.draft ~= true then
+            return release
+        end
+    end
+    return nil
+end
+
 local function _parseRelease(body)
     local ok_j, json = pcall(require, "json")
 
@@ -289,18 +322,21 @@ local function _parseRelease(body)
         return nil, "JSON parse error: " .. tostring(data)
     end
 
-    local tag = data.tag_name
+    local release = _newestRelease(data)
+    if not release then return nil, "no release found in response" end
+
+    local tag = release.tag_name
     if not tag then return nil, "tag_name missing from API response" end
 
     local download_url
-    for _, asset in ipairs(data.assets or {}) do
+    for _, asset in ipairs(release.assets or {}) do
         if asset.name == ASSET_NAME then
             download_url = asset.browser_download_url
             break
         end
     end
 
-    local notes = data.body
+    local notes = release.body
     if notes and notes ~= "" then
         notes = notes:gsub("#+%s*", "")           -- headings markdown
         notes = notes:gsub("%*%*(.-)%*%*", "%1")  -- bold **
@@ -314,9 +350,12 @@ local function _parseRelease(body)
         version      = tag:match("v?(.*)"),
         download_url = download_url,
         notes        = (notes and notes ~= "") and notes or nil,
-        html_url     = data.html_url,
+        html_url     = release.html_url,
     }
 end
+
+-- Exposed for the regression test: parses a GitHub release-list payload.
+M._parseRelease = _parseRelease
 
 -- ---------------------------------------------------------------------------
 -- Unzip
@@ -527,6 +566,11 @@ local function _doNetworkCheck()
     local release = _doFetch()
     if release.error then
         logger.warn("simpleui updater: check error:", release.error)
+        -- Record the attempt so the throttle engages even when the check
+        -- failed. Without this the 24 h window never opens and every boot
+        -- repeats the request (and the timeout that comes with it).
+        _fail_count = _fail_count + 1
+        _persist_state(os.time())
         return false, release.error
     end
 
@@ -540,9 +584,14 @@ local function _doNetworkCheck()
         current, _latest_ver or "?", tostring(_has_update)
     ))
 
+    _fail_count = 0
     _persist_state(os.time())
     return true, release
 end
+
+-- Exposed for the regression test: performs one check and records the
+-- attempt whether it succeeds or fails.
+M._doNetworkCheck = _doNetworkCheck
 
 -- ---------------------------------------------------------------------------
 -- Public API
@@ -585,7 +634,13 @@ function M.scheduleAutoCheck()
     local last = (gs and gs:readSetting(GS_LAST_CHECK)) or 0
     if type(last) ~= "number" then last = 0 end
 
-    if (now - last) < AUTO_CHECK_INTERVAL then
+    -- Interval grows with consecutive failures: 24 h, then 3 d, then 7 d.
+    -- _fail_count is the number of *previous* failures, so index it directly
+    -- (0 -> first entry) and clamp to the last step.
+    local step = math.min(_fail_count, AUTO_CHECK_MAX_BACKOFF_STEPS - 1)
+    local interval = AUTO_CHECK_BACKOFF[step + 1] or AUTO_CHECK_INTERVAL
+    M._lastInterval = interval
+    if (now - last) < interval then
         logger.dbg("simpleui updater: auto-check within throttle — skip")
         return
     end
