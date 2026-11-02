@@ -83,7 +83,8 @@ assert(timeout_reset==3)
 -- Use the existing origin's DNS name, retaining the public API's TLS/Host.
 -- The CDN remains one bounded fallback; do not retry real HTTP errors.
 local commands,attempts={},0
-package.loaded["socket"].dns.getaddrinfo=function()
+package.loaded["socket"].dns.getaddrinfo=function(host)
+ assert(host=="vps2.qiaomu.ai", "resolve origin DNS dynamically, never hard-code an IP")
  return {{family="inet",addr="172.67.1.1"},{family="inet",addr="104.21.1.1"}}
 end
 package.loaded["device"].isKindle=function() return true end
@@ -100,10 +101,10 @@ io.popen=function(command)
  return {read=function() if done then return end;done=true;return result end,close=function() end}
 end
 assert(N.request("/api/entries").entries and attempts==2)
-assert(commands[1]:find("--connect-to 'rss.qiaomu.ai:443:vps2.qiaomu.ai:443'",1,true),
+assert(commands[1]:find("--resolve 'rss.qiaomu.ai:443:172.67.1.1'",1,true),
  "Kindle must avoid the failing CDN TLS path using the existing origin")
-assert(not commands[2]:find("--connect-to",1,true), "fallback uses the public API's DNS")
-assert(not commands[1]:find("--resolve",1,true), "do not pin deployment IPs")
+assert(not commands[2]:find("--resolve",1,true), "fallback uses the public API's DNS")
+assert(not commands[1]:find("--connect-to",1,true), "PW1 curl 7.33 cannot use connect-to")
 assert(commands[1]:find("https://rss.qiaomu.ai/api/entries",1,true))
 assert(commands[1]:find("--proto '=https'",1,true) and not commands[1]:find("--insecure",1,true))
 attempts=0
@@ -113,6 +114,33 @@ io.popen=function()
 end
 local response,error_message=N.request("/api/entries")
 assert(response==nil and attempts==1 and error_message=="HTTP 403")
+-- Both failed routes retain the precise curl failure without response bodies.
+attempts=0
+io.popen=function()
+ attempts=attempts+1;local done=false
+ return {read=function() if done then return end;done=true
+ return string.char(10).."000"..string.char(10)..(attempts==1 and "35" or "28") end,close=function() end}
+end
+local failed,why=N.request("/api/entries")
+assert(not failed and attempts==2 and why:find("origin: curl 35: TLS handshake failed",1,true)
+ and why:find("public: curl 28: request timed out",1,true))
+-- Missing/failed origin DNS goes straight to one public attempt, even offline.
+for _,resolver in ipairs{
+ function() return nil,"DNS unavailable" end,
+ function() error("resolver unavailable") end,
+ function() return {{family="inet",addr="192.168.1.2"}} end,
+} do
+ package.loaded["socket"].dns.getaddrinfo=resolver
+ attempts=0
+ io.popen=function(command)
+  attempts=attempts+1
+  assert(not command:find("--resolve",1,true) and not command:find("--connect-to",1,true))
+  local done=false
+  return {read=function() if done then return end;done=true
+   return '{"entries":[]}'..string.char(10).."200"..string.char(10).."0" end,close=function() end}
+ end
+ assert(N.request("/api/entries").entries and attempts==1)
+end
 io.popen=real_popen
 io.open=real_open
 package.loaded["device"].isKindle=function() return false end
