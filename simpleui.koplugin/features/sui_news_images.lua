@@ -20,13 +20,6 @@ function M.safeUrl(url, base)
     if not host or not host:find("%.") or host:lower():match("%.local$") then return end
     return url,host:lower()
 end
-local function publicIPv4(ip)
-    local a,b=ip:match("^(%d+)%.(%d+)%.%d+%.%d+$");a,b=tonumber(a),tonumber(b)
-    return a and a>0 and a<224 and a~=10 and a~=127
-        and not (a==169 and b==254) and not (a==172 and b>=16 and b<=31)
-        and not (a==192 and b==168) and not (a==100 and b>=64 and b<=127)
-        and not (a==198 and (b==18 or b==19))
-end
 function M.path(url)
     url=M.safeUrl(url)
     if not url then return end
@@ -73,16 +66,8 @@ function M.fetch(url, budget, seconds)
     if not safe then return end
     local cached=M.path(safe)
     if cached then return cached,0 end
-    local route=""
-    if host=="rss.qiaomu.ai" then route=" --connect-to 'rss.qiaomu.ai:443:vps2.qiaomu.ai:443'"
-    else
-        local address
-        for _,a in ipairs(require("socket").dns.getaddrinfo(host) or {}) do
-            if a.family=="inet" and publicIPv4(a.addr) then address=a.addr;break end
-        end
-        if not address then return end
-        route=" --resolve "..quote(host..":443:"..address)
-    end
+    local route=require("features/sui_news_route").resolve(host)
+    if not route then return end
     local part=Cache.root().."/images/"..key(safe)..".part."..tonumber(require("ffi").C.getpid())
     local file=io.open(part,"wb");if not file then return end
     local max=math.min(budget,M.MAX_IMAGE)

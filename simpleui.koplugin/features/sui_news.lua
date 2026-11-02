@@ -155,45 +155,45 @@ end
 local function curlRequest(path)
     -- Kindle's built-in curl uses its system TLS/CA stack. LuaSec can stall
     -- on these same CDN handshakes. No external program is installed.
-    local last_error
+    local Route = require("features/sui_news_route")
+    local origin_route = Route.resolve("rss.qiaomu.ai")
+    local errors = {}
     for i = 1, 2 do
-        local command = "/usr/bin/curl --silent --fail --compressed --ipv4 --connect-timeout 8 --max-time 25"
-            .. " --max-filesize 4194304 --proto '=https'"
-            .. " --header 'Accept: application/json' --header 'X-Rss-List: reader-v1'"
-            .. " --user-agent 'Qiaomu-SimpleUI/3.0.0'"
-            .. " --write-out '\\n%{http_code}'"
-        if i == 1 then
-            -- Existing DNS-only origin hostname, not a new service or pinned IP.
-            -- --connect-to changes routing only: TLS SNI, certificate validation
-            -- and HTTP Host remain rss.qiaomu.ai. The public CDN is the fallback.
-            command = command .. " --connect-to " .. shellQuote("rss.qiaomu.ai:443:vps2.qiaomu.ai:443")
+        if i == 2 or origin_route then
+            local command = "/usr/bin/curl --silent --fail --compressed --ipv4 --connect-timeout 8 --max-time 25"
+                .. " --max-filesize 4194304 --proto '=https'"
+                .. " --header 'Accept: application/json' --header 'X-Rss-List: reader-v1'"
+                .. " --user-agent 'Qiaomu-SimpleUI/3.0.0'"
+                .. " --write-out '\\n%{http_code}'"
+            if i == 1 then
+                command = command .. origin_route
+            end
+            command = command .. " " .. shellQuote(M.ORIGIN .. path)
+                .. " 2>/dev/null; qiaomu_news_exit=$?; printf '\\n%s' \"$qiaomu_news_exit\""
+            local pipe = io.popen(command, "r")
+            if not pipe then return nil, "Could not start network request" end
+            local chunks, size, oversized = {}, 0, false
+            while true do
+                local chunk = pipe:read(65536)
+                if not chunk then break end
+                size = size + #chunk
+                if size > 4 * 1024 * 1024 then oversized = true; break end
+                chunks[#chunks + 1] = chunk
+            end
+            local closed, _, exit_code = pipe:close()
+            if oversized then return nil, "Response too large" end
+            local body, status, curl_status = table.concat(chunks):match("^(.*)\n(%d%d%d)\n(%d+)$")
+            local failed = tonumber(curl_status) ~= 0 or closed == false or (exit_code ~= nil and exit_code ~= 0)
+            if tonumber(status) == 200 and not failed then
+                local ok, data = pcall(JSON.decode, body)
+                if ok and type(data) == "table" then return data end
+                return nil, "Invalid response"
+            end
+            if tonumber(status) and tonumber(status) >= 300 then return nil, "HTTP " .. status end
+            errors[#errors + 1] = (i == 1 and "origin: " or "public: ") .. Route.error(curl_status)
         end
-        command = command .. " " .. shellQuote(M.ORIGIN .. path)
-            .. " 2>/dev/null; qiaomu_news_exit=$?; printf '\\n%s' \"$qiaomu_news_exit\""
-        local pipe = io.popen(command, "r")
-        if not pipe then return nil, "Could not start network request" end
-        local chunks, size, oversized = {}, 0, false
-        while true do
-            local chunk = pipe:read(65536)
-            if not chunk then break end
-            size = size + #chunk
-            if size > 4 * 1024 * 1024 then oversized = true; break end
-            chunks[#chunks + 1] = chunk
-        end
-        local closed, _, exit_code = pipe:close()
-        if oversized then return nil, "Response too large" end
-        local body, status, curl_status = table.concat(chunks):match("^(.*)\n(%d%d%d)\n(%d+)$")
-        local failed = tonumber(curl_status) ~= 0 or closed == false or (exit_code ~= nil and exit_code ~= 0)
-        if tonumber(status) == 200 and not failed then
-            local ok, data = pcall(JSON.decode, body)
-            if ok and type(data) == "table" then return data end
-            return nil, "Invalid response"
-        end
-        last_error = tonumber(status) and tonumber(status) >= 300 and ("HTTP " .. status)
-            or ("Network transfer incomplete (" .. tostring(curl_status) .. ")")
-        if tonumber(status) and tonumber(status) >= 300 then break end
     end
-    return nil, last_error
+    return nil, table.concat(errors, "; ")
 end
 
 function M.request(path)

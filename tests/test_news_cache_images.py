@@ -69,6 +69,7 @@ assert(not I.safeUrl("https://router.local/a"))
 local w,h,ext=I.dimensions(png);assert(w==2 and h==2 and ext=="png")
 local commands={}
 package.loaded["socket"]={dns={getaddrinfo=function(host)
+ if host=="invalid.example" then return {{family="inet",addr="203.0.113.999"}} end
  if host=="private.example" then return {{family="inet",addr="192.168.1.1"}} end
  return {{family="inet",addr="203.0.113.1"}}
 end}}
@@ -80,12 +81,17 @@ io.popen=function(command)
  return {read=function() if not done then done=true;return response end end,close=function() end}
 end
 assert(not I.fetch("https://private.example/a.png",10000))
-assert(#commands==0,"never request private-network image targets")
+assert(not I.fetch("https://invalid.example/a.png",10000))
+assert(#commands==0,"never request private-network or malformed image targets")
 local path,bytes=I.fetch("https://images.example/a.png",10000)
 assert(path and bytes==#png and exists(path))
 assert(I.path("https://images.example/a.png")==path)
 assert(commands[1]:find("--resolve 'images.example:443:203.0.113.1'",1,true))
 assert(not commands[1]:find("--insecure",1,true) and not commands[1]:find("--location",1,true))
+local news_path=I.fetch("https://rss.qiaomu.ai/pw1.png",10000)
+assert(news_path, "PW1 news images use compatible routing too")
+assert(commands[2]:find("--resolve 'rss.qiaomu.ai:443:203.0.113.1'",1,true))
+assert(not commands[2]:find("--connect-to",1,true), "PW1 curl 7.33 rejects connect-to")
 response=string.rep("x",1001)..string.char(10).."200"..string.char(10).."0"
 assert(not I.fetch("https://images.example/large.png",1000))
 response="<html>error</html>"..string.char(10).."200"..string.char(10).."0"

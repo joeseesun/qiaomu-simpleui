@@ -1,5 +1,13 @@
 # 更新记录 / Changelog
 
+## v3.0.0-qiaomu.20 — 测试版 / Prerelease
+
+- 修复 KPW1 旧版 curl 不支持 `--connect-to`，导致资讯请求及图片下载失败的问题；改用兼容 curl 7.33 的动态源站解析与 `--resolve`，保留 HTTPS 证书校验和资讯 API 的公网备用线路。
+- 资讯失败提示区分 DNS、连接、TLS、超时等 curl 状态，保留两条线路的错误原因；新增旧参数回归、解析失败和备用线路边界测试。
+- 本地回归与安装包检查通过；尚未在 KPW1 实机验收 HTTPS 或阅读画面，升级后需重启 KOReader 验证。
+
+English: use dynamically resolved origin routing compatible with PW1 curl 7.33 for News and images, retaining TLS verification and the public API fallback. Report per-route curl failures and cover DNS/fallback boundaries. PW1 hardware HTTPS and screen acceptance remain unverified.
+
 ## v3.0.0-qiaomu.19 — 测试版 / Prerelease
 
 - 修复手机扫码配置 AI 时，空自定义动作列表被 Lua JSON 编码为对象，导致页面报 `quick_prompts.map is not a function`、设置加载中断的问题。
