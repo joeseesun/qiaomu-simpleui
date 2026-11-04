@@ -153,14 +153,16 @@ local function shellQuote(value)
 end
 
 local function curlRequest(path)
-    -- Kindle's built-in curl uses its system TLS/CA stack. LuaSec can stall
-    -- on these same CDN handshakes. No external program is installed.
+    -- Keep Kindle's TLS engine and use the bundled CA store. The first
+    -- argument must be -q so device curl configuration cannot alter verification.
     local Route = require("features/sui_news_route")
+    local tls_options = require("features/sui_news_tls").curlOptions()
     local origin_route = Route.resolve("rss.qiaomu.ai")
     local errors = {}
     for i = 1, 2 do
         if i == 2 or origin_route then
-            local command = "/usr/bin/curl --silent --fail --compressed --ipv4 --connect-timeout 8 --max-time 25"
+            local command = "/usr/bin/curl -q --silent --fail --compressed --ipv4 --connect-timeout 8 --max-time 25"
+                .. tls_options
                 .. " --max-filesize 4194304 --proto '=https'"
                 .. " --header 'Accept: application/json' --header 'X-Rss-List: reader-v1'"
                 .. " --user-agent 'Qiaomu-SimpleUI/3.0.0'"

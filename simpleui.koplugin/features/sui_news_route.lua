@@ -32,6 +32,7 @@ function M.error(code)
         [2] = "unsupported curl option", [5] = "proxy DNS failed", [6] = "DNS failed",
         [7] = "connection failed", [28] = "request timed out", [35] = "TLS handshake failed",
         [60] = "TLS certificate verification failed", [63] = "response too large",
+        [77] = "CA bundle could not be read; reinstall the complete plugin",
     }
     return "curl " .. tostring(code or "unknown") .. ": " .. (reasons[tonumber(code)] or "transfer incomplete")
 end

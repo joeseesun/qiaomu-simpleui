@@ -1,0 +1,8 @@
+{
+  "source_url": "https://curl.se/ca/cacert-2026-10-20.pem",
+  "checksum_url": "https://curl.se/ca/cacert-2026-10-20.pem.sha256",
+  "mozilla_updated_at": "2026-10-20T13:32:40Z",
+  "sha256": "796f1389bfea13c0ed78f663b765baaff54a508e5483786bd6ece73c5e3e3cbe",
+  "certificates": 118,
+  "license": "MPL-2.0"
+}
