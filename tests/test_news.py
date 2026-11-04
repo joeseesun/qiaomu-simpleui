@@ -104,6 +104,11 @@ assert(N.request("/api/entries").entries and attempts==2)
 assert(commands[1]:find("--resolve 'rss.qiaomu.ai:443:172.67.1.1'",1,true),
  "Kindle must avoid the failing CDN TLS path using the existing origin")
 assert(not commands[2]:find("--resolve",1,true), "fallback uses the public API's DNS")
+for _, command in ipairs(commands) do
+ assert(command:find("/usr/bin/curl -q ",1,true)==1)
+ assert(command:find("--cacert '"..plugin_root.."/data/ca/cacert.pem'",1,true))
+ assert(not command:find(" --insecure",1,true) and not command:find(" -k",1,true))
+end
 assert(not commands[1]:find("--connect-to",1,true), "PW1 curl 7.33 cannot use connect-to")
 assert(commands[1]:find("https://rss.qiaomu.ai/api/entries",1,true))
 assert(commands[1]:find("--proto '=https'",1,true) and not commands[1]:find("--insecure",1,true))
@@ -124,6 +129,20 @@ end
 local failed,why=N.request("/api/entries")
 assert(not failed and attempts==2 and why:find("origin: curl 35: TLS handshake failed",1,true)
  and why:find("public: curl 28: request timed out",1,true))
+-- A CA error must reject even an apparent HTTP success on either route.
+for _,code in ipairs{"60","77"} do
+ attempts=0
+ io.popen=function(command)
+  attempts=attempts+1
+  assert(command:find("--cacert '",1,true) and not command:find("--insecure",1,true))
+  local done=false
+  return {read=function() if done then return end;done=true
+   return '{"entries":[]}'..string.char(10).."200"..string.char(10)..code end,close=function() end}
+ end
+ local result,reason=N.request("/api/entries")
+ assert(not result and attempts==2 and reason:find("origin: curl "..code,1,true)
+  and reason:find("public: curl "..code,1,true))
+end
 -- Missing/failed origin DNS goes straight to one public attempt, even offline.
 for _,resolver in ipairs{
  function() return nil,"DNS unavailable" end,

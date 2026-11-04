@@ -1,5 +1,12 @@
 # 更新记录 / Changelog
 
+## v3.0.0-qiaomu.21 — 测试版 / Prerelease
+
+- 为 Kindle 资讯 API 及图片下载随包提供经 SHA-256 校验的 Mozilla CA，保留 HTTPS 证书和主机名验证。
+- 新增真实本地 HTTPS 正反例和安装包完整性检查。原 PW1 尚待实机验收。
+
+English: ship verified Mozilla roots for Kindle news and images. Verify TLS and package integrity with local tests. Original PW1 acceptance is pending.
+
 ## v3.0.0-qiaomu.20 — 测试版 / Prerelease
 
 - 修复 KPW1 旧版 curl 不支持 `--connect-to`，导致资讯请求及图片下载失败的问题；改用兼容 curl 7.33 的动态源站解析与 `--resolve`，保留 HTTPS 证书校验和资讯 API 的公网备用线路。

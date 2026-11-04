@@ -12,6 +12,10 @@ files=sorted(p for p in plugin.rglob('*') if p.is_file()
 assert (plugin/'main.lua') in files
 assert (plugin/'features/library/sui_hidden_books.lua') in files
 assert (plugin/'features/sui_qiaomu.lua') in files
+ca=plugin/'data/ca'
+metadata=json.loads((ca/'bundle.json').read_text())
+assert hashlib.sha256((ca/'cacert.pem').read_bytes()).hexdigest()==metadata['sha256'], 'CA bundle checksum mismatch'
+assert all((ca/name) in files for name in ['cacert.pem','bundle.json','README.md','LICENSE-MPL-2.0.txt'])
 with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED) as z:
     for p in files:
         assert p.suffix not in {'.db','.sqlite','.session'},p
