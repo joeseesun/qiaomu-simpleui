@@ -222,6 +222,9 @@ assert(Settings.simpleui_layout==nil and Settings.simpleui_hs_module_order==nil,
         assert hook in eng
     assert eng.count('self:_armArrivalsWatch()') == 2, 'armed on show and on resume'
     assert 'inst:_armArrivalsWatch()' in (ROOT / 'infra/sui_patches.lua').read_text(), 'armed on unpark'
+    recent = (ROOT / 'modules/module_recent.lua').read_text()
+    for field in ('always_label = true', 'label_lines  = 2', 'progress_style = { default = "badge" }'):
+        assert field in recent, 'Recent Books matches the shelf: ' + field
     grid = (ROOT / 'engines/sui_book_grid.lua').read_text()
     assert grid.count('progressDrawsText(progress_style) or opts.always_label') == 2, 'build and getHeight must reserve the same caption'
     assert grid.count('labelBlockHeight(') == 3 and grid.count('gridRowGap(') == 3, 'one caption height and row gap for build and getHeight'

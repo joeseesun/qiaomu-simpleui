@@ -38,7 +38,12 @@ local recent_module = GridRenderer.makeModule{
     getFileList = source.getFileList,
     filterItem  = source.filterItem,
 
-    progress_style = { default = "bar_text" },
+    -- Same cover caption as the Recently added shelf (module_library.lua).
+    always_label = true,
+    label_lines  = 2,
+    labelForItem = function(bd) return bd and bd.title end,
+    text_label   = _("Title"),
+    progress_style = { default = "badge" },
 
     -- Off by default (unchanged look for existing users) — see
     -- GridRenderer.applyBadges' doc comment. All three available for the
