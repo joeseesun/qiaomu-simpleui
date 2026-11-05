@@ -3137,6 +3137,53 @@ function M.migrateOldCustomSlots()
     end
 end
 
+-- Inserts "arrivals" into an id list after Currently Reading (else after
+-- Recent Books, else after a leading Clock/Quote header). Returns true when
+-- it was inserted; a list that already holds it is left alone.
+function M.insertArrivalsId(list)
+    if type(list) ~= "table" then return false end
+    for _, id in ipairs(list) do
+        if (type(id) == "table" and id.id or id) == "arrivals" then return false end
+    end
+    local function idAt(i) local e = list[i]; return type(e) == "table" and e.id or e end
+    local at
+    for i = 1, #list do if idAt(i) == "currently" then at = i + 1; break end end
+    if not at then
+        for i = 1, #list do if idAt(i) == "recent" then at = i + 1; break end end
+    end
+    if not at then
+        at = 1
+        while idAt(at) == "clock" or idAt(at) == "quote" do at = at + 1 end
+    end
+    table.insert(list, at, "arrivals")
+    return true
+end
+
+-- One-time placement of the "arrivals" module into the built-in
+-- Homescreen's saved layout (first page) and flat module order.
+function M.placeArrivalsModule()
+    local layout = SUISettings:get("simpleui_layout")
+    if type(layout) == "table" and type(layout.pages) == "table" then
+        local placed = false
+        for _, page in ipairs(layout.pages) do
+            for _, entry in ipairs(page.modules or {}) do
+                if (type(entry) == "table" and entry.id or entry) == "arrivals" then placed = true end
+            end
+        end
+        local first = layout.pages[1]
+        if not placed and type(first) == "table" then
+            first.modules = first.modules or {}
+            if M.insertArrivalsId(first.modules) then
+                SUISettings:set("simpleui_layout", layout)
+            end
+        end
+    end
+    local order = SUISettings:get("simpleui_hs_module_order")
+    if type(order) == "table" and #order > 0 and M.insertArrivalsId(order) then
+        SUISettings:set("simpleui_hs_module_order", order)
+    end
+end
+
 -- First-run defaults. Idempotent: each setting is only written when absent,
 -- so user customisations made after first run are never overwritten.
 -- No version flags needed — the nil-check on each key is the guard.
@@ -3199,7 +3246,19 @@ function M.applyFirstRunDefaults()
     def(PFX .. "reading_goals_enabled",   false)
     def(PFX .. "reading_stats_enabled",   false)
     def(PFX .. "action_list_enabled",     false)
-    def(PFX .. "module_order",            { "quote", "currently", "recent", "clock", "coverdeck", "new_books", "tbr", "collections", "reading_goals", "reading_stats", "quick_actions_row_000001", "quick_actions_row_000002", "quick_actions_row_000003", "action_list" })
+    def(PFX .. "arrivals_enabled",        true)
+    def(PFX .. "module_order",            { "quote", "currently", "arrivals", "recent", "clock", "coverdeck", "new_books", "tbr", "collections", "reading_goals", "reading_stats", "quick_actions_row_000001", "quick_actions_row_000002", "quick_actions_row_000003", "action_list" })
+
+    -- "Just arrived" (books sent over Wi-Fi) joined the Homescreen after
+    -- many users had saved their own layout. Place it once, right after
+    -- Currently Reading, without reordering anything else; removing it in
+    -- Arrange Modules later is permanent. It takes no space while the
+    -- delivery folder is empty.
+    def("simpleui_arrivals_autorefresh", true)
+    if SUISettings:get("simpleui_arrivals_placed_v1") == nil then
+        SUISettings:set("simpleui_arrivals_placed_v1", true)
+        M.placeArrivalsModule()
+    end
 
     -- NOTE on the def()/nilOrTrue() contract: every boolean setting read via
     -- SUISettings:nilOrTrue() treats an *unset* key as true. That inline

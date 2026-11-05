@@ -1,5 +1,14 @@
 # 更新记录 / Changelog
 
+## 未发布 / Unreleased
+
+- 主页新增「刚送达」：乔木 Kindle 助手经 Wi-Fi 送到 `我的文章` 的书按送达时间从新到旧排列，打开前封面带「新」标记；文件夹里没有书时不占位置。新装默认在「继续阅读」之后；已保存布局的老用户只在第一页「继续阅读」后插入一次，其余模块顺序不变，在「排列模块」里移除后不再加回。
+- 停在主页时自动刷新：每 12 秒 stat 一次 `我的文章` 和书库根目录的 mtime，只有可见书名变化才重扫书库并重绘，十几秒内新书出现在「刚送达」「最近加入」「新书」里。菜单或对话框盖住主页、进入阅读、休眠时停止轮询，唤醒或回到主页时立即补查一次。
+- 传输中的 `.receiving-*` 等隐藏临时文件不计入、不显示，书传完改名后才出现。
+- 新增 `tests/test_arrivals_watch.py`（真实扫描器 + 计时器生命周期 + 布局迁移），CI 已纳入。尚待 PW3 实机验收。
+
+English: a "Just arrived" Homescreen row for books delivered over Wi-Fi to `我的文章` (newest first, New badge until opened, hidden when empty), placed once after Currently Reading without reordering saved layouts. While the Homescreen is in front, a 12-second directory-mtime check refreshes it when a visible book appears; polling stops when covered, reading, or asleep and catches up on resume. Hidden `.receiving-*` temp files are ignored. PW3 hardware acceptance pending.
+
 ## v3.0.0-qiaomu.21 — 测试版 / Prerelease
 
 - 为 Kindle 资讯 API 及图片下载随包提供经 SHA-256 校验的 Mozilla CA，保留 HTTPS 证书和主机名验证。

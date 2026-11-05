@@ -119,6 +119,7 @@ local MODULES = {
     { require_mod = "modules/module_clock"         },
     { require_mod = "modules/module_quote"         },
     { require_mod = "modules/module_currently"     },
+    { require_mod = "modules/module_arrivals"      },
     { require_mod = "modules/module_recent"        },
     { require_mod = "modules/module_new_books"      },
     { require_mod = "modules/module_tbr"            },   -- also the TBR data/API layer

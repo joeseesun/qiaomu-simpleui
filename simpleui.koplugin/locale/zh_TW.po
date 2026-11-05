@@ -6581,3 +6581,6 @@ msgstr "快取空間不足，請清理未收藏快取後重試。"
 
 msgid "Images could not be downloaded. Use the menu to retry."
 msgstr "圖片暫時無法下載，可在選單中重試。"
+
+msgid "Just arrived"
+msgstr "剛送達"

@@ -3574,6 +3574,7 @@ function ScreenWidget:onShow()
             self._defer_stats = false
             self:_scheduleDataRefresh(false)
         end
+        self:_armArrivalsWatch()
     end
 end
 
@@ -3649,12 +3650,30 @@ end
 -- (hidden underneath the reader, see onShowingReader below). Shared by
 -- both call sites so there is exactly one place this teardown subset lives.
 function ScreenWidget:_pauseBackgroundWork()
+    self:_stopArrivalsWatch()
     if self._cover_poll_timer then
         UIManager:unschedule(self._cover_poll_timer)
         self._cover_poll_timer = nil
     end
     local ClockMod = Registry.get("clock")
     if ClockMod and ClockMod.cancelRefresh then ClockMod.cancelRefresh() end
+end
+
+-- Wi-Fi deliveries (features/library/sui_arrivals.lua): while this screen is
+-- in front, a 12 s directory-mtime tick repaints it when a book arrives.
+-- Armed on show, resume and unpark; stopped with the other background work.
+function ScreenWidget:_armArrivalsWatch()
+    local ok, Arrivals = pcall(require, "features/library/sui_arrivals")
+    if ok and Arrivals then
+        local ok_w, err = pcall(Arrivals.watch, self)
+        if not ok_w then logger.warn("simpleui: arrivals watch failed:", tostring(err)) end
+    end
+end
+
+function ScreenWidget:_stopArrivalsWatch()
+    if not self._arrivals_timer then return end
+    local Arrivals = package.loaded["features/library/sui_arrivals"]
+    if Arrivals then Arrivals.stop(self) end
 end
 
 -- Whether the screen is built and in front of the user: not closed, parked
@@ -3697,6 +3716,8 @@ function ScreenWidget:onResume()
     if ClockMod and Registry.isEnabled(ClockMod, self._pfx) and ClockMod.scheduleRefresh then
         ClockMod.scheduleRefresh(self)
     end
+    -- Re-arms the poll and checks once now for books delivered meanwhile.
+    self:_armArrivalsWatch()
 end
 
 function ScreenWidget:onSetRotationMode(mode)
@@ -3870,6 +3891,7 @@ function ScreenWidget:onCloseWidget()
         UIManager:unschedule(self._cover_poll_timer)
         self._cover_poll_timer = nil
     end
+    self:_stopArrivalsWatch()
     -- Invalidate debounce token so any scheduled callback becomes a no-op.
     self._pending_refresh_token = {}
     self._refresh_scheduled     = false
