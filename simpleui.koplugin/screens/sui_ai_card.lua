@@ -57,8 +57,10 @@ function M.show(opts)
     local full_h = probe:getSize().h
     local text_h = math.min(full_h, math.floor(h * 0.55))
     probe:free()
-    content[#content + 1] = ScrollTextWidget:new{ text = opts.text or "", face = face, width = inner,
-        height = math.max(text_h, Screen:scaleBySize(40)), dialog = card }
+    local body_height = math.max(text_h, Screen:scaleBySize(40))
+    local body_index = #content + 1
+    content[body_index] = ScrollTextWidget:new{ text = opts.text or "", face = face, width = inner,
+        height = body_height, dialog = card }
     if full_h > text_h then
         -- Longer text pages inside the card; say so, since e-ink has no scroll hint.
         content[#content + 1] = TextWidget:new{ text = _("Swipe up for more"), face = Font:getFace("infont", 15),
@@ -75,6 +77,17 @@ function M.show(opts)
     function card:onTapClose(_, ges)
         if frame.dimen and ges.pos:notIntersectWith(frame.dimen) then self:dismiss() end
         return true
+    end
+    --- Replaces the body text in place (streaming answers); the box keeps its
+    --- height so the layout never jumps.
+    function card:setText(text)
+        if closed then return end
+        local old = content[body_index]
+        old:free()
+        content[body_index] = ScrollTextWidget:new{ text = tostring(text or ""), face = face,
+            width = inner, height = body_height, dialog = card }
+        if content.resetLayout then content:resetLayout() end
+        UIManager:setDirty(self, function() return "ui", frame.dimen end)
     end
     function card:onClose() self:dismiss(); return true end
     function card:onShow() UIManager:setDirty(self, function() return "ui", frame.dimen end) end

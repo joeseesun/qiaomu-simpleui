@@ -1,5 +1,14 @@
 # 更新记录 / Changelog
 
+## 未发布 / Unreleased
+
+- 「问 AI」对话改为流式输出：回答边到边显示在卡片里（SSE 增量解析，`[DONE]` 收尾）；服务端不支持流式时自动降级为整体返回，拒绝流式的 4xx 会自动用普通请求重试一次。
+- 墨水屏刷新节流：子进程最多每秒写一次进度，界面只刷新卡片区域、不整屏闪烁；流中途断开（无 `[DONE]`）报「连接中断」而不是显示半截回答，可重试错误最多重试一次，超时（curl 28）不重试。
+- 新增划线翻译 / 查词的磁盘缓存（按服务、模型、目标语言、内容区分键；损坏缓存视为未命中；超过 200 条自动清理最旧一半），重复提问可离线命中。
+- 新增流式与缓存回归测试（SSE 分片、断流、429/500、降级路径、缓存键与清理），CI 已纳入。
+
+English: streaming "Ask AI" answers with e-ink-friendly throttled partial repaints, automatic fallbacks (non-streaming document, 4xx degrade-to-plain), mid-stream drop detection, bounded retries, a disk cache for translate/lookup answers, and new regression tests wired into CI.
+
 ## v3.0.0-qiaomu.20 — 测试版 / Prerelease
 
 - 修复 KPW1 旧版 curl 不支持 `--connect-to`，导致资讯请求及图片下载失败的问题；改用兼容 curl 7.33 的动态源站解析与 `--resolve`，保留 HTTPS 证书校验和资讯 API 的公网备用线路。
