@@ -3137,6 +3137,36 @@ function M.migrateOldCustomSlots()
     end
 end
 
+-- "Just arrived" lived in a pre-release as its own row, listing the same books
+-- as the Recently added shelf. Takes it out of saved layouts; everything else
+-- keeps its place.
+function M.removeArrivalsModule()
+    local function strip(list)
+        if type(list) ~= "table" then return false end
+        local removed = false
+        for i = #list, 1, -1 do
+            local e = list[i]
+            if (type(e) == "table" and e.id or e) == "arrivals" then
+                table.remove(list, i)
+                removed = true
+            end
+        end
+        return removed
+    end
+    local layout = SUISettings:get("simpleui_layout")
+    if type(layout) == "table" and type(layout.pages) == "table" then
+        local changed = false
+        for _, page in ipairs(layout.pages) do
+            if strip(page.modules) then changed = true end
+        end
+        if changed then SUISettings:set("simpleui_layout", layout) end
+    end
+    local order = SUISettings:get("simpleui_hs_module_order")
+    if strip(order) then SUISettings:set("simpleui_hs_module_order", order) end
+    SUISettings:del("simpleui_hs_arrivals_enabled")
+    SUISettings:del("simpleui_arrivals_placed_v1")
+end
+
 -- First-run defaults. Idempotent: each setting is only written when absent,
 -- so user customisations made after first run are never overwritten.
 -- No version flags needed — the nil-check on each key is the guard.
@@ -3199,7 +3229,18 @@ function M.applyFirstRunDefaults()
     def(PFX .. "reading_goals_enabled",   false)
     def(PFX .. "reading_stats_enabled",   false)
     def(PFX .. "action_list_enabled",     false)
-    def(PFX .. "module_order",            { "quote", "currently", "recent", "clock", "coverdeck", "new_books", "tbr", "collections", "reading_goals", "reading_stats", "quick_actions_row_000001", "quick_actions_row_000002", "quick_actions_row_000003", "action_list" })
+    -- Fresh installs only: a saved layout keeps exactly the modules it has.
+    if SUISettings:get(PFX .. "module_order") == nil then
+        def(PFX .. "flat_library_enabled", true)
+    end
+    def(PFX .. "module_order",            { "quote", "currently", "flat_library", "recent", "clock", "coverdeck", "new_books", "tbr", "collections", "reading_goals", "reading_stats", "quick_actions_row_000001", "quick_actions_row_000002", "quick_actions_row_000003", "action_list" })
+
+    -- Keeps a Homescreen in front current as books arrive over Wi-Fi.
+    def("simpleui_arrivals_autorefresh", true)
+    if SUISettings:get("simpleui_arrivals_removed_v1") == nil then
+        SUISettings:set("simpleui_arrivals_removed_v1", true)
+        M.removeArrivalsModule()
+    end
 
     -- NOTE on the def()/nilOrTrue() contract: every boolean setting read via
     -- SUISettings:nilOrTrue() treats an *unset* key as true. That inline

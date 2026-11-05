@@ -3967,6 +3967,7 @@ _raiseParkedScreen = function(plugin, screen_module, prev_action)
     inst._on_goal_tap = plugin._goalTapCallback
 
     pcall(function() inst:_refresh(false) end)
+    if inst._armArrivalsWatch then inst:_armArrivalsWatch() end
 
     -- Dimen-scoped dirty: avoids full-flash promotion on colour panels once
     -- the instance is fully raised and dimen is current.
