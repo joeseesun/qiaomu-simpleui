@@ -6581,5 +6581,3 @@ msgstr "缓存空间不足，请清理未收藏缓存后重试。"
 msgid "Images could not be downloaded. Use the menu to retry."
 msgstr "图片暂时无法下载，可在菜单中重试。"
 
-msgid "Just arrived"
-msgstr "刚送达"

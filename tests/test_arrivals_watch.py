@@ -1,10 +1,9 @@
 """Wi-Fi deliveries reach a Homescreen that stays open.
 
-Covers the real scanner + "Just arrived" module (hidden .receiving-* temp
-files never show, newest first, New badge), the watcher lifecycle (cheap idle
-ticks, repaint only on a visible change, paused while covered/suspended/
-parked, catch-up check on resume) and the one-time layout placement that
-leaves a user's saved order intact.
+Covers the real scanner (hidden .receiving-* temp files never show), the
+watcher lifecycle (cheap idle ticks, repaint only on a visible change, paused
+while covered/suspended/parked, catch-up check on resume) and the one-time
+removal of the pre-release "Just arrived" row from saved layouts.
 """
 from pathlib import Path
 import os, tempfile
@@ -54,8 +53,6 @@ package.loaded["infra/sui_store"]={
 }
 package.loaded["infra/sui_i18n"]={translate=function(s) return s end}
 package.loaded["features/library/sui_hidden_books"]={isHidden=function() return false end}
-Spec=nil
-package.loaded["engines/sui_book_grid"]={makeModule=function(spec) Spec=spec; return {id=spec.id} end,reset=function() end}
 -- Timer queue standing in for UIManager:scheduleIn.
 Timers={}
 package.loaded["ui/uimanager"]={
@@ -64,7 +61,7 @@ package.loaded["ui/uimanager"]={
  unschedule=function(_,fn) for i=#Timers,1,-1 do if Timers[i].fn==fn then table.remove(Timers,i) end end end,
 }
 UI=package.loaded["ui/uimanager"]
-Enabled={arrivals=true}
+Enabled={flat_library=true}
 package.loaded["modules/moduleregistry"]={
  get=function(id) return {id=id} end,
  isEnabled=function(mod) return Enabled[mod.id]==true end,
@@ -78,16 +75,16 @@ function runTimers()
  return #due
 end
 Arrivals=require("features/library/sui_arrivals")
-Module=require("modules/module_arrivals")
 Scan=require("engines/sui_library_scan")
 local invalidations=0
 local real_invalidate=Scan.invalidate
 Scan.invalidate=function(...) invalidations=invalidations+1; return real_invalidate(...) end
 function Invalidations() return invalidations end
-assert(Spec.id=="arrivals" and Spec.default_on==true and Spec.badges.new=="on",
- "Just arrived is on by default and badges unopened books as New")
-assert(not Spec.is_book_mod,"an empty Just arrived row must not force slot-repair rebuilds")
-assert(#Module.getFileList()==0,"no delivery folder yet: the row stays empty (hidden)")
+-- What the shelf sees: the real recursive scan of the library home.
+function Listed(path)
+ for _,r in ipairs(Scan.getRaw(home)) do if r.fp==path then return true end end
+ return false
+end
 
 Screen={_id="hs",_pfx="simpleui_hs_",refreshes=0,_ctx_cache={}}
 function Screen:isActive() return self._ctx_cache~=nil and not (self._parked or self._suspended) end
@@ -122,7 +119,7 @@ assert(#Timers==1 and Screen._arrivals_state,"showing the home screen arms one t
     os.utime(inbox, ns=(inbox.stat().st_mtime_ns + 10**9,) * 2)
     tick()
     assert lua.eval('Screen.refreshes') == 1, 'an in-flight .receiving-* file must not repaint'
-    assert lua.eval('#Module.getFileList()') == 0, 'an in-flight transfer is never listed'
+    assert not lua.eval(f'Listed({str(temp)!r})') and not lua.eval(f'Listed({str(temp_ext)!r})'), 'an in-flight transfer is never listed'
 
     # Verified, renamed into place: the row lists it within one tick.
     final = inbox / '刚传来.epub'
@@ -134,13 +131,7 @@ assert(#Timers==1 and Screen._arrivals_state,"showing the home screen arms one t
     tick()
     assert lua.eval('Screen.refreshes') == 2, 'the renamed book repaints the home screen'
     assert lua.eval('Invalidations()') > inv, 'the library scan cache is dropped before the repaint'
-    assert lua.eval('Module.getFileList()[1]') == str(final)
-
-    # Newest first, stable ties.
-    older = inbox / 'a-earlier.epub'; older.write_text('a'); os.utime(older, (4000, 4000))
-    lua.execute('Arrivals.refreshScreen(Screen)')
-    fl = lua.eval('Module.getFileList()')
-    assert [fl[1], fl[2]] == [str(final), str(older)]
+    assert lua.eval(f'Listed({str(final)!r})'), 'the delivered book reaches the shelf scan'
 
     # Covered by a menu: no I/O, no repaint; caught up once it closes.
     lua.execute('UI._window_stack[3]={widget={}}')
@@ -191,52 +182,48 @@ assert(#Timers==1 and Screen._arrivals_state,"showing the home screen arms one t
     lua.execute('Enabled={flat_library=true}; Arrivals.watch(Screen)')
     assert lua.eval('#Timers') == 1, 'the Recently added shelf alone also gets live arrivals'
 
-    # Layout placement: inserted once after Currently Reading, nothing reordered.
+    # The pre-release row leaves saved layouts once; nothing else moves.
     lua.execute('''
-package.loaded["infra/sui_config"]=nil
-for _,m in ipairs({"infra/sui_fonts","infra/sui_paths","infra/sui_virtual_paths"}) do package.loaded[m]=package.loaded[m] or {} end
-''')
-    insert = lua.execute('''
 local Config={}
--- Load just the two helpers from sui_config.lua without its dependencies.
+-- Load just the helper from sui_config.lua without its dependencies.
 local src=io.open(plugin_root.."/infra/sui_config.lua"):read("a")
-local a=src:find("function M.insertArrivalsId",1,true)
+local a=src:find("function M.removeArrivalsModule",1,true)
 local b=src:find("-- First-run defaults. Idempotent:",a,true)
 local chunk=load("local M, SUISettings = ...\\n"..src:sub(a,b-1))
-chunk(Config,package.loaded["infra/sui_store"])
+local store=package.loaded["infra/sui_store"]
+store.del=function(_,k) Settings[k]=nil end
+chunk(Config,store)
 Settings={
- simpleui_layout={pages={{id=1,modules={"clock","currently","recent","collections"}},{id=2,modules={"tbr"}}}},
- simpleui_hs_module_order={"clock","currently","recent","collections","tbr"},
+ simpleui_layout={pages={{id=1,modules={"currently","arrivals","flat_library"}},{id=2,modules={{id="arrivals"},"tbr"}}}},
+ simpleui_hs_module_order={"currently","arrivals","flat_library"},
+ simpleui_hs_arrivals_enabled=true, simpleui_arrivals_placed_v1=true,
+ simpleui_hs_flat_library_grid_rows=2,
 }
-Config.placeArrivalsModule()
-local m=Settings.simpleui_layout.pages[1].modules
-assert(table.concat(m,",")=="clock,currently,arrivals,recent,collections",table.concat(m,","))
+Config.removeArrivalsModule()
+assert(table.concat(Settings.simpleui_layout.pages[1].modules,",")=="currently,flat_library")
 assert(table.concat(Settings.simpleui_layout.pages[2].modules,",")=="tbr")
-assert(table.concat(Settings.simpleui_hs_module_order,",")=="clock,currently,arrivals,recent,collections,tbr")
-Config.placeArrivalsModule()
-assert(#Settings.simpleui_layout.pages[1].modules==5,"placement is idempotent")
--- Removed later by the user (page 2 now): left where it is.
-Settings.simpleui_layout={pages={{id=1,modules={"currently"}},{id=2,modules={"arrivals"}}}}
-Config.placeArrivalsModule()
-assert(#Settings.simpleui_layout.pages[1].modules==1)
-local l={"clock","quote","heatmap"}; Config.insertArrivalsId(l)
-assert(table.concat(l,",")=="clock,quote,arrivals,heatmap")
-local r={"recent","tbr"}; Config.insertArrivalsId(r)
-assert(table.concat(r,",")=="recent,arrivals,tbr")
+assert(table.concat(Settings.simpleui_hs_module_order,",")=="currently,flat_library")
+assert(Settings.simpleui_hs_arrivals_enabled==nil and Settings.simpleui_arrivals_placed_v1==nil)
+assert(Settings.simpleui_hs_flat_library_grid_rows==2,"the shelf keeps its own settings")
+Config.removeArrivalsModule()
+assert(table.concat(Settings.simpleui_layout.pages[1].modules,",")=="currently,flat_library","idempotent")
 Settings={}
-Config.placeArrivalsModule()
+Config.removeArrivalsModule()
 assert(Settings.simpleui_layout==nil and Settings.simpleui_hs_module_order==nil,"no saved layout: defaults apply")
 ''')
 
     src = (ROOT / 'infra/sui_config.lua').read_text()
-    assert src.index('def("simpleui_arrivals_autorefresh"') < src.index('M.placeArrivalsModule()\n    end')
-    assert '"currently", "arrivals", "recent"' in src, 'fresh installs get Just arrived after Currently Reading'
+    assert '"currently", "flat_library", "recent"' in src, 'fresh installs get the shelf after Currently Reading'
+    assert 'arrivals_enabled' not in src.replace('simpleui_hs_arrivals_enabled', ''), 'no duplicate row is enabled'
     reg = (ROOT / 'modules/moduleregistry.lua').read_text()
-    assert reg.index('module_currently') < reg.index('module_arrivals') < reg.index('module_recent')
+    assert 'module_arrivals' not in reg and not (ROOT / 'modules/module_arrivals.lua').exists()
     eng = (ROOT / 'engines/sui_screen_engine.lua').read_text()
     for hook in ('function ScreenWidget:_pauseBackgroundWork()\n    self:_stopArrivalsWatch()',):
         assert hook in eng
     assert eng.count('self:_armArrivalsWatch()') == 2, 'armed on show and on resume'
     assert 'inst:_armArrivalsWatch()' in (ROOT / 'infra/sui_patches.lua').read_text(), 'armed on unpark'
+    grid = (ROOT / 'engines/sui_book_grid.lua').read_text()
+    assert grid.count('progressDrawsText(progress_style) or opts.always_label') == 2, 'build and getHeight must reserve the same caption'
+    assert grid.count('labelBlockHeight(') == 3 and grid.count('gridRowGap(') == 3, 'one caption height and row gap for build and getHeight'
 
-print('PASS: Wi-Fi deliveries appear on an open Homescreen within one 12 s tick; .receiving-* temp files never show; idle ticks only stat; paused when covered, suspended or parked; resume catches up; saved layouts keep their order.')
+print('PASS: Wi-Fi deliveries appear on an open Homescreen within one 12 s tick; .receiving-* temp files never show; idle ticks only stat; paused when covered, suspended or parked; resume catches up; the duplicate row leaves saved layouts once.')

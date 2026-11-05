@@ -33,7 +33,7 @@ Arrivals.FALLBACK_ROOTS = { "/mnt/us/documents" }
 
 -- Modules whose content depends on what is in the library folders. A screen
 -- showing none of them has nothing to refresh and is never polled.
-Arrivals.LIBRARY_MODULES = { "arrivals", "flat_library", "new_books" }
+Arrivals.LIBRARY_MODULES = { "flat_library", "new_books" }
 
 local function joinPath(parent, child)
     if parent:sub(-1) == "/" then return parent .. child end

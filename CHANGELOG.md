@@ -2,12 +2,13 @@
 
 ## v3.0.0-qiaomu.22 — 测试版 / Prerelease
 
-- 主页新增「刚送达」：乔木 Kindle 助手经 Wi-Fi 送到 `我的文章` 的书按送达时间从新到旧排列，打开前封面带「新」标记；文件夹里没有书时不占位置。新装默认在「继续阅读」之后；已保存布局的老用户只在第一页「继续阅读」后插入一次，其余模块顺序不变，在「排列模块」里移除后不再加回。
-- 停在主页时自动刷新：每 12 秒 stat 一次 `我的文章` 和书库根目录的 mtime，只有可见书名变化才重扫书库并重绘，十几秒内新书出现在「刚送达」「最近加入」「新书」里。菜单或对话框盖住主页、进入阅读、休眠时停止轮询，唤醒或回到主页时立即补查一次。
+- 主页书架合并为一行「最近加入」：去掉与它重复的「刚送达」，新书经 Wi-Fi 送达后直接排在最前。已保存的布局只移除这一行，其余顺序不变；新装默认在「继续阅读」之后显示书架。
+- 书架封面下方改为显示书名，最多两行、与封面左对齐，放不下时用省略号收尾；未读的书角标「新」，读过的书在同一角显示实心进度（如 37%），读完显示对勾。不用半透明底：墨水屏上会抖动成噪点，看不清封面和文字。书架设置的「进度样式」里仍可换回进度条。
+- 停在主页时自动刷新：每 12 秒 stat 一次 `我的文章` 和书库根目录的 mtime，只有可见书名变化才重扫书库并重绘，十几秒内新书出现在「最近加入」「新书」里。菜单或对话框盖住主页、进入阅读、休眠时停止轮询，唤醒或回到主页时立即补查一次。
 - 传输中的 `.receiving-*` 等隐藏临时文件不计入、不显示，书传完改名后才出现。
 - 新增 `tests/test_arrivals_watch.py`（真实扫描器 + 计时器生命周期 + 布局迁移），CI 已纳入。尚待 PW3 实机验收。
 
-English: a "Just arrived" Homescreen row for books delivered over Wi-Fi to `我的文章` (newest first, New badge until opened, hidden when empty), placed once after Currently Reading without reordering saved layouts. While the Homescreen is in front, a 12-second directory-mtime check refreshes it when a visible book appears; polling stops when covered, reading, or asleep and catches up on resume. Hidden `.receiving-*` temp files are ignored. PW3 hardware acceptance pending.
+English: one "Recently added" shelf replaces the duplicate "Just arrived" row, removed once from saved layouts without reordering anything else. Shelf covers show the title underneath (up to two lines, aligned to the cover) and progress in an opaque corner badge, since translucency dithers on e-ink; unopened books keep the New badge. While the Homescreen is in front, a 12-second directory-mtime check refreshes it when a visible book appears; polling stops when covered, reading, or asleep and catches up on resume. Hidden `.receiving-*` temp files are ignored. PW3 hardware acceptance pending.
 
 ## v3.0.0-qiaomu.21 — 测试版 / Prerelease
 
