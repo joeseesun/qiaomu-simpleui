@@ -31,6 +31,8 @@ jobs:
       - run: python tests/test_ai_page.py
       - run: python tests/test_ai_lookup.py
       - run: python tests/test_ai_chat.py
+      - run: python tests/test_ai_stream.py
+      - run: python tests/test_ai_cache.py
       - run: |
           python - <<'PY'
           from pathlib import Path
