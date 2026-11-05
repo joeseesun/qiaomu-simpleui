@@ -23,6 +23,7 @@ jobs:
       - run: python tests/test_home_controls.py
       - run: python tests/test_news.py
       - run: python tests/test_news_cache_images.py
+      - run: python tests/test_news_tls.py
       - run: python tests/test_news_markup.py
       - run: python tests/test_news_epub.py
       - run: python tests/test_news_typography.py

@@ -28,6 +28,7 @@ with tempfile.TemporaryDirectory() as tmp:
 package.path=plugin_root.."/?.lua;"..package.path
 package.loaded["datastorage"]={getSettingsDir=function() return tmp end}
 package.loaded["util"]={makePath=mkdir}
+package.loaded["infra/sui_paths"]={getPluginDir=function() return plugin_root.."/" end}
 package.loaded["libs/libkoreader-lfs"]={attributes=attrs,symlinkattributes=attrs,touch=touch,
  dir=function(p) local names=listing(p);local i=0;return function() i=i+1;return names[i] end end}
 local free=10*1024*1024*1024
@@ -92,6 +93,16 @@ local news_path=I.fetch("https://rss.qiaomu.ai/pw1.png",10000)
 assert(news_path, "PW1 news images use compatible routing too")
 assert(commands[2]:find("--resolve 'rss.qiaomu.ai:443:203.0.113.1'",1,true))
 assert(not commands[2]:find("--connect-to",1,true), "PW1 curl 7.33 rejects connect-to")
+for _, command in ipairs(commands) do
+ assert(command:find("/usr/bin/curl -q ",1,true)==1)
+ assert(command:find("--cacert '"..plugin_root.."/data/ca/cacert.pem'",1,true))
+ assert(not command:find(" -k",1,true) and not command:find("--insecure",1,true))
+end
+for _,code in ipairs{"60","77"} do
+ response=png..string.char(10).."200"..string.char(10)..code
+ assert(not I.fetch("https://images.example/tls-"..code..".png",10000))
+ assert(not I.path("https://images.example/tls-"..code..".png"))
+end
 response=string.rep("x",1001)..string.char(10).."200"..string.char(10).."0"
 assert(not I.fetch("https://images.example/large.png",1000))
 response="<html>error</html>"..string.char(10).."200"..string.char(10).."0"
