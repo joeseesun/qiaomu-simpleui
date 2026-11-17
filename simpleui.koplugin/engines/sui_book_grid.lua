@@ -786,7 +786,8 @@ function GridRenderer.build(w, ctx, opts)
     if opts.getCellHeight then
         cell_h = opts.getCellHeight(cw, pfx)
     else
-        cell_h = use_overlay and (ch + badge_r)
+        cell_h = use_overlay and (ch + badge_r + cellExtraHeight(false, opts.always_label,
+            D.RB_GAP1, D.RB_BAR_H, D.RB_GAP2, label_h))
                                or (ch + cellExtraHeight(draw_progress, draw_text, D.RB_GAP1, D.RB_BAR_H, D.RB_GAP2, label_h))
     end
 
@@ -940,23 +941,23 @@ function GridRenderer.build(w, ctx, opts)
                     }, ctx.text_alpha),
                 }
             else
-            local pct_w = UI.makeColoredText{
-                text      = opts.labelForItem and opts.labelForItem(bd)
-                            or string.format(_("%d%% Read"), math.floor((bd.percent or 0) * 100 + 0.5)),
-                face      = pct_face,
-                bold      = pct_bold,
-                fgcolor   = _pct_fg,
-                max_width = cw,
-                truncate_with_ellipsis = true,
-                alignment = "center",
-            }
-            cell[#cell+1] = pct_w
-            _update_text = function(nd)
-                UI.updateColoredText(pct_w,
-                    opts.labelForItem and opts.labelForItem(nd)
-                    or string.format(_("%d%% Read"), math.floor((nd and nd.percent or 0) * 100 + 0.5)),
-                    _pct_fg)
-            end
+                local pct_w = UI.makeColoredText{
+                    text      = opts.labelForItem and opts.labelForItem(bd)
+                                or string.format(_("%d%% Read"), math.floor((bd.percent or 0) * 100 + 0.5)),
+                    face      = pct_face,
+                    bold      = pct_bold,
+                    fgcolor   = _pct_fg,
+                    max_width = cw,
+                    truncate_with_ellipsis = true,
+                    alignment = "center",
+                }
+                cell[#cell+1] = pct_w
+                _update_text = function(nd)
+                    UI.updateColoredText(pct_w,
+                        opts.labelForItem and opts.labelForItem(nd)
+                        or string.format(_("%d%% Read"), math.floor((nd and nd.percent or 0) * 100 + 0.5)),
+                        _pct_fg)
+                end
             end
         end
 
@@ -1332,7 +1333,10 @@ function GridRenderer.getGridHeight(_ctx, opts)
     local label_h  = labelBlockHeight((SUIStyle.getTextFace(styles.label, pct_fs)), opts.label_lines)
     -- Height of the default book cell.
     local function bookCellHeight()
-        if use_overlay then return rh + math.floor(cw * 0.28) end
+        if use_overlay then
+            return rh + math.floor(cw * 0.28) + cellExtraHeight(false, opts.always_label,
+                D.RB_GAP1, D.RB_BAR_H, D.RB_GAP2, label_h)
+        end
         return rh + cellExtraHeight(draw_progress, draw_text, D.RB_GAP1, D.RB_BAR_H, D.RB_GAP2, label_h)
     end
     -- opts.getCellHeight: see the twin note in build() — must return

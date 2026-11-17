@@ -28,9 +28,14 @@ local function hash(text)
 end
 
 local function key(cfg, kind, model, messages)
-    local ok, encoded = pcall(JSON.encode, { provider = cfg.provider, model = model,
-        lang = cfg.translate_to, kind = kind, messages = messages })
-    return hash(ok and encoded or (tostring(kind) .. tostring(model) .. tostring(messages)))
+    -- Array order is stable across Lua processes. Include the endpoint so
+    -- switching between custom servers with the same model cannot reuse a reply.
+    local input = { cfg.provider or "", cfg.base or "", model or "",
+        cfg.translate_to or "", kind or "" }
+    for _, message in ipairs(messages) do
+        input[#input + 1] = { message.role, message.content }
+    end
+    return hash(JSON.encode(input))
 end
 
 local function path(k) return M.dir() .. "/" .. k .. ".json" end

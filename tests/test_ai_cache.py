@@ -46,7 +46,12 @@ local base={provider="deepseek",chat_model="m1",translate_model="m1",translate_t
 local msgs={{role="user",content="hello"}}
 Cache.set(base,"translate","m1",msgs,"答案")
 assert(Cache.get(base,"translate","m1",msgs)=="答案","same key hits")
-local other=base
+local endpoint1={provider="custom",base="https://provider-one.invalid",translate_to="zh-CN"}
+local endpoint2={provider="custom",base="https://provider-two.invalid",translate_to="zh-CN"}
+Cache.set(endpoint1,"translate","m1",msgs,"one")
+assert(Cache.get(endpoint2,"translate","m1",msgs)==nil,"endpoint is part of the key")
+Cache.set(endpoint1,"translate","m1",{{content="hello",role="user"}},"again")
+assert(Cache.get(endpoint1,"translate","m1",msgs)=="again","message field order is irrelevant")
 assert(Cache.get({provider="kimi",translate_to="zh-CN"},"translate","m1",msgs)==nil,"provider is part of the key")
 assert(Cache.get(base,"translate","m2",msgs)==nil,"model is part of the key")
 assert(Cache.get(base,"translate","m1",{{role="user",content="other"}})==nil,"messages are part of the key")
@@ -55,6 +60,9 @@ local en={provider="deepseek",translate_to="en"}
 assert(Cache.get(en,"translate","m1",msgs)==nil,"target language is part of the key")
 ''')
     cache_dir = Path(tmp) / 'var-local' / 'ai-cache'
+    for item in cache_dir.glob('*.json'):
+        if json.loads(item.read_bytes())['answer'] == 'again':
+            item.unlink()
     files = list(cache_dir.glob('*.json'))
     assert len(files) == 1
     files[0].write_text('not json at all')
