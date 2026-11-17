@@ -104,10 +104,14 @@ with tempfile.TemporaryDirectory() as directory:
     lua.globals().fixture_plugin = str(fixture_plugin) + '/'
     lua.globals().decode = lambda value: lua.table_from(json.loads(value))
 
+    last_output = None
+
     def curl(command):
+        global last_output
         assert command.startswith('/usr/bin/curl -q ') and ' --cacert ' in command
         result = subprocess.run(command, shell=True, env=environment, capture_output=True, check=True)
-        return result.stdout.decode()
+        last_output = result.stdout.decode()
+        return last_output
 
     lua.globals().curl = curl
     lua.execute('''
@@ -143,7 +147,7 @@ News=require("features/sui_news")
             else:
                 fixture_ca.write_bytes(contents)
             result = request(url)
-            assert result[0] is None and 'curl 77:' in result[1], result
+            assert result[0] is None and 'curl 77:' in result[1], (result, last_output)
             assert 'reinstall the complete plugin' in result[1]
 
 subprocess.run([sys.executable, str(ROOT / 'scripts/package.py')], check=True)

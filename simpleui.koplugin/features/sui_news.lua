@@ -184,7 +184,11 @@ local function curlRequest(path)
             end
             local closed, _, exit_code = pipe:close()
             if oversized then return nil, "Response too large" end
-            local body, status, curl_status = table.concat(chunks):match("^(.*)\n(%d%d%d)\n(%d+)$")
+            local output = table.concat(chunks)
+            local body, status, curl_status = output:match("^(.*)\n(%d%d%d)\n(%d+)$")
+            -- Early curl failures may skip --write-out; the shell still records
+            -- the exit code. A missing HTTP status never counts as success.
+            curl_status = curl_status or output:match("\n(%d+)$")
             local failed = tonumber(curl_status) ~= 0 or closed == false or (exit_code ~= nil and exit_code ~= 0)
             if tonumber(status) == 200 and not failed then
                 local ok, data = pcall(JSON.decode, body)

@@ -143,6 +143,15 @@ for _,code in ipairs{"60","77"} do
  assert(not result and attempts==2 and reason:find("origin: curl "..code,1,true)
   and reason:find("public: curl "..code,1,true))
 end
+-- Some curl builds exit before writing the HTTP status.
+attempts=0
+io.popen=function()
+ attempts=attempts+1;local done=false
+ return {read=function() if done then return end;done=true
+  return string.char(10).."77" end,close=function() end}
+end
+local no_http,reason=N.request("/api/entries")
+assert(not no_http and attempts==2 and reason:find("curl 77:",1,true))
 -- Missing/failed origin DNS goes straight to one public attempt, even offline.
 for _,resolver in ipairs{
  function() return nil,"DNS unavailable" end,
