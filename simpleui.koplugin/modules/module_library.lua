@@ -299,8 +299,14 @@ local mod = GridRenderer.makeModule{
         return not Finished.isHidden() or not SH.isFinished(fp, ctx and ctx.prefetched)
     end,
 
-    -- Same defaults as Recent Books: progress bar + "% Read" label, no overlay.
-    progress_style = { default = "bar_text" },
+    -- The title goes under the cover and progress onto it: the opaque corner
+    -- badge stays crisp on e-ink, where translucency only dithers the cover
+    -- behind it. Unopened books carry "New" in that corner instead.
+    always_label = true,
+    label_lines  = 2,
+    labelForItem = function(bd) return bd and bd.title end,
+    text_label   = _("Title"),
+    progress_style = { default = "badge" },
 
     -- Existing badge settings win. Unopened books are marked New by default;
     -- this is a reading-state badge, not a claim about the transfer date.

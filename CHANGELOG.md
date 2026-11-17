@@ -1,13 +1,13 @@
 # 更新记录 / Changelog
 
-## 未发布 / Unreleased
+## v3.0.0-qiaomu.23 — 测试版 / Prerelease
 
-- 「问 AI」对话改为流式输出：回答边到边显示在卡片里（SSE 增量解析，`[DONE]` 收尾）；服务端不支持流式时自动降级为整体返回，拒绝流式的 4xx 会自动用普通请求重试一次。
-- 墨水屏刷新节流：子进程最多每秒写一次进度，界面只刷新卡片区域、不整屏闪烁；流中途断开（无 `[DONE]`）报「连接中断」而不是显示半截回答，可重试错误最多重试一次，超时（curl 28）不重试。
-- 新增划线翻译 / 查词的磁盘缓存（按服务、模型、目标语言、内容区分键；损坏缓存视为未命中；超过 200 条自动清理最旧一半），重复提问可离线命中。
-- 新增流式与缓存回归测试（SSE 分片、断流、429/500、降级路径、缓存键与清理），CI 已纳入。
+- 主页合并为一行「最近加入」。停在主页时，通过 Wi-Fi 送达的书会在下一次检查后排在最前。传输中的隐藏临时文件不会显示。
+- 「最近加入」和「最近书籍」在封面下显示最多两行书名，默认在封面角标显示「新」、阅读进度或完成状态。
+- 「问 AI」支持流式显示回答，按墨水屏刷新节奏更新卡片。连接中断会提示失败，部分服务拒绝流式请求时会尝试普通请求。
+- 划线翻译和查词保留本地缓存。相同请求在离线时也可读取已缓存的回答。
 
-English: streaming "Ask AI" answers with e-ink-friendly throttled partial repaints, automatic fallbacks (non-streaming document, 4xx degrade-to-plain), mid-stream drop detection, bounded retries, a disk cache for translate/lookup answers, and new regression tests wired into CI.
+English: consolidate the Recently Added shelf and refresh it after Wi-Fi deliveries. Show book titles and progress badges on Recently Added and Recent Books. Ask AI streams answers with throttled card refresh, and translation and lookup can reuse cached answers offline.
 
 ## v3.0.0-qiaomu.21 — 测试版 / Prerelease
 
