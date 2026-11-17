@@ -104,10 +104,14 @@ with tempfile.TemporaryDirectory() as directory:
     lua.globals().fixture_plugin = str(fixture_plugin) + '/'
     lua.globals().decode = lambda value: lua.table_from(json.loads(value))
 
+    last_output = None
+
     def curl(command):
+        global last_output
         assert command.startswith('/usr/bin/curl -q ') and ' --cacert ' in command
         result = subprocess.run(command, shell=True, env=environment, capture_output=True, check=True)
-        return result.stdout.decode()
+        last_output = result.stdout.decode()
+        return last_output
 
     lua.globals().curl = curl
     lua.execute('''
@@ -142,9 +146,13 @@ News=require("features/sui_news")
                 fixture_ca.unlink()
             else:
                 fixture_ca.write_bytes(contents)
+            last_output = None
             result = request(url)
-            assert result[0] is None and 'curl 77:' in result[1], result
-            assert 'reinstall the complete plugin' in result[1]
+            assert result[0] is None and 'reinstall the complete plugin' in result[1], (result, last_output)
+            if contents:
+                assert 'curl 77:' in result[1] and last_output is not None
+            else:
+                assert last_output is None, 'missing or empty CA must fail before invoking curl'
 
 subprocess.run([sys.executable, str(ROOT / 'scripts/package.py')], check=True)
 with zipfile.ZipFile(ROOT / 'dist/simpleui.koplugin.zip') as archive:

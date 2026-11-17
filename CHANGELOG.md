@@ -1,15 +1,13 @@
 # 更新记录 / Changelog
 
-## v3.0.0-qiaomu.22 — 测试版 / Prerelease
+## v3.0.0-qiaomu.23 — 测试版 / Prerelease
 
-- 主页书架合并为一行「最近加入」：去掉与它重复的「刚送达」，新书经 Wi-Fi 送达后直接排在最前。已保存的布局只移除这一行，其余顺序不变；新装默认在「继续阅读」之后显示书架。
-- 书架封面下方改为显示书名，最多两行、与封面左对齐，放不下时用省略号收尾；未读的书角标「新」，读过的书在同一角显示实心进度（如 37%），读完显示对勾。不用半透明底：墨水屏上会抖动成噪点，看不清封面和文字。书架设置的「进度样式」里仍可换回进度条。
-- 主页「最近书籍」改用同样的样式：书名最多两行，进度显示在封面角标。
-- 停在主页时自动刷新：每 12 秒 stat 一次 `我的文章` 和书库根目录的 mtime，只有可见书名变化才重扫书库并重绘，十几秒内新书出现在「最近加入」「新书」里。菜单或对话框盖住主页、进入阅读、休眠时停止轮询，唤醒或回到主页时立即补查一次。
-- 传输中的 `.receiving-*` 等隐藏临时文件不计入、不显示，书传完改名后才出现。
-- 新增 `tests/test_arrivals_watch.py`（真实扫描器 + 计时器生命周期 + 布局迁移），CI 已纳入。尚待 PW3 实机验收。
+- 主页合并为一行「最近加入」。停在主页时，通过 Wi-Fi 送达的书会在下一次检查后排在最前。传输中的隐藏临时文件不会显示。
+- 「最近加入」和「最近书籍」在封面下显示最多两行书名，默认在封面角标显示「新」、阅读进度或完成状态。
+- 「问 AI」支持流式显示回答，按墨水屏刷新节奏更新卡片。连接中断会提示失败，部分服务拒绝流式请求时会尝试普通请求。
+- 划线翻译和查词保留本地缓存。相同请求在离线时也可读取已缓存的回答。
 
-English: one "Recently added" shelf replaces the duplicate "Just arrived" row, removed once from saved layouts without reordering anything else. Shelf covers show the title underneath (up to two lines, aligned to the cover) and progress in an opaque corner badge, since translucency dithers on e-ink; unopened books keep the New badge. Recent Books uses the same cover style. While the Homescreen is in front, a 12-second directory-mtime check refreshes it when a visible book appears; polling stops when covered, reading, or asleep and catches up on resume. Hidden `.receiving-*` temp files are ignored. PW3 hardware acceptance pending.
+English: consolidate the Recently Added shelf and refresh it after Wi-Fi deliveries. Show book titles and progress badges on Recently Added and Recent Books. Ask AI streams answers with throttled card refresh, and translation and lookup can reuse cached answers offline.
 
 ## v3.0.0-qiaomu.21 — 测试版 / Prerelease
 

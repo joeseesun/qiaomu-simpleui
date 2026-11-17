@@ -9,6 +9,13 @@ local Lookup = require("features/sui_ai_lookup")
 local _ = require("infra/sui_i18n").translate
 local M = {}
 
+-- Streaming refresh cadence, tuned for e-ink: the subprocess rewrites the
+-- stream file at most once a second (sui_ai_client), the UI polls slightly
+-- faster but repaints only when the text actually changed, and each repaint
+-- refreshes just the card's area ("ui"), never a full-screen flash.
+local STREAM_FIRST_POLL = 0.4
+local STREAM_POLL = 0.8
+
 local function notice(text)
     UIManager:show(require("ui/widget/infomessage"):new{ text = text })
 end
@@ -19,21 +26,57 @@ local function bookTitle(ui)
 end
 
 --- Runs one chat request in a cancellable subprocess with a loading card.
+--- Chat answers stream into the card as they arrive; lookup/translate answers
+--- are served from (and stored to) a disk cache, so repeats work offline.
 --- Logs kind, model, duration and outcome only (never text or key).
 function M.ask(title, messages, model, done, kind, on_cancel)
     local cfg = Config.load()
     local logger = require("logger")
     local Card = require("screens/sui_ai_card")
+    local Cache = require("features/sui_ai_cache")
+    local cacheable = kind == "lookup" or kind == "translate"
+    if cacheable then
+        local hit = Cache.get(cfg, kind, model, messages)
+        if hit then
+            logger.info("simpleui ai:", kind, model, "cached")
+            return done(hit)
+        end
+    end
     require("ui/network/manager"):runWhenOnline(function()
         local Trapper = require("ui/trapper")
         Trapper:wrap(function()
             local loading = Card.loading(title, on_cancel)
             local started = os.time()
+            -- Chat streams: the subprocess appends partial text to a file the
+            -- UI polls while the cancellable waiter pumps the event loop.
+            local stream_file, polling = nil, false
+            if kind == "chat" then
+                stream_file = string.format("%s/.stream-%d-%d", Config.DIR, os.time(), math.random(1, 1e9))
+                local last = ""
+                local function poll()
+                    if not polling then return end
+                    local f = io.open(stream_file, "rb")
+                    if f then
+                        local text = f:read("*a") or ""
+                        f:close()
+                        if text ~= "" and text ~= last then
+                            last = text
+                            pcall(function() loading:setText(text) end)
+                        end
+                    end
+                    UIManager:scheduleIn(STREAM_POLL, poll)
+                end
+                polling = true
+                UIManager:scheduleIn(STREAM_FIRST_POLL, poll)
+            end
             local completed, payload = Trapper:dismissableRunInSubprocess(function()
                 local ok, answer, err = pcall(require("features/sui_ai_client").chat, cfg, messages,
-                    { model = model, thinking = kind == "chat" })
+                    { model = model, thinking = kind == "chat", timeout = kind == "chat" and 90 or 30,
+                      stream_file = stream_file })
                 return JSON.encode(ok and { answer = answer, error = err } or { error = tostring(answer) })
             end, loading, true)
+            polling = false
+            if stream_file then os.remove(stream_file) end
             loading.dismiss_callback = nil
             if not completed then -- cancelled by tapping outside
                 logger.info("simpleui ai:", kind or "request", model, "cancelled")
@@ -50,6 +93,7 @@ function M.ask(title, messages, model, done, kind, on_cancel)
                 return
             end
             logger.info("simpleui ai:", kind or "request", model, "ok", os.time() - started, "s", #answer, "bytes")
+            if cacheable then Cache.set(cfg, kind, model, messages, answer) end
             done(answer)
         end)
     end)
