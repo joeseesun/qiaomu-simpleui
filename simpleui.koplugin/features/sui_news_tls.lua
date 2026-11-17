@@ -3,7 +3,11 @@ local M = {}
 
 function M.curlOptions()
     local path = require("infra/sui_paths").getPluginDir() .. "data/ca/cacert.pem"
-    -- Pass the explicit path even if missing so curl fails closed.
+    local file = io.open(path, "rb")
+    local first_byte = file and file:read(1)
+    if file then file:close() end
+    if not first_byte then return nil, "CA bundle could not be read; reinstall the complete plugin" end
+    -- curl validates the nonempty bundle and the server certificate.
     return " --cacert '" .. path:gsub("'", "'\\''") .. "'"
 end
 

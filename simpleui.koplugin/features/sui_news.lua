@@ -156,7 +156,8 @@ local function curlRequest(path)
     -- Keep Kindle's TLS engine and use the bundled CA store. The first
     -- argument must be -q so device curl configuration cannot alter verification.
     local Route = require("features/sui_news_route")
-    local tls_options = require("features/sui_news_tls").curlOptions()
+    local tls_options, tls_error = require("features/sui_news_tls").curlOptions()
+    if not tls_options then return nil, tls_error end
     local origin_route = Route.resolve("rss.qiaomu.ai")
     local errors = {}
     for i = 1, 2 do

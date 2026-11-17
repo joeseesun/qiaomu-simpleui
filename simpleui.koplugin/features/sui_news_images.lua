@@ -68,12 +68,14 @@ function M.fetch(url, budget, seconds)
     if cached then return cached,0 end
     local route=require("features/sui_news_route").resolve(host)
     if not route then return end
+    local tls_options=require("features/sui_news_tls").curlOptions()
+    if not tls_options then return end
     local part=Cache.root().."/images/"..key(safe)..".part."..tonumber(require("ffi").C.getpid())
     local file=io.open(part,"wb");if not file then return end
     local max=math.min(budget,M.MAX_IMAGE)
     local cmd="/usr/bin/curl -q --silent --fail --ipv4 --proto '=https' --connect-timeout 3 --max-time "
         ..math.max(1,math.min(6,seconds or 6)).." --max-filesize "..max..route
-        ..require("features/sui_news_tls").curlOptions()
+        ..tls_options
         .." --user-agent 'Qiaomu-SimpleUI/3.0.0'"
         .." --header 'Accept: image/png,image/jpeg,image/webp,image/gif' --write-out '\\n%{http_code}' "..quote(safe)
         .." 2>/dev/null; qiaomu_image_exit=$?; printf '\\n%s' \"$qiaomu_image_exit\""
