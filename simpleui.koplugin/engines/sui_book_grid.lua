@@ -45,6 +45,7 @@ local InputContainer  = require("ui/widget/container/inputcontainer")
 local WidgetContainer = require("ui/widget/container/widgetcontainer")
 local OverlapGroup    = require("ui/widget/overlapgroup")
 local CenterContainer = require("ui/widget/container/centercontainer")
+local LeftContainer   = require("ui/widget/container/leftcontainer")
 local VerticalGroup   = require("ui/widget/verticalgroup")
 local VerticalSpan    = require("ui/widget/verticalspan")
 local _ = require("infra/sui_i18n").translate
@@ -354,6 +355,22 @@ local function cellExtraHeight(draw_progress, draw_text, gap1, bar_h, gap2, labe
     return extra
 end
 
+-- Height reserved for the line(s) under a cover. Every cell reserves the full
+-- opts.label_lines, so one-line titles keep the covers of a row level.
+-- Same line pitch as the TextBoxWidget drawing them (line_height 0.3).
+local function labelBlockHeight(face, label_lines)
+    if label_lines and label_lines > 1 then
+        return math.floor(1.3 * face.size + 0.5) * label_lines
+    end
+    return SUIStyle.faceHeight(face)
+end
+
+-- Vertical gap between grid rows: half the horizontal gap, or all of it when
+-- every cell ends in a caption that would otherwise touch the next cover.
+local function gridRowGap(gap, opts)
+    return math.max(0, opts.always_label and gap or math.floor(gap / 2))
+end
+
 function GridRenderer.getGridRows(pfx, id, default_rows)
     return Config.readClampedInt(pfx .. id .. "_grid_rows",
         GridRenderer.GRID_ROWS_MIN, GridRenderer.GRID_ROWS_MAX, default_rows or 1)
@@ -602,6 +619,11 @@ end
 --                         (applied once, before caching in ctx)
 --   labelForItem function? (bd) -> string — replaces the default "XX% Read"
 --                         text (e.g. "New" for New Books)
+--   always_label bool?    draws the labelForItem line under every cover
+--                         whatever the progress style, for a line that is not
+--                         about progress (the book title on the shelf)
+--   label_lines number?   lines for that text, left-aligned to the cover (default
+--                         one centred line). Static text: not patched by updateStats.
 --   progress_style  table?  { default=style, locked=style, allowed={...} } —
 --                         see GridRenderer.getProgressStyle's doc comment.
 --   badges      table?   { pages=mode, series=mode, new=mode }, mode being
@@ -736,18 +758,18 @@ function GridRenderer.build(w, ctx, opts)
     -- horizontal `gap`. The full horizontal gap has to accommodate the
     -- visual frame of each cover on both sides; between rows, that full
     -- distance reads as too loose, making the two rows look like one block.
-    local row_gap = math.max(0, math.floor(gap / 2))
+    local row_gap = gridRowGap(gap, opts)
     local pct_face, pct_bold = SUIStyle.getTextFace(styles.label, pct_fs)
 
     local progress_style     = GridRenderer.getProgressStyle(pfx, id, progress_style_cfg)
     local draw_progress      = progress_style == "bar"  or progress_style == "bar_text"
-    local draw_text          = GridRenderer.progressDrawsText(progress_style)
+    local draw_text          = GridRenderer.progressDrawsText(progress_style) or opts.always_label
     local use_overlay        = progress_style == "overlay"
     local use_progress_badge = progress_style == "badge"
 
     -- Measured line height of pct_face (not a fixed constant), so the row
     -- always reserves at least as much height as the label needs.
-    local label_h = SUIStyle.faceHeight(pct_face)
+    local label_h = labelBlockHeight(pct_face, opts.label_lines)
 
     local badge_r = math.floor(cw * 0.28)
     -- draw_progress/draw_text (computed above, once, same for the whole
@@ -899,6 +921,25 @@ function GridRenderer.build(w, ctx, opts)
         if draw_text then
             cell[#cell+1] = SH.vspan(draw_progress and D.RB_GAP2 or D.RB_GAP1, ctx.vspan_pool)
             local _pct_fg = ink.sub
+            if opts.label_lines and opts.label_lines > 1 then
+                -- Fixed height, no height_adjust: the cell stays the size
+                -- reserved above however many lines this title takes.
+                local inset = SUIStyle.coverShadowOffset(SUIStyle.SHADOW_MODULES)
+                cell[#cell+1] = LeftContainer:new{
+                    dimen = Geom:new{ w = cw, h = label_h },
+                    UI.makeTextBox({
+                        text      = opts.labelForItem(bd) or "?",
+                        face      = pct_face,
+                        bold      = pct_bold,
+                        fgcolor   = _pct_fg,
+                        width     = math.max(1, cw - inset),
+                        height    = label_h,
+                        max_lines = opts.label_lines,
+                        height_overflow_show_ellipsis = true,
+                        alignment = "left",
+                    }, ctx.text_alpha),
+                }
+            else
             local pct_w = UI.makeColoredText{
                 text      = opts.labelForItem and opts.labelForItem(bd)
                             or string.format(_("%d%% Read"), math.floor((bd.percent or 0) * 100 + 0.5)),
@@ -915,6 +956,7 @@ function GridRenderer.build(w, ctx, opts)
                     opts.labelForItem and opts.labelForItem(nd)
                     or string.format(_("%d%% Read"), math.floor((nd and nd.percent or 0) * 100 + 0.5)),
                     _pct_fg)
+            end
             end
         end
 
@@ -1268,8 +1310,8 @@ function GridRenderer.getGridHeight(_ctx, opts)
     local cs = Config.getModuleScaleRaw(id, pfx) * Config.getThumbScaleRaw(id, pfx)
     local cw, gap_for_row = GridRenderer.computeAutoFitCell(w, grid_cols, cs)
     local rh = math.max(1, math.floor(cw * (D.RECENT_H / D.RECENT_W)))
-    -- Same vertical gap used in build() — half the horizontal gap.
-    local row_gap = math.max(0, math.floor(gap_for_row / 2))
+    -- Same vertical gap used in build().
+    local row_gap = gridRowGap(gap_for_row, opts)
 
     -- Must exactly mirror GridRenderer.build's `cell_h` — same reading of
     -- progress_style, and the same cellExtraHeight() — or the reserved
@@ -1284,10 +1326,10 @@ function GridRenderer.getGridHeight(_ctx, opts)
     -- so it always matches the actual glyph height, not a fixed constant.
     local progress_style = GridRenderer.getProgressStyle(pfx, id, progress_style_cfg)
     local draw_progress  = progress_style == "bar"  or progress_style == "bar_text"
-    local draw_text      = GridRenderer.progressDrawsText(progress_style)
+    local draw_text      = GridRenderer.progressDrawsText(progress_style) or opts.always_label
     local use_overlay    = progress_style == "overlay"
     local pct_fs   = math.max(8, math.floor(_BASE_RB_PCT_FS * scale * (styles.label.scale or 1)))
-    local label_h  = SUIStyle.faceHeight((SUIStyle.getTextFace(styles.label, pct_fs)))
+    local label_h  = labelBlockHeight((SUIStyle.getTextFace(styles.label, pct_fs)), opts.label_lines)
     -- Height of the default book cell.
     local function bookCellHeight()
         if use_overlay then return rh + math.floor(cw * 0.28) end
@@ -1729,6 +1771,8 @@ function GridRenderer.makeModule(spec)
         paged         = spec.paged,
         filterItem    = spec.filterItem,
         labelForItem  = spec.labelForItem,
+        always_label  = spec.always_label,
+        label_lines   = spec.label_lines,
         progress_style = progress_style,
         -- renderCell/getCellHeight: see the notes in GridRenderer.build/
         -- getHeight. Allow a spec to fully replace the "book cover" cell

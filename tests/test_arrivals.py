@@ -41,6 +41,10 @@ package.loaded["engines/sui_section_label"]={PageState={setPage=function(ctx,_,p
 Shelf=require("modules/module_library")
 Ctx={pfx="simpleui_hs_"}
 assert(Shelf.label_fn(Ctx.pfx)=="Recently added")
+assert(Shelf.label_lines==2,"long titles get a second line")
+assert(Shelf.always_label==true and Shelf.progress_style.default=="badge","title under the cover, progress on it")
+assert(Shelf.labelForItem({title="悉达多",percent=0.37})=="悉达多")
+assert(Shelf.labelForItem(nil)==nil,"a missing book falls back instead of crashing")
 local first=Shelf.getFileList(Ctx)
 assert(#first==4 and first[1]==home.."/z.epub")
 assert(first[3]==home.."/same-a.epub" and first[4]==home.."/same-b.epub")
