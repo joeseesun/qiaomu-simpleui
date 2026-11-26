@@ -117,6 +117,14 @@ python3 scripts/package.py   # 生成 dist/simpleui.koplugin.zip 与 dist/SHA256
 
 在参考 Kindle 上已确认：首页纵向滑动与书架菜单；资讯自动刷新；文章用 KOReader 阅读器打开约 2 秒、关闭后阅读历史与统计无残留；手机扫码配置 DeepSeek 并测试连接成功，配置文件权限 0600、日志中没有 Key；划线译文卡片完整显示；一次 AI 问答 3 秒返回。待实机确认：查词卡片与生词本、存为批注、AI 笔记文件、追问、频道切换的完整验收。详细记录见 [docs/home-news-progress.md](docs/home-news-progress.md)。
 
+## 启动后退回 Kindle 原生界面
+
+先检查 KOReader 的 `crash.log`。一次已确认的故障是 `readerkeyselection.lua` 在 Kindle 上无法读取，导致 `ReaderUI` 加载失败，进入待机时退出。此时不要先重新越狱或恢复出厂。
+
+安装完整性必须在 Kindle 自身验证：电脑通过 USB 读到文件，不能证明 Kindle 的文件系统也能读取它。通过已配对的 SSH 检查缺失文件，从对应版本的 KOReader 官方安装包恢复，并核对设备端 SHA-256。保留书籍、批注和设置，重启 KOReader 后验证打开书籍、待机及唤醒。
+
+日常传书和插件更新优先使用已配对的 Wi-Fi SSH/SFTP。需要 USB 存储模式时，先退出 KOReader，传输完成后安全弹出，再拔线。[KOReader 官方说明](https://github.com/koreader/koreader/wiki/Installation-on-Kindle-devices#usb)明确不支持在 KOReader 运行时切换到 USB 存储模式。升级前保留完整备份，使用完整官方安装包；升级后检查设备端文件、启动与待机流程。
+
 ## 恢复原版
 
 退出 KOReader，把备份的原版 `simpleui.koplugin` 和 `settings/simpleui` 放回原处即可；书、批注和阅读记录不需要动。要清除 AI 配置：「工具 → 乔木 AI → 清除 AI 设置」。

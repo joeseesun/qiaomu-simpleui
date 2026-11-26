@@ -1,5 +1,10 @@
 # Home shelf and independent news candidate
 
+<!-- [INPUT]: 代码、自动化结果与设备验收记录。
+[OUTPUT]: 各阶段已验证结果、限制与下一步。
+[POS]: 项目设备验证记录；README 引用此文件。
+[PROTOCOL]: Update this header on change, then check AGENTS.md -->
+
 Updated 2026-10-25. Base: `f8a91a3`; branch: `codex/home-arrivals-news`.
 
 ## Accepted interaction
@@ -201,3 +206,10 @@ Updated 2026-10-25. Base: `f8a91a3`; branch: `codex/home-arrivals-news`.
 - Regression tests failed on the prior implementation, then passed after the fix; cover API/images routing, private/malformed DNS addresses, DNS nil/exception, fallback bounds, partial HTTP 200 and distinct TLS/timeout failures. Curl option history verified against https://curl.se/docs/optionswhen.html.
 - PW1 hardware, firmware 5.6.1.1 and curl 7.33 are reported in the supplied screenshot, not verified from a connected PW1. No device update or settings write performed. Actual PW1 HTTPS and visible News acceptance require installation and a KOReader restart; local regression and package verification are separate evidence.
 - Final isolated candidate verification: all 14 tracked Python/Lua/Node suites and zh_CN/zh_TW locale validation passed; `scripts/package.py` produced 325 plugin files and a CRC-valid ZIP. Pre-existing AI streaming/cache work is excluded from this candidate and remains uncommitted in the main workspace. No temporary Git worktree was created.
+
+### PW5 Signature Edition standby exit diagnosis (2026-11-26, America/Los_Angeles)
+
+- Report: KOReader returns to the native Kindle interface after running briefly. Installed versions: KOReader v2026.07.1 and SimpleUI v3.0.0-qiaomu.22, firmware 5.16.2.1.1. Logs show a failed ReaderUI load followed by a fatal screensaver require. This is evidence of a reader crash, not a failed jailbreak.
+- The paired, pinned SSH profile was initially unavailable while USB was mounted. USB comparison of all 1,029 official package files passed, but native access after eject found exactly one missing path: `frontend/apps/reader/modules/readerkeyselection.lua`. A temporary require trace captured that original missing-module error before the plugin's protected calls hid it. The discrepancy between host and native views is observed; its filesystem cause is not established.
+- Backed up and hash-verified all 332 installed plugin files and kept private settings/log backups outside Git. Restored the missing 52,402-byte module from the official kindlepw2 v2026.07.1 ZIP (archive SHA-256 `ea1f575c54492a2c679d128b7f3210fd7d6a87e5f5a1ff1f7a7fe2080ff68f86`). Native readback and Lua syntax passed; module SHA-256 is `264c14886aa5fccadbb5bcb01c09831fad73be95b59569f037bb7ae01ed598e3`.
+- Restored SimpleUI's original entry point byte-for-byte and removed the temporary trace file from Kindle. No reader settings, books, annotations or hidden records were written. This repair restores official KOReader content; it introduces no plugin binary change and requires no new plugin release. Follow-up: the user confirmed restart, standby and wake are normal. The fresh startup log has no ReaderUI load errors or fatal Lua exit. Book opening was not separately verified in this run.
