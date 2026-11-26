@@ -1,3 +1,7 @@
+-- [INPUT]: KOReader 的阅读器事件、文档设置及 SimpleUI 设置。
+-- [OUTPUT]: SimpleUI 插件与阅读生命周期回调。
+-- [POS]: 插件入口，连接主界面、书库和阅读器。
+-- [PROTOCOL]: Update this header on change, then check AGENTS.md
 -- main.lua — Simple UI
 -- Plugin entry point. Registers the plugin and delegates to specialised modules.
 
@@ -1755,6 +1759,15 @@ function SimpleUIPlugin:onResume()
         if SUISettings:nilOrTrue("simpleui_enabled") then
             Patches.showHSAfterResume(self)
         end
+    end
+end
+
+-- KOReader 在 ReadSettings 前发出此事件。原生阅读器负责应用视图模式。
+function SimpleUIPlugin:onDocSettingsLoad(settings, document)
+    if not SUISettings:nilOrTrue("simpleui_enabled") or not document or document.info.has_pages then return end
+    local key = "copt_view_mode"
+    if settings:readSetting(key) == nil and G_reader_settings:readSetting(key) == nil then
+        settings:saveSetting(key, 1) -- CreOptions: 0 为分页，1 为连续。
     end
 end
 

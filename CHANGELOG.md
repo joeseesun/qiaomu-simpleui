@@ -1,5 +1,11 @@
 # 更新记录 / Changelog
 
+## v3.0.0-qiaomu.24 — 测试版 / Prerelease
+
+- EPUB 等可重排电子书和乔木精选文章默认连续滚动。保留已保存的全局或单本阅读模式，PDF 等固定版式不受影响。
+
+English: default reflowable books and news articles to continuous scrolling while honoring saved global and per-book view modes.
+
 ## v3.0.0-qiaomu.23 — 测试版 / Prerelease
 
 - 主页合并为一行「最近加入」。停在主页时，通过 Wi-Fi 送达的书会在下一次检查后排在最前。传输中的隐藏临时文件不会显示。

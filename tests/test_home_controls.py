@@ -102,3 +102,30 @@ assert(more.image.icon==nil)
 more.callback();assert(invoked)
 ''')
 print('PASS: shelf overflow uses a real icon file and retains its menu callback.')
+
+
+# Exercise the shipped DocSettingsLoad callback with KOReader's native mode values.
+main = (ROOT / "main.lua").read_text()
+callback = re.search(r"function SimpleUIPlugin:onDocSettingsLoad\(.*?\nend", main, re.S).group()
+lua.execute("""
+SimpleUIPlugin = {}
+local enabled, global_mode = true, nil
+SUISettings = { nilOrTrue = function() return enabled end }
+G_reader_settings = { readSetting = function() return global_mode end }
+""" + callback + """
+local function check(saved, global, fixed, active, expected)
+    global_mode, enabled = global, active
+    local ds = {
+        readSetting = function(_, key) assert(key == "copt_view_mode"); return saved end,
+        saveSetting = function(_, key, value) assert(key == "copt_view_mode"); saved = value end,
+    }
+    SimpleUIPlugin:onDocSettingsLoad(ds, {info = {has_pages = fixed}})
+    assert(saved == expected)
+end
+check(nil, nil, false, true, 1)
+check(0, nil, false, true, 0)
+check(nil, 0, false, true, nil)
+check(nil, nil, true, true, nil)
+check(nil, nil, false, false, nil)
+""")
+print("PASS: continuous defaults respect saved view modes, fixed-layout files and disabled SimpleUI.")
