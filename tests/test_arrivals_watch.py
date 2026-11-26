@@ -1,9 +1,7 @@
-"""Wi-Fi deliveries reach a Homescreen that stays open.
-
-Covers the real scanner (hidden .receiving-* temp files never show), the
-watcher lifecycle (cheap idle ticks, repaint only on a visible change, paused
-while covered/suspended/parked, catch-up check on resume) and the one-time
-removal of the pre-release "Just arrived" row from saved layouts.
+"""[INPUT]: 首页配置、书库扫描与收书刷新事件。
+[OUTPUT]: 默认布局迁移、文件扫描和刷新时序的回归结果。
+[POS]: 首页显示近期收书的行为测试。
+[PROTOCOL]: Update this header on change, then check AGENTS.md
 """
 from pathlib import Path
 import os, tempfile
@@ -210,6 +208,45 @@ assert(table.concat(Settings.simpleui_layout.pages[1].modules,",")=="currently,f
 Settings={}
 Config.removeArrivalsModule()
 assert(Settings.simpleui_layout==nil and Settings.simpleui_hs_module_order==nil,"no saved layout: defaults apply")
+''')
+
+    # 复现设备原有的默认布局，并验证定制布局与显式关闭。
+    lua.execute('''
+local Config={}
+local src=io.open(plugin_root.."/infra/sui_config.lua"):read("a")
+local a=assert(src:find("    local default_order = {",src:find("function M.applyFirstRunDefaults()",1,true),true))
+local b=assert(src:find("    -- Keeps a Homescreen",a,true))
+local apply=assert(load("local SUISettings=...;local PFX='simpleui_hs_';local function def(k,v) if SUISettings:get(k)==nil then SUISettings:set(k,v) end end\\n"..src:sub(a,b-1)))
+local store=package.loaded["infra/sui_store"]
+store.isTrue=function(_,k) return Settings[k]==true end
+local function oldStock()
+ return {"quote","currently","recent","clock","coverdeck","new_books","tbr","collections","reading_goals","reading_stats","quick_actions_row_000001","quick_actions_row_000002","quick_actions_row_000003","action_list"}
+end
+local function legacy(extra)
+ Settings=extra or {}
+ Settings.simpleui_hs_module_order=oldStock()
+ apply(store)
+end
+legacy({simpleui_hs_new_books_enabled=false})
+assert(Settings.simpleui_hs_flat_library_enabled==true)
+assert(Settings.simpleui_hs_module_order[3]=="flat_library")
+assert(Settings.simpleui_hs_module_order[4]=="recent")
+Settings.simpleui_hs_flat_library_enabled=false
+apply(store)
+assert(Settings.simpleui_hs_flat_library_enabled==false)
+legacy({simpleui_hs_flat_library_enabled=false})
+assert(Settings.simpleui_hs_module_order[3]=="recent")
+legacy({simpleui_hs_new_books_enabled=true})
+assert(Settings.simpleui_hs_module_order[3]=="recent")
+legacy({simpleui_layout={pages={{modules={"recent"}}}}})
+assert(Settings.simpleui_hs_flat_library_enabled==nil)
+assert(Settings.simpleui_hs_module_order[3]=="recent")
+Settings={simpleui_hs_module_order={"recent","currently"}}
+apply(store)
+assert(Settings.simpleui_hs_flat_library_enabled==nil)
+Settings={}
+apply(store)
+assert(Settings.simpleui_hs_flat_library_enabled==true and Settings.simpleui_hs_module_order[3]=="flat_library")
 ''')
 
     src = (ROOT / 'infra/sui_config.lua').read_text()

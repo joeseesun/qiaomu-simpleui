@@ -1,5 +1,12 @@
 # 更新记录 / Changelog
 
+## v3.0.0-qiaomu.25 — 测试版 / Prerelease
+
+- 修复旧版默认首页升级后缺少「最近加入」的问题。无线传入的书籍可从首页直接打开。
+- 保留手动编排的首页、已关闭的书架和已开启的「新书」模块。
+
+English: restore Recently added for stock legacy home layouts. Preserve custom layouts and existing shelf choices.
+
 ## v3.0.0-qiaomu.24 — 测试版 / Prerelease
 
 - EPUB 等可重排电子书和乔木精选文章默认连续滚动。保留已保存的全局或单本阅读模式，PDF 等固定版式不受影响。

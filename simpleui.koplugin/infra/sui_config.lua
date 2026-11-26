@@ -1,3 +1,7 @@
+-- [INPUT]: SimpleUI 设置存储、KOReader 设置和已注册模块。
+-- [OUTPUT]: 界面默认值、兼容迁移和界面设置访问接口。
+-- [POS]: 统一管理首页、导航栏和布局设置。
+-- [PROTOCOL]: Update this header on change, then check AGENTS.md
 -- config.lua — Simple UI
 -- sui_config.lua — Simple UI
 -- Central configuration, state caching, and core helpers.
@@ -3229,11 +3233,31 @@ function M.applyFirstRunDefaults()
     def(PFX .. "reading_goals_enabled",   false)
     def(PFX .. "reading_stats_enabled",   false)
     def(PFX .. "action_list_enabled",     false)
-    -- Fresh installs only: a saved layout keeps exactly the modules it has.
-    if SUISettings:get(PFX .. "module_order") == nil then
-        def(PFX .. "flat_library_enabled", true)
+    local default_order = { "quote", "currently", "flat_library", "recent", "clock", "coverdeck",
+        "new_books", "tbr", "collections", "reading_goals", "reading_stats",
+        "quick_actions_row_000001", "quick_actions_row_000002", "quick_actions_row_000003", "action_list" }
+    local order_key, shelf_key = PFX .. "module_order", PFX .. "flat_library_enabled"
+    local saved_order = SUISettings:get(order_key)
+    if saved_order == nil then
+        def(shelf_key, true)
+        def(order_key, default_order)
+    elseif SUISettings:get("simpleui_layout") == nil and SUISettings:get(shelf_key) == nil
+            and not SUISettings:isTrue(PFX .. "new_books_enabled")
+            and type(saved_order) == "table" and #saved_order == #default_order - 1 then
+        -- 旧版默认顺序只少了「最近加入」；保留手动编排和已开通的新书模块。
+        local old_index = 1
+        local stock = true
+        for _, id in ipairs(default_order) do
+            if id ~= "flat_library" then
+                if saved_order[old_index] ~= id then stock = false; break end
+                old_index = old_index + 1
+            end
+        end
+        if stock then
+            SUISettings:set(shelf_key, true)
+            SUISettings:set(order_key, default_order)
+        end
     end
-    def(PFX .. "module_order",            { "quote", "currently", "flat_library", "recent", "clock", "coverdeck", "new_books", "tbr", "collections", "reading_goals", "reading_stats", "quick_actions_row_000001", "quick_actions_row_000002", "quick_actions_row_000003", "action_list" })
 
     -- Keeps a Homescreen in front current as books arrive over Wi-Fi.
     def("simpleui_arrivals_autorefresh", true)
